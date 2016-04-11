@@ -8,9 +8,17 @@ import { Route, IndexRoute } from 'react-router'
 // your current file is.
 import CoreLayout from 'layouts/CoreLayout/CoreLayout'
 import HomeView from 'views/HomeView/HomeView'
+import DensityView from 'views/national/DensityView'
+import DiversityView from 'views/national/DiversityView'
+import FluidityView from 'views/national/FluidityView'
+import CombinedView from 'views/national/CombinedView'
 
 export default (store) => (
   <Route path='/' component={CoreLayout}>
     <IndexRoute component={HomeView} />
+    <Route path='/density' component={DensityView} />
+    <Route path='/diversity' component={DiversityView} />
+    <Route path='/fluidity' component={FluidityView} />
+	<Route path='/combined' component={CombinedView} />
   </Route>
 )
