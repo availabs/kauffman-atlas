@@ -7,7 +7,7 @@ import topojson from 'topojson'
 import classes from './NationalMap.scss'
 
 
-export class NationalMap extends React.Component<void, Props, void> {
+export class MetroMap extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
@@ -29,8 +29,12 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   _drawGraph (props) {
-    let statesGeo = props.statesGeo
-    let metrosGeo = props.metrosGeo
+    let metrosGeo = Object.assign({},props.metrosGeo);
+
+    metrosGeo.features = metrosGeo.features.filter(d => {
+      return d.id == props.currentMetro;
+    })
+
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -43,7 +47,7 @@ export class NationalMap extends React.Component<void, Props, void> {
         .scale(1)
         .translate([0, 0]);
 
-    var b = path.bounds(statesGeo),
+    var b = path.bounds(metrosGeo),
         s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
         t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
@@ -53,13 +57,6 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
-    
-    svg.selectAll(".state")
-      .data(statesGeo.features)
-      .enter().append('path')
-      .attr('class',classes['state'])
-      .attr("d", path);
-
 
     svg.selectAll(".msa")
       .data(metrosGeo.features)
@@ -89,10 +86,9 @@ export class NationalMap extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => ({
   loaded : state.geoData.loaded,
-  statesGeo : state.geoData.statesGeo,
   metrosGeo : state.geoData.metrosGeo
 })
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
-})(NationalMap)
+})(MetroMap)
