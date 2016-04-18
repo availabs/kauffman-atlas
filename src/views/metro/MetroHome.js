@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import MetroMap from 'components/maps/MetroMap'
+import classes from '../national/nationalView.scss'
 
 type Props = {
 };
@@ -29,14 +30,19 @@ export class MetroHome extends React.Component<void, Props, void> {
     else{
       return (
         <div>
-          <div className='container text-center'>
-            <div className='row'>
-              <div className='col-xs-12'>
-                <h4>{this.props.metros[metroId]}</h4>
+        <div className='container text-center'>
+          <div className='row'>
+            <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
+              <div className={classes["active"] + " " + classes["metricBox"]}>Density</div>
+              <div className={classes["metricBox"]}>Fluidity</div>
+              <div className={classes["metricBox"]}>Diversity</div>
+              <div className={classes["metricBox"]}>Composite</div>
+            </div>
+            <div className='col-xs-6'>
                 <MetroMap currentMetro={metroId} />
-              </div>
-            </div>            
-          </div>
+            </div>
+          </div>            
+        </div>
         </div>
       )      
     }

@@ -3,6 +3,7 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
+import { loadMetroData } from 'redux/modules/metroZbpData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 
@@ -11,21 +12,16 @@ export class MetroMap extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-      statesGeo: null, 
       metrosGeo: null,
+      zbpData:null
     }
 
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
   }
 
-  componentDidMount (){
-    this._initGraph()
-  }
-
-  
   componentWillReceiveProps (nextProps){
-    if(this.props.loaded !== nextProps.loaded){
+    if(this.props.mapLoaded !== nextProps.mapLoaded && this.props.zbpLoaded !== nextProps.zbpLoaded){
       this._drawGraph(nextProps);
     }
   }
@@ -68,39 +64,46 @@ export class MetroMap extends React.Component<void, Props, void> {
       .attr("id",function(d){return "msa"+d.properties.id;})
       .attr("d", path)
       .on('click',props.click || null);
+
+    console.log(this.props);
   }
 
   _initGraph () {
 
-    if(!this.props.loaded){
+    if(!this.props.mapLoaded){
       return this.props.loadData()
+
     }
+    if(!this.props.zbpData){
+      return this.props.loadZbpData(this.props.currentMetro)
+    }
+
     this._drawGraph(this.props)
   }
 
   render () {
+    this._initGraph();
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
       </div>
     )
   }
+  
 }
 
-const mapStateToProps = (state) => ({
-<<<<<<< HEAD
-  loaded: state.geodata.loaded,
-  metrosGeo: state.geodata.metrosGeo
-=======
-  loaded : state.geoData.loaded,
-  metrosGeo : state.geoData.metrosGeo
->>>>>>> 1314f37b2ef5ac1e14372f302396b29400b4465c
-})
+const mapStateToProps = (state) => {
+  var msaId = state['router']['locationBeforeTransitions']['pathname'].split('/')[2];
+
+  return ({
+    mapLoaded : state.geoData.loaded,
+    metrosGeo : state.geoData.metrosGeo,
+    zbpData : state.metroZbpData[msaId]
+  })
+}
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
-<<<<<<< HEAD
+  loadZbpData: (currentMetro) => loadMetroData(currentMetro)
 })(MetroMap)
-=======
-})(MetroMap)
->>>>>>> 1314f37b2ef5ac1e14372f302396b29400b4465c
+

@@ -1,0 +1,19 @@
+.metricBox {
+	border: 1px solid chartreuse;
+	min-height: 100px;
+	padding:10px;
+}
+
+.metricBox:hover {
+	background-color:#DCDCDC;
+}
+
+.active {
+	background-color:darken(#DCDCDC,30%);
+}
+
+
+.metricBoxContainer {
+	padding:0px;
+
+}
