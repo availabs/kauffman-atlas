@@ -12,6 +12,7 @@ import DensityView from 'views/national/DensityView'
 import DiversityView from 'views/national/DiversityView'
 import FluidityView from 'views/national/FluidityView'
 import CombinedView from 'views/national/CombinedView'
+import MetroHome from 'views/metro/MetroHome'
 
 export default (store) => (
   <Route path='/' component={CoreLayout}>
@@ -20,5 +21,6 @@ export default (store) => (
     <Route path='/diversity' component={DiversityView} />
     <Route path='/fluidity' component={FluidityView} />
 	<Route path='/combined' component={CombinedView} />
+	<Route path='/metro/:geoid' component={MetroHome} />
   </Route>
 )

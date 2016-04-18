@@ -6,6 +6,8 @@ import { increment, doubleAsync } from '../../redux/modules/counter'
 import DuckImage from './Duck.jpg'
 import classes from './HomeView.scss'
 import NationalMap from 'components/maps/NationalMap'
+import { browserHistory } from 'react-router'
+
 
 type Props = {
   counter: number,
@@ -22,6 +24,12 @@ export class HomeView extends React.Component<void, Props, void> {
 
   render () {
 
+
+    let msaClick = (d) =>{
+      console.log(d);
+      this.props.history.push('/metro/'+d.id);
+    }
+
     const sectionStyle = {
       height: 200,
       border: '1px solid orangered'
@@ -33,7 +41,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
           <div className='col-xs-12'>
             <h4>Kauffman Atlas</h4>
-            <NationalMap />
+            <NationalMap click={msaClick}/>
           </div>
         </div>
 

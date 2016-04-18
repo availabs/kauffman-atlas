@@ -1,15 +1,20 @@
 "use strict"
 import React from 'react'
 import d3 from 'd3'
-import topojson from 'topojson'
 import { connect } from 'react-redux'
-import { loadNationalData } from 'redux/modules/geodata'
+import { loadNationalData } from 'redux/modules/geoData'
+import topojson from 'topojson'
 import classes from './NationalMap.scss'
+
 
 export class MetroMap extends React.Component<void, Props, void> {
   constructor () {
     super()
-    this.state = {}
+    this.state = {
+      statesGeo: null, 
+      metrosGeo: null,
+    }
+
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
   }
@@ -18,18 +23,20 @@ export class MetroMap extends React.Component<void, Props, void> {
     this._initGraph()
   }
 
-  componentWillReceiveProps(nextProps){
+  
+  componentWillReceiveProps (nextProps){
     if(this.props.loaded !== nextProps.loaded){
-      this._drawGraph(nextProps)
+      this._drawGraph(nextProps);
     }
   }
-  
+
   _drawGraph (props) {
-    let metrosGeo = Object.assign({},props.metrosGeo)
+    let metrosGeo = Object.assign({},props.metrosGeo);
 
-    metrosGeo.features = metrosGeo.features.filter(d => d.id == props.currentMetro)
+    metrosGeo.features = metrosGeo.features.filter(d => {
+      return d.id == props.currentMetro;
+    })
 
-    console.log('metrosGeo', metrosGeo, props.currentMetro)
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -52,7 +59,7 @@ export class MetroMap extends React.Component<void, Props, void> {
 
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
-    
+
 
     svg.selectAll(".msa")
       .data(metrosGeo.features)
@@ -64,8 +71,8 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   _initGraph () {
-    if(!this.props.loaded) {
-      console.log('data not loaded, loading...')
+
+    if(!this.props.loaded){
       return this.props.loadData()
     }
     this._drawGraph(this.props)
@@ -81,10 +88,19 @@ export class MetroMap extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
+<<<<<<< HEAD
   loaded: state.geodata.loaded,
   metrosGeo: state.geodata.metrosGeo
+=======
+  loaded : state.geoData.loaded,
+  metrosGeo : state.geoData.metrosGeo
+>>>>>>> 1314f37b2ef5ac1e14372f302396b29400b4465c
 })
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
+<<<<<<< HEAD
 })(MetroMap)
+=======
+})(MetroMap)
+>>>>>>> 1314f37b2ef5ac1e14372f302396b29400b4465c

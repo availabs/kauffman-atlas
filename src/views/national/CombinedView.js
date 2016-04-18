@@ -1,6 +1,7 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import NationalMap from 'components/maps/NationalMap'
 
 type Props = {
 };
@@ -21,6 +22,7 @@ export class CombinedView extends React.Component<void, Props, void> {
           <div className='row'>
             <div className='col-xs-12'>
               <h4>Combined Index View</h4>
+                          <NationalMap />
             </div>
           </div>            
         </div>

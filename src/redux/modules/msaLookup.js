@@ -5,7 +5,6 @@ const ACTION_HANDLERS = {
   //[RECEIVE_NATIONAL_DATA]: (state, action) => {{}}   
 }
 
-
 // ------------------------------------
 // Reducer
 // ------------------------------------

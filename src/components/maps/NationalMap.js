@@ -1,11 +1,11 @@
 "use strict"
 import React from 'react'
 import d3 from 'd3'
+import { connect } from 'react-redux'
+import { loadNationalData } from 'redux/modules/geoData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 
-var backColor = "#DCDCDC",
-    msaColor = "#7EC0EE";
 
 export class NationalMap extends React.Component<void, Props, void> {
   constructor () {
@@ -13,7 +13,6 @@ export class NationalMap extends React.Component<void, Props, void> {
     this.state = {
       statesGeo: null, 
       metrosGeo: null,
-      resizing: false
     }
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
@@ -23,9 +22,15 @@ export class NationalMap extends React.Component<void, Props, void> {
     this._initGraph()
   }
   
-  _drawGraph () {
-    let statesGeo = this.state.statesGeo
-    let metrosGeo = this.state.metrosGeo
+  componentWillReceiveProps (nextProps){
+    if(this.props.loaded !== nextProps.loaded){
+      this._drawGraph(nextProps);
+    }
+  }
+
+  _drawGraph (props) {
+    let statesGeo = props.statesGeo
+    let metrosGeo = props.metrosGeo
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -52,30 +57,24 @@ export class NationalMap extends React.Component<void, Props, void> {
     svg.selectAll(".state")
       .data(statesGeo.features)
       .enter().append('path')
-      .attr('class','state')
-      .style("fill",backColor)
+      .attr('class',classes['state'])
       .attr("d", path);
 
 
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')
-      .attr("class","msa")
+      .attr("class",classes['msa'])
       .attr("id",function(d){return "msa"+d.properties.id;})
-      .style("fill", msaColor)
-      .style("stroke","#fff")
       .attr("d", path)
-      .on('click',this.props.click || null);
+      .on('click',props.click || null);
   }
 
   _initGraph () {
-    d3.json('/us.json',(err,us) => {
-      this.setState({
-        statesGeo:topojson.feature(us,us["objects"]["states.geo"]),
-        metrosGeo: topojson.feature(us,us["objects"]["fixMsa.geo"])
-      })
-      this._drawGraph()
-    })
+    if(!this.props.loaded){
+      return this.props.loadData()
+    }
+    this._drawGraph(this.props)
   }
 
   render () {
@@ -88,4 +87,12 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 }
 
-export default  NationalMap
+const mapStateToProps = (state) => ({
+  loaded : state.geoData.loaded,
+  statesGeo : state.geoData.statesGeo,
+  metrosGeo : state.geoData.metrosGeo
+})
+
+export default connect((mapStateToProps), {
+  loadData: () => loadNationalData(),
+})(NationalMap)
