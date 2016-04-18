@@ -45,6 +45,7 @@ export const actions = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [RECIEVE_NATIONAL_DATA]: (state,action) => {
+
     var newState = Object.assign({},state);
     let us = action.payload;
     newState.loaded = true;
@@ -52,7 +53,6 @@ const ACTION_HANDLERS = {
     newState.metrosGeo = topojson.feature(us,us["objects"]["fixMsa.geo"])
 
     return newState;
-
   }
 }
 

@@ -75,6 +75,7 @@ export class NationalMap extends React.Component<void, Props, void> {
       return this.props.loadData()
     }
     this._drawGraph(this.props)
+
   }
 
   render () {
