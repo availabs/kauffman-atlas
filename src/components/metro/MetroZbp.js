@@ -29,7 +29,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
    
     return (
       <div className='container'>
-        {JSON.stringify(Object.keys(this.props.zbpData[this.props.currentMetro]))}
+        {this.props.zbpData[this.props.currentMetro] ? JSON.stringify(Object.keys(this.props.zbpData[this.props.currentMetro])) : 'no data'}
       </div>
     )
   }
