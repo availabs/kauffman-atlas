@@ -93,12 +93,11 @@ export class MetroMap extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => {
-  var msaId = state['router']['locationBeforeTransitions']['pathname'].split('/')[2];
-
+  
   return ({
     mapLoaded : state.geoData.loaded,
     metrosGeo : state.geoData.metrosGeo,
-    zbpData : state.metroZbpData[msaId]
+    zbpData : state.metroZbpData
   })
 }
 

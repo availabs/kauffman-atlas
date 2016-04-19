@@ -6,6 +6,7 @@ import { increment, doubleAsync } from '../../redux/modules/counter'
 import DuckImage from './Duck.jpg'
 import classes from './HomeView.scss'
 import NationalMap from 'components/maps/NationalMap'
+// import DensityView from 'views/'
 import { browserHistory } from 'react-router'
 
 
@@ -37,14 +38,13 @@ export class HomeView extends React.Component<void, Props, void> {
 
     return (
      
-      <div className='container text-center'>
+      <div className='container'>
         <div className='row'>
           <div className='col-xs-12'>
-            <h4>Kauffman Atlas</h4>
-            <NationalMap click={msaClick}/>
+            <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
           </div>
+          
         </div>
-
         <div className='row'>
           <div className='col-xs-6' style={sectionStyle}>
             <Link to='/combined'>Combined</Link>
@@ -61,6 +61,13 @@ export class HomeView extends React.Component<void, Props, void> {
             <Link to='/diversity'>Diversity</Link>
           </div>
         </div>
+        <div className='row'>
+          <div className='col-xs-12'>
+            <NationalMap click={msaClick}/>
+          </div>
+        </div>
+
+        
           
       </div>
       
