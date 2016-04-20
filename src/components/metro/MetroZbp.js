@@ -23,10 +23,29 @@ export class MetroZbp extends React.Component<void, Props, void> {
     let data = this.props.zbpData[this.props.currentMetro]
     let year = Object.keys(data)[Object.keys(data).length - 1]
     let currentData = data[year] //2003
-    let naicsKeys = Object.keys(currentData)
-    naicsKeys.sort(function(a,b){
-      return 
+    let naicsKeys = Object.keys(currentData).filter(function(d){
+      return ['totalEmp', 'totalEst'].indexOf(d) === -1
     })
+    naicsKeys.sort((a, b) => {
+      return currentData[b]['estShare'] - currentData[a]['estShare']
+    })
+
+    var twoDigitSum = naicsKeys.reduce(function(prev,current){
+      var twoDigit = current.substr(0,2)
+      if(!prev[twoDigit]){
+        prev[twoDigit] = 0
+      }
+      prev[twoDigit] += +currentData[current]['estShare']
+      return prev
+    },{})
+
+    var sorted =  naicsKeys.map((d) => {
+      return +(currentData[d]['estShare']*100).toFixed(2)
+    })
+    
+    
+
+    console.log('after', twoDigitSum)
 
     return data
   }
@@ -41,7 +60,6 @@ export class MetroZbp extends React.Component<void, Props, void> {
 
   render () {
     let data = this._processData()
-    console.log(data);
     return (
       <div className='container'>
         {this.props.zbpData[this.props.currentMetro] ? JSON.stringify(Object.keys(this.props.zbpData[this.props.currentMetro])) : 'no data'}
