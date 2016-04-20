@@ -64,8 +64,6 @@ export class MetroMap extends React.Component<void, Props, void> {
       .attr("id",function(d){return "msa"+d.properties.id;})
       .attr("d", path)
       .on('click',props.click || null);
-
-    console.log(this.props);
   }
 
   _initGraph () {
