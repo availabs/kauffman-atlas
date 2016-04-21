@@ -1,4 +1,4 @@
-module. exports = {
+module.exports = {
   "562119": {
     "index": [
       "Brush collection services", 
