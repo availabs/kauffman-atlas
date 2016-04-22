@@ -18,7 +18,7 @@ export class Navbar extends React.Component<void, Props, void> {
     }
 
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
-    var metro = this.props.metros[metroId] ? this.props.metros[metroId] : ''
+    var metro = this.props.metros[metroId] && this.props.metros[metroId].name ? this.props.metros[metroId].name : ''
     return (
       <nav className='navbar navbar-default'>
         <div className='container'>

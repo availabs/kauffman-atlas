@@ -37,13 +37,17 @@ export class MetroHome extends React.Component<void, Props, void> {
               <div className={classes["active"] + " " + classes["metricBox"]}>Density</div>
               <div className={classes["metricBox"]}>Fluidity</div>
               <div className={classes["metricBox"]}>Diversity</div>
-              <div className={classes["metricBox"]}>Composite</div>
+              <div className={classes["metricBox"]}>Composite
+               
+              </div>
             </div>
             <div className='col-xs-9'>
+           
                 <MetroMap currentMetro={metroId} />
             </div>
           </div>
           <div className='row'>
+            Population: {this.props.metros[metroId].pop['2012']}
             <MetroZbp currentMetro={metroId} year='2012'/>
           </div>           
         </div>
