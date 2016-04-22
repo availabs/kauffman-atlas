@@ -46,29 +46,28 @@ export class HomeView extends React.Component<void, Props, void> {
           
         </div>
         <div className='row'>
-          <div className='col-xs-6' style={sectionStyle}>
+          <div className='col-xs-3' style={sectionStyle}>
             <Link to='/combined'>Combined</Link>
           </div>
-          <div className='col-xs-6' style={sectionStyle}>
+          <div className='col-xs-3' style={sectionStyle}>
             <Link to='/density'>Density</Link>
           </div>
-        </div>
-        <div className='row'>
-          <div className='col-xs-6' style={sectionStyle}>
+          <div className='col-xs-3' style={sectionStyle}>
             <Link to='/fluidity'>Fluidity</Link>
           </div>
-          <div className='col-xs-6' style={sectionStyle}>
+          <div className='col-xs-3' style={sectionStyle}>
             <Link to='/diversity'>Diversity</Link>
           </div>
         </div>
+         <div className='col-xs-12'>
+            <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+          </div>
+          
         <div className='row'>
           <div className='col-xs-12'>
             <NationalMap click={msaClick}/>
           </div>
-        </div>
-
-        
-          
+        </div>  
       </div>
       
     )
