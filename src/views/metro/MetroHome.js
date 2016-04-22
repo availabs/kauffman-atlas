@@ -44,7 +44,7 @@ export class MetroHome extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className='row'>
-            <MetroZbp currentMetro={metroId} />
+            <MetroZbp currentMetro={metroId} year='2012'/>
           </div>           
         </div>
         </div>

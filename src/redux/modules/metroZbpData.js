@@ -4,6 +4,7 @@ import fetch from 'isomorphic-fetch'
 // Constants
 // ------------------------------------
 export const RECIEVE_METROZBP_DATA = 'RECIEVE_METROZBP_DATA'
+export const RECIEVE_METROZBP_DATA_WITH_YEAR = 'RECIEVE_METROZBP_DATA_WITH_YEAR'
 
 // ------------------------------------
 // Actions
@@ -17,6 +18,13 @@ export function recieveData (value,msaId) {
   return {
     type: RECIEVE_METROZBP_DATA,
     payload: [value,msaId]
+  }
+}
+
+export function recieveDataWithYear (value,msaId,year) {
+  return {
+    type: RECIEVE_METROZBP_DATA_WITH_YEAR,
+    payload: [value,msaId,year]
   }
 }
 
@@ -34,9 +42,19 @@ export const loadMetroData = (msaId) => {
   }
 }
 
+export const loadMetroDataYear = (msaId, year) => {
+  return (dispatch) => {
+    return fetch('/data/metroZbp_by_year/'+msaId+'_'+ year+'.json')
+      .then(response => response.json())
+      .then(json => dispatch(recieveDataWithYear(json,msaId,year)))
+  }
+}
+
 export const actions = {
+  recieveDataWithYear,
   recieveData,
-  loadMetroData
+  loadMetroData,
+  loadMetroDataYear
 }
 
 // ------------------------------------
@@ -46,6 +64,13 @@ const ACTION_HANDLERS = {
   [RECIEVE_METROZBP_DATA]: (state,action) => {
     var newState = Object.assign({},state);
     newState[action.payload[1]] = action.payload[0];
+    return newState;
+  },
+  [RECIEVE_METROZBP_DATA_WITH_YEAR]: (state,action) => {
+    var newState = Object.assign({},state);
+    if(!newState[action.payload[2]]) { newState[action.payload[2]] = {} }
+    newState[action.payload[2]][action.payload[1]] = action.payload[0];
+    console.log('test', action.payload[2],action.payload[1])
     return newState;
   }
 }
