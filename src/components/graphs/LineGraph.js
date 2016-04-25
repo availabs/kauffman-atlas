@@ -42,7 +42,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         let width = document.getElementById("mapDiv").offsetWidth
         let height = width  * 0.6
 
-        let paddedWidth = width-45;
+        let paddedWidth = width-50;
         let paddedHeight = height-50;
 
         if(scope.props.plot == "rank"){

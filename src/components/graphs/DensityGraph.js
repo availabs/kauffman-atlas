@@ -283,14 +283,9 @@ export class DensityGraph extends React.Component<void, Props, void> {
     this._initGraph();
     if(this.props.loaded){
       var data = this._processData(this.props) 
-      if(this.props.selectedMetric == 1){
-        var metric = "share"
-      }
-      if(this.props.selectedMetric == 2){
-        var metric = "newValues"
-      }
+
        return (
-          <LineGraph data={data} plot={this.state.plot} dataType={this.state.dataType} title={metric} graph={metric}/>
+          <LineGraph data={data} plot={this.state.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )     
     }
     else{

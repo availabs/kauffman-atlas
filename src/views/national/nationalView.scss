@@ -8,12 +8,31 @@
 	background-color:#DCDCDC;
 }
 
+.metricBoxContainer {
+	padding:0px;
+}
+
+.rawRelContainer {
+	border: 1px solid red;
+	margin-bottom:5px;
+}
+
+.rawRelBox{
+	display:inline-block;
+	width:50%;
+	border: 1px solid red;
+	min-height: 100px;
+	padding:10px;	
+}
+
+.rawRelBox:hover {
+	background-color:#DCDCDC;
+}
+
 .active {
 	background-color:darken(#DCDCDC,30%);
 }
 
-
-.metricBoxContainer {
-	padding:0px;
-
+.active:hover {
+	background-color:darken(#DCDCDC,40%);
 }
