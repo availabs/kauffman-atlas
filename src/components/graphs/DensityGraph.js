@@ -38,10 +38,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
   _initGraph () {
     if(!this.props.loaded){
       return this.props.loadData()
-    }
-    if(!this.state.loaded){
-      this._processData(this.props)      
-    }
+    }     
   }
 
   _processData (props){
@@ -162,7 +159,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
     graphData['raw'] = polishedData2;
     graphData['relative'] = polishedData;
                
-    this._drawGraph(graphData);
+    return graphData;
   }
   rankCities (cities){
       var scope=this,
@@ -279,13 +276,13 @@ export class DensityGraph extends React.Component<void, Props, void> {
   }
 
   _drawGraph (graphData) {
-    this.setState({loaded:true,data:graphData})
     console.log(graphData);
   }
 
   render () {
     this._initGraph();
-    if(this.state.loaded){
+    if(this.props.loaded){
+      var data = this._processData(this.props) 
       if(this.props.selectedMetric == 1){
         var metric = "share"
       }
@@ -293,7 +290,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
         var metric = "newValues"
       }
        return (
-          <LineGraph data={this.state.data} plot={this.state.plot} dataType={this.state.dataType} title={metric} graph={metric}/>
+          <LineGraph data={data} plot={this.state.plot} dataType={this.state.dataType} title={metric} graph={metric}/>
         )     
     }
     else{

@@ -42,14 +42,17 @@ export class LineGraph extends React.Component<void, Props, void> {
         let width = document.getElementById("mapDiv").offsetWidth
         let height = width  * 0.6
 
+        let paddedWidth = width-45;
+        let paddedHeight = height-50;
+
         if(scope.props.plot == "rank"){
             var voronoi = d3.geom.voronoi()
                 .x(function(d) { return x(d.x); })
                 .y(function(d) { return y(d.rank); })
-                .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]])
+                .clipExtent([[-margin.left, -margin.top], [paddedWidth + margin.right, paddedHeight + margin.bottom]])
 
             var y = d3.scale.linear()
-                .range([0,height]);
+                .range([paddedHeight,0]);
 
             y.domain([d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
 
@@ -58,7 +61,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                     [d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.x }); })],
                     [d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.x }); })+1]
                     ))
-                .rangeRoundBands([0,width]);
+                .rangeRoundBands([0,paddedWidth]);
 
             var xTangent = 40; // Length of Bézier tangents to control curve.
 
@@ -91,15 +94,15 @@ export class LineGraph extends React.Component<void, Props, void> {
             var voronoi = d3.geom.voronoi()
                 .x(function(d) { return x(d.x); })
                 .y(function(d) { return y(d.y); })
-                .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]])
+                .clipExtent([[-margin.left, -margin.top], [paddedWidth + margin.right, paddedHeight + margin.bottom]])
 
             var y = d3.scale.linear()
-            .range([height,0]);
+            .range([0,height]);
 
             y.domain([d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
 
             var x = d3.scale.linear()
-                .range([0, width]);
+                .range([0, paddedWidth]);
 
             x.domain([
                 d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
@@ -116,10 +119,12 @@ export class LineGraph extends React.Component<void, Props, void> {
 
         var xAxis = d3.svg.axis()
             .scale(x)
+            .outerTickSize([3])
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
             .scale(y)
+            .outerTickSize([3])
             .orient("left");
 
         if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && scope.props.plot != 'rank'){
@@ -127,9 +132,10 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
 
 
+        d3.select("#lineGraph svg").selectAll("*").remove();
 
         var svg = d3.select("#lineGraph svg")
-        .attr('viewBox','0 0 ' + width + ' ' + height)
+        .attr('viewBox','-50 -10 ' + (width) + ' ' + (height))
 
         filteredData.sort(function(a,b){
             return b.values[0].rank - a.values[0].rank
@@ -145,7 +151,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                 .append("path")
                 .attr("d",function(){b.border = this; return line(b.values)})
                 .style("stroke","black")
-                .style("stroke-width",((height)/(heightVal))-1.5)
+                .style("stroke-width",((paddedHeight)/(heightVal))-1.5)
                 .style("fill","none")
                 .style("opacity",".4");     
 
@@ -154,7 +160,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                 .attr("class","cities")
                 .attr("d",function(){b.line = this; return line(b.values)})
                 .style("stroke",b.color)
-                .style("stroke-width",((height-85)/(heightVal))-2)
+                .style("stroke-width",((paddedHeight-85)/(heightVal))-2)
                 .style("fill","none")
                 .style("opacity",".6");                    
         })
@@ -187,7 +193,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                 .on("click",click);
 
         function mouseover(d) {
-            d3.select(d.city.line).style("stroke-width",( (height/(heightVal) )+1))
+            d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+1))
             d3.select(d.city.line).style("stroke","#000000")
             d3.select(d.city.line).style("opacity","1")
 
@@ -218,7 +224,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
 
         function mouseout(d) {                              
-            d3.select(d.city.line).style("stroke-width",( ((height-74)/(heightVal)-2 )))
+            d3.select(d.city.line).style("stroke-width",( ((paddedHeight-74)/(heightVal)-2 )))
             d3.select(d.city.line).style("stroke",function(){return d.city.color})
             d3.select(d.city.line).style("opacity",".6")
             focus.attr("transform", "translate(-100,-100)");
@@ -231,16 +237,19 @@ export class LineGraph extends React.Component<void, Props, void> {
 
         svg.append("g")
           .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
+          .attr("transform", "translate(0," + (paddedHeight) + ")")
           .call(xAxis)
-        .append("text")
+        .selectAll("text")  
           .style("text-anchor", "end")
-          .attr("dx","50em")
-          .attr("dy","3em")
-          .text("Year");
+          .attr("dx", "-.6em")
+          .attr("dy", ".15em")
+          .attr("transform", function(d) {
+              return "rotate(-65)" 
+          })
 
         svg.append("g")
-          .attr("class", "y axis")
+          .attr("class", "y axis")   
+          .attr("transform", "translate(1,3)")
           .call(yAxis)
         .append("text")
           .attr("transform", "rotate(-90)")
@@ -248,7 +257,7 @@ export class LineGraph extends React.Component<void, Props, void> {
           .attr("dy", "2em")
           .attr("x","-15em")
           .style("text-anchor", "end")
-          .text(scope.props.plot);   
+          .text(scope.props.plot);
     }
 
     render () {

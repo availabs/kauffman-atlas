@@ -20,6 +20,14 @@ export class DensityView extends React.Component<void, Props, void> {
   }
 
   _setMetric (e){
+    console.log(d3.selectAll("."+classes["metricBox"]))
+    
+    d3.selectAll("."+classes["metricBox"])[0].forEach(metricBox => {
+      metricBox.className = classes["metricBox"];
+    })
+
+    e.target.className = classes["active"] + " " + classes["metricBox"];
+
     this.setState({'selectedMetric':e.target.id});
   }
 
@@ -37,8 +45,8 @@ export class DensityView extends React.Component<void, Props, void> {
         <div className='container text-center'>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div onClick={this._setMetric} id="0" className={classes["active"] + " " + classes["metricBox"]}>Overall Density</div>
-              <div onClick={this._setMetric} id="share" className={classes["metricBox"]}>Share of Employment in New Firms</div>
+              <div onClick={this._setMetric} id="0" className={classes["metricBox"]}>Overall Density</div>
+              <div onClick={this._setMetric} id="share" className={classes["active"] + " " + classes["metricBox"]}>Share of Employment in New Firms</div>
               <div onClick={this._setMetric} id="newValues" className={classes["metricBox"]}>New firms per 1000</div>
               <div onClick={this._setMetric} id="3" className={classes["metricBox"]}>Sector Density</div>
             </div>
