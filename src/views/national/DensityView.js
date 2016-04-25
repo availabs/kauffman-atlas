@@ -15,10 +15,12 @@ export class DensityView extends React.Component<void, Props, void> {
     super()
     this.state = {
       'selectedMetric':"share",
-      'dataType':'raw'
+      'dataType':'raw',
+      'plot':'rank'
     }
     this._setMetric = this._setMetric.bind(this)
     this._setDataType = this._setDataType.bind(this)
+    this._setRankVal = this._setRankVal.bind(this)
   }
 
   _setMetric (e){
@@ -45,6 +47,18 @@ export class DensityView extends React.Component<void, Props, void> {
     this.setState({'dataType':e.target.id});
   }
 
+  _setRankVal (e){
+    console.log(d3.selectAll("."+classes["rankValBox"]))
+    
+    d3.selectAll("."+classes["rankValBox"])[0].forEach(rankValBox => {
+      rankValBox.className = classes["rankValBox"];
+    })
+
+    e.target.className = classes["active"] + " " + classes["rankValBox"];
+
+    this.setState({'plot':e.target.id});
+  }
+
   render () {
 
     console.log(this.state);
@@ -59,7 +73,14 @@ export class DensityView extends React.Component<void, Props, void> {
         <div className='container text-center'>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div className={classes["rawRelContainer"]}><div id="raw" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Raw</div><div id="relative" onClick={this._setDataType} className={classes["rawRelBox"]}>Relative</div></div>            
+              <div className={classes["rawRelContainer"]}>
+                <div id="raw" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Raw</div>
+                <div id="relative" onClick={this._setDataType} className={classes["rawRelBox"]}>Relative</div>
+              </div>
+              <div className={classes["rankValContainer"]}>
+                <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
+                <div id="value" onClick={this._setRankVal} className={classes["rankValBox"]}>Value</div>
+              </div>             
               <div onClick={this._setMetric} id="0" className={classes["metricBox"]}>Overall Density</div>
               <div onClick={this._setMetric} id="share" className={classes["active"] + " " + classes["metricBox"]}>Share of Employment in New Firms</div>
               <div onClick={this._setMetric} id="newValues" className={classes["metricBox"]}>New firms per 1000</div>
@@ -67,7 +88,7 @@ export class DensityView extends React.Component<void, Props, void> {
             </div>
             <div className='col-xs-9'>
                   <NationalMap />
-                  <DensityGraph dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>
+                  <DensityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>
             </div>
 
           </div>            

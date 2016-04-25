@@ -42,7 +42,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         let width = document.getElementById("mapDiv").offsetWidth
         let height = width  * 0.6
 
-        let paddedWidth = width-50;
+        let paddedWidth = width-70;
         let paddedHeight = height-50;
 
         if(scope.props.plot == "rank"){
@@ -97,7 +97,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                 .clipExtent([[-margin.left, -margin.top], [paddedWidth + margin.right, paddedHeight + margin.bottom]])
 
             var y = d3.scale.linear()
-            .range([0,height]);
+            .range([paddedHeight,0]);
 
             y.domain([d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
 
@@ -120,6 +120,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         var xAxis = d3.svg.axis()
             .scale(x)
             .outerTickSize([3])
+            .tickFormat(d3.format("f"))
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
@@ -127,15 +128,21 @@ export class LineGraph extends React.Component<void, Props, void> {
             .outerTickSize([3])
             .orient("left");
 
-        if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && scope.props.plot != 'rank'){
-            yAxis.tickFormat(axisPercFormat);
+
+        if(scope.props.plot != 'rank'){
+          xAxis.tickValues = (d3.range(x.domain()[0],x.domain()[1]))   
+          console.log("hello");       
+          if(scope.props.dataType != "raw" && scope.props.graph != "newValues"){
+              yAxis.tickFormat(axisPercFormat);
+          }          
         }
+
 
 
         d3.select("#lineGraph svg").selectAll("*").remove();
 
         var svg = d3.select("#lineGraph svg")
-        .attr('viewBox','-50 -10 ' + (width) + ' ' + (height))
+        .attr('viewBox','-70 -10 ' + (width) + ' ' + (height))
 
         filteredData.sort(function(a,b){
             return b.values[0].rank - a.values[0].rank

@@ -285,7 +285,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
       var data = this._processData(this.props) 
 
        return (
-          <LineGraph data={data} plot={this.state.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
+          <LineGraph data={data} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )     
     }
     else{
