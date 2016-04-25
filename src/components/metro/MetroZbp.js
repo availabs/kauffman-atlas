@@ -12,7 +12,8 @@ export class MetroZbp extends React.Component<void, Props, void> {
     super()
     this.state = {
       depth: 2,
-      filter: null
+      filter: null,
+      sort: 'emp_quot'
     }
     this._fecthData = this._fecthData.bind(this)
     this._processData = this._processData.bind(this)
@@ -86,6 +87,15 @@ export class MetroZbp extends React.Component<void, Props, void> {
   }
 
   _setFilter(filter,depth) {
+    if(depth <= 6){
+      this.setState({
+        filter,
+        depth
+      })
+    }
+  }
+
+  _setSort(sort) {
     if(depth <= 6){
       console.log(filter,depth)
       this.setState({
@@ -164,13 +174,13 @@ export class MetroZbp extends React.Component<void, Props, void> {
         naicsCodes[d].est_quot = (naicsCodes[d].estShare / naicsCodes[d].nat_estShare)/100
         return d
       })
-      .sort(function(a,b){
-        return naicsCodes[b][sortVariable] - naicsCodes[a][sortVariable]
+      .sort((a,b) => {
+        return naicsCodes[b][this.state.sort] - naicsCodes[a][this.state.sort]
       })
       .map((d) =>{
       return (
         <tr key={d}>
-          <td><a onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title.substr(0,55)}</a></td>
+          <td><a onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
           <td>{naicsCodes[d].emp.toLocaleString()}</td>
           <td>{+(naicsCodes[d].empShare*100).toLocaleString()}%</td>
           <td>{+(naicsCodes[d].emp_quot*100).toLocaleString()}</td>
