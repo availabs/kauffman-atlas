@@ -15,11 +15,13 @@ export class LineGraph extends React.Component<void, Props, void> {
     //   title:"",
     //   graph:"composite"
     // }
-    this.renderGraph = this.renderGraph.bind(this)
+    this._renderGraph = this._renderGraph.bind(this)
+    this._labelFunction = this._labelFunction.bind(this)
   }
-    renderGraph () {
+    _renderGraph () {
         var percFormat = d3.format(".3%"),
             axisPercFormat = d3.format("%"),
+            commaFormat = d3.format(","),
             scope = this;
 
         var selected = "false";
@@ -42,8 +44,8 @@ export class LineGraph extends React.Component<void, Props, void> {
         let width = document.getElementById("mapDiv").offsetWidth
         let height = width  * 0.6
 
-        let paddedWidth = width-70;
-        let paddedHeight = height-50;
+        let paddedWidth = width-100;
+        let paddedHeight = height-100;
 
         if(scope.props.plot == "rank"){
             var voronoi = d3.geom.voronoi()
@@ -130,8 +132,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
 
         if(scope.props.plot != 'rank'){
-          xAxis.tickValues = (d3.range(x.domain()[0],x.domain()[1]))   
-          console.log("hello");       
+          xAxis.ticks(x.domain()[1]-x.domain()[0])       
           if(scope.props.dataType != "raw" && scope.props.graph != "newValues"){
               yAxis.tickFormat(axisPercFormat);
           }          
@@ -142,7 +143,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         d3.select("#lineGraph svg").selectAll("*").remove();
 
         var svg = d3.select("#lineGraph svg")
-        .attr('viewBox','-70 -10 ' + (width) + ' ' + (height))
+        .attr('viewBox','-90 -20 ' + (width) + ' ' + (height))
 
         filteredData.sort(function(a,b){
             return b.values[0].rank - a.values[0].rank
@@ -177,8 +178,8 @@ export class LineGraph extends React.Component<void, Props, void> {
               .attr("class", "focus");
 
         focus.append("text")
-          .attr("y", -10)
-          .style("font-weight","bold");
+          .attr("y", 10)
+          .style("font-size",".75em");
 
         var voronoiGroup = svg.append("g")
               .attr("class", "voronoi")
@@ -202,7 +203,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         function mouseover(d) {
             d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+1))
             d3.select(d.city.line).style("stroke","#000000")
-            d3.select(d.city.line).style("opacity","1")
+            d3.select(d.city.line).style("opacity","2")
 
             var popText = "",
                 name;
@@ -217,12 +218,12 @@ export class LineGraph extends React.Component<void, Props, void> {
                     popText += name + ' | ' + d.x +':  '+ percFormat(d.y);
                 }
                 else{
-                    popText += name + ' | ' + d.x +':  '+ d.y;                        
+                    popText += name + ' | ' + d.x +':  '+ commaFormat(d.y);                        
                 }
             }
 
             d.city.line.parentNode.appendChild(d.city.line);
-            focus.attr("transform", "translate(100,-25)");
+            focus.attr("transform", "translate(10,-20)");
             focus.select("text").text(popText);
         }
 
@@ -260,25 +261,75 @@ export class LineGraph extends React.Component<void, Props, void> {
           .call(yAxis)
         .append("text")
           .attr("transform", "rotate(-90)")
-          .attr("y", "-5em")
+          .attr("y", "-7.5em")
           .attr("dy", "2em")
-          .attr("x","-15em")
-          .style("text-anchor", "end")
-          .text(scope.props.plot);
+          .attr("x",0-(paddedHeight/2))
+        .style("text-anchor", "middle")
+          .style("font-weight","bold")
+          .style("text-decoration","underline")
+          .text(function(){
+            if(scope.props.plot == 'value'){
+             return scope._labelFunction().slice(0,-31)             
+            }
+            else{
+             return "Ranking"               
+            }
+          });
     }
+
+    _labelFunction () {
+
+      if(this.props.graph == "share"){
+        if(this.props.plot == "value"){
+          if(this.props.dataType == "raw"){
+            return "Number employed in new and young firms by year"
+          }
+          else{
+            return "Share of employment in new and young firms by year"
+          }             
+        }
+        else{
+          if(this.props.dataType == "raw"){
+            return "Metro Area Ranking for number employed in new and young firms by year"
+          }
+          else{
+            return "Metro Area Ranking for share of employment in new and young firms by year"
+          }                  
+        }          
+      }
+      else if(this.props.graph == "newValues"){
+        if(this.props.plot == "value"){
+          if(this.props.dataType == "raw"){
+            return "Number of new and young firms by year"
+          }
+          else{
+            return "Number of new and young firms per 1000 people by year"
+          }             
+        }
+        else{
+          if(this.props.dataType == "raw"){
+            return "Metro Area Ranking for number of new and young firms by year"
+          }
+          else{
+            return "Metro Area Ranking for new and young firms per 1000 people by year"
+          }                  
+        }          
+      }
+   
+    }
+
 
     render () {
       var scope = this;
 
       console.log("linegraph render state",scope);
 
-
-
-
-      scope.renderGraph();
+      scope._renderGraph();
       return (
-          <div>
-              <h3>{scope.props.title} </h3>
+          <div className={classes['graphContainer']}>
+              <div className={classes['title']}>
+                <h4>{scope._labelFunction()}</h4>
+              </div>
               <div id="lineGraph" className={classes['svg-container']}>
                 <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
               </div>
