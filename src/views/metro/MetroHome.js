@@ -2,6 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import MetroMap from 'components/maps/MetroMap'
+import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
 import classes from '../national/nationalView.scss'
 
@@ -9,7 +10,37 @@ type Props = {
 };
 
 export class MetroHome extends React.Component<void, Props, void> {
-  static propTypes = {};
+  constructor () {
+    super()
+    this.state = {
+     display: 'industry'
+    }
+    this.renderDisplay = this.renderDisplay.bind(this)
+    this._selectDisplay = this._selectDisplay.bind(this)
+  }
+
+  _selectDisplay (display) {
+    this.setState({display})
+  }
+
+  renderDisplay(){
+    let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
+    console.log('test', this)
+    switch(this.state.display){
+      case 'industry':
+        return (
+           <MetroZbp currentMetro={metroId} year='2012'/>
+        )
+      case 'cluster':
+        return (
+           <MetroZbpCluster currentMetro={metroId} year='2012'/>
+        )
+      default:
+        return (
+          <MetroZbp currentMetro={metroId} year='2012'/>
+        )
+    }
+  }
 
   render () {
 
@@ -34,21 +65,18 @@ export class MetroHome extends React.Component<void, Props, void> {
         <div className='container text-center'>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div className={classes["active"] + " " + classes["metricBox"]}>Density</div>
+              <div className={classes["metricBox"]}>Density</div>
               <div className={classes["metricBox"]}>Fluidity</div>
-              <div className={classes["metricBox"]}>Diversity</div>
-              <div className={classes["metricBox"]}>Composite
-               
-              </div>
+              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'industry')}>Industry Overview</div>
+              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'cluster')}>Cluster Overview</div>
             </div>
             <div className='col-xs-9'>
-           
                 <MetroMap currentMetro={metroId} />
+                Population: {this.props.metros[metroId].pop['2012']}
             </div>
           </div>
           <div className='row'>
-            Population: {this.props.metros[metroId].pop['2012']}
-            <MetroZbp currentMetro={metroId} year='2012'/>
+            {this.renderDisplay()}
           </div>           
         </div>
         </div>

@@ -80,10 +80,6 @@ export class MetroZbp extends React.Component<void, Props, void> {
 
       return prev
     },{})
-    
-    //console.log('after', twoDigitSum)
-
-    return twoDigitSum
   }
 
   _setFilter(filter,depth) {
@@ -96,13 +92,9 @@ export class MetroZbp extends React.Component<void, Props, void> {
   }
 
   _setSort(sort) {
-    if(depth <= 6){
-      console.log(filter,depth)
-      this.setState({
-        filter,
-        depth
-      })
-    }
+    this.setState({
+      sort
+    })
   }
 
   renderRadar(year,depth, filter){
@@ -195,13 +187,13 @@ export class MetroZbp extends React.Component<void, Props, void> {
       <table className='table'>
         <thead>
           <tr>
-            <td>Industry (Naics)</td>
             <td>Employment</td>
-            <td>Employment Share</td>
-            <td>Employment Quotient</td>
-            <td>Establishments</td>
-            <td>Establishment Share</td>
-             <td>Establishment Quotient</td>
+            <td><a onClick={this._setSort.bind(this,'emp')}>Employment</a></td>
+            <td><a onClick={this._setSort.bind(this,'empShare')}>Employment Share</a></td>
+            <td><a onClick={this._setSort.bind(this,'emp_quot')}>Employment Quotient</a></td>
+            <td><a onClick={this._setSort.bind(this,'est')}>Establishments</a></td>
+            <td><a onClick={this._setSort.bind(this,'estShare')}>Establishment Share</a></td>
+            <td><a onClick={this._setSort.bind(this,'est_quot')}>Establishment Quotient</a></td>
           </tr>
         </thead>
         <tbody>
