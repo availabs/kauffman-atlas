@@ -49,10 +49,30 @@ export class DensityGraph extends React.Component<void, Props, void> {
     var newFirms = this._processData({data:props.data,selectedMetric:"newValues",metros:props.metros})['relative'],
         share = this._processData({data:props.data,selectedMetric:"share",metros:props.metros})['relative'];
 
-    console.log("new",newFirms);
-    console.log("share",share);
+    // console.log("new",newFirms);
+     //console.log("share",share);
 
     var compositeCityRanks = [];
+
+    var newFirmScale = d3.scale.linear()
+      .range([0,2])
+      .domain(d3.range(
+                    [d3.min(newFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); })],
+                    [d3.max(newFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    ))
+
+    var shareScale = d3.scale.linear()
+      .range([0,100])
+      .domain(d3.range(
+                    [d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); })],
+                    [d3.max(share, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    ))
+
+    console.log(d3.range(
+                    [d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); })],
+                    [d3.max(share, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    ));
+    console.log(d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); }))
 
     newFirms.forEach(function(item){
         for(var i=0; i<share.length;i++){
