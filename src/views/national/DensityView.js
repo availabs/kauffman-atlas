@@ -81,7 +81,7 @@ export class DensityView extends React.Component<void, Props, void> {
                 <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
                 <div id="value" onClick={this._setRankVal} className={classes["rankValBox"]}>Value</div>
               </div>             
-              <div onClick={this._setMetric} id="0" className={classes["metricBox"]}>Overall Density</div>
+              <div onClick={this._setMetric} id="composite" className={classes["metricBox"]}>Overall Density</div>
               <div onClick={this._setMetric} id="share" className={classes["active"] + " " + classes["metricBox"]}>Share of Employment in New Firms</div>
               <div onClick={this._setMetric} id="newValues" className={classes["metricBox"]}>New firms per 1000</div>
               <div onClick={this._setMetric} id="3" className={classes["metricBox"]}>Sector Density</div>

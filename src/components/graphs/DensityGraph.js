@@ -20,6 +20,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
     this._processData = this._processData.bind(this)
+    this._processComposite = this._processComposite.bind(this)
   }
 
   componentWillMount () {
@@ -41,15 +42,58 @@ export class DensityGraph extends React.Component<void, Props, void> {
     }     
   }
 
-  _processData (props){
-     var data = props.data,
-        dataset = this.props.selectedMetric;
+  _processComposite (props) {
 
-    var scope = this,
+    var newProps = {data:props.data,selectedMetric:"newValues"}
+
+    var newFirms = this._processData({data:props.data,selectedMetric:"newValues",metros:props.metros})['relative'],
+        share = this._processData({data:props.data,selectedMetric:"share",metros:props.metros})['relative'];
+
+    console.log("new",newFirms);
+    console.log("share",share);
+
+    var compositeCityRanks = [];
+
+    newFirms.forEach(function(item){
+        for(var i=0; i<share.length;i++){
+            if(item.key == share[i].key){
+
+                var resultValues = [];
+
+                item.values.forEach(function(itemValues){
+                    for(var j=0;j<share[i].values.length;j++){
+                        if(itemValues.x == share[i].values[j].x){
+                            resultValues.push({x:itemValues.x,y:( ((newFirms.length - itemValues.rank)+1 + (share.length-share[i].values[j].rank)+1)/2 )})
+                        }
+                    }
+                })
+                compositeCityRanks.push({key:item.key,values:resultValues})
+            }
+        }
+    })
+
+    compositeCityRanks = this.rankCities(compositeCityRanks);
+    var graphData = this.polishData(compositeCityRanks,"densityComposite");
+    return graphData;
+
+
+
+
+  }
+
+  _processData (props){
+    let data = props.data,
+        dataset = props.selectedMetric;
+
+    let scope = this,
         ages = d3.range(12),
         newFirmData = {};
 
+    if(dataset == "composite"){
+      return this._processComposite(props);
+    }
 
+    console.log(props);
     Object.keys(data).forEach(function(firmAge){
         Object.keys(data[firmAge]).forEach(function(metroAreaId){
             //If we havent gotten to this MSA yet
@@ -158,7 +202,8 @@ export class DensityGraph extends React.Component<void, Props, void> {
     var graphData = {};
     graphData['raw'] = polishedData2;
     graphData['relative'] = polishedData;
-               
+    
+
     return graphData;
   }
   rankCities (cities){
