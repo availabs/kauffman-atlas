@@ -1,7 +1,7 @@
 import React from 'react'
-import Radar from './Radar'
+import Network from './Network'
 
-export class RadarChart extends React.Component<void, Props, void> {
+export class NetworkGraph extends React.Component<void, Props, void> {
   
   componentDidMount () {
     this._drawGraph(this.props)
@@ -13,7 +13,10 @@ export class RadarChart extends React.Component<void, Props, void> {
 
   _drawGraph (props) {
     //console.log('radarDest', props.data, props.options)
-    Radar.draw('#'+this.props.divID, props.data, props.options)
+    let width = document.getElementById(this.props.divID).offsetWidth
+    let height = width  * 0.6
+    //connsole.
+    Network.draw('#'+this.props.divID, props.data, {w:width,h:height})
   }
 
   render () {
@@ -24,5 +27,5 @@ export class RadarChart extends React.Component<void, Props, void> {
   }
 }
 
-export default RadarChart
+export default NetworkGraph
 

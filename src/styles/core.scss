@@ -20,4 +20,20 @@
   *:after {
     box-sizing: inherit;
   }
+  .link {
+    stroke: #999;
+    stroke-opacity: .4;
+  }
+  
+  .node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+
+  .node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+    //font-weight: 700;
+    color: black;
+  }
 }
