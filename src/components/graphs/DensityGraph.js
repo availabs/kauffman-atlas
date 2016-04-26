@@ -62,17 +62,13 @@ export class DensityGraph extends React.Component<void, Props, void> {
                     ))
 
     var shareScale = d3.scale.linear()
-      .range([0,100])
+      .range([0,1.63])
       .domain(d3.range(
-                    [d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); })],
-                    [d3.max(share, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    [d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); })*100],
+                    [d3.max(share, function(c) { return d3.max(c.values, function(v) { return v.y }); })*100]
                     ))
 
-    console.log(d3.range(
-                    [d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); })],
-                    [d3.max(share, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
-                    ));
-    console.log(d3.min(share, function(c) { return d3.min(c.values, function(v) { return v.y }); }))
+    console.log(shareScale(65));
 
     newFirms.forEach(function(item){
         for(var i=0; i<share.length;i++){
