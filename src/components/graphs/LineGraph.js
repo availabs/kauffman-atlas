@@ -18,6 +18,9 @@ export class LineGraph extends React.Component<void, Props, void> {
     this._renderGraph = this._renderGraph.bind(this)
     this._labelFunction = this._labelFunction.bind(this)
   }
+  componentDidMount () {
+      this._renderGraph();
+  }
     _renderGraph () {
         var percFormat = d3.format(".3%"),
             axisPercFormat = d3.format("%"),
@@ -36,7 +39,7 @@ export class LineGraph extends React.Component<void, Props, void> {
             var data = scope.props.data[scope.props.dataType];
         }
 
-        console.log(data);
+        //console.log(data);
 
         var filteredData = data
 
@@ -133,7 +136,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
         if(scope.props.plot != 'rank'){
           xAxis.ticks(x.domain()[1]-x.domain()[0])       
-          if(scope.props.dataType != "raw" && scope.props.graph != "newValues"){
+          if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && scope.props.graph != "composite"){
               yAxis.tickFormat(axisPercFormat);
           }          
         }
@@ -214,7 +217,7 @@ export class LineGraph extends React.Component<void, Props, void> {
                 popText += name + ' | ' + d.x +':  '+ d.rank;                    
             }
             else{
-                if(scope.props.dataType != "raw" && scope.props.graph != "newValues"){
+                if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && scope.props.graph != "composite"){
                     popText += name + ' | ' + d.x +':  '+ percFormat(d.y);
                 }
                 else{
@@ -313,6 +316,14 @@ export class LineGraph extends React.Component<void, Props, void> {
           else{
             return "Metro Area Ranking for new and young firms per 1000 people by year"
           }                  
+        }          
+      }
+      else if (this.props.graph == "composite"){
+        if(this.props.plot == "value"){
+            return "Compsite density score by year"            
+        }
+        else{
+            return "Metro Area Ranking for composite density score by year" 
         }          
       }
    

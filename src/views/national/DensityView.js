@@ -32,6 +32,16 @@ export class DensityView extends React.Component<void, Props, void> {
 
     e.target.className = classes["active"] + " " + classes["metricBox"];
 
+    if(e.target.id == "composite"){
+      d3.select("#raw")[0][0].className = classes["disabled"] + " " + classes["rawRelBox"];
+      d3.select("#relative")[0][0].className = classes["disabled"] + " " +  classes["rawRelBox"];
+    }
+    else{
+      d3.select("#raw")[0][0].className = classes["rawRelBox"];
+      d3.select("#relative")[0][0].className = classes["rawRelBox"];
+      d3.select("#" + this.state.dataType)[0][0].className = classes["active"] + " " +  classes["rawRelBox"];      
+    }
+
     this.setState({'selectedMetric':e.target.id});
   }
 
@@ -91,7 +101,9 @@ export class DensityView extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className = 'row'>
+            <div className='col-xs-12'>
             <DensityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>
+            </div>
           </div>        
         </div>
       </div>

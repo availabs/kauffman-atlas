@@ -42,6 +42,12 @@
 	padding:10px;	
 }
 
+.disabled {
+	pointer-events: none;
+	background-color:#DCDCDC;
+	opacity:.35;
+}
+
 .rankValBox:hover {
 	background-color:#DCDCDC;
 }
