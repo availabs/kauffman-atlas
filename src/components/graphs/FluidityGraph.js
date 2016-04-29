@@ -27,13 +27,13 @@ export class FluidityGraph extends React.Component<void, Props, void> {
       this.setState({loaded:false})
     }
     if(this.props.loaded !== nextProps.loaded){
-      return this.props.loadData()
+      // return this.props.loadData()
     }
   }
 
   _initGraph () {
     if(!this.props.loaded){
-      return this.props.loadData()
+      // return this.props.loadData()
     }     
   }
 
@@ -55,17 +55,25 @@ export class FluidityGraph extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
-  loaded : state.fluidityData.loaded,
-  composite:state.fluidityData.newValuesData,
-  inc5000:state.fluidityData.newValuesData,
-  netMigrationIrs:state.fluidityData.newValuesData,
-  netMigrationACS:state.fluidityData.newValuesData,
-  totalMigration:state.fluidityData.newValuesData,
-  inflowMigration:state.fluidityData.newValuesData,
-  outflowMigration:state.fluidityData.newValuesData,
+  irsLoaded : state.fluidityData.irsLoaded,
+  acsLoaded : state.fluidityData.acsLoaded,
+  inc5000Loaded : state.fluidityData.inc5000Loaded,
+  composite:state.fluidityData.composite,
+  inc5000:state.fluidityData.inc5000,
+  netMigrationIrs:state.fluidityData.netMigrationIrs,
+  netMigrationACS:state.fluidityData.netMigrationACS,
+  totalMigration:state.fluidityData.totalMigration,
+  inflowMigration:state.fluidityData.inflowMigration,
+  outflowMigration:state.fluidityData.outflowMigration,
   metros: state.metros
 })
 
 export default connect((mapStateToProps), {
-  loadData: () => loadFluidityData()
+  loadComposite: () => loadComposite (),
+  loadInc5000Data: () => loadInc5000Data (),
+  loadNetMigrationIrs: () => loadNetMigrationIrs (),
+  loadNetMigrationAcs: () => loadNetMigrationAcs (),
+  loadTotalMigration: () => loadTotalMigration (),
+  loadInflowMigration: () => loadInflowMigration (),
+  loadOutflowMigration: () => loadOutflowMigration ()
 })(FluidityGraph)

@@ -36,7 +36,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
       return this.props['loadData']()
     }
     if(!this.props[this.props.selectedMetric]){
-      return this.props[('get'+[this.props.selectedMetric])]()
+      return this.props[('load'+[this.props.selectedMetric])]()
     }     
   }
 
@@ -67,7 +67,7 @@ const mapStateToProps = (state) => ({
 
 export default connect((mapStateToProps), {
   loadData: () => loadDensityData(),
-  getnewValues: () => loadNewValues(),
-  getshare: () => loadShare(),
-  getcomposite: () => loadComposite()
+  loadnewValues: () => loadNewValues(),
+  loadshare: () => loadShare(),
+  loadcomposite: () => loadComposite()
 })(DensityGraph)

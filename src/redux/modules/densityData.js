@@ -6,10 +6,10 @@ import d3 from 'd3'
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const RECIEVE_DENSITY_DATA = 'RECIEVE_DENSITY_DATA'
-export const RECIEVE_NEWVALUES_DATA = 'RECIEVE_NEWVALUES_DATA'
-export const RECIEVE_SHARE_DATA = 'RECIEVE_SHARE_DATA'
-export const RECIEVE_COMPOSITE_DATA = 'RECIEVE_COMPOSITE_DATA'
+export const RECEIVE_DENSITY_DATA = 'RECEIVE_DENSITY_DATA'
+export const RECEIVE_NEWVALUES_DATA = 'RECEIVE_NEWVALUES_DATA'
+export const RECEIVE_SHARE_DATA = 'RECEIVE_SHARE_DATA'
+export const RECEIVE_COMPOSITE_DATA = 'RECEIVE_COMPOSITE_DATA'
 
 // ------------------------------------
 // Actions
@@ -19,30 +19,30 @@ export const RECIEVE_COMPOSITE_DATA = 'RECIEVE_COMPOSITE_DATA'
 // if you'd like to learn more you can check out: flowtype.org.
 // DOUBLE NOTE: there is currently a bug with babel-eslint where a `space-infix-ops` error is
 // incorrectly thrown when using arrow functions, hence the oddity.
-export function recieveData (value) {
+export function receiveData (value) {
   return {
-    type: RECIEVE_DENSITY_DATA,
+    type: RECEIVE_DENSITY_DATA,
     payload: value
   }
 }
 
 export function getNewValues () {
   return {
-    type: RECIEVE_NEWVALUES_DATA,
+    type: RECEIVE_NEWVALUES_DATA,
     payload: null
   }
 }
 
 export function getShare () {
   return {
-    type: RECIEVE_SHARE_DATA,
+    type: RECEIVE_SHARE_DATA,
     payload: null
   }
 }
 
 export function getComposite () {
   return {
-    type: RECIEVE_COMPOSITE_DATA,
+    type: RECEIVE_COMPOSITE_DATA,
     payload: null
   }
 }
@@ -57,7 +57,7 @@ export const loadDensityData = () => {
   return (dispatch) => {
     return fetch('/data/density_data.json')
       .then(response => response.json())
-      .then(json => dispatch(recieveData(json)))
+      .then(json => dispatch(receiveData(json)))
   }
 }
 
@@ -75,7 +75,7 @@ export const loadComposite = () => {
 
 
 export const actions = {
-  recieveData,
+  receiveData,
   loadDensityData,
   loadNewValues,
   getNewValues,
@@ -89,9 +89,9 @@ export const actions = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [RECIEVE_DENSITY_DATA]: (state,action) => {
+  [RECEIVE_DENSITY_DATA]: (state,action) => {
     var newState = Object.assign({},state);
-    
+
     newState.rawData = action.payload;
     newState.loaded = true;
 
@@ -99,21 +99,21 @@ const ACTION_HANDLERS = {
 
     return newState;
   },
-  [RECIEVE_NEWVALUES_DATA]: (state,action) => {
+  [RECEIVE_NEWVALUES_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
     newState.newValuesData = _processData({data:state.rawData,selectedMetric:"newValues"})
 
     return newState;
   },
-  [RECIEVE_SHARE_DATA]: (state,action) => {
+  [RECEIVE_SHARE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
     newState.shareData = _processData({data:state.rawData,selectedMetric:"share"})
 
     return newState;
   },
-  [RECIEVE_COMPOSITE_DATA]: (state,action) => {
+  [RECEIVE_COMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
     if(!newState.newValuesData){

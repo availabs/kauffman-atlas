@@ -1,60 +1,202 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
-import { msaLookup, populationData } from 'static/data/msaDetails'
 import colorbrewer from 'colorbrewer'
 import d3 from 'd3'
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const RECIEVE_FLUIDITY_DATA = 'RECIEVE_FLUIDITY_DATA'
+export const RECEIVE_IRS_DATA = 'RECEIVE_IRS_DATA'
+export const RECEIVE_ACS_DATA = 'RECEIVE_ACS_DATA'
+export const RECEIVE_INC5000_DATA = 'RECEIVE_INC5000_DATA'
+export const RECEIVE_COMPOSITE_DATA = 'RECEIVE_COMPOSITE_DATA'
+export const RECEIVE_NETMIGRATIONIRS_DATA = 'RECEIVE_NETMIGRATIONIRS_DATA'
+export const RECEIVE_NETMIGRATIONACS_DATA = 'RECEIVE_NETMIGRATIONACS_DATA'
+export const RECEIVE_TOTALMIGRATION_DATA = 'RECEIVE_TOTALMIGRATION_DATA'
+export const RECEIVE_INFLOWMIGRATION_DATA = 'RECEIVE_INFLOWMIGRATION_DATA'
+export const RECEIVE_OUTFLOWMIGRATION_DATA = 'RECEIVE_OUTFLOWMIGRATION_DATA'
 
-// ------------------------------------
-// Actions
-// ------------------------------------
-// NOTE: "Action" is a Flow interface defined in https://github.com/TechnologyAdvice/flow-interfaces
-// If you're unfamiliar with Flow, you are completely welcome to avoid annotating your code, but
-// if you'd like to learn more you can check out: flowtype.org.
-// DOUBLE NOTE: there is currently a bug with babel-eslint where a `space-infix-ops` error is
-// incorrectly thrown when using arrow functions, hence the oddity.
-export function recieveData (value) {
+export const loadIrsData = () => {
+  return (dispatch) => {
+    return fetch('/data/irsMigration.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveIrsData(json)))
+  }
+}
+export function receiveIrsData (value) {
   return {
-    type: RECIEVE_FLUIDITY_DATA,
+    type: RECEIVE_IRS_DATA,
     payload: value
   }
 }
 
-// This is a thunk, meaning it is a function that immediately
-// returns a function for lazy evaluation. It is incredibly useful for
-// creating async actions, especially when combined with redux-thunk!
-// NOTE: This is solely for demonstration purposes. In a real application,
-// you'd probably want to dispatch an action of COUNTER_DOUBLE and let the
-// reducer take care of this logic.
-export const loadFluidityData = () => {
+export const loadAcsData = () => {
   return (dispatch) => {
-    return fetch('/data/density_data.json')
+    return fetch('/data/acsMigration.json')
       .then(response => response.json())
-      .then(json => dispatch(recieveData(json)))
+      .then(json => dispatch(receiveAcsData(json)))
+  }
+}
+export function receiveAcsData (value) {
+  return {
+    type: RECEIVE_ACS_DATA,
+    payload: value
+  }
+}
+
+export const loadInc5000Data = () => {
+  return (dispatch) => {
+    return fetch('/data/inc5000.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveInc5000Data(json)))
+  }
+}
+export function receiveInc5000Data (value) {
+  return {
+    type: RECEIVE_INC5000_DATA,
+    payload: value
+  }
+}
+
+export const loadComposite = () => {
+  return (dispatch) => {dispatch(getComposite())}
+}
+export function getComposite () {
+  return {
+    type: RECEIVE_COMPOSITE_DATA,
+    payload: null
+  }
+}
+
+export const loadNetMigrationIrs = () => {
+  return (dispatch) => {dispatch(getNetMigrationIrs())}
+}
+export function getNetMigrationIrs () {
+  return {
+    type: RECEIVE_NETMIGRATIONIRS_DATA,
+    payload: null
+  }
+}
+
+export const loadNetMigrationAcs = () => {
+  return (dispatch) => {dispatch(getNetMigrationAcs())}
+}
+export function getNetMigrationAcs () {
+  return {
+    type: RECEIVE_NETMIGRATIONACS_DATA,
+    payload: null
+  }
+}
+
+export const loadTotalMigration = () => {
+  return (dispatch) => {dispatch(getTotalMigration())}
+}
+export function getTotalMigration () {
+  return {
+    type: RECEIVE_TOTALMIGRATION_DATA,
+    payload: null
+  }
+}
+
+export const loadInflowMigration = () => {
+  return (dispatch) => {dispatch(getInflowMigration())}
+}
+export function getInflowMigration () {
+  return {
+    type: RECEIVE_INFLOWMIGRATION_DATA,
+    payload: null
+  }
+}
+
+export const loadOutflowMigration = () => {
+  return (dispatch) => {dispatch(getOutflowMigration())}
+}
+export function getOutflowMigration () {
+  return {
+    type: RECEIVE_OUTFLOWMIGRATION_DATA,
+    payload: null
   }
 }
 
 export const actions = {
-  recieveData,
-  loadFluidityData
+  loadIrsData,
+  receiveIrsData,
+  loadAcsData,
+  receiveAcsData,
+  loadInc5000Data,
+  receiveInc5000Data,
+  loadComposite,
+  getComposite,
+  loadNetMigrationIrs,
+  getNetMigrationIrs,
+  loadNetMigrationAcs,
+  getNetMigrationAcs,
+  loadTotalMigration,
+  getTotalMigration,
+  loadInflowMigration,
+  getInflowMigration,
+  loadOutflowMigration,
+  getOutflowMigration
 }
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [RECIEVE_FLUIDITY_DATA]: (state,action) => {
+  // [RECEIVE_FLUIDITY_DATA]: (state,action) => {
+  //   var newState = Object.assign({},state);
+
+
+  //   newState.newValuesData = _processData({data:action.payload,selectedMetric:"newValues"})
+  //   newState.shareData = _processData({data:action.payload,selectedMetric:"share"})
+  //   newState.compositeData = _processComposite(newState.newValuesData['relative'],newState.shareData['relative']);
+  //   newState.loaded = true;
+
+  //   //console.log(newState)
+
+  //   return newState;
+  // },
+  [RECEIVE_IRS_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.newValuesData = _processData({data:action.payload,selectedMetric:"newValues"})
-    newState.shareData = _processData({data:action.payload,selectedMetric:"share"})
-    newState.compositeData = _processComposite(newState.newValuesData['relative'],newState.shareData['relative']);
-    newState.loaded = true;
+    return newState;
+  },
+  [RECEIVE_ACS_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
 
-    //console.log(newState)
+    return newState;
+  },
+  [RECEIVE_INC5000_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_COMPOSITE_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_NETMIGRATIONIRS_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_NETMIGRATIONACS_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_TOTALMIGRATION_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_INFLOWMIGRATION_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    return newState;
+  },
+  [RECEIVE_OUTFLOWMIGRATION_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
 
     return newState;
   }
@@ -183,7 +325,9 @@ const ACTION_HANDLERS = {
 // Reducer
 // ------------------------------------
 const initialState = {
-  loaded:false
+  irsLoaded:false,
+  acsLoaded:false,
+  inc5000Loaded:false
 };
 
 export default function fluidityReducer (state = initialState, action) {
