@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { increment, doubleAsync } from '../../redux/modules/counter'
-import { loadDensityData } from 'redux/modules/densityData'
+import { loadDensityData,loadComposite } from 'redux/modules/densityData'
 import DuckImage from './Duck.jpg'
 import classes from './HomeView.scss'
 import d3 from 'd3'
@@ -32,7 +32,10 @@ export class HomeView extends React.Component<void, Props, void> {
   _initGraph () {
     if(!this.props.loaded){
       return this.props.loadData()
-    }     
+    }
+    if(!this.props['composite']){
+      return this.props['getcomposite']()
+    }         
   }
 
   render () {
@@ -51,7 +54,7 @@ export class HomeView extends React.Component<void, Props, void> {
 
     }
 
-    if(this.props.loaded){
+    if(this.props.loaded && this.props.composite){
 
       topFive = this.props.composite.reduce((prev,msa) => {
         if(msa.values[msa.values.length-1].rank < 6){
@@ -127,5 +130,6 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect((mapStateToProps), {
-  loadData: () => loadDensityData()
+  loadData: () => loadDensityData(),
+  getcomposite: () => loadComposite()
 })(HomeView)

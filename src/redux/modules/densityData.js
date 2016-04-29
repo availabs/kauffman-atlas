@@ -7,6 +7,9 @@ import d3 from 'd3'
 // Constants
 // ------------------------------------
 export const RECIEVE_DENSITY_DATA = 'RECIEVE_DENSITY_DATA'
+export const RECIEVE_NEWVALUES_DATA = 'RECIEVE_NEWVALUES_DATA'
+export const RECIEVE_SHARE_DATA = 'RECIEVE_SHARE_DATA'
+export const RECIEVE_COMPOSITE_DATA = 'RECIEVE_COMPOSITE_DATA'
 
 // ------------------------------------
 // Actions
@@ -20,6 +23,27 @@ export function recieveData (value) {
   return {
     type: RECIEVE_DENSITY_DATA,
     payload: value
+  }
+}
+
+export function getNewValues () {
+  return {
+    type: RECIEVE_NEWVALUES_DATA,
+    payload: null
+  }
+}
+
+export function getShare () {
+  return {
+    type: RECIEVE_SHARE_DATA,
+    payload: null
+  }
+}
+
+export function getComposite () {
+  return {
+    type: RECIEVE_COMPOSITE_DATA,
+    payload: null
   }
 }
 
@@ -37,9 +61,28 @@ export const loadDensityData = () => {
   }
 }
 
+export const loadNewValues = () => {
+  return (dispatch) => {dispatch(getNewValues())}
+}
+
+export const loadShare = () => {
+  return (dispatch) => {dispatch(getShare())}
+}
+
+export const loadComposite = () => {
+  return (dispatch) => {dispatch(getComposite())}
+}
+
+
 export const actions = {
   recieveData,
-  loadDensityData
+  loadDensityData,
+  loadNewValues,
+  getNewValues,
+  loadShare,
+  getShare,
+  loadComposite,
+  getComposite
 }
 
 // ------------------------------------
@@ -48,13 +91,38 @@ export const actions = {
 const ACTION_HANDLERS = {
   [RECIEVE_DENSITY_DATA]: (state,action) => {
     var newState = Object.assign({},state);
-
-    newState.newValuesData = _processData({data:action.payload,selectedMetric:"newValues"})
-    newState.shareData = _processData({data:action.payload,selectedMetric:"share"})
-    newState.compositeData = _processComposite(newState.newValuesData['relative'],newState.shareData['relative']);
+    
+    newState.rawData = action.payload;
     newState.loaded = true;
 
     //console.log(newState)
+
+    return newState;
+  },
+  [RECIEVE_NEWVALUES_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.newValuesData = _processData({data:state.rawData,selectedMetric:"newValues"})
+
+    return newState;
+  },
+  [RECIEVE_SHARE_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.shareData = _processData({data:state.rawData,selectedMetric:"share"})
+
+    return newState;
+  },
+  [RECIEVE_COMPOSITE_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    if(!newState.newValuesData){
+      newState.newValuesData = _processData({data:state.rawData,selectedMetric:"newValues"})
+    }
+    if(!newState.shareData){
+      newState.shareData = _processData({data:state.rawData,selectedMetric:"share"})
+    }
+    newState.compositeData = _processComposite(newState.newValuesData['relative'],newState.shareData['relative']);
 
     return newState;
   }

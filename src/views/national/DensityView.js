@@ -102,7 +102,7 @@ export class DensityView extends React.Component<void, Props, void> {
           </div>
           <div className = 'row'>
             <div className='col-xs-12'>
-            <DensityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>
+              <DensityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>
             </div>
           </div>        
         </div>
