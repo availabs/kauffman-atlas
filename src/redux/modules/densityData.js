@@ -40,7 +40,7 @@ export function getShare () {
   }
 }
 
-export function getComposite () {
+export function getDensityComposite () {
   return {
     type: RECEIVE_DENSITYCOMPOSITE_DATA,
     payload: null
@@ -69,8 +69,8 @@ export const loadShare = () => {
   return (dispatch) => {dispatch(getShare())}
 }
 
-export const loadComposite = () => {
-  return (dispatch) => {dispatch(getComposite())}
+export const loadDensityComposite = () => {
+  return (dispatch) => {dispatch(getDensityComposite())}
 }
 
 
@@ -81,8 +81,8 @@ export const actions = {
   getNewValues,
   loadShare,
   getShare,
-  loadComposite,
-  getComposite
+  loadDensityComposite,
+  getDensityComposite
 }
 
 // ------------------------------------
@@ -157,20 +157,20 @@ const ACTION_HANDLERS = {
                     d3.max(filteredShare, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                     )
 
-    newFirms.forEach(function(item){
+    newFirms.forEach(function(newFirmItem){
         for(var i=0; i<filteredShare.length;i++){
-            if(item.key == filteredShare[i].key){
+            if(newFirmItem.key == filteredShare[i].key){
 
                 var resultValues = [];
 
-                item.values.forEach(function(itemValues){
+                newFirmItem.values.forEach(function(newFirmItemValues){
                     for(var j=0;j<filteredShare[i].values.length;j++){
-                        if(itemValues.x == filteredShare[i].values[j].x){
-                            resultValues.push({x:itemValues.x,y:((newFirmScale(itemValues.y) + shareScale((filteredShare[i].values[j].y))) /2 )})
+                        if(newFirmItemValues.x == filteredShare[i].values[j].x){
+                            resultValues.push({x:newFirmItemValues.x,y:((newFirmScale(newFirmItemValues.y) + shareScale((filteredShare[i].values[j].y))) /2 )})
                         }
                     }
                 })
-                compositeCityRanks.push({key:item.key,values:resultValues})
+                compositeCityRanks.push({key:newFirmItem.key,values:resultValues})
             }
         }
     })

@@ -1,7 +1,7 @@
 "use strict"
 import React from 'react'
 import { connect } from 'react-redux'
-import { loadIrsData,loadAcsData,loadInc5000Data,loadComposite,loadNetMigrationIrs,loadNetMigrationAcs,loadTotalMigration,loadInflowMigration,loadOutflowMigration} from 'redux/modules/fluidityData'
+import { loadIrsData,loadAcsData,loadInc5000Data,loadFluidityComposite,loadFluidityData, loadNetMigrationIrs,loadNetMigrationAcs,loadTotalMigration,loadInflowMigration,loadOutflowMigration} from 'redux/modules/fluidityData'
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
@@ -71,7 +71,8 @@ const mapStateToProps = (state) => ({
   irsLoaded : state.fluidityData.irsLoaded,
   acsLoaded : state.fluidityData.acsLoaded,
   incLoaded : state.fluidityData.inc5000Loaded,
-  composite:state.fluidityData.composite,
+  fluLoaded : state.fluidityData.fluLoaded,
+  fluiditycomposite:state.fluidityData.compositeData,
   inc:state.fluidityData.inc5000,
   irsNet:state.fluidityData.irsNet,
   acsNet:state.fluidityData.acsNet,
@@ -82,10 +83,11 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect((mapStateToProps), {
-  loadcomposite: () => loadComposite (),
+  loadfluData: () => loadFluidityData (),
   loadirsData: () => loadIrsData (),
   loadacsData: () => loadAcsData (),
   loadincData: () => loadInc5000Data (),
+  loadfluiditycomposite: () => loadFluidityComposite (),
   loadirsNet: () => loadNetMigrationIrs (),
   loadacsNet: () => loadNetMigrationAcs (),
   loadirsTotalMigration: () => loadTotalMigration (),

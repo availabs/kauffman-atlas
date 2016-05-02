@@ -10,7 +10,8 @@ import { msaLookup, populationData } from 'static/data/msaDetails'
 export const RECEIVE_IRS_DATA = 'RECEIVE_IRS_DATA'
 export const RECEIVE_ACS_DATA = 'RECEIVE_ACS_DATA'
 export const RECEIVE_INC5000_DATA = 'RECEIVE_INC5000_DATA'
-export const RECEIVE_COMPOSITEFLUIDITY_DATA = 'RECEIVE_COMPOSITEFLUIDITY_DATA'
+export const RECEIVE_FLUIDITY_DATA = 'RECEIVE_FLUIDITY_DATA'
+export const RECEIVE_COMPOSITE_DATA = 'RECEIVE_COMPOSITE_DATA'
 export const RECEIVE_NETMIGRATIONIRS_DATA = 'RECEIVE_NETMIGRATIONIRS_DATA'
 export const RECEIVE_NETMIGRATIONACS_DATA = 'RECEIVE_NETMIGRATIONACS_DATA'
 export const RECEIVE_TOTALMIGRATION_DATA = 'RECEIVE_TOTALMIGRATION_DATA'
@@ -61,12 +62,30 @@ export function receiveInc5000Data (value) {
   }
 }
 
-export const loadComposite = () => {
-  return (dispatch) => {dispatch(getComposite())}
+export const loadFluidityData = () => {
+  return (dispatch) => {
+    return fetch('/data/acsMigration.json')
+      .then(response => response.json())
+      .then(acsJson => {
+        fetch('/data/irsMigration.json')
+          .then(response => response.json())
+          .then(irsJson => dispatch(receiveFluidityData(acsJson,irsJson)))
+      })
+  }
 }
-export function getComposite () {
+export function receiveFluidityData (acs,irs) {
   return {
-    type: RECEIVE_COMPOSITEFLUIDITY_DATA,
+    type:  RECEIVE_FLUIDITY_DATA,
+    payload: {'acs':acs,'irs':irs}
+  }
+}
+
+export const loadFluidityComposite = () => {
+  return (dispatch) => {dispatch(getFluidityComposite())}
+}
+export function getFluidityComposite () {
+  return {
+    type: RECEIVE_COMPOSITE_DATA,
     payload: null
   }
 }
@@ -128,8 +147,10 @@ export const actions = {
   receiveAcsData,
   loadInc5000Data,
   receiveInc5000Data,
-  loadComposite,
-  getComposite,
+  loadFluidityData,
+  receiveFluidityData,
+  loadFluidityComposite,
+  getFluidityComposite,
   loadNetMigrationIrs,
   getNetMigrationIrs,
   loadNetMigrationAcs,
@@ -146,12 +167,37 @@ export const actions = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [RECEIVE_FLUIDITY_DATA]: (state,action) => {
+    console.log("action datastore");
+    var newState = Object.assign({},state);
+
+    newState.irsRawData = action.payload['irs'];
+    newState.irsLoaded = true;
+
+    newState.acsRawData = action.payload['acs'];
+    newState.acsLoaded = true;
+
+
+    //Need to add INC5000
+    if(newState.irsLoaded && newState.acsLoaded){
+      newState.fluLoaded = true;
+    }
+    
+
+    console.log("loadirs datastore",newState);
+    return newState;
+  },
   [RECEIVE_IRS_DATA]: (state,action) => {
     console.log("action datastore");
     var newState = Object.assign({},state);
 
     newState.irsRawData = action.payload;
     newState.irsLoaded = true;
+
+    //Need to add INC5000
+    if(newState.irsLoaded && newState.acsLoaded){
+      newState.fluLoaded = true;
+    }
     
 
     console.log("loadirs datastore",newState);
@@ -162,7 +208,12 @@ const ACTION_HANDLERS = {
 
     newState.acsRawData = action.payload;
     newState.acsLoaded = true;
-    
+
+    //Need to add INC5000    
+    if(newState.irsLoaded && newState.acsLoaded){
+      newState.fluLoaded = true;
+    }
+
     return newState;
   },
   [RECEIVE_INC5000_DATA]: (state,action) => {
@@ -173,10 +224,14 @@ const ACTION_HANDLERS = {
     
     return newState;
   },
-  [RECEIVE_COMPOSITEFLUIDITY_DATA]: (state,action) => {
+  [RECEIVE_COMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
     if(!newState.irsNet){
+      if(!newState.irsRawData){
+        console.log("loading irs data in composite");
+        loadIrsData();
+      }
       newState.irsNet = processdetailMigration(newState.irsRawData,"irsNet");
     }
     if(!newState.acsNet){
@@ -191,6 +246,8 @@ const ACTION_HANDLERS = {
     if(!newState.outflowMigration){
       newState.outflowMigration = processdetailMigration(newState.irsRawData,"outflowMigration");
     }
+
+    newState.compositeData = _processComposite(newState);
 
 
     return newState;
@@ -232,7 +289,55 @@ const ACTION_HANDLERS = {
     return newState;
   }
 }
+const _processComposite = (newState) => {
 
+
+  var compositeCityRanks = [];
+
+  var irsNetScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(newState.irsNet['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(newState.irsNet['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )
+  var acsNetScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(newState.acsNet['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(newState.acsNet['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )
+  var totalMigrationScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(newState.totalMigrationFlow['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(newState.totalMigrationFlow['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )  
+  var inflowMigrationScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(newState.inflowMigration['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(newState.inflowMigration['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )  
+  var outflowMigrationScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(newState.outflowMigration['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(newState.outflowMigration['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )    
+  newState.irsNet['relative'].sort(sortMsaCities());
+  newState.acsNet['relative'].sort(sortMsaCities());
+  newState.totalMigrationFlow['relative'].sort(sortMsaCities());
+  newState.inflowMigration['relative'].sort(sortMsaCities());
+  newState.outflowMigration['relative'].sort(sortMsaCities());
+
+  for(var i=0; i<newState.irsNet['relative'].length;i++){
+      var resultValues = [];
+      for(var j=0; j<newState.irsNet['relative'][i]['values'].length; j++){
+        resultValues.push({x:newState.irsNet['relative'][i].values[j].x,y:((irsNetScale(newState.irsNet['relative'][i].values[j].y) + acsNetScale(newState.acsNet['relative'][i].values[j].y) + totalMigrationScale(newState.totalMigrationFlow['relative'][i].values[j].y) + inflowMigrationScale(newState.acsNet['relative'][i].values[j].y) + outflowMigrationScale(newState.outflowMigration['relative'][i].values[j].y))/5)})      
+      } 
+      compositeCityRanks.push({key:newState.irsNet['relative'][i]['key'],values:resultValues})
+  }
+
+
+  compositeCityRanks = rankCities(compositeCityRanks);
+  var graphData = polishData(compositeCityRanks,"fluidityComposite");
+  return graphData;
+}
 
 const convertToCoordinateArray = (data,dataset) => {
     var scope = this,
@@ -243,9 +348,7 @@ const convertToCoordinateArray = (data,dataset) => {
         Object.keys(data[msaId]).forEach(function(year){
             if(dataset != "opportunity"){
                 if(dataset != "inc5000"){
-                    if(data[msaId][year] != 0){
-                        valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});  
-                    }                        
+                  valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});                   
                 }
                 else{
                     valueArray.push( {x:+year,y:+data[msaId][year]});          
@@ -268,8 +371,8 @@ const relativeAgainstPopulation = (graphRawData) => {
       maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
   //Current Population dataset only goes to 2014        
-  if(maxYear > 2014){
-      maxYear = 2014;
+  if(maxYear > 2012){
+      maxYear = 2012;
   }
 
   var graphRelativeData = graphRawData.map(function(metroArea){
@@ -483,6 +586,19 @@ const sortCities =  (year) =>{
         return -1;
       }
       if(bValue > aValue){
+        return 1;
+      }           
+                
+      return 0;     
+  }
+}
+
+const sortMsaCities =  () =>{
+    return function(a,b){
+      if(a.key > b.key){
+        return -1;
+      }
+      if(b.key > a.key){
         return 1;
       }           
                 

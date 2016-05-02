@@ -32,7 +32,7 @@ export class FluidityView extends React.Component<void, Props, void> {
 
     e.target.className = classes["active"] + " " + classes["metricBox"];
 
-    if(e.target.id == "composite"){
+    if(e.target.id == "fluiditycomposite"){
       d3.select("#raw")[0][0].className = classes["disabled"] + " " + classes["rawRelBox"];
       d3.select("#relative")[0][0].className = classes["disabled"] + " " +  classes["rawRelBox"];
     }
@@ -91,7 +91,7 @@ export class FluidityView extends React.Component<void, Props, void> {
                 <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
                 <div id="value" onClick={this._setRankVal} className={classes["rankValBox"]}>Value</div>
               </div>             
-              <div onClick={this._setMetric} id="composite" className={classes["metricBox"]}>Overall Fluidity</div>
+              <div onClick={this._setMetric} id="fluiditycomposite" className={classes["metricBox"]}>Overall Fluidity</div>
               <div onClick={this._setMetric} id="inc" className={classes["metricBox"]}>High Growth Firms</div>
               <div onClick={this._setMetric} id="irsNet" className={classes["active"] + " " + classes["metricBox"]}>Net Migration (IRS)</div>
               <div onClick={this._setMetric} id="acsNet" className={classes["metricBox"]}>Net Migration (ACS)</div>
