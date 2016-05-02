@@ -14,7 +14,7 @@ export class FluidityView extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-      'selectedMetric':"share",
+      'selectedMetric':"irsNet",
       'dataType':'raw',
       'plot':'rank'
     }
@@ -24,7 +24,7 @@ export class FluidityView extends React.Component<void, Props, void> {
   }
 
   _setMetric (e){
-    console.log(d3.selectAll("."+classes["metricBox"]))
+    //console.log(d3.selectAll("."+classes["metricBox"]))
     
     d3.selectAll("."+classes["metricBox"])[0].forEach(metricBox => {
       metricBox.className = classes["metricBox"];
@@ -92,12 +92,12 @@ export class FluidityView extends React.Component<void, Props, void> {
                 <div id="value" onClick={this._setRankVal} className={classes["rankValBox"]}>Value</div>
               </div>             
               <div onClick={this._setMetric} id="composite" className={classes["metricBox"]}>Overall Fluidity</div>
-              <div onClick={this._setMetric} id="inc5000" className={classes["active"] + " " + classes["metricBox"]}>High Growth Firms</div>
-              <div onClick={this._setMetric} id="netMigrationIrs" className={classes["metricBox"]}>Net Migration (IRS)</div>
-              <div onClick={this._setMetric} id="netMigrationACS" className={classes["metricBox"]}>Net Migration (ACS)</div>
-              <div onClick={this._setMetric} id="totalMigration" className={classes["metricBox"]}>Total Migration(Inflow/Outflow Sum) (ACS)</div>
-              <div onClick={this._setMetric} id="inflowMigration" className={classes["metricBox"]}>Inflow Migration</div>
-              <div onClick={this._setMetric} id="outflowMigration" className={classes["metricBox"]}>Outflow Migration</div> 
+              <div onClick={this._setMetric} id="inc" className={classes["metricBox"]}>High Growth Firms</div>
+              <div onClick={this._setMetric} id="irsNet" className={classes["active"] + " " + classes["metricBox"]}>Net Migration (IRS)</div>
+              <div onClick={this._setMetric} id="acsNet" className={classes["metricBox"]}>Net Migration (ACS)</div>
+              <div onClick={this._setMetric} id="irsTotalMigration" className={classes["metricBox"]}>Total Migration(Inflow/Outflow Sum) (IRS)</div>
+              <div onClick={this._setMetric} id="irsInflowMigration" className={classes["metricBox"]}>Inflow Migration</div>
+              <div onClick={this._setMetric} id="irsOutflowMigration" className={classes["metricBox"]}>Outflow Migration</div> 
             </div>
             <div className='col-xs-9'>
                   <NationalMap />
@@ -105,7 +105,7 @@ export class FluidityView extends React.Component<void, Props, void> {
           </div>
           <div className = 'row'>
             <div className='col-xs-12'>
-              
+              <FluidityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>          
             </div>
           </div>        
         </div>

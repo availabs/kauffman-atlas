@@ -9,7 +9,7 @@ import d3 from 'd3'
 export const RECEIVE_DENSITY_DATA = 'RECEIVE_DENSITY_DATA'
 export const RECEIVE_NEWVALUES_DATA = 'RECEIVE_NEWVALUES_DATA'
 export const RECEIVE_SHARE_DATA = 'RECEIVE_SHARE_DATA'
-export const RECEIVE_COMPOSITE_DATA = 'RECEIVE_COMPOSITE_DATA'
+export const RECEIVE_DENSITYCOMPOSITE_DATA = 'RECEIVE_DENSITYCOMPOSITE_DATA'
 
 // ------------------------------------
 // Actions
@@ -42,7 +42,7 @@ export function getShare () {
 
 export function getComposite () {
   return {
-    type: RECEIVE_COMPOSITE_DATA,
+    type: RECEIVE_DENSITYCOMPOSITE_DATA,
     payload: null
   }
 }
@@ -113,7 +113,7 @@ const ACTION_HANDLERS = {
 
     return newState;
   },
-  [RECEIVE_COMPOSITE_DATA]: (state,action) => {
+  [RECEIVE_DENSITYCOMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
     if(!newState.newValuesData){

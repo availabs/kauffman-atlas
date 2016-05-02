@@ -1,7 +1,7 @@
 "use strict"
 import React from 'react'
 import { connect } from 'react-redux'
-import { loadFluidityData } from 'redux/modules/fluidityData'
+import { loadIrsData,loadAcsData,loadInc5000Data,loadComposite,loadNetMigrationIrs,loadNetMigrationAcs,loadTotalMigration,loadInflowMigration,loadOutflowMigration} from 'redux/modules/fluidityData'
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
@@ -23,29 +23,42 @@ export class FluidityGraph extends React.Component<void, Props, void> {
   }
 
   componentWillReceiveProps (nextProps){
+    let dataset = (this.props.selectedMetric).substring(0,3);
+        console.log("props",dataset)
     if(this.props !== nextProps){
       this.setState({loaded:false})
     }
-    if(this.props.loaded !== nextProps.loaded){
-      // return this.props.loadData()
+    if(this.props[(dataset + "Loaded")] !== nextProps[(dataset + "Loaded")]){
+      return nextProps[('load'+[this.props.selectedMetric])]();
     }
   }
-
+ 
   _initGraph () {
-    if(!this.props.loaded){
-      // return this.props.loadData()
-    }     
+    let dataset = (this.props.selectedMetric).substring(0,3);
+    console.log("init",dataset)
+
+    if(!this.props[(dataset + "Loaded")]){
+      console.log("notloaded",this.props,('load'+[dataset] + 'Data'));
+      return this.props[('load'+[dataset] + 'Data')]()
+    }
+    if(!this.props[this.props.selectedMetric]){
+      console.log("noMetric",(('load'+[this.props.selectedMetric])));
+      return this.props[('load'+[this.props.selectedMetric])]()
+    }          
   }
 
   render () {
+    let dataset = (this.props.selectedMetric).substring(0,3);
+    console.log("render",dataset)
     this._initGraph();
-    if(this.props.loaded){
+    if(this.props[(dataset + "Loaded")] && this.props[this.props.selectedMetric]){
       console.log(this.props[this.props.selectedMetric])
        return (
           <LineGraph data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )     
     }
     else{
+      console.log("rener mia",this.props);
       return (
         <div></div>
       )      
@@ -57,23 +70,25 @@ export class FluidityGraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
   irsLoaded : state.fluidityData.irsLoaded,
   acsLoaded : state.fluidityData.acsLoaded,
-  inc5000Loaded : state.fluidityData.inc5000Loaded,
+  incLoaded : state.fluidityData.inc5000Loaded,
   composite:state.fluidityData.composite,
-  inc5000:state.fluidityData.inc5000,
-  netMigrationIrs:state.fluidityData.netMigrationIrs,
-  netMigrationACS:state.fluidityData.netMigrationACS,
-  totalMigration:state.fluidityData.totalMigration,
-  inflowMigration:state.fluidityData.inflowMigration,
-  outflowMigration:state.fluidityData.outflowMigration,
+  inc:state.fluidityData.inc5000,
+  irsNet:state.fluidityData.irsNet,
+  acsNet:state.fluidityData.acsNet,
+  irsTotalMigration:state.fluidityData.totalMigrationFlow,
+  irsInflowMigration:state.fluidityData.inflowMigration,
+  irsOutflowMigration:state.fluidityData.outflowMigration,
   metros: state.metros
 })
 
 export default connect((mapStateToProps), {
-  loadComposite: () => loadComposite (),
-  loadInc5000Data: () => loadInc5000Data (),
-  loadNetMigrationIrs: () => loadNetMigrationIrs (),
-  loadNetMigrationAcs: () => loadNetMigrationAcs (),
-  loadTotalMigration: () => loadTotalMigration (),
-  loadInflowMigration: () => loadInflowMigration (),
-  loadOutflowMigration: () => loadOutflowMigration ()
+  loadcomposite: () => loadComposite (),
+  loadirsData: () => loadIrsData (),
+  loadacsData: () => loadAcsData (),
+  loadincData: () => loadInc5000Data (),
+  loadirsNet: () => loadNetMigrationIrs (),
+  loadacsNet: () => loadNetMigrationAcs (),
+  loadirsTotalMigration: () => loadTotalMigration (),
+  loadirsInflowMigration: () => loadInflowMigration (),
+  loadirsOutflowMigration: () => loadOutflowMigration ()
 })(FluidityGraph)
