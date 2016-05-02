@@ -32,7 +32,6 @@ export class MetroHome extends React.Component<void, Props, void> {
       return (
         <div>
         <div className='container text-center'>
-          <h4>{this.props.metros[metroId]}</h4>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
               <div className={classes["active"] + " " + classes["metricBox"]}>Density</div>
