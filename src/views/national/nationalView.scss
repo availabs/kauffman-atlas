@@ -1,6 +1,10 @@
+.metricBoxContainer {
+	padding:0px;
+}
+
 .metricBox {
 	border: 1px solid chartreuse;
-	min-height: 100px;
+	min-height: 75px;
 	padding:10px;
 }
 
@@ -8,12 +12,55 @@
 	background-color:#DCDCDC;
 }
 
+.rawRelContainer {
+	border: 1px solid red;
+	margin-bottom:5px;
+}
+
+.rawRelBox{
+	display:inline-block;
+	width:50%;
+	border: 1px solid red;
+	min-height: 50px;
+	padding:10px;	
+}
+
+.rawRelBox:hover {
+	background-color:#DCDCDC;
+}
+
+.rankValContainer {
+	border: 1px solid yellow;
+	margin-bottom:5px;
+}
+
+.rankValBox{
+	display:inline-block;
+	width:50%;
+	border: 1px solid yellow;
+	min-height: 50px;
+	padding:10px;	
+}
+
+.disabled {
+	pointer-events: none;
+	background-color:#DCDCDC;
+	opacity:.35;
+}
+
+.rankValBox:hover {
+	background-color:#DCDCDC;
+}
+
 .active {
 	background-color:darken(#DCDCDC,30%);
 }
 
+.active:hover {
+	background-color:darken(#DCDCDC,40%);
+}
 
-.metricBoxContainer {
-	padding:0px;
-
+.title {
+	text-align: right;
+	text-transform: uppercase;
 }

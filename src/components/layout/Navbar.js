@@ -6,7 +6,8 @@ import { Link } from  'react-router'
 
 export class Navbar extends React.Component<void, Props, void> {
   static propTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    metros: PropTypes.object
   };
 
   render () {
@@ -16,6 +17,8 @@ export class Navbar extends React.Component<void, Props, void> {
       border: '1px solid orangered'
     }
 
+    let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
+    var metro = this.props.metros[metroId] && this.props.metros[metroId].name ? this.props.metros[metroId].name : ''
     return (
       <nav className='navbar navbar-default'>
         <div className='container'>
@@ -31,7 +34,9 @@ export class Navbar extends React.Component<void, Props, void> {
 
           <div className='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
             <ul className='nav navbar-nav'>
-              
+              <li>
+                <a>{metro}</a>
+              </li>
               
             </ul>
             <ul className='nav navbar-nav navbar-right'>
@@ -45,7 +50,8 @@ export class Navbar extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
-  router: state.router
+  router: state.router,
+  metros : state.metros || {}
 })
 
 export default connect((mapStateToProps), {})(Navbar)

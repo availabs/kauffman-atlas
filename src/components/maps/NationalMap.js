@@ -65,7 +65,7 @@ export class NationalMap extends React.Component<void, Props, void> {
       .data(metrosGeo.features)
       .enter().append('path')
       .attr("class",classes['msa'])
-      .attr("id",function(d){return "msa"+d.properties.id;})
+      .attr("id",function(d){return "msa"+d.id;})
       .attr("d", path)
       .on('click',props.click || null);
   }
@@ -79,7 +79,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   render () {
-
+    console.log(d3.select("#msa31080"))
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
