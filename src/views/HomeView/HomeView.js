@@ -81,7 +81,7 @@ export class HomeView extends React.Component<void, Props, void> {
       })
     }
     else{
-      topFiveDensity = "Not"
+      topFiveDensity = "Loading..."
     }
 
     if(this.props.fluidityloaded && this.props.fluiditycomposite){
@@ -100,7 +100,7 @@ export class HomeView extends React.Component<void, Props, void> {
       })
     }
     else{
-      topFiveFluidity = "Not"
+      topFiveFluidity = "Loading..."
     }
 
 

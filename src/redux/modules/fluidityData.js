@@ -210,6 +210,7 @@ const ACTION_HANDLERS = {
     newState.acsRawData = action.payload['acs'];
     newState.acsLoaded = true;
 
+    console.log("loaded fluidity data");
 
     if(newState.irsLoaded && newState.acsLoaded && newState.inc5000Loaded){
       newState.fluLoaded = true;
@@ -363,13 +364,13 @@ const _processComposite = (newState) => {
                 d3.max(filteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
 
-  filteredIrsNet.sort(sortMsaCities());
-  filteredAcsNet.sort(sortMsaCities());
-  filteredTotalMigrationFlow.sort(sortMsaCities());
-  filteredInflowMigration.sort(sortMsaCities());
-  filteredOutflowMigration.sort(sortMsaCities());
-  filteredRawInc.sort(sortMsaCities());
-  filteredRelInc.sort(sortMsaCities());
+  filteredIrsNet.sort(_sortMsaCities());
+  filteredAcsNet.sort(_sortMsaCities());
+  filteredTotalMigrationFlow.sort(_sortMsaCities());
+  filteredInflowMigration.sort(_sortMsaCities());
+  filteredOutflowMigration.sort(_sortMsaCities());
+  filteredRawInc.sort(_sortMsaCities());
+  filteredRelInc.sort(_sortMsaCities());
 
 
   for(var i=0; i<filteredIrsNet.length;i++){
@@ -410,8 +411,7 @@ const _trimYears = (years,cities) => {
 }
 
 const _convertToCoordinateArray = (data,dataset) => {
-    var scope = this,
-        finalData = [];
+    var finalData = [];
 
     Object.keys(data).forEach(msaId => {
         var valueArray = [];
@@ -437,8 +437,7 @@ const _convertToCoordinateArray = (data,dataset) => {
     return finalData;
 }
 const _relativeAgainstPopulation = (graphRawData) => {
-  var scope = this,
-      maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
+  var maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
   //Current Population dataset only goes to 2014        
   if(maxYear > 2012){
@@ -488,8 +487,7 @@ const _processGeneral = (data,dataset) => {
 }
 
 const _processdetailMigration = (data,dataset) => {
-  var scope = this, 
-      reducedData = {},
+  var reducedData = {},
       finalData = [];
 
   Object.keys(data).forEach(msaId => {
@@ -615,7 +613,7 @@ const _processinc5000 = (data,newFirms) => {
 }
 
 
-const _rankCities =  (cities) => {
+const _rankCities = (cities) => {
       var years = d3.range(
             [d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.x }); })],
             [d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.x }); })+1]
@@ -638,7 +636,7 @@ const _rankCities =  (cities) => {
     })          
     return cities;   
 }
-const _polishData =  (data,dataset) => {
+const _polishData = (data,dataset) => {
   var newData = [];
 
   Object.keys(data).forEach(metroArea => {
@@ -687,7 +685,7 @@ const _colorFunction = (params,dataset) => {
 
   return cityColor;
 }
-const _colorGroup =  () => {
+const _colorGroup = () => {
     var _colorGroup = d3.scale.linear()
         .domain(d3.range(1,366,(366/9)))
         .range(colorbrewer.Spectral[9]);
@@ -695,7 +693,7 @@ const _colorGroup =  () => {
     return _colorGroup;
 }
 
-const _sortCities =  (year) => {
+const _sortCities = (year) => {
     return (a,b) => {
   var aValue,
         bValue;
@@ -723,7 +721,7 @@ const _sortCities =  (year) => {
   }
 }
 
-const sortMsaCities =  () => {
+const _sortMsaCities = () => {
     return (a,b) => {
       if(a.key > b.key){
         return -1;
