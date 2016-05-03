@@ -91,7 +91,10 @@ export const loadFluidityData = () => {
       .then(acsJson => {
         fetch('/data/irsMigration.json')
           .then(response => response.json())
-          .then(irsJson => dispatch(receiveFluidityData(acsJson,irsJson)))
+          .then(irsJson => {
+            dispatch(loadInc5000Data())
+            .then(() => dispatch(receiveFluidityData(acsJson,irsJson)))
+          })
       })
   }
 }
@@ -103,7 +106,16 @@ export function receiveFluidityData (acs,irs) {
 }
 
 export const loadFluidityComposite = () => {
-  return (dispatch) => {dispatch(getFluidityComposite())}
+  return (dispatch,getState) => {
+    var state = getState();
+    if(!state.inc5000Loaded){
+      return dispatch(loadInc5000Data())
+        .then(() => dispatch(getFluidityComposite()))
+    }
+    else{
+      return dispatch(getFluidityComposite());
+    }
+  }
 }
 export function getFluidityComposite () {
   return {
@@ -206,7 +218,7 @@ const ACTION_HANDLERS = {
     }
     
 
-    console.log("loadirs datastore",newState);
+    console.log("loadirs datastore action recFluidData",newState);
     return newState;
   },
   [RECEIVE_IRS_DATA]: (state,action) => {
@@ -249,11 +261,11 @@ const ACTION_HANDLERS = {
   },
   [RECEIVE_COMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
-
+    console.log("compositeState checkign inc", state);
     if(!newState.irsNet){
       if(!newState.irsRawData){
         console.log("loading irs data in composite");
-        loadIrsData();
+        loadIrsData()
       }
       newState.irsNet = processdetailMigration(newState.irsRawData,"irsNet");
     }
@@ -314,52 +326,98 @@ const ACTION_HANDLERS = {
 }
 const _processComposite = (newState) => {
 
+  console.log(newState.inc5000.raw);
+
+  var filteredRawInc = trimYears(([1990,2012]),newState.inc5000.raw);
+  var filteredRelInc = trimYears(([1990,2012]),newState.inc5000.relative);
+  var filteredIrsNet = trimYears(([1990,2012]),newState.irsNet['relative']);
+  var filteredAcsNet = trimYears(([1990,2012]),newState.acsNet['relative']);
+  var filteredTotalMigrationFlow = trimYears(([1990,2012]),newState.totalMigrationFlow['relative']);
+  var filteredInflowMigration = trimYears(([1990,2012]),newState.inflowMigration['relative']);
+  var filteredOutflowMigration = trimYears(([1990,2012]),newState.outflowMigration['relative']);
 
   var compositeCityRanks = [];
 
   var irsNetScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newState.irsNet['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newState.irsNet['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredIrsNet, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredIrsNet, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
   var acsNetScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newState.acsNet['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newState.acsNet['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredAcsNet, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredAcsNet, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
   var totalMigrationScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newState.totalMigrationFlow['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newState.totalMigrationFlow['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredTotalMigrationFlow, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredTotalMigrationFlow, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )  
   var inflowMigrationScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newState.inflowMigration['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newState.inflowMigration['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredInflowMigration, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredInflowMigration, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )  
   var outflowMigrationScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newState.outflowMigration['relative'], function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newState.outflowMigration['relative'], function(c) { return d3.max(c.values, function(v) { return v.y }); })]
-                  )    
-  newState.irsNet['relative'].sort(sortMsaCities());
-  newState.acsNet['relative'].sort(sortMsaCities());
-  newState.totalMigrationFlow['relative'].sort(sortMsaCities());
-  newState.inflowMigration['relative'].sort(sortMsaCities());
-  newState.outflowMigration['relative'].sort(sortMsaCities());
+    .domain(      [d3.min(filteredOutflowMigration, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredOutflowMigration, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )   
+  var rawIncScale = d3.scale.linear()
+  .range([0,100])
+  .domain(      [d3.min(filteredRawInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(filteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
+  var relIncScale = d3.scale.linear()
+  .range([0,100])
+  .domain(      [d3.min(filteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(filteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
 
-  for(var i=0; i<newState.irsNet['relative'].length;i++){
+  filteredIrsNet.sort(sortMsaCities());
+  filteredAcsNet.sort(sortMsaCities());
+  filteredTotalMigrationFlow.sort(sortMsaCities());
+  filteredInflowMigration.sort(sortMsaCities());
+  filteredOutflowMigration.sort(sortMsaCities());
+  filteredRawInc.sort(sortMsaCities());
+  filteredRelInc.sort(sortMsaCities());
+
+
+  for(var i=0; i<filteredIrsNet.length;i++){
       var resultValues = [];
-      for(var j=0; j<newState.irsNet['relative'][i]['values'].length; j++){
-        resultValues.push({x:newState.irsNet['relative'][i].values[j].x,y:((irsNetScale(newState.irsNet['relative'][i].values[j].y) + acsNetScale(newState.acsNet['relative'][i].values[j].y) + totalMigrationScale(newState.totalMigrationFlow['relative'][i].values[j].y) + inflowMigrationScale(newState.acsNet['relative'][i].values[j].y) + outflowMigrationScale(newState.outflowMigration['relative'][i].values[j].y))/5)})      
+      for(var j=0; j<filteredIrsNet[i]['values'].length; j++){
+        resultValues.push({x:filteredIrsNet[i].values[j].x,y:((irsNetScale(filteredIrsNet[i].values[j].y) + acsNetScale(filteredAcsNet[i].values[j].y) + totalMigrationScale(filteredTotalMigrationFlow[i].values[j].y) + inflowMigrationScale(filteredInflowMigration[i].values[j].y) + outflowMigrationScale(filteredOutflowMigration[i].values[j].y))/5)})      
       } 
-      compositeCityRanks.push({key:newState.irsNet['relative'][i]['key'],values:resultValues})
+      compositeCityRanks.push({key:filteredIrsNet[i]['key'],values:resultValues})
   }
 
 
   compositeCityRanks = rankCities(compositeCityRanks);
   var graphData = polishData(compositeCityRanks,"fluidityComposite");
   return graphData;
+}
+
+const trimYears = (years,cities) => {
+
+  var filteredCities = cities.map(city => {
+    var newValues = []
+
+    city.values.forEach(yearValue => {
+      if(yearValue.x >= years[0] && yearValue.x <= years[1]){
+        newValues.push(yearValue);
+      }
+    })
+    var newCity = {
+      color:city.color,
+      key:city.key,
+      name:city.name,
+      values:newValues
+    }
+    return newCity;
+  })
+
+
+  return filteredCities;
 }
 
 const convertToCoordinateArray = (data,dataset) => {

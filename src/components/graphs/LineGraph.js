@@ -275,7 +275,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         .text(function(){
           if(scope.props.plot == 'value'){
             if(scope.props.graph.substr(-9) !== 'composite'){
-              return scope._labelFunction().slice(0,-31)       
+              return scope._labelFunction().split("by")[0]  
             }
             else{
               return "Composite Score"
