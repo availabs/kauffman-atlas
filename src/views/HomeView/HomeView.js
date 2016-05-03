@@ -72,7 +72,7 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log(topFiveDensity)
+      console.log("density",topFiveDensity)
       topFiveDensity = Object.keys(topFiveDensity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(

@@ -202,7 +202,6 @@ export const actions = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [RECEIVE_FLUIDITY_DATA]: (state,action) => {
-    console.log("action datastore");
     var newState = Object.assign({},state);
 
     newState.irsRawData = action.payload['irs'];
@@ -212,29 +211,22 @@ const ACTION_HANDLERS = {
     newState.acsLoaded = true;
 
 
-    //Need to add INC5000
-    if(newState.irsLoaded && newState.acsLoaded){
+    if(newState.irsLoaded && newState.acsLoaded && newState.inc5000Loaded){
       newState.fluLoaded = true;
     }
     
-
-    console.log("loadirs datastore action recFluidData",newState);
     return newState;
   },
   [RECEIVE_IRS_DATA]: (state,action) => {
-    console.log("action datastore");
     var newState = Object.assign({},state);
 
     newState.irsRawData = action.payload;
     newState.irsLoaded = true;
 
-    //Need to add INC5000
-    if(newState.irsLoaded && newState.acsLoaded){
+    if(newState.irsLoaded && newState.acsLoaded && newState.inc5000Loaded){
       newState.fluLoaded = true;
     }
     
-
-    console.log("loadirs datastore",newState);
     return newState;
   },
   [RECEIVE_ACS_DATA]: (state,action) => {
@@ -244,7 +236,7 @@ const ACTION_HANDLERS = {
     newState.acsLoaded = true;
 
     //Need to add INC5000    
-    if(newState.irsLoaded && newState.acsLoaded){
+    if(newState.irsLoaded && newState.acsLoaded && newState.inc5000Loaded){
       newState.fluLoaded = true;
     }
 
@@ -254,32 +246,32 @@ const ACTION_HANDLERS = {
     var newState = Object.assign({},state);
 
     newState.inc5000RawData = action.payload.incData;
-    newState.inc5000 = processinc5000(newState.inc5000RawData,action.payload.newValuesData['raw']);
+    newState.inc5000 = _processinc5000(newState.inc5000RawData,action.payload.newValuesData['raw']);
     newState.inc5000Loaded = true;
     
     return newState;
   },
   [RECEIVE_COMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
-    console.log("compositeState checkign inc", state);
+
     if(!newState.irsNet){
       if(!newState.irsRawData){
-        console.log("loading irs data in composite");
+
         loadIrsData()
       }
-      newState.irsNet = processdetailMigration(newState.irsRawData,"irsNet");
+      newState.irsNet = _processdetailMigration(newState.irsRawData,"irsNet");
     }
     if(!newState.acsNet){
-      newState.acsNet = processGeneral(newState.acsRawData,"acsNet");
+      newState.acsNet = _processGeneral(newState.acsRawData,"acsNet");
     }
     if(!newState.totalMigrationFlow){
-      newState.totalMigrationFlow = processdetailMigration(newState.irsRawData,"totalMigrationFlow");
+      newState.totalMigrationFlow = _processdetailMigration(newState.irsRawData,"totalMigrationFlow");
     }
     if(!newState.inflowMigration){
-      newState.inflowMigration = processdetailMigration(newState.irsRawData,"inflowMigration");
+      newState.inflowMigration = _processdetailMigration(newState.irsRawData,"inflowMigration");
     }
     if(!newState.outflowMigration){
-      newState.outflowMigration = processdetailMigration(newState.irsRawData,"outflowMigration");
+      newState.outflowMigration = _processdetailMigration(newState.irsRawData,"outflowMigration");
     }
 
     newState.compositeData = _processComposite(newState);
@@ -290,51 +282,48 @@ const ACTION_HANDLERS = {
   [RECEIVE_NETMIGRATIONIRS_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.irsNet = processdetailMigration(newState.irsRawData,"irsNet");
+    newState.irsNet = _processdetailMigration(newState.irsRawData,"irsNet");
 
-    console.log("irsnet datastore",newState);
     return newState;
   },
   [RECEIVE_NETMIGRATIONACS_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.acsNet = processGeneral(newState.acsRawData,"acsNet");
+    newState.acsNet = _processGeneral(newState.acsRawData,"acsNet");
 
     return newState;
   },
   [RECEIVE_TOTALMIGRATION_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.totalMigrationFlow = processdetailMigration(newState.irsRawData,"totalMigrationFlow");
+    newState.totalMigrationFlow = _processdetailMigration(newState.irsRawData,"totalMigrationFlow");
 
     return newState;
   },
   [RECEIVE_INFLOWMIGRATION_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.inflowMigration = processdetailMigration(newState.irsRawData,"inflowMigration");
+    newState.inflowMigration = _processdetailMigration(newState.irsRawData,"inflowMigration");
 
     return newState;
   },
   [RECEIVE_OUTFLOWMIGRATION_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.outflowMigration = processdetailMigration(newState.irsRawData,"outflowMigration");
+    newState.outflowMigration = _processdetailMigration(newState.irsRawData,"outflowMigration");
 
     return newState;
   }
 }
 const _processComposite = (newState) => {
 
-  console.log(newState.inc5000.raw);
-
-  var filteredRawInc = trimYears(([1990,2012]),newState.inc5000.raw);
-  var filteredRelInc = trimYears(([1990,2012]),newState.inc5000.relative);
-  var filteredIrsNet = trimYears(([1990,2012]),newState.irsNet['relative']);
-  var filteredAcsNet = trimYears(([1990,2012]),newState.acsNet['relative']);
-  var filteredTotalMigrationFlow = trimYears(([1990,2012]),newState.totalMigrationFlow['relative']);
-  var filteredInflowMigration = trimYears(([1990,2012]),newState.inflowMigration['relative']);
-  var filteredOutflowMigration = trimYears(([1990,2012]),newState.outflowMigration['relative']);
+  var filteredRawInc = _trimYears(([1990,2012]),newState.inc5000.raw);
+  var filteredRelInc = _trimYears(([1990,2012]),newState.inc5000.relative);
+  var filteredIrsNet = _trimYears(([1990,2012]),newState.irsNet['relative']);
+  var filteredAcsNet = _trimYears(([1990,2012]),newState.acsNet['relative']);
+  var filteredTotalMigrationFlow = _trimYears(([1990,2012]),newState.totalMigrationFlow['relative']);
+  var filteredInflowMigration = _trimYears(([1990,2012]),newState.inflowMigration['relative']);
+  var filteredOutflowMigration = _trimYears(([1990,2012]),newState.outflowMigration['relative']);
 
   var compositeCityRanks = [];
 
@@ -392,12 +381,12 @@ const _processComposite = (newState) => {
   }
 
 
-  compositeCityRanks = rankCities(compositeCityRanks);
-  var graphData = polishData(compositeCityRanks,"fluidityComposite");
+  compositeCityRanks = _rankCities(compositeCityRanks);
+  var graphData = _polishData(compositeCityRanks,"fluidityComposite");
   return graphData;
 }
 
-const trimYears = (years,cities) => {
+const _trimYears = (years,cities) => {
 
   var filteredCities = cities.map(city => {
     var newValues = []
@@ -420,13 +409,13 @@ const trimYears = (years,cities) => {
   return filteredCities;
 }
 
-const convertToCoordinateArray = (data,dataset) => {
+const _convertToCoordinateArray = (data,dataset) => {
     var scope = this,
         finalData = [];
 
-    Object.keys(data).forEach(function(msaId){
+    Object.keys(data).forEach(msaId => {
         var valueArray = [];
-        Object.keys(data[msaId]).forEach(function(year){
+        Object.keys(data[msaId]).forEach(year => {
             if(dataset != "opportunity"){
                 if(dataset != "inc5000"){
                   valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});                   
@@ -447,7 +436,7 @@ const convertToCoordinateArray = (data,dataset) => {
 
     return finalData;
 }
-const relativeAgainstPopulation = (graphRawData) => {
+const _relativeAgainstPopulation = (graphRawData) => {
   var scope = this,
       maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
@@ -456,9 +445,9 @@ const relativeAgainstPopulation = (graphRawData) => {
       maxYear = 2012;
   }
 
-  var graphRelativeData = graphRawData.map(function(metroArea){
+  var graphRelativeData = graphRawData.map(metroArea => {
       var newValues = [];
-      metroArea.values.forEach(function(yearVal){
+      metroArea.values.forEach(yearVal => {
           if(yearVal.x <= maxYear){
               var newCoord = {x:yearVal.x, y:0};
 
@@ -477,20 +466,19 @@ const relativeAgainstPopulation = (graphRawData) => {
   return graphRelativeData;
 
 }
-const processGeneral = (data,dataset) => {
-    console.log("processgeneral");
-    var finalData = convertToCoordinateArray(data);
+const _processGeneral = (data,dataset) => {
+    var finalData = _convertToCoordinateArray(data);
 
-    var rankedData = rankCities(finalData);
-    var polishedData = polishData(rankedData,dataset);
+    var rankedData = _rankCities(finalData);
+    var polishedData = _polishData(rankedData,dataset);
     var graphRawData = polishedData;
 
     var graphRelativeData = [];
-    graphRelativeData = relativeAgainstPopulation(graphRawData);
+    graphRelativeData = _relativeAgainstPopulation(graphRawData);
 
     if(graphRelativeData && graphRelativeData.length > 0){
-        var rankedData2 = rankCities(graphRelativeData);
-        var polishedData2 = polishData(rankedData2,("relative"+dataset));
+        var rankedData2 = _rankCities(graphRelativeData);
+        var polishedData2 = _polishData(rankedData2,("relative"+dataset));
 
         var graphData = {};
         graphData["raw"] = graphRawData;
@@ -499,15 +487,14 @@ const processGeneral = (data,dataset) => {
     }
 }
 
-const processdetailMigration = (data,dataset) => {
+const _processdetailMigration = (data,dataset) => {
   var scope = this, 
       reducedData = {},
       finalData = [];
-      console.log("processdetailMigration")
 
-  Object.keys(data).forEach(function(msaId){
+  Object.keys(data).forEach(msaId => {
       var valueArray = [];
-      Object.keys(data[msaId]).forEach(function(year){
+      Object.keys(data[msaId]).forEach(year => {
           if(data[msaId][year]){
               if(data[msaId][year]['outflow']){
                   if(year > 12){
@@ -542,11 +529,11 @@ const processdetailMigration = (data,dataset) => {
       }
   })
 
-  var rankedData = rankCities(finalData);
-  var polishedData = polishData(rankedData,dataset);
+  var rankedData = _rankCities(finalData);
+  var polishedData = _polishData(rankedData,dataset);
 
-  polishedData.forEach(function(metroArea){
-      metroArea.values.sort(function(a,b){
+  polishedData.forEach(metroArea => {
+      metroArea.values.sort((a,b) => {
           return a.x - b.x
       })
   })
@@ -554,11 +541,11 @@ const processdetailMigration = (data,dataset) => {
   var graphRawData = polishedData;
 
   var graphRelativeData = [];
-  graphRelativeData = relativeAgainstPopulation(graphRawData);
+  graphRelativeData = _relativeAgainstPopulation(graphRawData);
 
   if(graphRelativeData && graphRelativeData.length > 0){
-      var rankedData2 = rankCities(graphRelativeData);
-      var polishedData2 = polishData(rankedData2,("relative"+dataset));
+      var rankedData2 = _rankCities(graphRelativeData);
+      var polishedData2 = _polishData(rankedData2,("relative"+dataset));
 
       var graphData = {};
       graphData["raw"] = graphRawData;
@@ -567,20 +554,19 @@ const processdetailMigration = (data,dataset) => {
   }             
 }
 
-const processinc5000 = (data,newFirms) => {
-  console.log("processinc5000");
+const _processinc5000 = (data,newFirms) => {
 
-  var finalData = convertToCoordinateArray(data,"inc5000");
-  var rankedData = rankCities(finalData);
-  var polishedData = polishData(rankedData,"inc5000");
+  var finalData = _convertToCoordinateArray(data,"inc5000");
+  var rankedData = _rankCities(finalData);
+  var polishedData = _polishData(rankedData,"inc5000");
 
   var totalEmp = {};
 
-  newFirms.forEach(function(city){
+  newFirms.forEach(city => {
 
       //Iterating through every year within a metro area
       var valueObject = {};
-      Object.keys(city.values).forEach(function(yearValue){
+      Object.keys(city.values).forEach(yearValue => {
           //Want to return: x:year y:percent
           valueObject[city.values[yearValue].x] = 0;
           valueObject[city.values[yearValue].x] = city.values[yearValue].y;
@@ -592,9 +578,9 @@ const processinc5000 = (data,newFirms) => {
 
   var graphRawData = polishedData;
 
-  var graphRelativeData = graphRawData.map(function(metroArea){
+  var graphRelativeData = graphRawData.map(metroArea => {
       var newValues = [];
-      metroArea.values.forEach(function(yearVal){
+      metroArea.values.forEach(yearVal => {
           if(yearVal.x < 2010){
               var newCoord = {x:yearVal.x, y:0};
 
@@ -610,14 +596,14 @@ const processinc5000 = (data,newFirms) => {
   })
 
   var graphRelativeData2 = [];
-  graphRelativeData2 = relativeAgainstPopulation(graphRawData);
+  graphRelativeData2 = _relativeAgainstPopulation(graphRawData);
 
   if(graphRelativeData2 && graphRelativeData2.length > 0){
-      var rankedData2 = rankCities(graphRelativeData);
-      var polishedData2 = polishData(rankedData2,"relativeInc5000");
+      var rankedData2 = _rankCities(graphRelativeData);
+      var polishedData2 = _polishData(rankedData2,"relativeInc5000");
 
-      var rankedData3 = rankCities(graphRelativeData2);
-      var polishedData3 = polishData(rankedData3,"relativeInc5000");
+      var rankedData3 = _rankCities(graphRelativeData2);
+      var polishedData3 = _polishData(rankedData3,"relativeInc5000");
 
       var graphData = {};
       graphData["raw"] = graphRawData;
@@ -629,20 +615,20 @@ const processinc5000 = (data,newFirms) => {
 }
 
 
-const rankCities =  (cities) => {
+const _rankCities =  (cities) => {
       var years = d3.range(
             [d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.x }); })],
             [d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.x }); })+1]
         );
 
-    years.forEach(function(year){
+    years.forEach(year => {
         var rank = 1;
         //Sort cities according to each year
-        cities.sort(sortCities(year));
+        cities.sort(_sortCities(year));
 
         //Go through and assign ranks for current year
-        cities.forEach(function(city){
-            city.values.forEach(function(yearValues){
+        cities.forEach(city => {
+            city.values.forEach(yearValues => {
                 if(yearValues.x == year){
                     yearValues.rank = rank;
                 }
@@ -652,10 +638,10 @@ const rankCities =  (cities) => {
     })          
     return cities;   
 }
-const polishData =  (data,dataset) =>{
+const _polishData =  (data,dataset) => {
   var newData = [];
 
-  Object.keys(data).forEach(function(metroArea){
+  Object.keys(data).forEach(metroArea => {
     var name = "undefined";
     if(msaLookup[data[metroArea].key]){
       name = msaLookup[data[metroArea].key]
@@ -665,17 +651,17 @@ const polishData =  (data,dataset) =>{
           values:null,
           name: name,
           key:data[metroArea].key,
-          color:colorFunction(data[metroArea],dataset)
+          color:_colorFunction(data[metroArea],dataset)
         }
 
-        city.values = data[metroArea].values.map(function(i){
+        city.values = data[metroArea].values.map(i => {
             return {
                 city:city,
                 x:i.x,
                 y:i.y,
                 rank:i.rank,
                 raw:i.raw,
-                color:colorFunction(i,dataset)
+                color:_colorFunction(i,dataset)
             }
         })   
           newData.push(city);           
@@ -683,7 +669,7 @@ const polishData =  (data,dataset) =>{
   });
   return newData;
 }
-const colorFunction = (params,dataset) =>{
+const _colorFunction = (params,dataset) => {
   var  cityColor;
 
   if(params){
@@ -694,33 +680,33 @@ const colorFunction = (params,dataset) =>{
       else if(params.values){
           var valueLength = params.values.length;
           var curRank = params.values[valueLength-1].rank
-          var color = colorGroup();
+          var color = _colorGroup();
           cityColor = color(curRank);   
       }
   }  
 
   return cityColor;
 }
-const colorGroup =  () =>{
-    var colorGroup = d3.scale.linear()
+const _colorGroup =  () => {
+    var _colorGroup = d3.scale.linear()
         .domain(d3.range(1,366,(366/9)))
         .range(colorbrewer.Spectral[9]);
     
-    return colorGroup;
+    return _colorGroup;
 }
 
-const sortCities =  (year) =>{
-    return function(a,b){
+const _sortCities =  (year) => {
+    return (a,b) => {
   var aValue,
         bValue;
 
-      a.values.forEach(function(yearValues){
+      a.values.forEach(yearValues => {
         if(yearValues.x == year){
           aValue = yearValues.y;
         }
       })            
   
-      b.values.forEach(function(yearValues){
+      b.values.forEach(yearValues => {
         if(yearValues.x == year){
           bValue = yearValues.y;
         }
@@ -737,8 +723,8 @@ const sortCities =  (year) =>{
   }
 }
 
-const sortMsaCities =  () =>{
-    return function(a,b){
+const sortMsaCities =  () => {
+    return (a,b) => {
       if(a.key > b.key){
         return -1;
       }

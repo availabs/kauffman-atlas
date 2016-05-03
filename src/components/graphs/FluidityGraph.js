@@ -24,7 +24,6 @@ export class FluidityGraph extends React.Component<void, Props, void> {
  
   _initGraph () {
     let dataset = (this.props.selectedMetric).substring(0,3);
-    console.log("init",dataset)
 
     if(!this.props[(dataset + "Loaded")]){
       console.log("notloaded",this.props,('load'+[dataset] + 'Data'));
@@ -38,10 +37,8 @@ export class FluidityGraph extends React.Component<void, Props, void> {
 
   render () {
     let dataset = (this.props.selectedMetric).substring(0,3);
-    console.log("render",dataset)
     this._initGraph();
     if(this.props[(dataset + "Loaded")] && this.props[this.props.selectedMetric]){
-      console.log(this.props[this.props.selectedMetric])
        return (
           <LineGraph data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )     
