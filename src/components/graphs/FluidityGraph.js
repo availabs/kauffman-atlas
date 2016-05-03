@@ -21,17 +21,6 @@ export class FluidityGraph extends React.Component<void, Props, void> {
   componentWillMount () {
     this._initGraph();
   }
-
-  componentWillReceiveProps (nextProps){
-    let dataset = (this.props.selectedMetric).substring(0,3);
-        console.log("props",dataset)
-    if(this.props !== nextProps){
-      this.setState({loaded:false})
-    }
-    if(this.props[(dataset + "Loaded")] !== nextProps[(dataset + "Loaded")]){
-      return nextProps[('load'+[this.props.selectedMetric])]();
-    }
-  }
  
   _initGraph () {
     let dataset = (this.props.selectedMetric).substring(0,3);

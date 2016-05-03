@@ -136,8 +136,11 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       if(scope.props.plot != 'rank'){
         xAxis.ticks(x.domain()[1]-x.domain()[0])       
-        if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite"){
+        if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite" && scope.props.graph != "inc"){
             yAxis.tickFormat(axisPercFormat);
+        }
+        if(scope.props.dataType != "raw" && scope.props.graph == "inc"){
+            yAxis.tickFormat(percFormat);         
         }          
       }
 
@@ -377,10 +380,10 @@ export class LineGraph extends React.Component<void, Props, void> {
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking total Migration (inflow/outflow sum) (IRS) by year"
+          return "Metro Area Ranking for total Migration (inflow/outflow sum) (IRS) by year"
         }
         else{
-          return "Metro Area Ranking total Migration (inflow/outflow sum) (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for total Migration (inflow/outflow sum) (IRS) as a percentage of total population by year"
         }                  
       }          
     } 
@@ -395,10 +398,10 @@ export class LineGraph extends React.Component<void, Props, void> {
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking inflow Migration (IRS) by year"
+          return "Metro Area Ranking for inflow Migration (IRS) by year"
         }
         else{
-          return "Metro Area Ranking inflow Migration (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for inflow Migration (IRS) as a percentage of total population by year"
         }                  
       }          
     } 
@@ -413,10 +416,28 @@ export class LineGraph extends React.Component<void, Props, void> {
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking outflow Migration (IRS) by year"
+          return "Metro Area Ranking for outflow Migration (IRS) by year"
         }
         else{
-          return "Metro Area Ranking outflow Migration (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for outflow Migration (IRS) as a percentage of total population by year"
+        }                  
+      }          
+    } 
+    else if(this.props.graph == "inc"){
+      if(this.props.plot == "value"){
+        if(this.props.dataType == "raw"){
+          return "Number of High Growth Firms by year"
+        }
+        else{
+          return "Number of High Growth Firms as a percentage of total firms by year"
+        }             
+      }
+      else{
+        if(this.props.dataType == "raw"){
+          return "Metro Area Ranking for number of High Growth Firms by year"
+        }
+        else{
+          return "Metro Area Ranking for number of High Growth Firms as a percentage of total firms by year"
         }                  
       }          
     } 

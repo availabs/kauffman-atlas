@@ -95,7 +95,7 @@ const ACTION_HANDLERS = {
     newState.rawData = action.payload;
     newState.loaded = true;
 
-    //console.log(newState)
+    console.log("loaded density data");
 
     return newState;
   },

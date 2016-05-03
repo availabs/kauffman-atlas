@@ -2,6 +2,7 @@
 import fetch from 'isomorphic-fetch'
 import colorbrewer from 'colorbrewer'
 import d3 from 'd3'
+import { loadDensityData,loadNewValues} from 'redux/modules/densityData'
 import { msaLookup, populationData } from 'static/data/msaDetails'
 
 // ------------------------------------
@@ -19,7 +20,6 @@ export const RECEIVE_INFLOWMIGRATION_DATA = 'RECEIVE_INFLOWMIGRATION_DATA'
 export const RECEIVE_OUTFLOWMIGRATION_DATA = 'RECEIVE_OUTFLOWMIGRATION_DATA'
 
 export const loadIrsData = () => {
-  console.log("loadIrsData datasstore");
   return (dispatch) => {
     return fetch('/data/irsMigration.json')
       .then(response => response.json())
@@ -27,7 +27,6 @@ export const loadIrsData = () => {
   }
 }
 export function receiveIrsData (value) {
-  console.log("receiveIrsData datastore")
   return {
     type: RECEIVE_IRS_DATA,
     payload: value
@@ -49,16 +48,39 @@ export function receiveAcsData (value) {
 }
 
 export const loadInc5000Data = () => {
-  return (dispatch) => {
-    return fetch('/data/inc5000.json')
-      .then(response => response.json())
-      .then(json => dispatch(receiveInc5000Data(json)))
+  return (dispatch,getState) => {
+    var state = getState();
+    if(!state.densityData.loaded){
+       dispatch(loadDensityData())
+        .then(() => dispatch(loadNewValues()))
+        .then(() => { 
+          state = getState();
+          return fetch('/data/inc5000.json')
+            .then(response => response.json())
+            .then(incJson => dispatch(receiveInc5000Data(incJson, state.densityData.newValuesData)))
+        })
+    }
+    else if(!state.densityData.newValuesData){
+      dispatch(loadNewValues())
+        .then(() => {
+          state = getState();
+          return fetch('/data/inc5000.json')
+            .then(response => response.json())
+            .then(incJson => dispatch(receiveInc5000Data(incJson, state.densityData.newValuesData)))
+        })
+    }
+    else{
+      state = getState();
+      return fetch('/data/inc5000.json')
+        .then(response => response.json())
+        .then(incJson => dispatch(receiveInc5000Data(incJson, state.densityData.newValuesData)))
+    }
   }
 }
-export function receiveInc5000Data (value) {
+export function receiveInc5000Data (incJson,newValuesData) {
   return {
     type: RECEIVE_INC5000_DATA,
-    payload: value
+    payload: {incData:incJson,newValuesData:newValuesData}
   }
 }
 
@@ -219,8 +241,9 @@ const ACTION_HANDLERS = {
   [RECEIVE_INC5000_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    newState.inc5000RawData = action.payload;
-    newState.inc50000Loaded = true;
+    newState.inc5000RawData = action.payload.incData;
+    newState.inc5000 = processinc5000(newState.inc5000RawData,action.payload.newValuesData['raw']);
+    newState.inc5000Loaded = true;
     
     return newState;
   },
@@ -485,6 +508,69 @@ const processdetailMigration = (data,dataset) => {
       return graphData;                
   }             
 }
+
+const processinc5000 = (data,newFirms) => {
+  console.log("processinc5000");
+
+  var finalData = convertToCoordinateArray(data,"inc5000");
+  var rankedData = rankCities(finalData);
+  var polishedData = polishData(rankedData,"inc5000");
+
+  var totalEmp = {};
+
+  newFirms.forEach(function(city){
+
+      //Iterating through every year within a metro area
+      var valueObject = {};
+      Object.keys(city.values).forEach(function(yearValue){
+          //Want to return: x:year y:percent
+          valueObject[city.values[yearValue].x] = 0;
+          valueObject[city.values[yearValue].x] = city.values[yearValue].y;
+      })
+
+      //Only return once per metroArea
+      totalEmp[city.key] = {key:city.key,values:valueObject,area:false};                    
+  })
+
+  var graphRawData = polishedData;
+
+  var graphRelativeData = graphRawData.map(function(metroArea){
+      var newValues = [];
+      metroArea.values.forEach(function(yearVal){
+          if(yearVal.x < 2010){
+              var newCoord = {x:yearVal.x, y:0};
+
+              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][yearVal.x]){
+                  var newY = +yearVal.y / totalEmp[metroArea.key]["values"][yearVal.x];
+                  newCoord = {x: yearVal.x, y:newY};
+              }
+              newValues.push(newCoord);                       
+          }     
+      })
+
+       return ({key:metroArea.key,values:newValues,area:false});                
+  })
+
+  var graphRelativeData2 = [];
+  graphRelativeData2 = relativeAgainstPopulation(graphRawData);
+
+  if(graphRelativeData2 && graphRelativeData2.length > 0){
+      var rankedData2 = rankCities(graphRelativeData);
+      var polishedData2 = polishData(rankedData2,"relativeInc5000");
+
+      var rankedData3 = rankCities(graphRelativeData2);
+      var polishedData3 = polishData(rankedData3,"relativeInc5000");
+
+      var graphData = {};
+      graphData["raw"] = graphRawData;
+      graphData["relative"] = polishedData2;
+      graphData["relative2"] = polishedData3;
+
+      return graphData;               
+  }
+}
+
+
 const rankCities =  (cities) => {
       var years = d3.range(
             [d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.x }); })],
