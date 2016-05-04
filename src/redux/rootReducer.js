@@ -5,8 +5,9 @@ import geoData from './modules/geoData'
 import metroZbpData from './modules/metroZbpData'
 import metros from './modules/msaLookup'
 import densityData from './modules/densityData'
-import fluidityData from './modules/densityData'
+import fluidityData from './modules/fluidityData'
 import metroQcewData from './modules/metroQcewData'
+
 
 export default combineReducers({
   fluidityData,
