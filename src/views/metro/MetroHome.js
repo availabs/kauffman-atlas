@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import MetroMap from 'components/maps/MetroMap'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
+import NaicsGraph from 'components/graphs/NaicsGraph'
 import classes from '../national/nationalView.scss'
 
 type Props = {
@@ -62,6 +63,7 @@ export class MetroHome extends React.Component<void, Props, void> {
     else{
       return (
         <div>
+							<NaicsGraph currentMetro={metroId} />
         <div className='container text-center'>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
@@ -74,6 +76,7 @@ export class MetroHome extends React.Component<void, Props, void> {
                 <MetroMap currentMetro={metroId} />
                 Population: {this.props.metros[metroId].pop['2012']}
             </div>
+							
           </div>
           <div className='row'>
             {this.renderDisplay()}

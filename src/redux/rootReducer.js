@@ -6,12 +6,14 @@ import metroZbpData from './modules/metroZbpData'
 import metros from './modules/msaLookup'
 import densityData from './modules/densityData'
 import fluidityData from './modules/densityData'
+import metroQcewData from './modules/metroQcewData'
 
 export default combineReducers({
   fluidityData,
   densityData,
   metros,
   metroZbpData,
+  metroQcewData,
   geoData,
   counter,
   router
