@@ -1,7 +1,7 @@
 "use strict"
 import React from 'react'
 import { connect } from 'react-redux'
-import { loadFluidityData } from 'redux/modules/fluidityData'
+import { loadIrsData,loadAcsData,loadInc5000Data,loadFluidityComposite,loadFluidityData, loadNetMigrationIrs,loadNetMigrationAcs,loadTotalMigration,loadInflowMigration,loadOutflowMigration} from 'redux/modules/fluidityData'
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
@@ -21,31 +21,30 @@ export class FluidityGraph extends React.Component<void, Props, void> {
   componentWillMount () {
     this._initGraph();
   }
-
-  componentWillReceiveProps (nextProps){
-    if(this.props !== nextProps){
-      this.setState({loaded:false})
-    }
-    if(this.props.loaded !== nextProps.loaded){
-      // return this.props.loadData()
-    }
-  }
-
+ 
   _initGraph () {
-    if(!this.props.loaded){
-      // return this.props.loadData()
-    }     
+    let dataset = (this.props.selectedMetric).substring(0,3);
+
+    if(!this.props[(dataset + "Loaded")]){
+      console.log("notloaded",this.props,('load'+[dataset] + 'Data'));
+      return this.props[('load'+[dataset] + 'Data')]()
+    }
+    if(!this.props[this.props.selectedMetric]){
+      console.log("noMetric",(('load'+[this.props.selectedMetric])));
+      return this.props[('load'+[this.props.selectedMetric])]()
+    }          
   }
 
   render () {
+    let dataset = (this.props.selectedMetric).substring(0,3);
     this._initGraph();
-    if(this.props.loaded){
-      console.log(this.props[this.props.selectedMetric])
+    if(this.props[(dataset + "Loaded")] && this.props[this.props.selectedMetric]){
        return (
           <LineGraph data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )     
     }
     else{
+      console.log("rener mia",this.props);
       return (
         <div></div>
       )      
@@ -57,23 +56,27 @@ export class FluidityGraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
   irsLoaded : state.fluidityData.irsLoaded,
   acsLoaded : state.fluidityData.acsLoaded,
-  inc5000Loaded : state.fluidityData.inc5000Loaded,
-  composite:state.fluidityData.composite,
-  inc5000:state.fluidityData.inc5000,
-  netMigrationIrs:state.fluidityData.netMigrationIrs,
-  netMigrationACS:state.fluidityData.netMigrationACS,
-  totalMigration:state.fluidityData.totalMigration,
-  inflowMigration:state.fluidityData.inflowMigration,
-  outflowMigration:state.fluidityData.outflowMigration,
+  incLoaded : state.fluidityData.inc5000Loaded,
+  fluLoaded : state.fluidityData.fluLoaded,
+  fluiditycomposite:state.fluidityData.compositeData,
+  inc:state.fluidityData.inc5000,
+  irsNet:state.fluidityData.irsNet,
+  acsNet:state.fluidityData.acsNet,
+  irsTotalMigration:state.fluidityData.totalMigrationFlow,
+  irsInflowMigration:state.fluidityData.inflowMigration,
+  irsOutflowMigration:state.fluidityData.outflowMigration,
   metros: state.metros
 })
 
 export default connect((mapStateToProps), {
-  loadComposite: () => loadComposite (),
-  loadInc5000Data: () => loadInc5000Data (),
-  loadNetMigrationIrs: () => loadNetMigrationIrs (),
-  loadNetMigrationAcs: () => loadNetMigrationAcs (),
-  loadTotalMigration: () => loadTotalMigration (),
-  loadInflowMigration: () => loadInflowMigration (),
-  loadOutflowMigration: () => loadOutflowMigration ()
+  loadfluData: () => loadFluidityData (),
+  loadirsData: () => loadIrsData (),
+  loadacsData: () => loadAcsData (),
+  loadincData: () => loadInc5000Data (),
+  loadfluiditycomposite: () => loadFluidityComposite (),
+  loadirsNet: () => loadNetMigrationIrs (),
+  loadacsNet: () => loadNetMigrationAcs (),
+  loadirsTotalMigration: () => loadTotalMigration (),
+  loadirsInflowMigration: () => loadInflowMigration (),
+  loadirsOutflowMigration: () => loadOutflowMigration ()
 })(FluidityGraph)

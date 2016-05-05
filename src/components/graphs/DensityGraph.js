@@ -61,7 +61,7 @@ const mapStateToProps = (state) => ({
   loaded : state.densityData.loaded,
   newValues: state.densityData.newValuesData,
   share:state.densityData.shareData,
-  composite:state.densityData.compositeData,
+  densitycomposite:state.densityData.compositeData,
   metros: state.metros
 })
 
@@ -69,5 +69,5 @@ export default connect((mapStateToProps), {
   loadData: () => loadDensityData(),
   loadnewValues: () => loadNewValues(),
   loadshare: () => loadShare(),
-  loadcomposite: () => loadComposite()
+  loaddensitycomposite: () => loadComposite()
 })(DensityGraph)

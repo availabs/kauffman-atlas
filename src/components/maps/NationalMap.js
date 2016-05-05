@@ -79,7 +79,6 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   render () {
-    console.log(d3.select("#msa31080"))
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>

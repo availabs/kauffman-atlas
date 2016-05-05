@@ -38,14 +38,9 @@ export class Navbar extends React.Component<void, Props, void> {
           </div>
 
           <div className='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
-            <ul className='nav navbar-nav'>
-              <li>
-                <a>{metro}</a>
-              </li>
-              
-            </ul>
+           
             <ul className='nav navbar-nav navbar-right'>
-             
+            
             </ul>
           </div>
         </div>

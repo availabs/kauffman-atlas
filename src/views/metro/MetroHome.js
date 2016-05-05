@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import MetroMap from 'components/maps/MetroMap'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
-import classes from '../national/nationalView.scss'
+import classes from 'styles/sitewide/index.scss'
+// import classes from '../national/nationalView.scss'
 
 type Props = {
 };
@@ -25,21 +26,22 @@ export class MetroHome extends React.Component<void, Props, void> {
 
   renderDisplay(){
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
-    console.log('test', this)
-    switch(this.state.display){
-      case 'industry':
-        return (
-           <MetroZbp currentMetro={metroId} year='2012'/>
-        )
-      case 'cluster':
-        return (
-           <MetroZbpCluster currentMetro={metroId} year='2012'/>
-        )
-      default:
-        return (
-          <MetroZbp currentMetro={metroId} year='2012'/>
-        )
-    }
+    console.log('test', metroId)
+    return <span />
+    // switch(this.state.display){
+    //   case 'industry':
+    //     return (
+    //        <MetroZbp currentMetro={metroId} year='2012'/>
+    //     )
+    //   case 'cluster':
+    //     return (
+    //        <MetroZbpCluster currentMetro={metroId} year='2012'/>
+    //     )
+    //   default:
+    //     return (
+    //       <MetroZbp currentMetro={metroId} year='2012'/>
+    //     )
+    // }
   }
 
   render () {
@@ -60,16 +62,16 @@ export class MetroHome extends React.Component<void, Props, void> {
       ) 
     }
     else{
+      console.log('test 2', metroId, this.props.metros[metroId])
       return (
-        <div>
         <div className='container text-center'>
-          <h4>{this.props.metros[metroId]}</h4>
+          <h4>{this.props.metros[metroId].name}</h4>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div className={classes["metricBox"]}>Density</div>
-              <div className={classes["metricBox"]}>Fluidity</div>
-              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'industry')}>Industry Overview</div>
-              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'cluster')}>Cluster Overview</div>
+              <div className={classes["selector-buttons"]}>Density</div>
+              <div className={classes["selector-buttons"]}>Fluidity</div>
+              <div className={classes["selector-buttons"]} onClick={this._selectDisplay.bind(this,'industry')}>Industry Overview</div>
+              <div className={classes["selector-buttons"]} onClick={this._selectDisplay.bind(this,'cluster')}>Cluster Overview</div>
             </div>
             <div className='col-xs-9'>
                 <MetroMap currentMetro={metroId} />
@@ -79,7 +81,6 @@ export class MetroHome extends React.Component<void, Props, void> {
           <div className='row'>
             {this.renderDisplay()}
           </div>           
-        </div>
         </div>
       )      
     }
