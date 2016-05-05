@@ -123,13 +123,12 @@ export class DiversityView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="opportunity" className={classes["metricBox"]}>Income Gain/Loss from Childhood Residence</div>
             </div>
             <div className='col-xs-9'>
-                  <NationalMap />
-                  <DiversityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>                            
+                <NationalMap />
             </div>
           </div>
           <div className = 'row'>
             <div className='col-xs-12'>
-              
+                <DiversityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>                                          
             </div>
           </div>        
         </div>
