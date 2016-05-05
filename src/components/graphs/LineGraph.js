@@ -449,6 +449,24 @@ export class LineGraph extends React.Component<void, Props, void> {
           return "Metro Area Ranking for composite fluidity score by year" 
       }          
     }
+    else if(this.props.graph == "foreignBorn"){
+      if(this.props.plot == "value"){
+        if(this.props.dataType == "raw"){
+          return "Number of foreign born current residents by year"
+        }
+        else{
+          return "Number of foreign born current residents as a percentage of total population by year"
+        }             
+      }
+      else{
+        if(this.props.dataType == "raw"){
+          return "Metro Area Ranking for number of foreign born current residents by year"
+        }
+        else{
+          return "Metro Area Ranking for number of foreign born current residents as a percentage of total population by year"
+        }                  
+      }          
+    } 
   }
 
 
@@ -469,6 +487,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         </div>
     );          
   }
+  
 }
 
 

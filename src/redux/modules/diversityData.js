@@ -10,20 +10,123 @@ import { msaLookup, populationData } from 'static/data/msaDetails'
 
 export const RECEIVE_OPPORTUNITY_DATA = 'RECEIVE_OPPORTUNITY_DATA'
 export const RECEIVE_FOREIGNBORN_DATA = 'RECEIVE_FOREIGNBORN_DATA'
-export const RECEIVE_FLUIDITYCOMPOSITE_DATA = 'RECEIVE_FLUIDITYCOMPOSITE_DATA'
+export const RECEIVE_DIVERSITY_DATA = 'RECEIVE_DIVERSITY_DATA'
+export const RECEIVE_DIVERSITYCOMPOSITE_DATA = 'RECEIVE_DIVERSITYCOMPOSITE_DATA'
 
+export function receiveOpportunityData (value) {
+  return {
+    type: RECEIVE_OPPORTUNITY_DATA,
+    payload: value
+  }
+}
+
+export function receiveForeignBornData (value) {
+  return {
+    type: RECEIVE_FOREIGNBORN_DATA,
+    payload: value
+  }
+}
+
+export function receiveDiversityCompositeData (opp,foreign) {
+  return {
+    type: RECEIVE_DIVERSITY_DATA,
+    payload: {opportunity:opp,foreignBorn:foreign}
+  }
+}
+
+export function getDiversityComposite () {
+  return {
+    type: RECEIVE_DIVERSITYCOMPOSITE_DATA,
+    payload: null
+  }
+}
+
+export const loadOpportunityData = () => {
+  return (dispatch) => {
+    return fetch('/data/opportunity.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveOpportunityData(json)))
+  }
+}
+
+export const loadForeignBornData = () => {
+  return (dispatch) => {
+    return fetch('/data/foreignborn.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveForeignBornData(json)))
+  }
+}
+
+export const loadDiversityData = () => {
+  return (dispatch) => {
+    return fetch('/data/foreignborn.json')
+      .then(response => response.json())
+      .then(foreignJson => {
+        return fetch('/data/opportunity.json')
+        .then(response => response.json())
+        .then(oppJson => dispatch(receiveDiversityCompositeData(oppJson,foreignJson)))
+    })
+  }
+}
+
+export const loadDiversityComposite = () => {
+  return (dispatch) => {dispatch(getDiversityComposite())}
+}
 
 
 export const actions = {
-
-
+  receiveOpportunityData,
+  receiveForeignBornData,
+  receiveDiversityCompositeData,
+  getDiversityComposite,
+  loadOpportunityData,
+  loadForeignBornData,
+  loadDiversityData,
+  loadDiversityComposite
 }
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [RECEIVE_OPPORTUNITY_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
 
+    newState.opportunity = _processequalOpp(action.payload);
+
+    if(newState.foreignborn && newState.opportunity){
+      newState.diversityLoaded = true;
+    }
+    console.log("loaded opportunity data");
+
+    return newState;
+  },
+  [RECEIVE_FOREIGNBORN_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.foreignborn = _processGeneral(action.payload,"foreignborn");
+
+
+    if(newState.foreignborn && newState.opportunity){
+      newState.diversityLoaded = true;
+    }
+    console.log("loaded foreign born data");
+
+    return newState;
+  },
+  [RECEIVE_DIVERSITY_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.opportunity = _processequalOpp(action.payload['opportunity']);
+    newState.foreignborn = _processGeneral(action.payload['foreignBorn'],"foreignborn");
+
+    console.log("loaded all diversity data");
+
+    return newState;
+  },
+  [RECEIVE_DIVERSITYCOMPOSITE_DATA]: (state,action) => {
+
+  }
 }
 
 
@@ -48,6 +151,27 @@ const _trimYears = (years,cities) => {
 
 
   return filteredCities;
+}
+
+const _processequalOpp = (data) => {
+  var msaGains = {};
+
+  console.log("processequalOpp");
+  //filter out null rows
+  Object.keys(data).forEach(function(msaId){
+      if(data[msaId]["highIncome"] != null && data[msaId]["lowIncome"] != null){
+          msaGains[msaId] = {};
+          msaGains[msaId] = data[msaId];
+      }
+
+  })
+
+  var finalData = _convertToCoordinateArray(msaGains,"opportunity");
+  
+  finalData.sort(_sortCities("lowIncome"));
+  var polishedData = _polishData(finalData,"opportunity");
+
+  return polishedData;
 }
 
 const _convertToCoordinateArray = (data,dataset) => {
@@ -103,8 +227,8 @@ const _relativeAgainstPopulation = (graphRawData) => {
   })
 
   return graphRelativeData;
-
 }
+
 const _processGeneral = (data,dataset) => {
     var finalData = _convertToCoordinateArray(data);
 
@@ -125,10 +249,6 @@ const _processGeneral = (data,dataset) => {
         return graphData;                
     }
 }
-
-
-
-
 
 const _rankCities = (cities) => {
       var years = d3.range(
@@ -184,24 +304,41 @@ const _polishData = (data,dataset) => {
   });
   return newData;
 }
-const _colorFunction = (params,dataset) => {
-  var  cityColor;
 
-  if(params){
-      if(dataset == "opportunity" && params.x){
-          var color = colorOppGroup(params.x);    
-          cityColor = color(params.y);                             
-      }
-      else if(params.values){
-          var valueLength = params.values.length;
-          var curRank = params.values[valueLength-1].rank
-          var color = _colorGroup();
-          cityColor = color(curRank);   
-      }
-  }  
+const _colorOppGroup = (group) => {
+    if(group == "lowIncome"){
+        var colorGroup = d3.scale.linear()
+            .domain([-.2,.2])
+            .range(['red','green']);
+    }
+    if(group == "highIncome"){
+        var colorGroup = d3.scale.linear()
+           .domain([-.1,.1])
+           .range(['red','green']);           
+    }
 
-  return cityColor;
+    return colorGroup;
 }
+
+const _colorFunction = (params,dataset) => {
+    var cityColor;
+
+    if(params){
+        if(dataset == "opportunity" && params.x){
+            var color = _colorOppGroup(params.x);    
+            cityColor = color(params.y);                             
+        }
+        else if(params.values){
+            var valueLength = params.values.length;
+            var curRank = params.values[valueLength-1].rank
+            var color = _colorGroup();
+            cityColor = color(curRank);   
+        }
+    }  
+
+    return cityColor;
+}
+
 const _colorGroup = () => {
     var _colorGroup = d3.scale.linear()
         .domain(d3.range(1,366,(366/9)))
