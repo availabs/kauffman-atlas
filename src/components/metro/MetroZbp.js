@@ -42,6 +42,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
       return ['totalEmp', 'totalEst'].indexOf(d) === -1
     })
 
+
      if(filter){
       naicsKeys = naicsKeys.filter(k => {
         let key = k.substr(0,depth)
@@ -201,7 +202,6 @@ export class MetroZbp extends React.Component<void, Props, void> {
         </tbody>
       </table>
     )
-
   }
 
   componentDidMount() {
