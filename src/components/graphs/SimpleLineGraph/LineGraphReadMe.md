@@ -8,7 +8,7 @@
     color: '#00f' // Optional
     values:[
       {
-        key: 0 // xvalue
+        key: 0 // x value name
         values: {x: 0, y: 27}
       },
       ...

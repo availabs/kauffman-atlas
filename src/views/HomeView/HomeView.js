@@ -153,8 +153,10 @@ export class HomeView extends React.Component<void, Props, void> {
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'fluidity')}>
             <div className={classes['selector-buttons']+' '+this._isActive('fluidity')}>
               <Link className={classes['darklink'] + ' ' + this._linkIsActive('fluidity')} to='/fluidity'>
-                <div className={classes["topFive"]}>{topFiveFluidity}</div>
+              Fluidity
               </Link>
+              <div className={classes["topFive"]}>{topFiveFluidity}</div>
+              
             </div>
           </div>
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'diversity')}>
