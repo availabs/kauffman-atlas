@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from  'react-router'
 import classes from './Navbar.scss'
+import sitewideClasses from 'styles/sitewide/index.scss'
 // import classes from './HomeView.scss'
 
 export class Navbar extends React.Component<void, Props, void> {
@@ -31,7 +32,7 @@ export class Navbar extends React.Component<void, Props, void> {
               <span className='icon-bar'></span>
             </button>
             
-            <Link className={classes['kauffman-navbar-brand'] + ' whitelink'} to='/'>
+            <Link className={classes['kauffman-navbar-brand'] + ' ' + sitewideClasses['whitelink']} to='/'>
               <img src='/images/entrepreneurial-ecosystem-symbol.png' className={classes['kauffman-navbar-logo']} />
               Atlas of Entrepreneurial Activity
             </Link>
