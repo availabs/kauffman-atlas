@@ -13,6 +13,9 @@
     margin: 0;
     padding: 0;
     height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    color:#5d5d5d;
+    background-color: #f7f7f7;
   }
 
   *,
@@ -36,4 +39,43 @@
     //font-weight: 700;
     color: black;
   }
+
+  .whitelink {
+    text-decoration: none;
+  }
+
+  .whitelink:active {
+    color: white;
+    text-decoration: none;
+  }
+
+  .whitelink:hover {
+    color: #e7eff2;
+    text-decoration:none;
+  }
+
+  .whitelink:visited {
+    color: white;
+    text-decoration: none;
+  }
+
+  .darklink {
+    text-decoration: none;
+    color: #5d5d5d
+  }
+
+  .darklink:active {
+    color: white;
+  }
+
+  .darklink:hover {
+    color: #e7eff2;
+    text-decoration:none;
+  }
+
+  .darklink:visited {
+    color: #5d5d5d;
+    text-decoration: none;
+  }
+
 }

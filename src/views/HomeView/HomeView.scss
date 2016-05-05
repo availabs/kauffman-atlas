@@ -30,3 +30,36 @@
 .name {
 	width:75%;
 }
+
+.text-div {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.selector-buttons {
+	height: 200px;
+	padding: 15px;
+	background-color: #efefef;
+	//border-style: solid;
+	//border-width: 0px;
+	//border-color: #5d5d5d;
+	border-radius: 10px;
+	box-shadow: 2px 2px 2px #5d5d5d;
+	color: #5d5d5d;
+}
+
+.selector-buttons:hover {
+	background-color: #d6d6d6;
+	color: #5d5d5d;
+}
+
+.active {
+   //border: 2px solid white;
+   background-color: #5d5d5d;
+   color: white;
+}
+
+.active-link {
+	color: white;
+	font-weight: 200px;
+}

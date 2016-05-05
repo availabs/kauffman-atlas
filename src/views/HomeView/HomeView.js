@@ -19,6 +19,17 @@ type Props = {
 };
 
 export class HomeView extends React.Component<void, Props, void> {
+   constructor () {
+    super()
+    this.state = {
+      activeComponent:'combined'
+    }
+    this._initGraph = this._initGraph.bind(this)
+    this._isActive = this._isActive.bind(this)
+    this._linkIsActive = this._linkIsActive.bind(this)
+    this._setActiveComponent = this._setActiveComponent.bind(this)
+  }
+
   componentWillMount () {
     this._initGraph();
   }
@@ -27,6 +38,18 @@ export class HomeView extends React.Component<void, Props, void> {
     if(this.props.loaded !== nextProps.loaded){
       return this.props.loadData()
     }
+  }
+
+  _setActiveComponent(type){
+    this.setState({activeComponent:type})
+  }
+
+  _isActive(type){
+    return type === this.state.activeComponent ? classes['active'] : ''
+  }
+
+  _linkIsActive(type){
+    return type === this.state.activeComponent ? classes['active-link'] : ''
   }
 
   _initGraph () {
@@ -80,38 +103,44 @@ export class HomeView extends React.Component<void, Props, void> {
 
 
     const sectionStyle = {
-      height: 200,
-      border: '1px solid orangered'
     }
 
     return (
      
       <div className='container'>
         <div className='row'>
-          <div className='col-xs-12'>
+          <div className={'col-xs-12 ' + classes['text-div']}>
             <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
           </div>
-          
         </div>
         <div className='row'>
-          <div className='col-xs-3' style={sectionStyle}>
-            <Link to='/combined'>Combined</Link>
+          <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'combined')}>
+            <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
+              <Link className={'darklink '+this._linkIsActive('combined')} to='/combined'>Combined</Link>
+            </div>
           </div>
-          <div className='col-xs-3' style={sectionStyle}>
-            <Link to='/density'>Density</Link>
-            <div className={classes["topFive"]}>{topFive}</div>
-
+          <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'density')}>
+           <div className={classes['selector-buttons']+' '+this._isActive('density')}>
+              <Link className={'darklink '+this._linkIsActive('density')} to='/density'>Density</Link>
+              <div className={classes["topFive"]}>{topFive}</div>
+            </div>
           </div>
-          <div className='col-xs-3' style={sectionStyle}>
-            <Link to='/fluidity'>Fluidity</Link>
+          <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'fluidity')}>
+            <div className={classes['selector-buttons']+' '+this._isActive('fluidity')}>
+              <Link className={'darklink '+this._linkIsActive('fluidity')} to='/fluidity'>Fluidity</Link>
+            </div>
           </div>
-          <div className='col-xs-3' style={sectionStyle}>
-            <Link to='/diversity'>Diversity</Link>
+          <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'diversity')}>
+            <div className={classes['selector-buttons']+' '+this._isActive('diversity')}>
+              <Link className={'darklink '+this._linkIsActive('diversity')} to='/diversity'>Diversity</Link>
+            </div>
           </div>
         </div>
-         <div className='col-xs-12'>
-            <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
-          </div>
+        <div className='row'>
+         <div className={'col-xs-12 ' + classes['text-div']}>
+              <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+           </div>
+        </div>
           
         <div className='row'>
           <div className='col-xs-12'>
