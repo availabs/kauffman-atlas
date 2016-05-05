@@ -129,6 +129,7 @@ const ACTION_HANDLERS = {
 }
 
 const _processComposite = (newFirms,share) => {
+  console.time('_processComposite')
   var filteredShare = share.map(city => {
     var withinBounds;
 
@@ -177,6 +178,7 @@ const _processComposite = (newFirms,share) => {
 
   compositeCityRanks = _rankCities(compositeCityRanks);
   var graphData = _polishData(compositeCityRanks,"densityComposite");
+  console.timeEnd('_processComposite')
   return graphData;
 }
 

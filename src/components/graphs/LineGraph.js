@@ -45,7 +45,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       var margin = {top: 10, right: 10, bottom: 10, left: 10}
       let width = document.getElementById("mapDiv").offsetWidth
-      let height = width  * 0.6
+      let height = width  * 0.5
 
       let paddedWidth = width-100;
       let paddedHeight = height-100;

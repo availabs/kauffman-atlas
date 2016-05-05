@@ -3,7 +3,8 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroZbpData'
-import naicsLib from 'static/data/naicsKeys'
+import { loadNaicsKeys } from 'redux/modules/msaLookup'
+//import naicsLib from 'static/data/naicsKeys'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
 
 
@@ -29,11 +30,16 @@ export class MetroZbp extends React.Component<void, Props, void> {
     if(!this.props.zbpData['national']){
       return this.props.loadZbpData('national')
     }
+
+    if(!this.props.naicsKeys){
+      return this.props.loadNaicsKeys()
+    }
   }
 
   _processData (year,depth,filter) {
     let currentData = this.props.zbpData[year][this.props.currentMetro] //2003
     let nationalData  = this.props.zbpData['national'][year]
+    let naicsLib = this.props.naicsKeys
     if(!depth) depth = 2
     //if(!filter) filter = 'x'
 
@@ -100,6 +106,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
 
   renderRadar(year,depth, filter){
     let naicsCodes = this._processData(year,depth,filter)
+    let naicsLib = this.props.naicsKeys
     let estQuot =  Object.keys(naicsCodes).map(d => {
         naicsCodes[d].est_quot = (naicsCodes[d].estShare / naicsCodes[d].nat_estShare)/100
         return d
@@ -161,6 +168,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
   renderNaicsOverview (year, depth, filter) {
     let sortVariable = 'emp_quot'
     let naicsCodes = this._processData(year,depth, filter)
+    let naicsLib = this.props.naicsKeys
     let naicsRows = Object.keys(naicsCodes)
       .map(d => {
         naicsCodes[d].emp_quot = (naicsCodes[d].empShare / naicsCodes[d].nat_empShare)/100
@@ -213,10 +221,14 @@ export class MetroZbp extends React.Component<void, Props, void> {
   }
 
   hasData () {
-    return this.props.zbpData[this.props.year] && this.props.zbpData[this.props.year][this.props.currentMetro] && this.props.zbpData['national']
+    return this.props.zbpData[this.props.year] && 
+      this.props.zbpData[this.props.year][this.props.currentMetro] && 
+      this.props.zbpData['national'] &&
+      this.props.naicsKeys
   }
   render () {
     if (!this.hasData()) return <span />
+    let naicsLib = this.props.naicsKeys
     let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
     return (
       <div className='container'>
@@ -243,11 +255,13 @@ const mapStateToProps = (state) => {
     mapLoaded : state.geoData.loaded,
     metrosGeo : state.geoData.metrosGeo,
     zbpData : state.metroZbpData,
+    naicsKeys : state.metros.naicsKeys
   })
 }
 
 export default connect((mapStateToProps), {
   loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-  loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year)
+  loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year),
+  loadNaicsKeys: () => loadNaicsKeys()
 })(MetroZbp)
 

@@ -3,7 +3,6 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroZbpData'
-import naicsLib from 'static/data/naicsKeys'
 import clusterLib from 'static/data/clusterLib'
 import NetworkGraph from 'components/vis/NetworkGraph/NetworkGraph'
 
@@ -30,6 +29,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
     if(!this.props.zbpData['national']){
       return this.props.loadZbpData('national')
     }
+
   }
 
   _naicsToCluster () {
@@ -207,8 +207,11 @@ export class MetroZbp extends React.Component<void, Props, void> {
     this._fecthData ()
   }
 
-  hasData () {
-    return this.props.zbpData[this.props.year] && this.props.zbpData[this.props.year][this.props.currentMetro] && this.props.zbpData['national'] ? true : false
+ hasData () {
+    return this.props.zbpData[this.props.year] && 
+      this.props.zbpData[this.props.year][this.props.currentMetro] && 
+      this.props.zbpData['national'] &&
+      this.props.naicsKeys
   }
 
   render () {
@@ -233,11 +236,13 @@ const mapStateToProps = (state) => {
     mapLoaded : state.geoData.loaded,
     metrosGeo : state.geoData.metrosGeo,
     zbpData : state.metroZbpData,
+    naicsKeys : state.metros.naicsKeys
   })
 }
 
 export default connect((mapStateToProps), {
   loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-  loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year)
+  loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year),
+  loadNaicsKeys: () => loadNaicsKeys()
 })(MetroZbp)
 
