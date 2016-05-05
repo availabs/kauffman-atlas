@@ -3,7 +3,7 @@
 ###Data format:
 ```
 [
-  {
+  { // this is one line
     key:'Oranges'
     color: '#00f' // Optional
     values:[
