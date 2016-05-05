@@ -7,9 +7,11 @@ import metros from './modules/msaLookup'
 import densityData from './modules/densityData'
 import fluidityData from './modules/fluidityData'
 import metroQcewData from './modules/metroQcewData'
+import diversityData from './modules/diversityData'
 
 
 export default combineReducers({
+  diversityData,
   fluidityData,
   densityData,
   metros,

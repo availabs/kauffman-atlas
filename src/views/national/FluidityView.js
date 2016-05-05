@@ -94,7 +94,6 @@ export class FluidityView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="fluiditycomposite" className={classes["metricBox"]}>Overall Fluidity</div>
               <div onClick={this._setMetric} id="inc" className={classes["metricBox"]}>High Growth Firms</div>
               <div onClick={this._setMetric} id="irsNet" className={classes["active"] + " " + classes["metricBox"]}>Net Migration (IRS)</div>
-              <div onClick={this._setMetric} id="acsNet" className={classes["metricBox"]}>Net Migration (ACS)</div>
               <div onClick={this._setMetric} id="irsTotalMigration" className={classes["metricBox"]}>Total Migration(Inflow/Outflow Sum) (IRS)</div>
               <div onClick={this._setMetric} id="irsInflowMigration" className={classes["metricBox"]}>Inflow Migration</div>
               <div onClick={this._setMetric} id="irsOutflowMigration" className={classes["metricBox"]}>Outflow Migration</div> 

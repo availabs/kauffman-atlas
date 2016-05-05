@@ -6,6 +6,9 @@ import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
 import NaicsGraph from 'components/graphs/NaicsGraph'
 import classes from '../national/nationalView.scss'
+import classes from 'styles/sitewide/index.scss'
+import { Link } from 'react-router'
+
 
 type Props = {
 };
@@ -18,6 +21,16 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     this.renderDisplay = this.renderDisplay.bind(this)
     this._selectDisplay = this._selectDisplay.bind(this)
+    this._isActive = this._isActive.bind(this)
+    this._linkIsActive = this._linkIsActive.bind(this)
+  }
+
+  _isActive(type){
+    return type === this.state.activeComponent ? classes['active'] : ''
+  }
+
+  _linkIsActive(type){
+    return type === this.state.activeComponent ? classes['active-link'] : ''
   }
 
   _selectDisplay (display) {
@@ -26,7 +39,6 @@ export class MetroHome extends React.Component<void, Props, void> {
 
   renderDisplay(){
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
-    console.log('test', this)
     switch(this.state.display){
       case 'industry':
         return (
@@ -62,27 +74,36 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     else{
       return (
-        <div>
-							<NaicsGraph currentMetro={metroId} />
+
         <div className='container text-center'>
+          <h4>{this.props.metros[metroId].name}</h4>
           <div className='row'>
-            <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div className={classes["metricBox"]}>Density</div>
-              <div className={classes["metricBox"]}>Fluidity</div>
-              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'industry')}>Industry Overview</div>
-              <div className={classes["metricBox"]} onClick={this._selectDisplay.bind(this,'cluster')}>Cluster Overview</div>
-            </div>
-            <div className='col-xs-9'>
+            <div className='col-xs-3'>
                 <MetroMap currentMetro={metroId} />
                 Population: {this.props.metros[metroId].pop['2012']}
             </div>
-							
+							<NaicsGraph currentMetro={metroId} />
           </div>
+
           <div className='row'>
-            {this.renderDisplay()}
+            <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'combined')}>
+              <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
+                <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
+              </div>    
+            </div>
+          </div>
+
+          <div className='row'>
+            <div className={'col-xs-12 ' + classes['text-div']}>
+              <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+            </div>
+          </div>
+
+          <div className='row'>
+              {this.renderDisplay()}
           </div>           
         </div>
-        </div>
+
       )      
     }
 

@@ -45,7 +45,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       var margin = {top: 10, right: 10, bottom: 10, left: 10}
       let width = document.getElementById("mapDiv").offsetWidth
-      let height = width  * 0.6
+      let height = width  * 0.5
 
       let paddedWidth = width-100;
       let paddedHeight = height-100;
@@ -449,6 +449,24 @@ export class LineGraph extends React.Component<void, Props, void> {
           return "Metro Area Ranking for composite fluidity score by year" 
       }          
     }
+    else if(this.props.graph == "foreignBorn"){
+      if(this.props.plot == "value"){
+        if(this.props.dataType == "raw"){
+          return "Number of foreign born current residents by year"
+        }
+        else{
+          return "Number of foreign born current residents as a percentage of total population by year"
+        }             
+      }
+      else{
+        if(this.props.dataType == "raw"){
+          return "Metro Area Ranking for number of foreign born current residents by year"
+        }
+        else{
+          return "Metro Area Ranking for number of foreign born current residents as a percentage of total population by year"
+        }                  
+      }          
+    } 
   }
 
 
@@ -469,6 +487,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         </div>
     );          
   }
+  
 }
 
 
