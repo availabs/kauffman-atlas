@@ -4,6 +4,7 @@ import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
 import { loadMetroData } from 'redux/modules/metroZbpData'
+import { fipsToName, abbrToFips } from 'static/data/stateAbbrToFull'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 
@@ -13,6 +14,7 @@ export class MetroMap extends React.Component<void, Props, void> {
     super()
     this.state = {
       metrosGeo: null,
+      statesGeo:null,
       zbpData:null
     }
 
@@ -28,10 +30,22 @@ export class MetroMap extends React.Component<void, Props, void> {
 
   _drawGraph (props) {
     let metrosGeo = Object.assign({},props.metrosGeo);
+    let statesGeo = Object.assign({},props.statesGeo);
 
     metrosGeo.features = metrosGeo.features.filter(d => {
       return d.id == props.currentMetro;
     })
+
+    statesGeo.features = statesGeo.features.filter(d => {
+      var match = false;
+      metrosGeo.features[0].properties.NAME.split(', ')[1].split('-').forEach(stateAbbr => {
+        if(d.properties.NAME == fipsToName[abbrToFips[stateAbbr]]){
+          match = true;
+        }
+      }) 
+      return match;
+    })
+
 
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
@@ -45,7 +59,7 @@ export class MetroMap extends React.Component<void, Props, void> {
         .scale(1)
         .translate([0, 0]);
 
-    var b = path.bounds(metrosGeo),
+    var b = path.bounds(statesGeo),
         s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
         t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
@@ -56,21 +70,27 @@ export class MetroMap extends React.Component<void, Props, void> {
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
 
+    svg.selectAll(".state")
+      .data(statesGeo.features)
+      .enter().append('path')
+      .attr('class',classes['state'])
+      .attr("d", path);
 
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')
       .attr("class",'msa '+classes['msa'])
-      .attr("id",function(d){return "msa"+d.properties.id;})
+      .attr("id",function(d){return "msa"+d.id;})
       .attr("d", path)
       .on('click',props.click || null);
+
+
   }
 
   _initGraph () {
 
     if(!this.props.mapLoaded){
       return this.props.loadData()
-
     }
     if(!this.props.zbpData){
       return this.props.loadZbpData(this.props.currentMetro)
@@ -94,6 +114,7 @@ const mapStateToProps = (state) => {
   
   return ({
     mapLoaded : state.geoData.loaded,
+    statesGeo : state.geoData.statesGeo,
     metrosGeo : state.geoData.metrosGeo,
     zbpData : state.metroZbpData
   })
