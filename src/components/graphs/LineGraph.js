@@ -462,6 +462,14 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
+    else if (this.props.graph == "diversitycomposite"){
+      if(this.props.plot == "value"){
+          return "Composite diversity score by year"            
+      }
+      else{
+          return "Metro Area Ranking for composite diversity score by year" 
+      }          
+    }
   }
 
 

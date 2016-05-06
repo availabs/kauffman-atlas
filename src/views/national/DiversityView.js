@@ -15,7 +15,7 @@ export class DiversityView extends React.Component<void, Props, void> {
     super()
     this.state = {
       'selectedMetric':"foreignBorn",
-      'dataType':'raw',
+      'dataType':'relative',
       'plot':'rank'
     }
     this._setMetric = this._setMetric.bind(this)
@@ -57,9 +57,7 @@ export class DiversityView extends React.Component<void, Props, void> {
 
   }
 
-  _setDataType (e){
-    console.log(d3.selectAll("."+classes["rawRelBox"]))
-    
+  _setDataType (e){   
     d3.selectAll("."+classes["rawRelBox"])[0].forEach(rawRelBox => {
       rawRelBox.className = classes["rawRelBox"];
     })
@@ -70,8 +68,6 @@ export class DiversityView extends React.Component<void, Props, void> {
   }
 
   _setRankVal (e){
-    console.log(d3.selectAll("."+classes["rankValBox"]))
-    
     d3.selectAll("."+classes["rankValBox"])[0].forEach(rankValBox => {
       rankValBox.className = classes["rankValBox"];
     })
@@ -95,8 +91,8 @@ export class DiversityView extends React.Component<void, Props, void> {
         <div>   
           <div id="otherButtons">           
             <div className={classes["rawRelContainer"]}>
-              <div id="raw" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Raw</div>
-              <div id="relative" onClick={this._setDataType} className={classes["rawRelBox"]}>Relative</div>
+              <div id="raw" onClick={this._setDataType} className={classes["rawRelBox"]}>Raw</div>
+              <div id="relative" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Relative</div>
             </div>
             <div className={classes["rankValContainer"]}>
               <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
@@ -118,7 +114,7 @@ export class DiversityView extends React.Component<void, Props, void> {
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
               {buttons}
-              <div onClick={this._setMetric} id="fluiditycomposite" className={classes["metricBox"]}>Overall Diversity</div>
+              <div onClick={this._setMetric} id="diversitycomposite" className={classes["metricBox"]}>Overall Diversity</div>
               <div onClick={this._setMetric} id="foreignBorn" className={classes["active"] + " " + classes["metricBox"]}>Foreign Born Population</div>
               <div onClick={this._setMetric} id="opportunity" className={classes["metricBox"]}>Income Gain/Loss from Childhood Residence</div>
             </div>

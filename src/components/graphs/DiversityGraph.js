@@ -25,6 +25,15 @@ export class DiversityGraph extends React.Component<void, Props, void> {
   _initGraph () {
 
     if(!this.props[(this.props.selectedMetric)]){
+      if(this.props.selectedMetric == "diversitycomposite"){
+        if(this.props['diversityLoaded']){
+          console.log("notloaded",this.props,([this.props.selectedMetric]));
+          return this.props[(['load' + this.props.selectedMetric])]()          
+        }
+        else{
+          return this.props[(['loaddiversitydata'])]()
+        }
+      }
       console.log("notloaded",this.props,([this.props.selectedMetric]));
       return this.props[(['load' + this.props.selectedMetric])]()
     }       
@@ -67,5 +76,5 @@ export default connect((mapStateToProps), {
   loadopportunity: () => loadOpportunityData (),
   loadforeignBorn: () => loadForeignBornData (),
   loaddiversitydata: () => loadDiversityData (),
-  loaddiversitycomposite: () => loadDiversityComposite (),
+  loaddiversitycomposite: () => loadDiversityComposite ()
 })(DiversityGraph)

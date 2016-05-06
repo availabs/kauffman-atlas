@@ -15,7 +15,7 @@ export class DensityView extends React.Component<void, Props, void> {
     super()
     this.state = {
       'selectedMetric':"share",
-      'dataType':'raw',
+      'dataType':'relative',
       'plot':'rank'
     }
     this._setMetric = this._setMetric.bind(this)
@@ -84,8 +84,8 @@ export class DensityView extends React.Component<void, Props, void> {
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
               <div className={classes["rawRelContainer"]}>
-                <div id="raw" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Raw</div>
-                <div id="relative" onClick={this._setDataType} className={classes["rawRelBox"]}>Relative</div>
+                <div id="raw" onClick={this._setDataType} className={classes["rawRelBox"]}>Raw</div>
+                <div id="relative" onClick={this._setDataType} className={classes["active"] + " " + classes["rawRelBox"]}>Relative</div>
               </div>
               <div className={classes["rankValContainer"]}>
                 <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
