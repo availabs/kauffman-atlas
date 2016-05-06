@@ -24,6 +24,17 @@ class LineGraph extends React.Component {
   }
 
   componentDidMount () {
+		if(this.props.xAxis)
+				this.state.graph.showX(this.props.xAxis)
+		if(this.props.margin)
+			 this.state.graph.margin(this.props.margin)
+		if(this.props.xFormat)
+				this.state.graph.xFormat(this.props.xFormat)
+		if(this.props.yFormat)
+				this.state.graph.yFormat(this.props.yFormat)
+		if(this.props.xScaleType)
+				this.state.graph.xScaleType(this.props.xScaleType)
+		
     d3.select('#lineGraph' + this.props.uniq)
       .append('svg')
       .call(this.state.graph)
@@ -52,15 +63,25 @@ class LineGraph extends React.Component {
   }
 
   render () {
+			let title = this.props.title ? <h3>{this.props.title}</h3>:null;
     return (
+			<div>
+			{title}
       <div id={'lineGraph' + this.props.uniq} />
+			</div>
     )
   }
 }
 
 LineGraph.propTypes = {
   data: React.PropTypes.array,
-  uniq: React.PropTypes.string
+  uniq: React.PropTypes.string,
+  xAxis: React.PropTypes.bool,
+  margin: React.PropTypes.number,
+	title: React.PropTypes.string,
+	xFormat: React.PropTypes.func,
+	yFormat: React.PropTypes.func,
+	xScaleType: React.PropTypes.func
 }
 
 export default LineGraph

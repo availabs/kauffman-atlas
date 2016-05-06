@@ -5,7 +5,6 @@ import MetroMap from 'components/maps/MetroMap'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
 import NaicsGraph from 'components/graphs/NaicsGraph'
-import classes from '../national/nationalView.scss'
 import classes from 'styles/sitewide/index.scss'
 import { Link } from 'react-router'
 

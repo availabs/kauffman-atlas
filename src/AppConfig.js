@@ -1,1 +1,1 @@
-export const qcewApi = 'http://localhost:1337/'
+export const qcewApi = 'http://qcew.availabs.org/'
