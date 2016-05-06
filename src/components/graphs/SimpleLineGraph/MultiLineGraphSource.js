@@ -62,6 +62,7 @@ module.exports = function () {
       guideLine.attr('stroke', '#000')
     }
   }
+
   function hideLine () {
     guideLine.attr('stroke', 'none')
   }
@@ -195,12 +196,14 @@ module.exports = function () {
     lines.enter().append('path')
       .attr({
         opacity: 0.8,
-        'stroke-width': 3,
         fill: 'none',
         'stroke-linejoin': 'round'
       })
     lines.attr(attr)
-    lines.attr('stroke', function (d) {
+    lines.attr('stroke-width', (d) => {
+      return d.strokeWidth || 3
+    })
+    lines.attr('stroke', (d) => {
       return d.color || '#000'
     })
 
@@ -375,6 +378,13 @@ module.exports = function () {
       return showY
     }
     showY = b
+    return graph
+  }
+  graph.showGrid = function (b) {
+    if (!arguments.length) {
+      return showGrid
+    }
+    showGrid = b
     return graph
   }
   graph.tickPadding = function (p) {

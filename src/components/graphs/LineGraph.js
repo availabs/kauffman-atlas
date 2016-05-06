@@ -164,7 +164,7 @@ export class LineGraph extends React.Component<void, Props, void> {
               .append("path")
               .attr("d",function(){b.border = this; return line(b.values)})
               .style("stroke","black")
-              .style("stroke-width",((paddedHeight)/(heightVal))-1.5)
+              .style("stroke-width",.6)
               .style("fill","none")
               .style("opacity",".4");     
 
@@ -172,8 +172,8 @@ export class LineGraph extends React.Component<void, Props, void> {
               .append("path")
               .attr("class","cities")
               .attr("d",function(){b.line = this; return line(b.values)})
-              .style("stroke",b.color)
-              .style("stroke-width",((paddedHeight-85)/(heightVal))-2)
+              .style("stroke",function(){return b.color;})
+              .style("stroke-width",.5)
               .style("fill","none")
               .style("opacity",".6");                    
       })
@@ -206,7 +206,7 @@ export class LineGraph extends React.Component<void, Props, void> {
               .on("click",click);
 
       function mouseover(d) {
-          d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+1))
+          d3.select(d.city.line).style("stroke-width",1.5)
           d3.select(d.city.line).style("stroke","#000000")
           d3.select(d.city.line).style("opacity","2")
 
@@ -237,20 +237,15 @@ export class LineGraph extends React.Component<void, Props, void> {
       }
 
       function mouseout(d) {                              
-          d3.select(d.city.line).style("stroke-width",( ((paddedHeight-74)/(heightVal)-2 )))
+          d3.select(d.city.line).style("stroke-width",.5)
           d3.select(d.city.line).style("stroke",function(){return d.city.color})
           d3.select(d.city.line).style("opacity",".6")
           focus.attr("transform", "translate(-100,-100)");
       }
 
-      var arc = d3.svg.arc()
-              .outerRadius(20)
-              .startAngle(0)
-              .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
-
       svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + (paddedHeight) + ")")
+        .attr("transform", "translate(-1," + (paddedHeight) + ")")
         .call(xAxis)
       .selectAll("text")  
         .style("text-anchor", "end")
@@ -262,7 +257,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       svg.append("g")
         .attr("class", "y axis")   
-        .attr("transform", "translate(1,3)")
+        .attr("transform", "translate(2,0)")
         .call(yAxis)
       .append("text")
         .attr("transform", "rotate(-90)")
@@ -467,6 +462,14 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
+    else if (this.props.graph == "diversitycomposite"){
+      if(this.props.plot == "value"){
+          return "Composite diversity score by year"            
+      }
+      else{
+          return "Metro Area Ranking for composite diversity score by year" 
+      }          
+    }
   }
 
 

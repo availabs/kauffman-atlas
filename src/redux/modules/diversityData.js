@@ -119,13 +119,97 @@ const ACTION_HANDLERS = {
 
     newState.opportunity = _processequalOpp(action.payload['opportunity']);
     newState.foreignborn = _processGeneral(action.payload['foreignBorn'],"foreignborn");
-
+    newState.diversityLoaded = true;
     console.log("loaded all diversity data");
 
     return newState;
   },
   [RECEIVE_DIVERSITYCOMPOSITE_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
 
+    var opportunity = newState.opportunity;
+
+    var lowOpp = newState.opportunity.map((city) => {
+      var newValues = city.values.filter((value) => {
+        return value.x == "lowIncome"
+      })
+
+      return {color:city.color,key:city.key,name:city.name,values:newValues}
+
+    })
+    var highOpp = newState.opportunity.map((city) => {
+      var newValues = city.values.filter((value) => {
+        return value.x == "highIncome"
+      })
+
+      return {color:city.color,key:city.key,name:city.name,values:newValues}
+
+    })
+    var foreignborn = newState.foreignborn['relative'];
+
+
+
+    var cityFilteredLowOpp = [],
+    cityFilteredHighOpp = [],
+    cityFilteredForeignborn = [];
+    var compositeCityRanks = [];
+
+    for(var i=0; i<lowOpp.length; i++){
+      for(var j=0; j<foreignborn.length; j++){
+        if(lowOpp[i].key == foreignborn[j].key){
+          cityFilteredLowOpp.push(lowOpp[i]); 
+          cityFilteredHighOpp.push(highOpp[i]);
+          cityFilteredForeignborn.push(foreignborn[j])
+        }      
+      }
+    }
+
+    console.log(cityFilteredLowOpp.length,cityFilteredHighOpp.length,cityFilteredForeignborn.length);
+
+  var lowOppScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(cityFilteredLowOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(cityFilteredLowOpp, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )
+  var highOppScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(cityFilteredHighOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(cityFilteredHighOpp, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )  
+  var foreignBornScale = d3.scale.linear()
+  .range([0,100])
+  .domain(      [d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(cityFilteredForeignborn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
+
+
+  cityFilteredLowOpp.sort(_sortMsaCities());
+  cityFilteredHighOpp.sort(_sortMsaCities());
+  cityFilteredForeignborn.sort(_sortMsaCities());
+
+
+    for(var i=0; i<cityFilteredForeignborn.length;i++){
+      var resultValues = [];
+      if(cityFilteredForeignborn[i].key == cityFilteredLowOpp[i].key){
+        for(var j=0; j<cityFilteredForeignborn[i]['values'].length; j++){
+          //console.log( foreignBornScale(cityFilteredForeignborn[i].values[j].y), highOppScale(cityFilteredHighOpp[i].values[0].y), lowOppScale(cityFilteredLowOpp[i].values[0].y))
+          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + highOppScale(cityFilteredHighOpp[i].values[0].y) + lowOppScale(cityFilteredLowOpp[i].values[0].y))/3)})      
+        } 
+        compositeCityRanks.push({key:cityFilteredForeignborn[i]['key'],values:resultValues})          
+      }
+    }
+
+
+    console.log(compositeCityRanks);
+    compositeCityRanks = _rankCities(compositeCityRanks);
+    var graphData = _polishData(compositeCityRanks,"diversityComposite");
+
+
+    newState.diversitycomposite = graphData;
+
+
+
+    return newState;
   }
 }
 

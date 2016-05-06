@@ -5,17 +5,19 @@ import GraphSouce from './MultiLineGraphSource'
 // import styles from './Race.scss'
 
 class LineGraph extends React.Component {
-  constructor () {
+  constructor (props) {
     super()
     this.state = {
       graph: GraphSouce()
         .xScaleType('ordinal')
-        .margin({ left: 25 })
         .tickPadding(0.5)
-        .xTickSize(1, 0)
-        .yTickSize(3, 0)
-        .yFormat(d => d + '%')
-        .margin({left: 35})
+        .showY(false)
+        .showGrid(false)
+
+        //.xTickSize(1, 0)
+        //.yTickSize(3, 0)
+        //.yFormat(d => d + '%')
+        .margin({left: 0, right: 0, top:10}),
         // .mousemove(mousemove)
         // .mouseout(mouseout)
         // .click(this.changeMonth)
@@ -42,10 +44,12 @@ class LineGraph extends React.Component {
     this.state.graph
       .data(this.props.data)
 
+
+
     this.state.graph
       .size({
         width: document.getElementById('lineGraph' + this.props.uniq).offsetWidth,
-        height: 215
+        height: this.props.options.height || 215
       })()
     window.addEventListener('resize', this._resize)
   }
@@ -58,7 +62,7 @@ class LineGraph extends React.Component {
     this.state.graph
       .size({
         width: document.getElementById('lineGraph' + this.props.uniq).offsetWidth,
-        height: 215
+        height: this.props.options.height || 215
       })()
   }
 
