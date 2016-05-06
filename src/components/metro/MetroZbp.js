@@ -6,6 +6,7 @@ import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroZbpData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 //import naicsLib from 'static/data/naicsKeys'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
+import classes from 'styles/sitewide/index.scss'
 
 
 export class MetroZbp extends React.Component<void, Props, void> {
@@ -181,7 +182,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
       .map((d) =>{
       return (
         <tr key={d}>
-          <td><a onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
+          <td><a className={classes['bluelink']} onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
           <td>{naicsCodes[d].emp.toLocaleString()}</td>
           <td>{+(naicsCodes[d].empShare*100).toLocaleString()}%</td>
           <td>{+(naicsCodes[d].emp_quot*100).toLocaleString()}</td>
@@ -197,12 +198,12 @@ export class MetroZbp extends React.Component<void, Props, void> {
         <thead>
           <tr>
             <td>Employment</td>
-            <td><a onClick={this._setSort.bind(this,'emp')}>Employment</a></td>
-            <td><a onClick={this._setSort.bind(this,'empShare')}>Employment Share</a></td>
-            <td><a onClick={this._setSort.bind(this,'emp_quot')}>Employment Quotient</a></td>
-            <td><a onClick={this._setSort.bind(this,'est')}>Establishments</a></td>
-            <td><a onClick={this._setSort.bind(this,'estShare')}>Establishment Share</a></td>
-            <td><a onClick={this._setSort.bind(this,'est_quot')}>Establishment Quotient</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp')}>Employment</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'empShare')}>Employment Share</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp_quot')}>Employment Quotient</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'est')}>Establishments</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'estShare')}>Establishment Share</a></td>
+            <td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'est_quot')}>Establishment Quotient</a></td>
           </tr>
         </thead>
         <tbody>
