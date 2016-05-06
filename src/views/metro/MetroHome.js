@@ -1,7 +1,7 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import MetroMap from 'components/maps/MetroMap'
+import MetroHeader from 'components/metro/MetroHeader'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
 import classes from 'styles/sitewide/index.scss'
@@ -72,20 +72,21 @@ export class MetroHome extends React.Component<void, Props, void> {
     else{
       return (
         
-        <div className='container text-center'>
-          <h4>{this.props.metros[metroId].name}</h4>
-          <div className='row'>
-            <div className='col-xs-3'>
-                <MetroMap currentMetro={metroId} />
-                Population: {this.props.metros[metroId].pop['2012']}
+        <div>
+          <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
+          <div className='container text-center'>
+            <div className='row'>
+              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'combined')}>
+                <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
+                  <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
+                </div>    
+              </div>
             </div>
-          </div>
 
-          <div className='row'>
-            <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'combined')}>
-              <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
-                <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
-              </div>    
+            <div className='row'>
+              <div className={'col-xs-12 ' + classes['text-div']}>
+                <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+              </div>
             </div>
             <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'industry')}>
               <div className={classes['selector-buttons']+' '+this._isActive('industry')}>
@@ -104,15 +105,10 @@ export class MetroHome extends React.Component<void, Props, void> {
             </div>
           </div>
 
-          <div className='row'>
-            <div className={'col-xs-12 ' + classes['text-div']}>
-              <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+            <div className='row'>
+                {this.renderDisplay()}
             </div>
-          </div>
-
-          <div className='row'>
-              {this.renderDisplay()}
-          </div>           
+          </div>   
         </div>
 
       )      

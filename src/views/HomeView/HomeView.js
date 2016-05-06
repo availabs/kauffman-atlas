@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 import { increment, doubleAsync } from '../../redux/modules/counter'
 import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
+import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
 import DuckImage from './Duck.jpg'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
@@ -42,6 +43,9 @@ export class HomeView extends React.Component<void, Props, void> {
     if(this.props.fluidityloaded !== nextProps.fluidityloaded){
       return this.props.loadFluidityData()
     }
+    if(this.props.diversityLoaded !== nextProps.diversityLoaded){
+      return this.props.loaddiversitydata()
+    }
   }
 
   _setActiveComponent(type){
@@ -68,14 +72,21 @@ export class HomeView extends React.Component<void, Props, void> {
     }
     if(!this.props['fluiditycomposite']){
       return this.props['getfluidityComposite']()
-    }               
+    }
+    if(!this.props.diversityLoaded){
+      return this.props.loaddiversitydata()
+    }
+    if(!this.props['diversitycomposite']){
+      return this.props['getdiversitycomposite']()
+    }                
   }
 
   render () {
 
     this._initGraph();
     var topFiveDensity;
-    var topFiveFluidity
+    var topFiveFluidity;
+    var topFiveDiversity;
 
     let msaClick = (d) =>{
       console.log(d);
@@ -126,6 +137,24 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveFluidity = "Loading..."
     }
 
+    if(this.props.diversityLoaded && this.props.diversitycomposite){
+      topFiveDiversity = this.props.diversitycomposite.reduce((prev,msa) => {
+        if(msa.values[msa.values.length-1].rank < 6){
+          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+        }
+        return prev;
+      },{})
+      console.log("diversity",topFiveDiversity)
+      topFiveDiversity = Object.keys(topFiveDiversity).map(rank => {
+        var roundFormat = d3.format(".2f")
+        return(
+              <div onClick={msaClick} id={topFiveDiversity[rank].id} className={classes["msa"]}>{rank + ". " + topFiveDiversity[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveDiversity[rank]["score"])}</div></div>
+        )
+      })
+    }
+    else{
+      topFiveDiversity = "Loading..."
+    }
 
     const sectionStyle = {
     }
@@ -141,12 +170,16 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'combined')}>
             <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
-              <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
+              <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>
+              Combined
+              </Link>
             </div>
           </div>
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'density')}>
            <div className={classes['selector-buttons']+' '+this._isActive('density')}>
-              <Link className={classes['darklink'] + ' ' + this._linkIsActive('density')} to='/density'>Density</Link>
+              <Link className={classes['darklink'] + ' ' + this._linkIsActive('density')} to='/density'>
+              Density
+              </Link>
               <div className={classes["topFive"]}>{topFiveDensity}</div>
             </div>
           </div>
@@ -156,12 +189,14 @@ export class HomeView extends React.Component<void, Props, void> {
               Fluidity
               </Link>
               <div className={classes["topFive"]}>{topFiveFluidity}</div>
-              
             </div>
           </div>
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'diversity')}>
             <div className={classes['selector-buttons']+' '+this._isActive('diversity')}>
-              <Link className={classes['darklink'] + ' ' + this._linkIsActive('diversity')} to='/diversity'>Diversity</Link>
+              <Link className={classes['darklink'] + ' ' + this._linkIsActive('diversity')} to='/diversity'>
+              Diversity
+              </Link>
+              <div className={classes["topFive"]}>{topFiveDiversity}</div>
             </div>
           </div>
         </div>
@@ -186,12 +221,16 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,
   densityloaded:state.densityData.loaded,
   fluiditycomposite:state.fluidityData.compositeData,
-  fluidityloaded:state.fluidityData.fluLoaded
+  fluidityloaded:state.fluidityData.fluLoaded,
+  diversityLoaded : state.diversityData.diversityLoaded,
+  diversitycomposite : state.diversityData.diversitycomposite
 })
 
 export default connect((mapStateToProps), {
   loadDensityData: () => loadDensityData(),
   getdensityComposite: () => loadDensityComposite(),
   loadFluidityData: () => loadFluidityData(),
-  getfluidityComposite: () => loadFluidityComposite()
+  getfluidityComposite: () => loadFluidityComposite(),
+  loaddiversitydata: () => loadDiversityData (),
+  getdiversitycomposite: () => loadDiversityComposite ()
 })(HomeView)

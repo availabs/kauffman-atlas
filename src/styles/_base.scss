@@ -14,3 +14,15 @@ For example:
 .swatch {
 	fill: #5d5d5d;
 }
+
+.grid .tick {
+    stroke: rgba(0,0,0,.2);
+    stroke-width: 1px;
+    stroke-dasharray: 2px;
+}
+.grid path {
+    // stroke-width: 0;
+    stroke: rgba(0,0,0,.2);
+    stroke-width: 1px;
+    stroke-dasharray: 2px;
+}
