@@ -17,7 +17,7 @@ class LineGraph extends React.Component {
         //.xTickSize(1, 0)
         //.yTickSize(3, 0)
         //.yFormat(d => d + '%')
-        .margin({left: 0, right: 0, top:10}),
+        .margin({left: 0, right: 0, top: 10})
         // .mousemove(mousemove)
         // .mouseout(mouseout)
         // .click(this.changeMonth)
@@ -26,8 +26,15 @@ class LineGraph extends React.Component {
   }
 
   componentDidMount () {
-		if(this.props.xAxis)
+		if(this.props.yAxis){
+				this.state.graph.showY(true)
+
+				this.state.graph.showGrid(true)
+		}
+		if(this.props.xAxis){
 				this.state.graph.showX(this.props.xAxis)
+
+		}
 		if(this.props.margin)
 			 this.state.graph.margin(this.props.margin)
 		if(this.props.xFormat)
@@ -49,7 +56,7 @@ class LineGraph extends React.Component {
     this.state.graph
       .size({
         width: document.getElementById('lineGraph' + this.props.uniq).offsetWidth,
-        height: this.props.options.height || 215
+        height: this.props.options && this.props.options.height || 215
       })()
     window.addEventListener('resize', this._resize)
   }
@@ -62,7 +69,7 @@ class LineGraph extends React.Component {
     this.state.graph
       .size({
         width: document.getElementById('lineGraph' + this.props.uniq).offsetWidth,
-        height: this.props.options.height || 215
+        height: (this.props.options && this.props.options.height) || 215
       })()
   }
 
@@ -81,11 +88,12 @@ LineGraph.propTypes = {
   data: React.PropTypes.array,
   uniq: React.PropTypes.string,
   xAxis: React.PropTypes.bool,
-  margin: React.PropTypes.number,
+  margin: React.PropTypes.object,
 	title: React.PropTypes.string,
 	xFormat: React.PropTypes.func,
 	yFormat: React.PropTypes.func,
-	xScaleType: React.PropTypes.func
+	xScaleType: React.PropTypes.string,
+	yAxis: React.PropTypes.bool
 }
 
 export default LineGraph

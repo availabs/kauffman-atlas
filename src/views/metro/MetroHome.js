@@ -73,11 +73,6 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     else{
       return (
-<<<<<<< HEAD
-
-
-
-=======
         
         <div>
           <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />

@@ -12,19 +12,21 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				super()
 				this.state={
 						data: null,
+						
 				}
 		}
 
-		_init () {
-					if(!this.props.data)
-							this.props.loadData(this.props.currentMetro, this.props.currentYear)
+		_init (id) {
+					if(!this.props.data || id)
+							this.props.loadData(id)
 		}
 
 		componentWillMount () {
-				this._init()
+				this._init(this.props.currentMetro)
 		}		
 		componentWillReceiveProps (nextProps){
-				this._init()
+				if(this.props.currentMetro !== nextProps.currentMetro)
+						this._init(nextProps.currentMetro)
 		}
 
 		render () {
@@ -57,10 +59,14 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 								obj.key = industry.key
 								obj.color = colors(ix)
 								obj.values = industry.values.map(rec => {
-										return {
+										
+										let val =  {
 												key: (rec.year + 'q' + rec.qtr),
 												values:{x: xmap(rec.year, rec.qtr), y: parseFloat(rec[field])}
 										}
+										if(isNaN(val.values.x+val.values.y))
+												console.log('x='+val.values.x,'y='+val.values.y)
+										return val
 								})
 							obj.values.sort((a,b) => a.values.x-b.values.x)
 								return obj
@@ -71,24 +77,37 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				console.log('normCounts',normCount)
 				console.log('lqCounts',lqCount)
 				var key = data.values.map((ind,i) =>{
-						return <div style={{backgroundColor:colors(i)}}>{ind.key}</div>
+						return (
+
+										<div style={{backgroundColor:colors(i)}}>{ind.key}</div>
+						)
 				});
+				let graphMargin = {top: 0, left: 40, right: 20, bottom: 20}
+
+
 				return (<div>
 								{key}
 								<LineGraph 
+								key={'normCount'}
 								data={normCount} 
 								uniq={'qtrlyCount'}
 								title={'Quarterly Establishment Count'}
 								yFormat={(x)=>x}
+								xScaleType={''}
+								yAxis={true}
+								margin={graphMargin}
 								/>
 								
 								<LineGraph 
+								key={'lqCount'}
 								data={lqCount} 
 								uniq='lqCount' 
 								xFormat={(x)=>revMap(x)} 
 								title={'Location Quotient Quarterly Establishment Count'}
 								xAxis={true}
 								xScaleType={'linear'}
+								yAxis={true}
+								margin={graphMargin}
 								/>
 								</div>)
 		}
