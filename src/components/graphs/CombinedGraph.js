@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
+import { loadCombinedData, loadCombinedComposite } from 'redux/modules/combinedData'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
 
@@ -61,7 +62,9 @@ const mapStateToProps = (state) => ({
   fluiditycomposite:state.fluidityData.compositeData,
   fluidityloaded:state.fluidityData.fluLoaded,
   diversityloaded : state.diversityData.diversityLoaded,
-  diversitycomposite : state.diversityData.diversitycomposite
+  diversitycomposite : state.diversityData.diversitycomposite,
+  combinedloaded : state.combinedData.combinedLoaded,
+  combinedcomposite : state.combinedData.combinedcomposite 
 })
 
 export default connect((mapStateToProps), {
@@ -70,5 +73,7 @@ export default connect((mapStateToProps), {
   loadfluidityData: () => loadFluidityData(),
   getfluiditycomposite: () => loadFluidityComposite(),
   loaddiversityData: () => loadDiversityData (),
-  getdiversitycomposite: () => loadDiversityComposite ()
+  getdiversitycomposite: () => loadDiversityComposite (),
+  loadcombinedData: () => loadCombinedData (),
+  getcombinedcomposite: () => loadCombinedComposite ()
 })(CombinedGraph)
