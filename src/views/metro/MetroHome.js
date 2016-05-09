@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import MetroHeader from 'components/metro/MetroHeader'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroZbp from 'components/metro/MetroZbp'
-import NaicsGraph from 'components/graphs/NaicsGraph'
+import MetroQcew from 'components/metro/MetroQcew'
+
 import classes from 'styles/sitewide/index.scss'
 import { Link } from 'react-router'
 
@@ -16,7 +17,7 @@ export class MetroHome extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-     display: 'industry'
+     display: 'workforce'
     }
     this.renderDisplay = this.renderDisplay.bind(this)
     this._selectDisplay = this._selectDisplay.bind(this)
@@ -47,6 +48,10 @@ export class MetroHome extends React.Component<void, Props, void> {
         return (
            <MetroZbpCluster currentMetro={metroId} year='2012'/>
         )
+		case 'workforce':
+				return (
+						<MetroQcew currentMetro={metroId} year='2014' qtr='1'/>
+				)
       default: 
         return (
           <MetroZbp currentMetro={metroId} year='2012'/>
@@ -91,7 +96,7 @@ export class MetroHome extends React.Component<void, Props, void> {
                 </div>    
               </div>
 
-														<NaicsGraph currentMetro={metroId} />
+														
 
               <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'industry')}>
                 <div className={classes['selector-buttons']+' '+this._isActive('industry')}>

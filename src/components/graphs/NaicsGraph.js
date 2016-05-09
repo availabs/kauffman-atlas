@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { loadMetroData } from 'redux/modules/metroQcewData.js'
 import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
+import { loadNaicsKeys } from 'redux/modules/msaLookup'
 type Props = {
 };
 
@@ -19,6 +20,9 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		_init (id) {
 					if(!this.props.data || id)
 							this.props.loadData(id)
+				  if(!this.props.naicsKeys){
+							this.props.loadNaicsKeys()
+					}
 		}
 
 		componentWillMount () {
@@ -29,7 +33,9 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 						this._init(nextProps.currentMetro)
 		}
 
+
 		render () {
+				console.log(this.props.naicsKeys)
 				let yearConst = 1990
 				console.log('naics state', this.props)
 				if(!this.props.data || !this.props.data.length)
@@ -79,10 +85,13 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				var key = data.values.map((ind,i) =>{
 						return (
 
-										<div key={'NaicsColorKey'+i} style={{backgroundColor:colors(i)}}>{ind.key}</div>
+								<div key={'NaicsColorKey'+i} 
+								style={{backgroundColor:colors(i)}}>
+										{ind.key + ' | ' + (this.props.naicsKeys[ind.key].title || '')}
+								</div>
 						)
 				});
-				let graphMargin = {top: 0, left: 40, right: 20, bottom: 20}
+				let graphMargin = {top: 0, left: 60, right: 20, bottom: 20}
 
 
 				return (<div>
@@ -114,9 +123,12 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
-		data : state.metroQcewData.data
+		data : state.metroQcewData.data,
+		naicsKeys : state.metros.naicsKeys
+		
 })
 
 export default connect((mapStateToProps), {
-		loadData : (msaId, year) => loadMetroData(msaId)
+		loadData : (msaId, year) => loadMetroData(msaId),
+		loadNaicsKeys : () => loadNaicsKeys()
 })(NaicsGraph)
