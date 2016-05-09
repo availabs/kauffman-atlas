@@ -79,7 +79,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				var key = data.values.map((ind,i) =>{
 						return (
 
-										<div style={{backgroundColor:colors(i)}}>{ind.key}</div>
+										<div key={'NaicsColorKey'+i} style={{backgroundColor:colors(i)}}>{ind.key}</div>
 						)
 				});
 				let graphMargin = {top: 0, left: 40, right: 20, bottom: 20}

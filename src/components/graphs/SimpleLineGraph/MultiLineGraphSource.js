@@ -227,7 +227,7 @@ module.exports = function () {
           })
         }, this)
       })
-      var vPoints = voronoi(points).filter(function (d) { return d })
+      var vPoints = voronoi(points).filter(function (d) { return d.length })
       var vLines = voronoiGroup.selectAll('path')
         .data(vPoints)
       vLines.exit().remove()
