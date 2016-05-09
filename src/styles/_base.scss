@@ -11,6 +11,10 @@ For example:
 @import './themes/default';
 */
 
+.swatch {
+	fill: #5d5d5d;
+}
+
 .grid .tick {
     stroke: rgba(0,0,0,.2);
     stroke-width: 1px;

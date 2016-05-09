@@ -206,7 +206,7 @@ export class LineGraph extends React.Component<void, Props, void> {
               .on("click",click);
 
       function mouseover(d) {
-          d3.select(d.city.line).style("stroke-width",1.5)
+          d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+2))
           d3.select(d.city.line).style("stroke","#000000")
           d3.select(d.city.line).style("opacity","2")
 

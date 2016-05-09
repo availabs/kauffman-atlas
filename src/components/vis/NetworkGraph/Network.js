@@ -15,7 +15,7 @@ export default {
     .range([0,1])
 
     let force = d3.layout.force()
-      .gravity(1)
+      .gravity(.6)
       .linkDistance(90)
       .charge(-1000)
       .linkStrength(function(d) {
@@ -40,12 +40,12 @@ export default {
       .start();
 
 
-    distanceScale.range([0.5,5])
+    distanceScale.range([0.9,3])
     let link = svg.selectAll(".link")
       .data(graph.links)
     .enter().append("line")
       .attr("class", "link")
-      .style('stroke', '#999')
+      .style('stroke', '#5d5d5d')
       .style("stroke-width", function(d) { return distanceScale(d.value) });
 
     
@@ -58,7 +58,7 @@ export default {
 
     let color = d3.scale.quantile()
       .domain( graph.nodes.map((d) => {return d.empShare}).sort())
-      .range(["#f1eef6", "#d0d1e6", "#a6bddb", "#74a9cf", "#3690c0", "#0570b0", "#034e7b"]) 
+      .range(["#b1bbcf", "#97a5bf", "#8a9ab7", "#7d8faf", "#70809d", "#64728c", "#57647a"]) 
     // ---------- --------------------- ---------
     let w =  width - (60*color.quantiles().length)
     let h =  height - 36
