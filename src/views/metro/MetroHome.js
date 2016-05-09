@@ -76,41 +76,40 @@ export class MetroHome extends React.Component<void, Props, void> {
           <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
           <div className='container text-center'>
             <div className='row'>
+              <div className={'col-xs-12 ' + classes['text-div']}>
+                <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+              </div>
+            </div>
+
+            <div className='row'>
+             
               <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'combined')}>
                 <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
                   <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
                 </div>    
               </div>
-            </div>
-
-            <div className='row'>
-              <div className={'col-xs-12 ' + classes['text-div']}>
-                <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'industry')}>
+                <div className={classes['selector-buttons']+' '+this._isActive('industry')}>
+                  <Link className={this._linkIsActive('industry') +' '+ classes['darklink']} to='/industry'>Industries (By NAICS)</Link>
+                </div>    
+              </div>
+              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'cluster')}>
+                <div className={classes['selector-buttons']+' '+this._isActive('cluster')}>
+                  <Link className={this._linkIsActive('cluster') +' '+ classes['darklink']} to='/cluster'>Industry Clusters</Link>
+                </div>    
+              </div>
+              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'workforce')}>
+                <div className={classes['selector-buttons']+' '+this._isActive('workforce')}>
+                  <Link className={this._linkIsActive('workforce') +' '+ classes['darklink']} to='/workforce'>Workforce</Link>
+                </div>    
               </div>
             </div>
-            <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'industry')}>
-              <div className={classes['selector-buttons']+' '+this._isActive('industry')}>
-                <Link className={this._linkIsActive('industry') +' '+ classes['darklink']} to='/industry'>Industries (By NAICS)</Link>
-              </div>    
-            </div>
-            <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'cluster')}>
-              <div className={classes['selector-buttons']+' '+this._isActive('cluster')}>
-                <Link className={this._linkIsActive('cluster') +' '+ classes['darklink']} to='/cluster'>Industry Clusters</Link>
-              </div>    
-            </div>
-            <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'workforce')}>
-              <div className={classes['selector-buttons']+' '+this._isActive('workforce')}>
-                <Link className={this._linkIsActive('workforce') +' '+ classes['darklink']} to='/workforce'>Workforce</Link>
-              </div>    
-            </div>
-          </div>
 
             <div className='row'>
                 {this.renderDisplay()}
             </div>
           </div>   
         </div>
-
       )      
     }
 
