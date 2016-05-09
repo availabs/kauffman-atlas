@@ -424,9 +424,9 @@ const _colorFunction = (params,dataset) => {
 }
 
 const _colorGroup = () => {
-    var _colorGroup = d3.scale.linear()
+    var _colorGroup = d3.scale.quantile()
         .domain(d3.range(1,366,(366/9)))
-        .range(colorbrewer.Spectral[9]);
+        .range(["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]) 
     
     return _colorGroup;
 }
