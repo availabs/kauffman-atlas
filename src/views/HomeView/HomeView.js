@@ -6,7 +6,7 @@ import { increment, doubleAsync } from '../../redux/modules/counter'
 import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
-import DuckImage from './Duck.jpg'
+import { loadCombinedComposite } from 'redux/modules/combinedData'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
 import NationalMap from 'components/maps/NationalMap'
@@ -78,7 +78,13 @@ export class HomeView extends React.Component<void, Props, void> {
     }
     if(!this.props['diversitycomposite']){
       return this.props['getdiversitycomposite']()
-    }                
+    }  
+    if(!this.props['diversitycomposite']){
+      return this.props['getdiversitycomposite']()
+    }       
+    if(!this.props['combinedcomposite']){
+      return this.props['getcombinedcomposite']()        
+    }          
   }
 
   render () {
@@ -87,6 +93,7 @@ export class HomeView extends React.Component<void, Props, void> {
     var topFiveDensity;
     var topFiveFluidity;
     var topFiveDiversity;
+    var topFiveCombined;
 
     let msaClick = (d) =>{
       console.log(d);
@@ -156,6 +163,25 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveDiversity = "Loading..."
     }
 
+    if(this.props.combinedcomposite){
+      topFiveCombined = this.props.combinedcomposite.reduce((prev,msa) => {
+        if(msa.values[msa.values.length-1].rank < 6){
+          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+        }
+        return prev;
+      },{})
+      console.log("diversity",topFiveCombined)
+      topFiveCombined = Object.keys(topFiveCombined).map(rank => {
+        var roundFormat = d3.format(".2f")
+        return(
+              <div onClick={msaClick} id={topFiveCombined[rank].id} className={classes["msa"]}>{rank + ". " + topFiveCombined[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveCombined[rank]["score"])}</div></div>
+        )
+      })
+    }
+    else{
+      topFiveCombined = "Loading..."
+    }
+
     const sectionStyle = {
     }
 
@@ -173,6 +199,7 @@ export class HomeView extends React.Component<void, Props, void> {
               <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>
               Combined
               </Link>
+              <div className={classes["topFive"]}>{topFiveCombined}</div>
             </div>
           </div>
           <div className='col-xs-3' style={sectionStyle} onClick={this._setActiveComponent.bind(null,'density')}>
@@ -239,7 +266,8 @@ const mapStateToProps = (state) => ({
   fluiditycomposite:state.fluidityData.compositeData,
   fluidityloaded:state.fluidityData.fluLoaded,
   diversityLoaded : state.diversityData.diversityLoaded,
-  diversitycomposite : state.diversityData.diversitycomposite
+  diversitycomposite : state.diversityData.diversitycomposite,
+  combinedcomposite : state.combinedData.combinedcomposite 
 })
 
 export default connect((mapStateToProps), {
@@ -248,5 +276,6 @@ export default connect((mapStateToProps), {
   loadFluidityData: () => loadFluidityData(),
   getfluidityComposite: () => loadFluidityComposite(),
   loaddiversitydata: () => loadDiversityData (),
-  getdiversitycomposite: () => loadDiversityComposite ()
+  getdiversitycomposite: () => loadDiversityComposite (),
+  getcombinedcomposite: () => loadCombinedComposite ()
 })(HomeView)

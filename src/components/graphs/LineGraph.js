@@ -135,7 +135,10 @@ export class LineGraph extends React.Component<void, Props, void> {
 
 
       if(scope.props.plot != 'rank'){
-        xAxis.ticks(x.domain()[1]-x.domain()[0])       
+        if(scope.props.graph != "combinedcomposite"){
+          xAxis.ticks(x.domain()[1]-x.domain()[0])             
+        }
+    
         if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite" && scope.props.graph != "inc"){
             yAxis.tickFormat(axisPercFormat);
         }
@@ -331,90 +334,72 @@ export class LineGraph extends React.Component<void, Props, void> {
     else if(this.props.graph == "irsNet"){
       if(this.props.plot == "value"){
         if(this.props.dataType == "raw"){
-          return "Net migration (IRS) by year"
+          return "Net migration by year"
         }
         else{
-          return "Net Migration (IRS) as a percentage of total population by year"
+          return "Net Migration as a percentage of total population by year"
         }             
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking for net migration (IRS) by year"
+          return "Metro Area Ranking for net migration by year"
         }
         else{
-          return "Metro Area Ranking for net Migration (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for net Migration as a percentage of total population by year"
         }                  
       }          
     }    
-    else if(this.props.graph == "acsNet"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
-          return "Net migration (ACS) by year"
-        }
-        else{
-          return "Net Migration (ACS) as a percentage of total population by year"
-        }             
-      }
-      else{
-        if(this.props.dataType == "raw"){
-          return "Metro Area Ranking for net migration (ACS) by year"
-        }
-        else{
-          return "Metro Area Ranking for net Migration (ACS) as a percentage of total population by year"
-        }                  
-      }          
-    }   
     else if(this.props.graph == "irsTotalMigration"){
       if(this.props.plot == "value"){
         if(this.props.dataType == "raw"){
-          return "Total Migration (inflow/outflow sum) (IRS) by year"
+          return "Total Migration (inflow/outflow sum) by year"
         }
         else{
-          return "Total Migration (inflow/outflow sum) (IRS) as a percentage of total population by year"
+          return "Total Migration (inflow/outflow sum) as a percentage of total population by year"
         }             
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking for total Migration (inflow/outflow sum) (IRS) by year"
+          return "Metro Area Ranking for total Migration (inflow/outflow sum) by year"
         }
         else{
-          return "Metro Area Ranking for total Migration (inflow/outflow sum) (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for total Migration (inflow/outflow sum) as a percentage of total population by year"
         }                  
       }          
     } 
     else if(this.props.graph == "irsInflowMigration"){
       if(this.props.plot == "value"){
         if(this.props.dataType == "raw"){
-          return "Inflow Migration (IRS) by year"
+          return "Inflow Migration by year"
         }
         else{
-          return "Inflow Migration (IRS) as a percentage of total population by year"
+          return "Inflow Migration as a percentage of total population by year"
         }             
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking for inflow Migration (IRS) by year"
+          return "Metro Area Ranking for inflow Migration by year"
         }
         else{
-          return "Metro Area Ranking for inflow Migration (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for inflow Migration as a percentage of total population by year"
         }                  
       }          
     } 
     else if(this.props.graph == "irsOutflowMigration"){
       if(this.props.plot == "value"){
         if(this.props.dataType == "raw"){
-          return "Outflow Migration (IRS) by year"
+          return "Outflow Migration by year"
         }
         else{
-          return "Outflow Migration (IRS) as a percentage of total population by year"
+          return "Outflow Migration as a percentage of total population by year"
         }             
       }
       else{
         if(this.props.dataType == "raw"){
-          return "Metro Area Ranking for outflow Migration (IRS) by year"
+          return "Metro Area Ranking for outflow Migration by year"
         }
         else{
-          return "Metro Area Ranking for outflow Migration (IRS) as a percentage of total population by year"
+          return "Metro Area Ranking for outflow Migration as a percentage of total population by year"
         }                  
       }          
     } 
