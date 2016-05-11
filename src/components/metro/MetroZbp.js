@@ -9,8 +9,8 @@ import RadarChart from 'components/vis/RadarChart/RadarChart'
 import classes from 'styles/sitewide/index.scss'
 
 
-export class MetroZbp extends React.Component<void, Props, void> {
-  constructor () {
+export class MetroZbp extends React.Component {
+  constructor (props) {
     super()
     this.state = {
       depth: 2,
@@ -23,7 +23,6 @@ export class MetroZbp extends React.Component<void, Props, void> {
   }
   
   _fecthData () {
-    //console.log(this.props.zbpData[this.props.year])
     if(!this.props.zbpData[this.props.year] || !this.props.zbpData[this.props.year][this.props.currentMetro]){
       return this.props.loadZbpDataYear(this.props.currentMetro,this.props.year)
     }
@@ -35,6 +34,14 @@ export class MetroZbp extends React.Component<void, Props, void> {
     if(!this.props.naicsKeys){
       return this.props.loadNaicsKeys()
     }
+  }
+
+  componentDidMount() {
+    this._fecthData ()
+  }
+  
+  componentWillReceiveProps (nextProps){
+    this._fecthData ()
   }
 
   _processData (year,depth,filter) {
@@ -49,8 +56,7 @@ export class MetroZbp extends React.Component<void, Props, void> {
       return ['totalEmp', 'totalEst'].indexOf(d) === -1
     })
 
-
-     if(filter){
+    if(filter){
       naicsKeys = naicsKeys.filter(k => {
         let key = k.substr(0,depth)
         //filter = naicsLib[filter].part_of_range ? naicsLib[filter].part_of_range : filter
@@ -59,8 +65,8 @@ export class MetroZbp extends React.Component<void, Props, void> {
         return k.indexOf(filter) == 0
 
       })
-     }
-     return naicsKeys.reduce(function(prev,current){
+    }
+    return naicsKeys.reduce(function(prev,current){
       var twoDigit = current.substr(0,depth)
       if(naicsLib[twoDigit].part_of_range){
         twoDigit = naicsLib[twoDigit].part_of_range;
@@ -213,20 +219,13 @@ export class MetroZbp extends React.Component<void, Props, void> {
     )
   }
 
-  componentDidMount() {
-    this._fecthData ()
-  }
-  
-  componentWillReceiveProps (nextProps){
-    this._fecthData ()
-  }
-
   hasData () {
     return this.props.zbpData[this.props.year] && 
       this.props.zbpData[this.props.year][this.props.currentMetro] && 
       this.props.zbpData['national'] &&
       this.props.naicsKeys
   }
+
   render () {
     if (!this.hasData()) return <span />
     let naicsLib = this.props.naicsKeys

@@ -47,7 +47,7 @@ export class MetroMap extends React.Component<void, Props, void> {
     })
 
 
-    let width = document.getElementById("mapDiv").offsetWidth
+    let width = document.getElementById("mapDiv").offsetWidth //? document.getElementById("mapDiv").offsetWidth : 200
     let height = width  * 0.6
 
     var projection = d3.geo.albersUsa();
@@ -87,6 +87,10 @@ export class MetroMap extends React.Component<void, Props, void> {
 
   }
 
+  componentDidMount () {
+    this._initGraph();
+  }
+
   _initGraph () {
 
     if(!this.props.mapLoaded){
@@ -100,7 +104,6 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   render () {
-    this._initGraph();
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>

@@ -200,6 +200,22 @@ export class HomeView extends React.Component<void, Props, void> {
             </div>
           </div>
         </div>
+         <div className='row' style={{padding:15, border:'1px solid black', marginTop: 15}}>
+          <div className={'col-xs-3'}>
+              <strong style={{color:'chartreuse'}}>All Metros</strong> 
+          </div>
+           <div className={'col-xs-3'}>
+              <strong>Big Metros</strong>
+              <br /> 2m+
+          </div>
+          <div className={'col-xs-3'}>
+              <strong>Medium Metros</strong>
+               <br />1m - 2m
+          </div>
+          <div className={'col-xs-3'}>
+              <strong>Small Metros</strong> 
+          </div>
+        </div>
         <div className='row'>
          <div className={'col-xs-12 ' + classes['text-div']}>
               <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.

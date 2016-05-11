@@ -1,11 +1,11 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import MetroHeader from 'components/metro/MetroHeader'
-import MetroZbpCluster from 'components/metro/MetroZbpCluster'
-import MetroZbp from 'components/metro/MetroZbp'
-import classes from 'styles/sitewide/index.scss'
 import { Link } from 'react-router'
+import MetroHeader from 'components/metro/MetroHeader'
+import MetroZbp from 'components/metro/MetroZbp'
+import MetroZbpCluster from 'components/metro/MetroZbpCluster'
+import classes from 'styles/sitewide/index.scss'
 
 type Props = {
 };
@@ -16,6 +16,7 @@ export class MetroHome extends React.Component<void, Props, void> {
     this.state = {
      display: 'industry'
     }
+    
     this.renderDisplay = this.renderDisplay.bind(this)
     this._selectDisplay = this._selectDisplay.bind(this)
     this._isActive = this._isActive.bind(this)
@@ -36,6 +37,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 
   renderDisplay(){
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
+    console.log('render Dsiplay', 2012, metroId)
     switch(this.state.display){
       case 'industry':
         return (
@@ -53,7 +55,6 @@ export class MetroHome extends React.Component<void, Props, void> {
   }
 
   render () {
-
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
     if(!this.props.metros[metroId]){
       return (
