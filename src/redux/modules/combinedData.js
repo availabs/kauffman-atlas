@@ -5,73 +5,30 @@ import d3 from 'd3'
 import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
-
+import { msaLookup, populationData } from 'static/data/msaDetails'
 // ------------------------------------
 // Constants
 // ------------------------------------
 
-export const RECEIVE_COMBINED_DATA = 'RECEIVE_COMBINED_DATA'
 export const RECEIVE_COMBINEDCOMPOSITE_DATA = 'RECEIVE_COMBINEDCOMPOSITE_DATA'
-
-
-
-export const loadCombinedData = () => {
-  return (dispatch,getState) => {
-    var state = getState();
-
-    if(!state.densityData.loaded){
-      console.log("getting density in combo")
-       dispatch(loadDensityData())
-        .then(() => dispatch(loadDensityComposite()))
-    }
-    else if(!state.densityData.compositeData){
-      dispatch(loadDensityComposite())
-    }
-    if(!state.fluidityData.loaded){
-      console.log("getting fluid in combo")
-       dispatch(loadFluidityData())
-        .then(() => dispatch(loadFluidityComposite()))
-    }
-    else if(!state.fluidityData.compositeData){
-      dispatch(loadFluidityComposite())
-    }
-    if(!state.diversityData.loaded){
-      console.log("getting div in combo")
-       dispatch(loadDiversityData())
-        .then(() => dispatch(loadDiversityComposite()))
-    }
-    else if(!state.diversityData.diversitycomposite){
-      dispatch(loadDiversityComposite())
-    }      
-    console.log(getState())
-    return dispatch(receiveCombinedData())  
-  }
-}
-export function receiveCombinedData () {
-  return {
-    type: RECEIVE_COMBINED_DATA,
-    payload: null
-  }
-}
 
 export const loadCombinedComposite = () => {
   return (dispatch,getState) => {
     console.log("should have all data here combo comp",getState())
-    return dispatch(getCombinedComposite())     
+    var state = getState()
+    return dispatch(getCombinedComposite(state.densityData.compositeData,state.fluidityData.compositeData,state.diversityData.diversitycomposite))     
   }
 }
 
-export function getCombinedComposite () {
+export function getCombinedComposite (density,fluidity,diversity) {
   return {
     type: RECEIVE_COMBINEDCOMPOSITE_DATA,
-    payload: null
+    payload: {density:density,fluidity:fluidity,diversity:diversity}
   }
 }
 
 
 export const actions = {
-  receiveCombinedData,
-  loadCombinedData,
   loadCombinedComposite,
   getCombinedComposite
 }
@@ -80,21 +37,74 @@ export const actions = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [RECEIVE_COMBINED_DATA]: (state,action) => {
-    var newState = Object.assign({},state);
-
-    console.log("loaded combined data");
-
-    newState.combinedLoaded = true;
-
-    return newState;
-  },
   [RECEIVE_COMBINEDCOMPOSITE_DATA]: (state,action) => {
     var newState = Object.assign({},state);
 
-    console.log("receive combined composite data");
+    console.log("receive combined composite data",action.payload);
 
-    newState.combinedcomposite = ['testing']
+    var density = action.payload.density,
+        fluidity = action.payload.fluidity,
+        diversity = action.payload.diversity;
+
+
+
+    var cityFilteredDensity = [],
+        cityFilteredDiversity = [],
+        cityFilteredFluidity = [];
+
+    var compositeCityRanks = [];
+
+    for(var i=0; i<diversity.length; i++){
+      for(var j=0; j<density.length; j++){
+        for(var k=0; k<fluidity.length; k++){
+          if(diversity[i].key == density[j].key && diversity[i].key == fluidity[k].key){
+            cityFilteredDiversity.push(diversity[i]); 
+            cityFilteredFluidity.push(fluidity[k]);
+            cityFilteredDensity.push(density[j])
+          }              
+        }
+      }
+    }
+
+
+  var yearCityFilteredDiversity = _trimYears(([2009,2009]),cityFilteredDiversity);
+  var yearCityFilteredFluidity = _trimYears(([2009,2009]),cityFilteredFluidity);
+  var yearCityFilteredDensity = _trimYears(([2009,2009]),cityFilteredDensity);
+
+    var densityScale = d3.scale.linear()
+      .range([0,100])
+      .domain(      [d3.min(yearCityFilteredDensity, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                    d3.max(yearCityFilteredDensity, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    )
+    var diversityScale = d3.scale.linear()
+      .range([0,100])
+      .domain(      [d3.min(yearCityFilteredDiversity, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                    d3.max(yearCityFilteredDiversity, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                    )  
+    var fluidityScale = d3.scale.linear()
+    .range([0,100])
+    .domain(      [d3.min(yearCityFilteredFluidity, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(yearCityFilteredFluidity, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                  )  
+
+    yearCityFilteredDensity.sort(_sortMsaCities());
+    yearCityFilteredDiversity.sort(_sortMsaCities());
+    yearCityFilteredFluidity.sort(_sortMsaCities());
+
+    for(var i=0; i<yearCityFilteredDensity.length;i++){
+      var resultValues = [];
+      if(yearCityFilteredDensity[i].key == yearCityFilteredDiversity[i].key && yearCityFilteredFluidity[i].key){
+        for(var j=0; j<yearCityFilteredDensity[i]['values'].length; j++){
+          resultValues.push({x:yearCityFilteredDensity[i].values[j].x,y:((densityScale(yearCityFilteredDensity[i].values[j].y) + fluidityScale(yearCityFilteredFluidity[i].values[j].y)+ diversityScale(yearCityFilteredDiversity[i].values[j].y))/3)})      
+        } 
+        compositeCityRanks.push({key:yearCityFilteredDensity[i]['key'],values:resultValues})          
+      }
+    }
+
+    compositeCityRanks = _rankCities(compositeCityRanks);
+    var graphData = _polishData(compositeCityRanks,"fluidityComposite");
+
+    newState.combinedcomposite = graphData
 
     return newState;
   }
@@ -122,103 +132,6 @@ const _trimYears = (years,cities) => {
 
 
   return filteredCities;
-}
-
-const _processequalOpp = (data) => {
-  var msaGains = {};
-
-  console.log("processequalOpp");
-  //filter out null rows
-  Object.keys(data).forEach(function(msaId){
-      if(data[msaId]["highIncome"] != null && data[msaId]["lowIncome"] != null){
-          msaGains[msaId] = {};
-          msaGains[msaId] = data[msaId];
-      }
-
-  })
-
-  var finalData = _convertToCoordinateArray(msaGains,"opportunity");
-  
-  finalData.sort(_sortCities("lowIncome"));
-  var polishedData = _polishData(finalData,"opportunity");
-
-  return polishedData;
-}
-
-const _convertToCoordinateArray = (data,dataset) => {
-    var finalData = [];
-
-    Object.keys(data).forEach(msaId => {
-        var valueArray = [];
-        Object.keys(data[msaId]).forEach(year => {
-            if(dataset != "opportunity"){
-                if(dataset != "inc5000"){
-                  valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});                   
-                }
-                else{
-                    valueArray.push( {x:+year,y:+data[msaId][year]});          
-                }
-            }
-            else{
-                valueArray.push( {x:year,y:+data[msaId][year]});  
-            } 
-        })
-
-        if(valueArray.length != 0){
-         finalData.push({key:msaId,values:valueArray,area:false});                
-        }
-    })
-
-    return finalData;
-}
-const _relativeAgainstPopulation = (graphRawData) => {
-  var maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
-  
-  //Current Population dataset only goes to 2014        
-  if(maxYear > 2012){
-      maxYear = 2012;
-  }
-
-  var graphRelativeData = graphRawData.map(metroArea => {
-      var newValues = [];
-      metroArea.values.forEach(yearVal => {
-          if(yearVal.x <= maxYear){
-              var newCoord = {x:yearVal.x, y:0};
-
-              if(populationData[metroArea.key]){
-                  if(populationData[metroArea.key][yearVal.x]){
-                      var newY = yearVal.y / populationData[metroArea.key][yearVal.x];
-                      newCoord = {x: yearVal.x, y:newY};                                
-                  }
-              }
-              newValues.push(newCoord);   
-          }
-      })
-      return ({key:metroArea.key,values:newValues,area:false});                
-  })
-
-  return graphRelativeData;
-}
-
-const _processGeneral = (data,dataset) => {
-    var finalData = _convertToCoordinateArray(data);
-
-    var rankedData = _rankCities(finalData);
-    var polishedData = _polishData(rankedData,dataset);
-    var graphRawData = polishedData;
-
-    var graphRelativeData = [];
-    graphRelativeData = _relativeAgainstPopulation(graphRawData);
-
-    if(graphRelativeData && graphRelativeData.length > 0){
-        var rankedData2 = _rankCities(graphRelativeData);
-        var polishedData2 = _polishData(rankedData2,("relative"+dataset));
-
-        var graphData = {};
-        graphData["raw"] = graphRawData;
-        graphData["relative"] = polishedData2;
-        return graphData;                
-    }
 }
 
 const _rankCities = (cities) => {
@@ -276,20 +189,6 @@ const _polishData = (data,dataset) => {
   return newData;
 }
 
-const _colorOppGroup = (group) => {
-    if(group == "lowIncome"){
-        var colorGroup = d3.scale.linear()
-            .domain([-.2,.2])
-            .range(['red','green']);
-    }
-    if(group == "highIncome"){
-        var colorGroup = d3.scale.linear()
-           .domain([-.1,.1])
-           .range(['red','green']);           
-    }
-
-    return colorGroup;
-}
 
 const _colorFunction = (params,dataset) => {
     var cityColor;

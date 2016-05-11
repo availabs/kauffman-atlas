@@ -150,8 +150,8 @@ const ACTION_HANDLERS = {
 
 
     var cityFilteredLowOpp = [],
-    cityFilteredHighOpp = [],
-    cityFilteredForeignborn = [];
+        cityFilteredHighOpp = [],
+        cityFilteredForeignborn = [];
     var compositeCityRanks = [];
 
     for(var i=0; i<lowOpp.length; i++){

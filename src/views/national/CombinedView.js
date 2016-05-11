@@ -16,7 +16,7 @@ export class CombinedView extends React.Component<void, Props, void> {
     this.state = {
       'selectedMetric':"densitycomposite",
       'dataType':'relative',
-      'plot':'rank'
+      'plot':'value'
     }
     this._setMetric = this._setMetric.bind(this)
     this._setDataType = this._setDataType.bind(this)
@@ -74,8 +74,8 @@ export class CombinedView extends React.Component<void, Props, void> {
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
               <div className={classes["rankValContainer"]}>
-                <div id="rank" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Rank</div>
-                <div id="value" onClick={this._setRankVal} className={classes["rankValBox"]}>Value</div>
+                <div id="rank" onClick={this._setRankVal} className={classes["rankValBox"]}>Rank</div>
+                <div id="value" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Value</div>
               </div>             
               <div onClick={this._setMetric} id="combinedcomposite" className={classes["metricBox"]}>Combined Composite</div>
               <div onClick={this._setMetric} id="densitycomposite" className={classes["active"] + " " + classes["metricBox"]}>Density Composite</div>
