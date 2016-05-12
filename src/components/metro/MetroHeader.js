@@ -15,11 +15,11 @@ export class MetroHeader extends React.Component<void, Props, void> {
   }
 
    componentDidMount() {
-    this._fecthData ()
+    this._fetchData ()
   }
   
   componentWillReceiveProps (nextProps){
-    this._fecthData ()
+    this._fetchData ()
   }
 
   hasData () {

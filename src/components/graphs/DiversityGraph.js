@@ -53,7 +53,6 @@ export class DiversityGraph extends React.Component<void, Props, void> {
           <LineGraph data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )         
       }
-    
     }
     else{
       console.log("rener mia",this.props);
