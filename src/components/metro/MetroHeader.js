@@ -5,18 +5,18 @@ import MetroMap from 'components/maps/MetroMap'
 import LineGraph from 'components/graphs/SimpleLineGraph'
 
 export class MetroHeader extends React.Component<void, Props, void> {
-  _fecthData () {
+  _fetchData () {
     if(!this.props.gdpData[this.props.metroId]){
       return this.props.loadGdpData(this.props.metroId)
     }
   }
 
    componentDidMount() {
-    this._fecthData ()
+    this._fetchData ()
   }
   
   componentWillReceiveProps (nextProps){
-    this._fecthData ()
+    this._fetchData ()
   }
 
   hasData () {
