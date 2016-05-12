@@ -4,6 +4,7 @@ import fetch from 'isomorphic-fetch'
 // Constants
 // ------------------------------------
 export const RECIEVE_METRO_GDP_DATA = 'RECIEVE_METRO_GDP_DATA'
+export const RECIEVE_METRO_GDP_PER_CAPITA_DATA = 'RECIEVE_METRO_GDP_PER_CAPITA_DATA'
 
 // ------------------------------------
 // Actions
@@ -13,9 +14,9 @@ export const RECIEVE_METRO_GDP_DATA = 'RECIEVE_METRO_GDP_DATA'
 // if you'd like to learn more you can check out: flowtype.org.
 // DOUBLE NOTE: there is currently a bug with babel-eslint where a `space-infix-ops` error is
 // incorrectly thrown when using arrow functions, hence the oddity.
-export function recieveData (value,msaId) {
+function recieveData (type,value,msaId) {
   return {
-    type: RECIEVE_METRO_GDP_DATA,
+    type: type,
     payload: [value,msaId]
   }
 }
@@ -33,7 +34,18 @@ export const loadMetroGdp = (msaId) => {
         console.log('test', response)
         return response.json()
       })
-      .then(json => dispatch(recieveData(json,msaId)))
+      .then(json => dispatch(recieveData(RECIEVE_METRO_GDP_DATA,json,msaId)))
+  }
+}
+
+export const loadMetroGdpPerCapita = (msaId) => {
+  return (dispatch) => {
+    return fetch('http://bea.gov/api/data/?UserID=DF1D6670-E35A-40F3-B4CA-A5F68A8EE147&method=GetData&datasetname=RegionalProduct&Component=PCRGDP_MAN&IndustryId=1&Year=ALL&GeoFips=' + msaId + '&ResultFormat=json')
+      .then(response => {
+        console.log('test', response)
+        return response.json()
+      })
+      .then(json => dispatch(recieveData(RECIEVE_METRO_GDP_PER_CAPITA_DATA,json,msaId)))
   }
 }
 
@@ -48,7 +60,19 @@ export const actions = {
 const ACTION_HANDLERS = {
   [RECIEVE_METRO_GDP_DATA]: (state,action) => {
     var newState = Object.assign({},state);
-    newState[action.payload[1]] = action.payload[0].BEAAPI.Results.Data.map(d => { 
+    if(!newState[action.payload[1]]) newState[action.payload[1]] = {}
+    newState[action.payload[1]]['gdp'] = action.payload[0].BEAAPI.Results.Data.map(d => { 
+      return {
+        key: d.TimePeriod,
+        value: +d.DataValue
+      }
+    });
+    return newState;
+  },
+  [RECIEVE_METRO_GDP_PER_CAPITA_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+    if(!newState[action.payload[1]]) newState[action.payload[1]] = {}
+    newState[action.payload[1]]['gdp_per_capita'] = action.payload[0].BEAAPI.Results.Data.map(d => { 
       return {
         key: d.TimePeriod,
         value: +d.DataValue
