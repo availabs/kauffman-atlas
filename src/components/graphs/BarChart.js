@@ -183,7 +183,7 @@ export class BarChart extends React.Component<void, Props, void> {
         var metroArea = svg.selectAll(".metroArea")
               .data(filteredData)
             .enter().append("g")
-              .attr("class","metroArea")
+              .attr("class",function(d){return "metroArea" + d.key})
               .attr("transform",function(d){ return "translate(" + x0(d.key) + ",0)";});
 
         var voronoiGroup = svg.append("g")
