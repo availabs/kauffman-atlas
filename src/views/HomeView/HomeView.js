@@ -2,10 +2,9 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
-import { increment, doubleAsync } from '../../redux/modules/counter'
-import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
-import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
-import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
+import { loadDensityComposite } from 'redux/modules/densityData'
+import { loadFluidityComposite } from 'redux/modules/fluidityData'
+import { loadDiversityComposite } from 'redux/modules/diversityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
@@ -35,17 +34,21 @@ export class HomeView extends React.Component<void, Props, void> {
   componentWillMount () {
     this._initGraph();
   }
+ 
 
-  componentWillReceiveProps (nextProps){
-    if(this.props.densityloaded !== nextProps.densityloaded){
-      return this.props.loadDensityData()
+  _initGraph () {
+    if(!this.props['densitycomposite']){
+      this.props['getdensitycomposite']()
     }
-    if(this.props.fluidityloaded !== nextProps.fluidityloaded){
-      return this.props.loadFluidityData()
+    if(!this.props['fluiditycomposite']){
+      this.props['getfluiditycomposite']()
     }
-    if(this.props.diversityLoaded !== nextProps.diversityLoaded){
-      return this.props.loaddiversitydata()
+    if(!this.props['diversitycomposite']){
+      this.props['getdiversitycomposite']()
     }
+    if(!this.props['combinedcomposite']){
+      this.props['getcombinedcomposite']()        
+    }        
   }
 
   _setActiveComponent(type){
@@ -58,33 +61,6 @@ export class HomeView extends React.Component<void, Props, void> {
 
   _linkIsActive(type){
     return type === this.state.activeComponent ? classes['active-link'] : ''
-  }
-
-  _initGraph () {
-    if(!this.props.densityloaded){
-      return this.props.loadDensityData()
-    }
-    if(!this.props['densitycomposite']){
-      return this.props['getdensityComposite']()
-    }
-    if(!this.props.fluidityloaded){
-      return this.props.loadFluidityData()
-    }
-    if(!this.props['fluiditycomposite']){
-      return this.props['getfluidityComposite']()
-    }
-    if(!this.props.diversityLoaded){
-      return this.props.loaddiversitydata()
-    }
-    if(!this.props['diversitycomposite']){
-      return this.props['getdiversitycomposite']()
-    }  
-    if(!this.props['diversitycomposite']){
-      return this.props['getdiversitycomposite']()
-    }       
-    if(!this.props['combinedcomposite']){
-      return this.props['getcombinedcomposite']()        
-    }          
   }
 
   render () {
@@ -106,7 +82,7 @@ export class HomeView extends React.Component<void, Props, void> {
 
     }
 
-    if(this.props.densityloaded && this.props.densitycomposite){
+    if(this.props.densitycomposite){
       topFiveDensity = this.props.densitycomposite.reduce((prev,msa) => {
         if(msa.values[msa.values.length-1].rank < 6){
           prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
@@ -125,7 +101,7 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveDensity = "Loading..."
     }
 
-    if(this.props.fluidityloaded && this.props.fluiditycomposite){
+    if(this.props.fluiditycomposite){
       topFiveFluidity = this.props.fluiditycomposite.reduce((prev,msa) => {
         if(msa.values[msa.values.length-1].rank < 6){
           prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
@@ -144,7 +120,8 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveFluidity = "Loading..."
     }
 
-    if(this.props.diversityLoaded && this.props.diversitycomposite){
+    if(this.props.diversitycomposite){
+      console.log(this.props.diversitycomposite);
       topFiveDiversity = this.props.diversitycomposite.reduce((prev,msa) => {
         if(msa.values[msa.values.length-1].rank < 6){
           prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
@@ -170,7 +147,7 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log("diversity",topFiveCombined)
+      console.log("composite",topFiveCombined)
       topFiveCombined = Object.keys(topFiveCombined).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
@@ -262,20 +239,14 @@ export class HomeView extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,
-  densityloaded:state.densityData.loaded,
   fluiditycomposite:state.fluidityData.compositeData,
-  fluidityloaded:state.fluidityData.fluLoaded,
-  diversityLoaded : state.diversityData.diversityLoaded,
   diversitycomposite : state.diversityData.diversitycomposite,
   combinedcomposite : state.combinedData.combinedcomposite 
 })
 
 export default connect((mapStateToProps), {
-  loadDensityData: () => loadDensityData(),
-  getdensityComposite: () => loadDensityComposite(),
-  loadFluidityData: () => loadFluidityData(),
-  getfluidityComposite: () => loadFluidityComposite(),
-  loaddiversitydata: () => loadDiversityData (),
-  getdiversitycomposite: () => loadDiversityComposite (),
-  getcombinedcomposite: () => loadCombinedComposite ()
+  getdensitycomposite: () => loadDensityComposite(),
+  getfluiditycomposite: () => loadFluidityComposite(),
+  getdiversitycomposite: () => loadDiversityComposite(),
+  getcombinedcomposite: () => loadCombinedComposite()
 })(HomeView)

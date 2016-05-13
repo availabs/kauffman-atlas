@@ -1,9 +1,9 @@
 "use strict"
 import React from 'react'
 import { connect } from 'react-redux'
-import { loadDensityData,loadDensityComposite } from 'redux/modules/densityData'
-import { loadFluidityData,loadFluidityComposite } from 'redux/modules/fluidityData'
-import { loadDiversityData,loadDiversityComposite } from 'redux/modules/diversityData'
+import { loadDensityComposite } from 'redux/modules/densityData'
+import { loadFluidityComposite } from 'redux/modules/fluidityData'
+import { loadDiversityComposite } from 'redux/modules/diversityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
@@ -25,46 +25,21 @@ export class CombinedGraph extends React.Component<void, Props, void> {
     this._initGraph();
   }
  
-  _initGraph () {
-    var dataset = this.props.selectedMetric.split("composite")[0];
-    console.log(dataset)
-
-    if(dataset == "combined"){
-      if(!this.props.densityloaded){
-        return this.props.loaddensityData()
-      }
-      if(!this.props['densitycomposite']){
-        return this.props['getdensitycomposite']()
-      }
-      if(!this.props.fluidityloaded){
-        return this.props.loadfluidityData()
-      }
-      if(!this.props['fluiditycomposite']){
-        return this.props['getfluiditycomposite']()
-      }
-      if(!this.props.diversityloaded){
-        return this.props.loaddiversityData()
-      }
-      if(!this.props['diversitycomposite']){
-        return this.props['getdiversitycomposite']()
-      } 
-
-      if(!this.props['combinedcomposite']){
-        console.log("getting combo comp")
-        return this.props['getcombinedcomposite']()        
-      }
+  componentWillReceiveProps (nextProps){
+    if(this.props !== nextProps){
+      this.setState({loaded:false})
     }
-    else{
-      if(!this.props[(dataset + "loaded")]){
-        return this.props[(['load' + dataset + "Data"])]()          
-      }       
-      if(!this.props[(this.props.selectedMetric)]){
-        console.log('dont have metric')
-        return this.props[(['get' + this.props.selectedMetric])]()
-      }      
+    if(!nextProps[nextProps.selectedMetric]){
+      return this.props[('get'+[nextProps.selectedMetric])]()
     }
-
   }
+
+  _initGraph () {
+    if(!this.props[this.props.selectedMetric]){
+      return this.props[('get'+[this.props.selectedMetric])]()
+    }          
+  }
+
 
   render () {
     this._initGraph();
@@ -95,20 +70,14 @@ export class CombinedGraph extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,
-  densityloaded:state.densityData.loaded,
   fluiditycomposite:state.fluidityData.compositeData,
-  fluidityloaded:state.fluidityData.fluLoaded,
-  diversityloaded : state.diversityData.diversityLoaded,
   diversitycomposite : state.diversityData.diversitycomposite,
   combinedcomposite : state.combinedData.combinedcomposite 
 })
 
 export default connect((mapStateToProps), {
-  loaddensityData: () => loadDensityData(),
   getdensitycomposite: () => loadDensityComposite(),
-  loadfluidityData: () => loadFluidityData(),
   getfluiditycomposite: () => loadFluidityComposite(),
-  loaddiversityData: () => loadDiversityData (),
   getdiversitycomposite: () => loadDiversityComposite (),
   getcombinedcomposite: () => loadCombinedComposite ()
 })(CombinedGraph)

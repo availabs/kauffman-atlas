@@ -39,7 +39,40 @@ export class BarChart extends React.Component<void, Props, void> {
 
     	var data = scope.props.data;
 
+        data.forEach(metro => {
+
+            var city = metro;
+
+            metro.values.forEach(yearValue => {
+              yearValue.city = city;
+            })
+
+        })
+
+
+
+
         if(scope.props.graph == "combinedcomposite"){
+            var data = data.filter(metroArea => {
+                if(scope.props.dataType == "composite"){
+                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                else{
+                    if(metroArea.values[0] == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }                
+                }
+
+
+            })
           data.sort(function(a,b){
               return b.values[0].y - a.values[0].y
           })
@@ -78,10 +111,10 @@ export class BarChart extends React.Component<void, Props, void> {
 
 
         if(scope.props.graph == "combinedcomposite"){
-            filteredData = data;
+            var filteredData = data;
         }
         else{
-            var filteredData = data.map(function(metroArea){
+            var trimmedData = data.map(function(metroArea){
 
                 var values = [];
 
@@ -104,8 +137,25 @@ export class BarChart extends React.Component<void, Props, void> {
 
                 return filteredMetro;
             })    
+            var filteredData = trimmedData.filter(metroArea => {
+                if(scope.props.dataType == "composite"){
+                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                else{
+                    if(metroArea.values[0] == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }                
+                }
+            })       
         }
-
 
         console.log("data",data);
         console.log("filtered",filteredData);
@@ -183,7 +233,7 @@ export class BarChart extends React.Component<void, Props, void> {
         var metroArea = svg.selectAll(".metroArea")
               .data(filteredData)
             .enter().append("g")
-              .attr("class","metroArea")
+              .attr("class",function(d){return "metroArea" + d.key})
               .attr("transform",function(d){ return "translate(" + x0(d.key) + ",0)";});
 
         var voronoiGroup = svg.append("g")

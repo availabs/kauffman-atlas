@@ -1,10 +1,11 @@
 "use strict"
 import React from 'react'
 import { connect } from 'react-redux'
-import { loadDensityData,loadNewValues,loadShare,loadComposite } from 'redux/modules/densityData'
+import { loadNewValues,loadShare,loadDensityComposite } from 'redux/modules/densityData'
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
+import { data } from 'static/data/test'
 
 export class DensityGraph extends React.Component<void, Props, void> {
   constructor () {
@@ -26,15 +27,12 @@ export class DensityGraph extends React.Component<void, Props, void> {
     if(this.props !== nextProps){
       this.setState({loaded:false})
     }
-    if(this.props.loaded !== nextProps.loaded){
-      return this.props.loadData()
+    if(!nextProps[nextProps.selectedMetric]){
+      return this.props[('load'+[nextProps.selectedMetric])]()
     }
   }
 
   _initGraph () {
-    if(!this.props.loaded){
-      return this.props['loadData']()
-    }
     if(!this.props[this.props.selectedMetric]){
       return this.props[('load'+[this.props.selectedMetric])]()
     }     
@@ -42,7 +40,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
 
   render () {
     this._initGraph();
-    if(this.props.loaded && this.props[this.props.selectedMetric]){
+    if(this.props[this.props.selectedMetric]){
       console.log("data",this.props[this.props.selectedMetric])
        return (
           <LineGraph data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
@@ -58,7 +56,6 @@ export class DensityGraph extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
-  loaded : state.densityData.loaded,
   newValues: state.densityData.newValuesData,
   share:state.densityData.shareData,
   densitycomposite:state.densityData.compositeData,
@@ -66,8 +63,7 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect((mapStateToProps), {
-  loadData: () => loadDensityData(),
   loadnewValues: () => loadNewValues(),
   loadshare: () => loadShare(),
-  loaddensitycomposite: () => loadComposite()
+  loaddensitycomposite: () => loadDensityComposite()
 })(DensityGraph)

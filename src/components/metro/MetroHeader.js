@@ -78,11 +78,11 @@ export class MetroHeader extends React.Component<void, Props, void> {
     }]
     console.log('header', this.props.gdpData[this.props.metroId])
     let growth = (this.props.metroData.pop[2014] - this.props.metroData.pop[2001]) / this.props.metroData.pop[2001] * 100
-    let last_gdp = this.props.gdpData[this.props.metroId].gdp.find(d => { return +d.key === 2014 }).value
-    let first_gdp = this.props.gdpData[this.props.metroId].gdp.find(d => { return +d.key === 2001 }).value
+    let last_gdp = this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2014 })[0].value
+    let first_gdp = this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2001 })[0].value
     let gdpGrowth = (last_gdp - first_gdp) / first_gdp * 100
-    let last_per_capita = gdpDataPerCapita[0].values.find(d => { return +d.key === 2014 }).values.y
-    let first_per_capita = gdpDataPerCapita[0].values.find(d => { return +d.key === 2001 }).values.y
+    let last_per_capita = gdpDataPerCapita[0].values.filter(d => { return +d.key === 2014 })[0].values.y
+    let first_per_capita = gdpDataPerCapita[0].values.filter(d => { return +d.key === 2001 })[0].values.y
     let perCapitaGrowth = (last_gdp - first_gdp) / first_gdp * 100
 
     return (
@@ -109,7 +109,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
           <div className='col-xs-3'>
             <div>
               <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
-                {this.props.gdpData[this.props.metroId].gdp.find(d => { return +d.key === 2014 }).value.toLocaleString()}
+                {this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2014 })[0].value.toLocaleString()}
               </span> 
               <div style={{display:'inline-block'}}><strong>GDP</strong> (in millions)<br />
                 {gdpGrowth.toLocaleString()}% 
