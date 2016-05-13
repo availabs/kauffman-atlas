@@ -1,7 +1,7 @@
 import React from 'react'
 import d3 from 'd3'
 import GraphSouce from './MultiLineGraphSource'
-
+import _ from 'lodash'
 // import styles from './Race.scss'
 
 class LineGraph extends React.Component {
@@ -65,6 +65,19 @@ class LineGraph extends React.Component {
     window.removeEventListener('resize', this._resize)
   }
 
+    componentWillReceiveProps (nProps) {
+	console.log('MLG new PROPS',nProps)
+	console.log(this.state.graph.data())
+	if(!_.isEqual(this.state.graph.data(),nProps.data)){
+	    this.state.graph.data(nProps.data)
+	    this.state.graph
+		.size({
+		    width: document.getElementById('lineGraph' + this.props.uniq).offsetWidth,
+		    height: this.props.options && this.props.options.height || 215
+      })()
+	}
+    }
+    
   _resize () {
     this.state.graph
       .size({

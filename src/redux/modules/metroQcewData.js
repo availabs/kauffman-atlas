@@ -59,19 +59,30 @@ export const loadMetroDataYear = (msaId, year) => {
 
 const ACTION_HANDLERS = {
     [RECEIVE_METROQCEW_DATA]: (state, action) => {
-      var newState = Object.assign({}, state)
-      newState.data = action.payload[0]
+	var newState = Object.assign({}, state)
+	let msa = action.payload[1]
+	let colors = d3.scale.category20()
+	newState.data = action.payload[0]
+	newState.data[0].values.map((ind,i) => {
+	    ind.color = colors(i%20)
+	    return ind
+	})
 		
-      return newState
+	return newState
     },
     [RECEIVE_METROQCEW_DATA_WITH_YEAR]: (state, action) => {
-      var newState = Object.assign({}, state)
-			let msa = action.payload[1]
-			let year = action.payload[2]
+	var newState = Object.assign({}, state)
+	let msa = action.payload[1]
+	let year = action.payload[2]
 				
-      newState.yeardata = newState.yeardata || {}
-			newState.yeardata[year] = action.payload[0][0]
-			console.log(action.payload[0][0].key)
+	newState.yeardata = newState.yeardata || {}
+	newState.yeardata[year] = action.payload[0][0]
+	console.log(action.payload[0][0].key)
+	newState.yeardata[year].values[0].values.map((ind,i) => {
+	    ind.color = d3.scale.category20()(i%20)
+	    return ind
+	})
+	
       return newState
     },
     [REQUEST_METROQCEW_DATA_WITH_YEAR] : (state, action) => {

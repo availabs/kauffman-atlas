@@ -42,7 +42,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    return <span></span>
 
 	var data = this.props.data[0]
-	var colors = d3.scale.category20()
+
 	var xmap = (year, qtr) => {
 	    var val = 
 		4*(parseInt(year)-yearConst) + parseInt(qtr)
@@ -60,10 +60,10 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    return year + yearConst + ''
 	}
 	var datamap = (field) => {
-	    return	data.values.map((industry, ix) => {
+	    return	data.values.map((industry) => {
 		var obj = {}
 		obj.key = industry.key
-		obj.color = colors(ix)
+		obj.color = industry.color
 		obj.values = industry.values.map(rec => {
 		    
 		    let val =  {
@@ -82,27 +82,18 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	var lqCount = datamap('lq_qtrly_estabs_count')
 	console.log('normCounts',normCount)
 	console.log('lqCounts',lqCount)
-	var key = data.values.map((ind,i) =>{
-	    return (
 
-		    <div key={'NaicsColorKey'+i} 
-		style={{backgroundColor:colors(i)}}>
-		    {ind.key + ' | ' + (this.props.naicsKeys[ind.key].title || '')}
-		</div>
-	    )
-	});
 	let graphMargin = {top: 0, left: 60, right: 20, bottom: 20}
 
 
 	return (<div>
-		{key}
 		<LineGraph 
 		key={'normCount'}
 		data={normCount} 
 		uniq={'qtrlyCount'}
 		title={'Quarterly Establishment Count'}
 		yFormat={(x)=>x}
-		xScaleType={''}
+		xScaleType={'linear'}
 		yAxis={true}
 		margin={graphMargin}
 		/>
