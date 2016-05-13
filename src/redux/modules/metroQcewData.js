@@ -74,16 +74,16 @@ const ACTION_HANDLERS = {
 			console.log(action.payload[0][0].key)
       return newState
     },
-		[REQUEST_METROQCEW_DATA_WITH_YEAR] : (state, action) => {
-				var newState = Object.assign({}, state)
-				let msa = action.payload[0]
-				let year = action.payload[1]
-				newState.year_requests = newState.year_requests || {}
-				newState.year_requests[msa] = newState.year_requests[msa] || {}
-				newState.year_requests[msa][year] = 
-						newState.year_requests[msa][year]|| 'loading'
-		}
-
+    [REQUEST_METROQCEW_DATA_WITH_YEAR] : (state, action) => {
+	var newState = Object.assign({}, state)
+	let msa = action.payload[0]
+	let year = action.payload[1]
+	newState.year_requests = newState.year_requests || {}
+	newState.year_requests[msa] = newState.year_requests[msa] || {}
+	newState.year_requests[msa][year] = 
+	    newState.year_requests[msa][year]|| 'loading'
+    }
+    
 }
 
 // ------------------------------
