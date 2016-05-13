@@ -38,16 +38,16 @@ export class HomeView extends React.Component<void, Props, void> {
 
   _initGraph () {
     if(!this.props['densitycomposite']){
-      return this.props['getdensitycomposite']()
+      this.props['getdensitycomposite']()
     }
     if(!this.props['fluiditycomposite']){
-      return this.props['getfluiditycomposite']()
+      this.props['getfluiditycomposite']()
     }
     if(!this.props['diversitycomposite']){
-      return this.props['getdiversitycomposite']()
+      this.props['getdiversitycomposite']()
     }
     if(!this.props['combinedcomposite']){
-      return this.props['getcombinedcomposite']()        
+      this.props['getcombinedcomposite']()        
     }        
   }
 
