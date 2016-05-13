@@ -271,8 +271,8 @@ function _processData(props) {
     //Iterating through every year within a metro area
     var rawValueArray = [];
     var relativeValueArray = Object.keys(newFirmData[msaId]).map(year => {
-      var curRelativeCoord={"x":+year,"y":0},
-          curRawCoord={"x":+year,"y":0},
+      var curRelativeCoord={"x":+year,"y":-1},
+          curRawCoord={"x":+year,"y":-1},
           newFirmSum = 0,
           newPer1000 = 0,
           pop = 0,
@@ -480,21 +480,29 @@ function _sortMsaCities(){
 }
 function _processComposite(newFirms,share){
 
-  var filteredShare = share.map(city => {
-    var withinBounds;
-
-    city.values = city.values.filter(yearVal => {
-      return true;
+  var filteredShare = share.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
     })
-    return city;
+    return metroArea
   })
+
+  var filteredNewFirms = newFirms.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+    return metroArea;
+  })
+
+  filteredShare.sort(_sortMsaCities());
+  filteredNewFirms.sort(_sortMsaCities());
 
   var compositeCityRanks = [];
 
   var newFirmScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
 
   var shareScale = d3.scale.linear()
@@ -503,7 +511,7 @@ function _processComposite(newFirms,share){
                   d3.max(filteredShare, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
 
-  newFirms.forEach(newFirmItem => {
+  filteredNewFirms.forEach(newFirmItem => {
       for(var i=0; i<filteredShare.length;i++){
           if(newFirmItem.key == filteredShare[i].key){
 
@@ -521,7 +529,17 @@ function _processComposite(newFirms,share){
       }
   })
 
-  compositeCityRanks = _rankCities(compositeCityRanks);
+  var filteredCityRanks = compositeCityRanks.filter(metro => {
+    if(metro.values.length == 0){
+      return false;
+    }
+    else{
+      return true;
+    }
+  })
+
+
+  compositeCityRanks = _rankCities(filteredCityRanks);
   var graphData = _polishData(compositeCityRanks,"densityComposite");
 
   return graphData;
@@ -710,6 +728,16 @@ function _processDiversityComposite(opportunity,foreignbornObj){
     }
   }
 
+  cityFilteredLowOpp.sort(_sortMsaCities());
+  cityFilteredHighOpp.sort(_sortMsaCities());
+  cityFilteredForeignborn.sort(_sortMsaCities());
+
+  cityFilteredForeignborn.forEach(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+  })
+
   var lowOppScale = d3.scale.linear()
     .range([0,100])
     .domain(      [d3.min(cityFilteredLowOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
@@ -727,9 +755,7 @@ function _processDiversityComposite(opportunity,foreignbornObj){
                 )  
 
 
-  cityFilteredLowOpp.sort(_sortMsaCities());
-  cityFilteredHighOpp.sort(_sortMsaCities());
-  cityFilteredForeignborn.sort(_sortMsaCities());
+
 
   for(var i=0; i<cityFilteredForeignborn.length;i++){
     var resultValues = [];
