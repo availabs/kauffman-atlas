@@ -40,6 +40,24 @@ var processedFluidityComposite = _processFluidityComposite(processedInc5000,proc
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
 
+fs.writeFileSync("data/processedNewFirms.json",JSON.stringify(processedNewFirms));
+fs.writeFileSync("data/processedShareEmp.json",JSON.stringify(processedShareEmp));
+fs.writeFileSync("data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
+
+fs.writeFileSync("data/processedOpportunity.json",JSON.stringify(processedOpportunity));
+fs.writeFileSync("data/processedForeignborn.json",JSON.stringify(processedForeignborn));
+fs.writeFileSync("data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
+
+fs.writeFileSync("data/processedInc5000.json",JSON.stringify(processedInc5000));
+fs.writeFileSync("data/processedNetMigration.json",JSON.stringify(processedNetMigration));
+fs.writeFileSync("data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
+fs.writeFileSync("data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
+fs.writeFileSync("data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
+fs.writeFileSync("data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
+
+fs.writeFileSync("data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
+
+
 //Want to build an array of objects
 //Each object will have its own file
 //One object per MSA
@@ -48,7 +66,7 @@ var msaArray = [];
 
 var thrice = 0;
 Object.keys(msaPop).forEach(msaId => {
-  if(msaId == 38900){
+  if(thrice < 0){
     var curMsaObj = {};
 
     //Start of Population + name + statename

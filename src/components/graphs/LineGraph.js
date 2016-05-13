@@ -39,7 +39,17 @@ export class LineGraph extends React.Component<void, Props, void> {
           var data = scope.props.data[scope.props.dataType];
       }
 
-      //console.log(data);
+      console.log("linegraphdata",data);
+
+      data.forEach(metro => {
+
+        var city = metro;
+
+        metro.values.forEach(yearValue => {
+          yearValue.city = city;
+        })
+
+      })
 
       var filteredData = data
 
