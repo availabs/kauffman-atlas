@@ -799,13 +799,15 @@ function _processinc5000(data,newFirms){
 
   var totalEmp = {};
 
+  var years = d3.range(1990,2013);
+
   newFirms.forEach(city => {
 
       //Iterating through every year within a metro area
       var valueObject = {};
       Object.keys(city.values).forEach(yearValue => {
           //Want to return: x:year y:percent
-          valueObject[city.values[yearValue].x] = -1;
+          valueObject[city.values[yearValue].x] = null;
           valueObject[city.values[yearValue].x] = city.values[yearValue].y;
       })
 
@@ -816,17 +818,23 @@ function _processinc5000(data,newFirms){
   var graphRawData = polishedData;
 
   var graphRelativeData = graphRawData.map(metroArea => {
-      var newValues = [];
-      metroArea.values.forEach(yearVal => {
-          if(yearVal.x < 2013){
-              var newCoord = {x:yearVal.x, y:-1};
 
-              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][yearVal.x]){
-                  var newY = +yearVal.y / totalEmp[metroArea.key]["values"][yearVal.x];
-                  newCoord = {x: yearVal.x, y:newY};
+      var newValues = years.map(year => {
+              var newCoord = {x:year, y:null};
+              var curVal = null;
+
+              metroArea.values.forEach(yearValue => {
+                if(yearValue.x == year){
+                  curVal = yearValue.y
+                }
+              })              
+
+
+              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][year] && curVal != null){
+                  var newY = +curVal / totalEmp[metroArea.key]["values"][year];
+                  newCoord.y = newY;
               }
-              newValues.push(newCoord);                       
-          }     
+              return newCoord;
       })
 
        return ({key:metroArea.key,values:newValues,area:false});                
@@ -885,6 +893,9 @@ function _processdetailMigration(data,dataset){
                   valueArray.push( {x:+curYear,y:curValue});                        
               }                
           }
+          else{
+            valueArray.push({x:+curYear,y:null});                    
+          }
       })
 
       if(valueArray.length != 0){
@@ -919,10 +930,37 @@ function _processdetailMigration(data,dataset){
 
 function _processFluidityComposite(inc5000,irsNet,totalMigration){
 
-  var filteredRawInc = _trimYears(([2007,2009]),inc5000.raw);
-  var filteredRelInc = _trimYears(([2007,2009]),inc5000.relative);
-  var filteredIrsNet = _trimYears(([2007,2009]),irsNet['relative']);
-  var filteredTotalMigrationFlow = _trimYears(([2007,2009]),totalMigration['relative']);
+  var filteredRawInc = inc5000.raw.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea
+  })
+
+  var filteredRelInc = inc5000.relative.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea;
+  })
+
+  var filteredIrsNet = irsNet['relative'].map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea
+  })
+
+  var filteredTotalMigrationFlow = totalMigration['relative'].map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea;
+  })
+
+
+
+
 
   var cityFilteredIrsNet = [],
       cityFilteredTotalMigrationFlow = [],
@@ -975,6 +1013,8 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   for(var i=0; i<cityFilteredIrsNet.length;i++){
     var resultValues = [];
     if(cityFilteredIrsNet[i].key == cityFilteredRawInc[i].key){
+            console.log(cityFilteredIrsNet[i].values.length,cityFilteredTotalMigrationFlow[i].values.length,cityFilteredRawInc[i].values.length,cityFilteredRelInc[i].values.length)
+
       for(var j=0; j<cityFilteredIrsNet[i]['values'].length; j++){
         resultValues.push({x:cityFilteredIrsNet[i].values[j].x,y:((irsNetScale(cityFilteredIrsNet[i].values[j].y) + totalMigrationScale(cityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(cityFilteredRelInc[i].values[j].y)+ rawIncScale(cityFilteredRawInc[i].values[j].y))/4)})      
       } 
