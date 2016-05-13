@@ -123,7 +123,10 @@ export class DiversityView extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className = 'row'>
-            <div className='col-xs-12'>
+            <div className='col-xs-6'>
+                <DiversityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>                                          
+            </div> 
+            <div className='col-xs-6'>
                 <DiversityGraph plot={this.state.plot} dataType={this.state.dataType} selectedMetric={this.state.selectedMetric}/>                                          
             </div>
           </div>        

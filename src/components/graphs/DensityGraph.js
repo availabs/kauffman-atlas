@@ -5,6 +5,7 @@ import { loadDensityData,loadNewValues,loadShare,loadComposite } from 'redux/mod
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
+import { data } from 'static/data/test'
 
 export class DensityGraph extends React.Component<void, Props, void> {
   constructor () {
@@ -32,6 +33,7 @@ export class DensityGraph extends React.Component<void, Props, void> {
   }
 
   _initGraph () {
+    console.log("testing",data);
     if(!this.props.loaded){
       return this.props['loadData']()
     }
