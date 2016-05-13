@@ -85,8 +85,6 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let first_per_capita = gdpDataPerCapita[0].values.find(d => { return +d.key === 2001 }).values.y
     let perCapitaGrowth = (last_gdp - first_gdp) / first_gdp * 100
 
-
-
     return (
       <div className='container'>
         <h4>{this.props.metroData.name}</h4>
