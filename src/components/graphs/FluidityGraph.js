@@ -65,7 +65,7 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect((mapStateToProps), {
-  loadincData: () => loadInc5000Data (),
+  loadinc: () => loadInc5000Data (),
   loadfluiditycomposite: () => loadFluidityComposite (),
   loadirsNet: () => loadNetMigrationIrs (),
   loadirsTotalMigration: () => loadTotalMigration (),

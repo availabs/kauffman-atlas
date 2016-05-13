@@ -225,7 +225,7 @@ Object.keys(msaPop).forEach(msaId => {
 
 
     //Writing to File
-    fs.writeFileSync("data/" + msaId + ".json",JSON.stringify(curMsaObj));   
+    fs.writeFileSync("data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
   }
   thrice++;
 })
@@ -779,7 +779,7 @@ function _processinc5000(data,newFirms){
       var valueObject = {};
       Object.keys(city.values).forEach(yearValue => {
           //Want to return: x:year y:percent
-          valueObject[city.values[yearValue].x] = 0;
+          valueObject[city.values[yearValue].x] = -1;
           valueObject[city.values[yearValue].x] = city.values[yearValue].y;
       })
 
@@ -793,7 +793,7 @@ function _processinc5000(data,newFirms){
       var newValues = [];
       metroArea.values.forEach(yearVal => {
           if(yearVal.x < 2013){
-              var newCoord = {x:yearVal.x, y:0};
+              var newCoord = {x:yearVal.x, y:-1};
 
               if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][yearVal.x]){
                   var newY = +yearVal.y / totalEmp[metroArea.key]["values"][yearVal.x];
