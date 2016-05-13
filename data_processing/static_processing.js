@@ -40,22 +40,22 @@ var processedFluidityComposite = _processFluidityComposite(processedInc5000,proc
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
 
-fs.writeFileSync("data/processedNewFirms.json",JSON.stringify(processedNewFirms));
-fs.writeFileSync("data/processedShareEmp.json",JSON.stringify(processedShareEmp));
-fs.writeFileSync("data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
+fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
+fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(processedShareEmp));
+fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
 
-fs.writeFileSync("data/processedOpportunity.json",JSON.stringify(processedOpportunity));
-fs.writeFileSync("data/processedForeignborn.json",JSON.stringify(processedForeignborn));
-fs.writeFileSync("data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
+fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
+fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
+fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
 
-fs.writeFileSync("data/processedInc5000.json",JSON.stringify(processedInc5000));
-fs.writeFileSync("data/processedNetMigration.json",JSON.stringify(processedNetMigration));
-fs.writeFileSync("data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
-fs.writeFileSync("data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
-fs.writeFileSync("data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-fs.writeFileSync("data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
+fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
+fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
+fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
+fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
+fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
+fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
-fs.writeFileSync("data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
+fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
 
 
 //Want to build an array of objects
@@ -746,8 +746,18 @@ function _processDiversityComposite(opportunity,foreignbornObj){
   }
 
 
+  var filteredCityRanks = compositeCityRanks.filter(metro => {
+    if(metro.values.length == 0){
+      return false;
+    }
+    else{
+      return true;
+    }
+  })
 
-  compositeCityRanks = _rankCities(compositeCityRanks);
+  //console.log(compositeCityRanks[0]);
+
+  compositeCityRanks = _rankCities(filteredCityRanks);
   var graphData = _polishData(compositeCityRanks,"diversityComposite");
 
 

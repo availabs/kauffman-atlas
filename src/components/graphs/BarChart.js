@@ -49,7 +49,30 @@ export class BarChart extends React.Component<void, Props, void> {
 
         })
 
+
+
+
         if(scope.props.graph == "combinedcomposite"){
+            var data = data.filter(metroArea => {
+                if(scope.props.dataType == "composite"){
+                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                else{
+                    if(metroArea.values[0] == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }                
+                }
+
+
+            })
           data.sort(function(a,b){
               return b.values[0].y - a.values[0].y
           })
@@ -88,7 +111,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
 
         if(scope.props.graph == "combinedcomposite"){
-            var trimmedData = data;
+            var filteredData = data;
         }
         else{
             var trimmedData = data.map(function(metroArea){
@@ -114,29 +137,25 @@ export class BarChart extends React.Component<void, Props, void> {
 
                 return filteredMetro;
             })    
+            var filteredData = trimmedData.filter(metroArea => {
+                if(scope.props.dataType == "composite"){
+                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                else{
+                    if(metroArea.values[0] == null){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }                
+                }
+            })       
         }
-
-        var filteredData = trimmedData.filter(metroArea => {
-            if(scope.props.dataType == "composite"){
-                if(metroArea.values[0].y == null || metroArea.values[1].y == null){
-                    return false;
-                }
-                else{
-                    return true;
-                }
-            }
-            else{
-                if(metroArea.values[0] == null){
-                    return false;
-                }
-                else{
-                    return true;
-                }                
-            }
-
-
-        })
-
 
         console.log("data",data);
         console.log("filtered",filteredData);
