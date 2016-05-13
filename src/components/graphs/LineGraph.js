@@ -51,7 +51,16 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       })
 
-      var filteredData = data
+      var filteredData =  data.filter(metroArea => {
+
+        if(metroArea.values.length == 0){
+          return false;
+        }
+        else{
+          return true;
+        }
+
+      })
 
       var margin = {top: 10, right: 10, bottom: 10, left: 10}
       let width = document.getElementById("mapDiv").offsetWidth
