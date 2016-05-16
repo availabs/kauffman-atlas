@@ -93,7 +93,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
               <MetroMap currentMetro={this.props.metroId} />
               
           </div>
-          <div className='col-xs-3'>
+          <div className='col-xs-2'>
               <div>
                 <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                   {this.props.metroData.pop['2014'].toLocaleString()}
@@ -106,7 +106,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
               <span className='pull-left'>{popData[0].values[0].key}</span>
               <span className='pull-right'>{popData[0].values[popData[0].values.length-1].key}</span>
           </div>
-          <div className='col-xs-3'>
+          <div className='col-xs-2'>
             <div>
               <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                 {this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2014 })[0].value.toLocaleString()}
@@ -119,7 +119,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
             <span className='pull-left'>{popData[0].values[0].key}</span>
             <span className='pull-right'>{popData[0].values[popData[0].values.length-1].key}</span>
           </div>
-           <div className='col-xs-3'>
+           <div className='col-xs-2'>
             <div>
               <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                 {last_per_capita.toLocaleString()}
