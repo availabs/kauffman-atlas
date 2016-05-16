@@ -39,19 +39,35 @@ export class LineGraph extends React.Component<void, Props, void> {
           var data = scope.props.data[scope.props.dataType];
       }
 
-      console.log("linegraphdata",data);
 
-      data.forEach(metro => {
 
-        var city = metro;
 
-        metro.values.forEach(yearValue => {
-          yearValue.city = city;
+      var cityData = data.map(metroArea => {
+
+        var city = {
+          name:metroArea.name,
+          color:metroArea.color,
+          key:metroArea.key,
+          values:null
+        }
+
+        city.values = metroArea.values.map(yearValue => {
+          return {x:yearValue.x, y:yearValue.y, city:city, rank:yearValue.rank}
+        }).filter(yearValue => {
+            if(yearValue.y < 0){
+              return false;
+            }
+            else{
+              return true;
+            }
+          })
+
+          return city;
         })
 
-      })
 
-      var filteredData =  data.filter(metroArea => {
+
+      var filteredData =  cityData.filter(metroArea => {
 
         if(metroArea.values.length == 0){
           return false;
@@ -61,7 +77,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
 
       })
-
+      console.log("linegraphdata",filteredData);
       var margin = {top: 10, right: 10, bottom: 10, left: 10}
       let width = document.getElementById("mapDiv").offsetWidth
       let height = width  * 0.5
@@ -78,7 +94,7 @@ export class LineGraph extends React.Component<void, Props, void> {
           var y = d3.scale.linear()
               .range([paddedHeight,0]);
 
-          y.domain([d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
+          y.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
 
           var x = d3.scale.ordinal()
               .domain(d3.range(
@@ -123,14 +139,14 @@ export class LineGraph extends React.Component<void, Props, void> {
           var y = d3.scale.linear()
           .range([paddedHeight,0]);
 
-          y.domain([d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
+          y.domain([d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
 
           var x = d3.scale.linear()
               .range([0, paddedWidth]);
 
           x.domain([
-              d3.min(data, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
-              d3.max(data, function(c) { return d3.max(c.values, function(v) { return v.x }); })
+              d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+              d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
           ]);
 
           var line = d3.svg.line()

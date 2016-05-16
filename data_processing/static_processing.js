@@ -225,7 +225,7 @@ Object.keys(msaPop).forEach(msaId => {
 
 
     //Writing to File
-    fs.writeFileSync("data/" + msaId + ".json",JSON.stringify(curMsaObj));   
+    fs.writeFileSync("data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
   }
   thrice++;
 })
@@ -271,8 +271,8 @@ function _processData(props) {
     //Iterating through every year within a metro area
     var rawValueArray = [];
     var relativeValueArray = Object.keys(newFirmData[msaId]).map(year => {
-      var curRelativeCoord={"x":+year,"y":0},
-          curRawCoord={"x":+year,"y":0},
+      var curRelativeCoord={"x":+year,"y":-1},
+          curRawCoord={"x":+year,"y":-1},
           newFirmSum = 0,
           newPer1000 = 0,
           pop = 0,
@@ -480,21 +480,29 @@ function _sortMsaCities(){
 }
 function _processComposite(newFirms,share){
 
-  var filteredShare = share.map(city => {
-    var withinBounds;
-
-    city.values = city.values.filter(yearVal => {
-      return true;
+  var filteredShare = share.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
     })
-    return city;
+    return metroArea
   })
+
+  var filteredNewFirms = newFirms.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+    return metroArea;
+  })
+
+  filteredShare.sort(_sortMsaCities());
+  filteredNewFirms.sort(_sortMsaCities());
 
   var compositeCityRanks = [];
 
   var newFirmScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(newFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(newFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(filteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(filteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
 
   var shareScale = d3.scale.linear()
@@ -503,7 +511,7 @@ function _processComposite(newFirms,share){
                   d3.max(filteredShare, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
 
-  newFirms.forEach(newFirmItem => {
+  filteredNewFirms.forEach(newFirmItem => {
       for(var i=0; i<filteredShare.length;i++){
           if(newFirmItem.key == filteredShare[i].key){
 
@@ -521,7 +529,17 @@ function _processComposite(newFirms,share){
       }
   })
 
-  compositeCityRanks = _rankCities(compositeCityRanks);
+  var filteredCityRanks = compositeCityRanks.filter(metro => {
+    if(metro.values.length == 0){
+      return false;
+    }
+    else{
+      return true;
+    }
+  })
+
+
+  compositeCityRanks = _rankCities(filteredCityRanks);
   var graphData = _polishData(compositeCityRanks,"densityComposite");
 
   return graphData;
@@ -710,6 +728,16 @@ function _processDiversityComposite(opportunity,foreignbornObj){
     }
   }
 
+  cityFilteredLowOpp.sort(_sortMsaCities());
+  cityFilteredHighOpp.sort(_sortMsaCities());
+  cityFilteredForeignborn.sort(_sortMsaCities());
+
+  cityFilteredForeignborn.forEach(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+  })
+
   var lowOppScale = d3.scale.linear()
     .range([0,100])
     .domain(      [d3.min(cityFilteredLowOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
@@ -727,9 +755,7 @@ function _processDiversityComposite(opportunity,foreignbornObj){
                 )  
 
 
-  cityFilteredLowOpp.sort(_sortMsaCities());
-  cityFilteredHighOpp.sort(_sortMsaCities());
-  cityFilteredForeignborn.sort(_sortMsaCities());
+
 
   for(var i=0; i<cityFilteredForeignborn.length;i++){
     var resultValues = [];
@@ -773,13 +799,15 @@ function _processinc5000(data,newFirms){
 
   var totalEmp = {};
 
+  var years = d3.range(1990,2013);
+
   newFirms.forEach(city => {
 
       //Iterating through every year within a metro area
       var valueObject = {};
       Object.keys(city.values).forEach(yearValue => {
           //Want to return: x:year y:percent
-          valueObject[city.values[yearValue].x] = 0;
+          valueObject[city.values[yearValue].x] = null;
           valueObject[city.values[yearValue].x] = city.values[yearValue].y;
       })
 
@@ -790,17 +818,23 @@ function _processinc5000(data,newFirms){
   var graphRawData = polishedData;
 
   var graphRelativeData = graphRawData.map(metroArea => {
-      var newValues = [];
-      metroArea.values.forEach(yearVal => {
-          if(yearVal.x < 2013){
-              var newCoord = {x:yearVal.x, y:0};
 
-              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][yearVal.x]){
-                  var newY = +yearVal.y / totalEmp[metroArea.key]["values"][yearVal.x];
-                  newCoord = {x: yearVal.x, y:newY};
+      var newValues = years.map(year => {
+              var newCoord = {x:year, y:null};
+              var curVal = null;
+
+              metroArea.values.forEach(yearValue => {
+                if(yearValue.x == year){
+                  curVal = yearValue.y
+                }
+              })              
+
+
+              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][year] && curVal != null){
+                  var newY = +curVal / totalEmp[metroArea.key]["values"][year];
+                  newCoord.y = newY;
               }
-              newValues.push(newCoord);                       
-          }     
+              return newCoord;
       })
 
        return ({key:metroArea.key,values:newValues,area:false});                
@@ -859,6 +893,9 @@ function _processdetailMigration(data,dataset){
                   valueArray.push( {x:+curYear,y:curValue});                        
               }                
           }
+          else{
+            valueArray.push({x:+curYear,y:null});                    
+          }
       })
 
       if(valueArray.length != 0){
@@ -893,10 +930,37 @@ function _processdetailMigration(data,dataset){
 
 function _processFluidityComposite(inc5000,irsNet,totalMigration){
 
-  var filteredRawInc = _trimYears(([2007,2009]),inc5000.raw);
-  var filteredRelInc = _trimYears(([2007,2009]),inc5000.relative);
-  var filteredIrsNet = _trimYears(([2007,2009]),irsNet['relative']);
-  var filteredTotalMigrationFlow = _trimYears(([2007,2009]),totalMigration['relative']);
+  var filteredRawInc = inc5000.raw.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea
+  })
+
+  var filteredRelInc = inc5000.relative.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea;
+  })
+
+  var filteredIrsNet = irsNet['relative'].map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea
+  })
+
+  var filteredTotalMigrationFlow = totalMigration['relative'].map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return metroArea;
+  })
+
+
+
+
 
   var cityFilteredIrsNet = [],
       cityFilteredTotalMigrationFlow = [],
@@ -949,6 +1013,8 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   for(var i=0; i<cityFilteredIrsNet.length;i++){
     var resultValues = [];
     if(cityFilteredIrsNet[i].key == cityFilteredRawInc[i].key){
+            console.log(cityFilteredIrsNet[i].values.length,cityFilteredTotalMigrationFlow[i].values.length,cityFilteredRawInc[i].values.length,cityFilteredRelInc[i].values.length)
+
       for(var j=0; j<cityFilteredIrsNet[i]['values'].length; j++){
         resultValues.push({x:cityFilteredIrsNet[i].values[j].x,y:((irsNetScale(cityFilteredIrsNet[i].values[j].y) + totalMigrationScale(cityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(cityFilteredRelInc[i].values[j].y)+ rawIncScale(cityFilteredRawInc[i].values[j].y))/4)})      
       } 
