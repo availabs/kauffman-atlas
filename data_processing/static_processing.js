@@ -40,22 +40,22 @@ var processedFluidityComposite = _processFluidityComposite(processedInc5000,proc
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
 
-fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
-fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(processedShareEmp));
-fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
+// fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
+// fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(processedShareEmp));
+// fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
 
-fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
-fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
-fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
+// fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
+// fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
+// fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
 
-fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
-fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
-fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
-fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
-fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
+// fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
+// fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
+// fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
+// fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
+// fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
+// fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
-fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
+// fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
 
 
 //Want to build an array of objects
@@ -66,168 +66,168 @@ var msaArray = [];
 
 var thrice = 0;
 Object.keys(msaPop).forEach(msaId => {
-  if(thrice < 0){
-    var curMsaObj = {};
 
-    //Start of Population + name + statename
-    curMsaObj['pop'] = msaPop[msaId];
-    curMsaObj['name'] = msaName[msaId];
-    curMsaObj['stateAbbr'] = [];
-    curMsaObj['stateFips'] = [];
-    curMsaObj['stateName'] = []; 
+  var curMsaObj = {};
 
-    if(msaName[msaId]){
-      msaName[msaId].split(', ')[1].split('-').forEach(stateAbbr => {
-        curMsaObj['stateAbbr'].push(stateAbbr);
-        curMsaObj['stateFips'].push(abbrToFips[stateAbbr]);
-        curMsaObj['stateName'].push(fipsToName[abbrToFips[stateAbbr]])    
-      })    
-    }
-    //End of Population + name + statename
+  //Start of Population + name + statename
+  curMsaObj['pop'] = msaPop[msaId];
+  curMsaObj['name'] = msaName[msaId];
+  curMsaObj['stateAbbr'] = [];
+  curMsaObj['stateFips'] = [];
+  curMsaObj['stateName'] = []; 
 
-    //Start of density data
-    curMsaObj['density'] = {};
-    curMsaObj['density']['newFirms'] = {};
-    curMsaObj['density']['shareEmp'] = {};
-    curMsaObj['density']['composite'];
-
-    processedNewFirms['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['density']['newFirms']['raw'] = metro;        
-      }
-    })
-    processedNewFirms['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['density']['newFirms']['relative'] = metro;        
-      }
-    })
-    processedShareEmp['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['density']['shareEmp']['raw'] = metro;        
-      }
-    })
-    processedShareEmp['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['density']['shareEmp']['relative'] = metro;        
-      }
-    })
-    processedDensityComposite.forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['density']['composite'] = metro;        
-      }
-    })
-    //End of density data
-
-    //Start of Diversity Data
-    curMsaObj['diversity'] = {};
-    curMsaObj['diversity']['opportunity'];
-    curMsaObj['diversity']['foreignborn'] = {};
-    curMsaObj['diversity']['composite'];
-
-    processedOpportunity.forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['diversity']['opportunity'] = metro;        
-      }
-    })
-    processedForeignborn['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['diversity']['foreignborn']['raw'] = metro;        
-      }
-    })
-    processedForeignborn['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['diversity']['foreignborn']['relative'] = metro;        
-      }
-    })
-    processedDiversityComposite.forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['diversity']['composite'] = metro;        
-      }
-    })
-    //End of Diversity Data
-
-    //Start of Fluidity Data
-    curMsaObj['fluidity'] = {};
-    curMsaObj['fluidity']['highGrowth'] = {};
-    curMsaObj['fluidity']['netMigration'] = {};
-    curMsaObj['fluidity']['totalMigration'] = {};
-    curMsaObj['fluidity']['inflowMigration'] = {};
-    curMsaObj['fluidity']['outflowMigration'] = {};
-    curMsaObj['fluidity']['composite'];
-
-    processedInc5000['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['highGrowth']['raw'] = metro;        
-      }
-    })
-    processedInc5000['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['highGrowth']['relative'] = metro;        
-      }
-    })
-    processedNetMigration['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['netMigration']['raw'] = metro;        
-      }
-    })
-    processedNetMigration['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['netMigration']['relative'] = metro;        
-      }
-    })
-    processedTotalMigration['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['totalMigration']['raw'] = metro;        
-      }
-    })
-    processedTotalMigration['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['totalMigration']['relative'] = metro;        
-      }
-    })
-    processedInflowMigration['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['inflowMigration']['raw'] = metro;        
-      }
-    })
-    processedInflowMigration['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['inflowMigration']['relative'] = metro;        
-      }
-    })
-    processedOutflowMigration['raw'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['outflowMigration']['raw'] = metro;        
-      }
-    })
-    processedOutflowMigration['relative'].forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
-      }
-    })
-    processedFluidityComposite.forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['fluidity']['composite'] = metro;        
-      }
-    })
-    //End of Fluidity Data
-
-    //Start of Combined
-    curMsaObj['combined'] = {};
-    curMsaObj['combined']['composite'];
-    processedCombinedComposite.forEach(metro => {
-      if(metro.key == msaId){
-        curMsaObj['combined']['composite'] = metro;        
-      }
-    })
-    //End of Combined
-
-
-
-    //Writing to File
-    fs.writeFileSync("data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
+  if(msaName[msaId]){
+    msaName[msaId].split(', ')[1].split('-').forEach(stateAbbr => {
+      curMsaObj['stateAbbr'].push(stateAbbr);
+      curMsaObj['stateFips'].push(abbrToFips[stateAbbr]);
+      curMsaObj['stateName'].push(fipsToName[abbrToFips[stateAbbr]])    
+    })    
   }
-  thrice++;
+  //End of Population + name + statename
+
+  //Start of density data
+  curMsaObj['density'] = {};
+  curMsaObj['density']['newFirms'] = {};
+  curMsaObj['density']['shareEmp'] = {};
+  curMsaObj['density']['composite'];
+
+  processedNewFirms['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['newFirms']['raw'] = metro;        
+    }
+  })
+  processedNewFirms['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['newFirms']['relative'] = metro;        
+    }
+  })
+  processedShareEmp['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmp']['raw'] = metro;        
+    }
+  })
+  processedShareEmp['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmp']['relative'] = metro;        
+    }
+  })
+  processedDensityComposite.forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['composite'] = metro;        
+    }
+  })
+  //End of density data
+
+  //Start of Diversity Data
+  curMsaObj['diversity'] = {};
+  curMsaObj['diversity']['opportunity'];
+  curMsaObj['diversity']['foreignborn'] = {};
+  curMsaObj['diversity']['composite'];
+
+  processedOpportunity.forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['opportunity'] = metro;        
+    }
+  })
+  processedForeignborn['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['foreignborn']['raw'] = metro;        
+    }
+  })
+  processedForeignborn['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['foreignborn']['relative'] = metro;        
+    }
+  })
+  processedDiversityComposite.forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['composite'] = metro;        
+    }
+  })
+  //End of Diversity Data
+
+  //Start of Fluidity Data
+  curMsaObj['fluidity'] = {};
+  curMsaObj['fluidity']['highGrowth'] = {};
+  curMsaObj['fluidity']['netMigration'] = {};
+  curMsaObj['fluidity']['totalMigration'] = {};
+  curMsaObj['fluidity']['inflowMigration'] = {};
+  curMsaObj['fluidity']['outflowMigration'] = {};
+  curMsaObj['fluidity']['composite'];
+
+  processedInc5000['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['highGrowth']['raw'] = metro;        
+    }
+  })
+  processedInc5000['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['highGrowth']['relative'] = metro;        
+    }
+  })
+  processedNetMigration['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['netMigration']['raw'] = metro;        
+    }
+  })
+  processedNetMigration['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['netMigration']['relative'] = metro;        
+    }
+  })
+  processedTotalMigration['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['totalMigration']['raw'] = metro;        
+    }
+  })
+  processedTotalMigration['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['totalMigration']['relative'] = metro;        
+    }
+  })
+  processedInflowMigration['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['inflowMigration']['raw'] = metro;        
+    }
+  })
+  processedInflowMigration['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['inflowMigration']['relative'] = metro;        
+    }
+  })
+  processedOutflowMigration['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['outflowMigration']['raw'] = metro;        
+    }
+  })
+  processedOutflowMigration['relative'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
+    }
+  })
+  processedFluidityComposite.forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['composite'] = metro;        
+    }
+  })
+  //End of Fluidity Data
+
+  //Start of Combined
+  curMsaObj['combined'] = {};
+  curMsaObj['combined']['composite'];
+  processedCombinedComposite.forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['combined']['composite'] = metro;        
+    }
+  })
+  //End of Combined
+
+
+
+  //Writing to File
+  fs.writeFileSync("../src/static/data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
+
+
 })
 
 
@@ -830,7 +830,7 @@ function _processinc5000(data,newFirms){
               })              
 
 
-              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][year] && curVal != null){
+              if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][year] && curVal != -1){
                   var newY = +curVal / totalEmp[metroArea.key]["values"][year];
                   newCoord.y = newY;
               }
@@ -850,9 +850,11 @@ function _processinc5000(data,newFirms){
       var rankedData3 = _rankCities(graphRelativeData2);
       var polishedData3 = _polishData(rankedData3,"relativeInc5000");
 
+
       var graphData = {};
       graphData["raw"] = graphRawData;
       graphData["relative"] = polishedData2;
+
       graphData["relative2"] = polishedData3;
 
       return graphData;               
@@ -930,95 +932,132 @@ function _processdetailMigration(data,dataset){
 
 function _processFluidityComposite(inc5000,irsNet,totalMigration){
 
-  var filteredRawInc = inc5000.raw.map(metroArea => {
+  var filteredRawInc = inc5000.raw.filter(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y < 0)
+    })
+    return (metroArea.values.length > 0)
+  })
+
+  var filteredRelInc = inc5000.relative.filter(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y < 0)
+    })
+    return (metroArea.values.length > 0);
+  })
+
+  var filteredIrsNet = irsNet['relative'].filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return !(yearValue.y == null || yearValue.y == -1)
     })
-    return metroArea
+    return (metroArea.values.length > 0)
   })
 
-  var filteredRelInc = inc5000.relative.map(metroArea => {
+  var filteredTotalMigrationFlow = totalMigration['relative'].filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return !(yearValue.y == null || yearValue.y == -1)
     })
-    return metroArea;
+    return (metroArea.values.length > 0);
   })
-
-  var filteredIrsNet = irsNet['relative'].map(metroArea => {
-    metroArea.values = metroArea.values.filter(yearValue => {
-      return !(yearValue.y == null || yearValue.y == -1)
-    })
-    return metroArea
-  })
-
-  var filteredTotalMigrationFlow = totalMigration['relative'].map(metroArea => {
-    metroArea.values = metroArea.values.filter(yearValue => {
-      return !(yearValue.y == null || yearValue.y == -1)
-    })
-    return metroArea;
-  })
-
-
-
-
 
   var cityFilteredIrsNet = [],
       cityFilteredTotalMigrationFlow = [],
       cityFilteredRawInc = [],
       cityFilteredRelInc = [];
 
-
-
   for(var i=0; i<filteredIrsNet.length; i++){
-
     for(var j=0; j<filteredRawInc.length; j++){
-      if(filteredIrsNet[i].key == filteredRawInc[j].key){
-        cityFilteredIrsNet.push(filteredIrsNet[i]); 
-        cityFilteredTotalMigrationFlow.push(filteredTotalMigrationFlow[i]);
-        cityFilteredRawInc.push(filteredRawInc[j])
-        cityFilteredRelInc.push(filteredRelInc[j])
-      }      
+      for(var k=0; k<filteredRelInc.length; k++){
+        if(filteredIrsNet[i].key == filteredRawInc[j].key && filteredIrsNet[i].key == filteredRelInc[k].key){
+          cityFilteredIrsNet.push(filteredIrsNet[i]); 
+          cityFilteredTotalMigrationFlow.push(filteredTotalMigrationFlow[i]);
+          cityFilteredRawInc.push(filteredRawInc[j])
+          cityFilteredRelInc.push(filteredRelInc[k])
+        }          
+      }
     }
   }
 
+
   var compositeCityRanks = [];
+
+  var irsNetYearRange = ([d3.min(cityFilteredIrsNet, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredIrsNet, function(c) { return d3.max(c.values, function(v) { return v.x }); })]
+                    )
+  var totalMigrationyearRange = ([d3.min(cityFilteredTotalMigrationFlow, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredTotalMigrationFlow, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var rawIncyearRange = ([d3.min(cityFilteredRawInc, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                  d3.max(cityFilteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var relIncyearRange = ([d3.min(cityFilteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                  d3.max(cityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+
+
+  var minYear = d3.max([irsNetYearRange[0],totalMigrationyearRange[0],rawIncyearRange[0],relIncyearRange[0]])
+  var maxYear = d3.min([irsNetYearRange[1],totalMigrationyearRange[1],rawIncyearRange[1],relIncyearRange[1]])
+
+  var yearCityFilteredIrsNet = _trimYears(([minYear,maxYear]),cityFilteredIrsNet);
+  var yearCityFilteredTotalMigrationFlow = _trimYears(([minYear,maxYear]),cityFilteredTotalMigrationFlow);
+  var yearCityFilteredRawInc = _trimYears(([minYear,maxYear]),cityFilteredRawInc);
+  var yearCityFilteredRelInc = _trimYears(([minYear,maxYear]),cityFilteredRelInc);
+
+
 
   var irsNetScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(cityFilteredIrsNet, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(cityFilteredIrsNet, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(yearCityFilteredIrsNet, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(yearCityFilteredIrsNet, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
   var totalMigrationScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(cityFilteredTotalMigrationFlow, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(cityFilteredTotalMigrationFlow, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(yearCityFilteredTotalMigrationFlow, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(yearCityFilteredTotalMigrationFlow, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )  
   var rawIncScale = d3.scale.linear()
   .range([0,100])
-  .domain(      [d3.min(cityFilteredRawInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                d3.max(cityFilteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+  .domain(      [d3.min(yearCityFilteredRawInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
   var relIncScale = d3.scale.linear()
   .range([0,100])
-  .domain(      [d3.min(cityFilteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                d3.max(cityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+  .domain(      [d3.min(yearCityFilteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
 
-  cityFilteredIrsNet.sort(_sortMsaCities());
-  cityFilteredTotalMigrationFlow.sort(_sortMsaCities());
-  cityFilteredRawInc.sort(_sortMsaCities());
-  cityFilteredRelInc.sort(_sortMsaCities());
+  yearCityFilteredIrsNet.sort(_sortMsaCities());
+  yearCityFilteredTotalMigrationFlow.sort(_sortMsaCities());
+  yearCityFilteredRawInc.sort(_sortMsaCities());
+  yearCityFilteredRelInc.sort(_sortMsaCities());
 
 
-  for(var i=0; i<cityFilteredIrsNet.length;i++){
+  for(var i=0; i<yearCityFilteredIrsNet.length;i++){
     var resultValues = [];
-    if(cityFilteredIrsNet[i].key == cityFilteredRawInc[i].key){
-            console.log(cityFilteredIrsNet[i].values.length,cityFilteredTotalMigrationFlow[i].values.length,cityFilteredRawInc[i].values.length,cityFilteredRelInc[i].values.length)
+    if(yearCityFilteredIrsNet[i].key == yearCityFilteredRawInc[i].key){
+      var  rawObj= {}
+      var relObj = {}
+      if(yearCityFilteredRawInc[i]['values'].length < yearCityFilteredIrsNet[i]['values'].length){
+        for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
+          for(var k = 0; k<yearCityFilteredRawInc[i]['values'].length; k++){
+            if(yearCityFilteredRawInc[i]['values'][k].x == yearCityFilteredIrsNet[i]['values'][j].x){
+              rawObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRawInc[i]['values'][k].y
+              relObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRelInc[i]['values'][k].y
+            }
+          }
+          if(!rawObj[yearCityFilteredIrsNet[i]['values'][j].x]){
+            rawObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
+            relObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
+          }
 
-      for(var j=0; j<cityFilteredIrsNet[i]['values'].length; j++){
-        resultValues.push({x:cityFilteredIrsNet[i].values[j].x,y:((irsNetScale(cityFilteredIrsNet[i].values[j].y) + totalMigrationScale(cityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(cityFilteredRelInc[i].values[j].y)+ rawIncScale(cityFilteredRawInc[i].values[j].y))/4)})      
-      } 
-      compositeCityRanks.push({key:cityFilteredIrsNet[i]['key'],values:resultValues})          
+          resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(relObj[yearCityFilteredIrsNet[i]['values'][j].x])+ rawIncScale(rawObj[yearCityFilteredIrsNet[i]['values'][j].x]))/4)})      
+        }
+        //console.log(yearObj);
+      }
+      else{
+        for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
+          resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(yearCityFilteredRelInc[i].values[j].y)+ rawIncScale(yearCityFilteredRawInc[i].values[j].y))/4)})      
+        }         
+      }
+
+      compositeCityRanks.push({key:yearCityFilteredIrsNet[i]['key'],values:resultValues})          
     }
   }
 
