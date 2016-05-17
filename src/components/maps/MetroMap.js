@@ -4,7 +4,7 @@ import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
 import { loadMetroData } from 'redux/modules/metroZbpData'
-import { fipsToName, abbrToFips } from 'static/data/stateAbbrToFull'
+import { loadMetroScores } from 'redux/modules/metroScoresData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 
@@ -15,7 +15,8 @@ export class MetroMap extends React.Component<void, Props, void> {
     this.state = {
       metrosGeo: null,
       statesGeo:null,
-      zbpData:null
+      zbpData:null,
+      metroScores:null
     }
 
     this._initGraph = this._initGraph.bind(this)
@@ -38,8 +39,8 @@ export class MetroMap extends React.Component<void, Props, void> {
 
     statesGeo.features = statesGeo.features.filter(d => {
       var match = false;
-      metrosGeo.features[0].properties.NAME.split(', ')[1].split('-').forEach(stateAbbr => {
-        if(d.properties.NAME == fipsToName[abbrToFips[stateAbbr]]){
+      props.metroScores[props.currentMetro].stateName.forEach(stateName => {
+        if(d.properties.NAME == stateName){
           match = true;
         }
       }) 
@@ -116,6 +117,7 @@ export class MetroMap extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => {
   
   return ({
+    metroScores : state.metroScoresData,
     mapLoaded : state.geoData.loaded,
     statesGeo : state.geoData.statesGeo,
     metrosGeo : state.geoData.metrosGeo,
@@ -125,6 +127,7 @@ const mapStateToProps = (state) => {
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
-  loadZbpData: (currentMetro) => loadMetroData(currentMetro)
+  loadZbpData: (currentMetro) => loadMetroData(currentMetro),
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
 })(MetroMap)
 
