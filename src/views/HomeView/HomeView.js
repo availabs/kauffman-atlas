@@ -89,7 +89,6 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log("density",topFiveDensity)
       topFiveDensity = Object.keys(topFiveDensity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
@@ -108,7 +107,6 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log("fluidity",topFiveFluidity)
       topFiveFluidity = Object.keys(topFiveFluidity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
@@ -127,7 +125,6 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log("diversity",topFiveDiversity)
       topFiveDiversity = Object.keys(topFiveDiversity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(

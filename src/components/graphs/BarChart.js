@@ -52,29 +52,9 @@ export class BarChart extends React.Component<void, Props, void> {
 
 
 
-        if(scope.props.graph == "combinedcomposite"){
-            var data = data.filter(metroArea => {
-                if(scope.props.dataType == "composite"){
-                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                else{
-                    if(metroArea.values[0] == null){
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }                
-                }
-
-
-            })
+        if(scope.props.graph != "opportunity"){
           data.sort(function(a,b){
-              return b.values[0].y - a.values[0].y
+              return b.values[(b.values.length-1)].y - a.values[(a.values.length-1)].y
           })
         }
         else{
@@ -110,7 +90,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
 
 
-        if(scope.props.graph == "combinedcomposite"){
+        if(scope.props.graph != "opportunity"){
             var filteredData = data;
         }
         else{
@@ -181,7 +161,7 @@ export class BarChart extends React.Component<void, Props, void> {
 		    .scale(y)
 		    .orient("left");
 
-            if(scope.props.graph == "combinedcomposite"){
+            if(scope.props.graph != "opportunity"){
 
             }
             else{
@@ -202,8 +182,8 @@ export class BarChart extends React.Component<void, Props, void> {
 		x0.domain(filteredData.map(function(d) { return +d.key; }));
         if(scope.props.graph != "combinedcomposite"){
             x1.domain(['lowIncome','highIncome']).rangeRoundBands([0,x0.rangeBand()]);
-        }
-		y.domain([d3.min(filteredData, function(d) { return d['values'][0]['y']; }), d3.max(filteredData, function(d) { return d['values'][0]['y']; })]);
+        } 
+		y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
 
 		svg.append("g")
 		    .attr("class", "x axis")
@@ -221,7 +201,7 @@ export class BarChart extends React.Component<void, Props, void> {
 		      .attr("dy", "-3.5em")
 		      .style("text-anchor", "end")
 		      .text(function(){
-                if(scope.props.graph == "combinedcomposite"){
+                if(scope.props.graph != "opportunity"){
                     return "Score"
                 }
                 else{
@@ -242,9 +222,9 @@ export class BarChart extends React.Component<void, Props, void> {
               .style("stroke","#000000")
               .style("opacity","0")
 
-        if(scope.props.graph == "combinedcomposite"){
+        if(scope.props.graph != "opportunity"){
             metroArea.selectAll("rect")
-                  .data(function(d){ return d.values;})
+                  .data(function(d){var val = [d.values[d.values.length-1]]; return val;})
                 .enter().append("rect")
                   .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
                   .attr("width",x0.rangeBand())
@@ -259,7 +239,7 @@ export class BarChart extends React.Component<void, Props, void> {
                 .data(voronoi(d3.nest()
                     .key(function(d) {return x0(d.city.key) + "," + y(d.y); })
                     .rollup(function(v) { return v[0]; })
-                    .entries(d3.merge(filteredData.map(function(d) { return d.values; })) )
+                    .entries(d3.merge(filteredData.map(function(d) {var val = [d.values[d.values.length-1]]; return val; })) )
                     .map(function(d) { return d.values; })))
             .enter().append("path")
                 .attr("d", function(d) { if(d!=undefined){return "M" + d.join("L") + "Z"}; })
@@ -270,7 +250,7 @@ export class BarChart extends React.Component<void, Props, void> {
         }
         else{
             metroArea.selectAll("rect")
-                  .data(function(d){ return d.values;})
+                  .data(function(d){console.log(d);  return d.values;})
                 .enter().append("rect")
                   .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
                   .attr("width",x1.rangeBand())
@@ -323,7 +303,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
             popText = "Name: " + name
 
-            if(scope.props.graph == "combinedcomposite"){
+            if(scope.props.graph != "opportunity"){
                 rect.attr("width",(x0.rangeBand()*2));
                 popText += " | " + d.y;
             }
@@ -352,7 +332,7 @@ export class BarChart extends React.Component<void, Props, void> {
         function mouseout(d) {                          
             var rect = d3.select("#metroArea"+d.city.key+d.x);
 
-            if(scope.props.graph == "combinedcomposite"){
+            if(scope.props.graph != "opportunity"){
                 rect.attr("width",(x0.rangeBand()));     
                 rect.style("fill",function(){return d.city.color})     
             }
