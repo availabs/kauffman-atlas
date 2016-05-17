@@ -157,7 +157,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
         //Make a new svg
         var svg = d3.select("#barChart svg")
-            .attr('viewBox','-90 -10 ' + (width+90) + ' ' + (height+60))
+            .attr('viewBox','-90 -10 ' + (width+110) + ' ' + (height+60))
 
 		x0.domain(filteredData.map(function(d) { return +d.key; }));
 
@@ -213,8 +213,8 @@ export class BarChart extends React.Component<void, Props, void> {
                   .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
                   .attr("width",x0.rangeBand())
                   .attr("x",function(d){ return x0(d.x);})
-                  .attr("y",function(d){ return y(d.y);})
-                  .attr("height",function(d){return height- y(d.y);})
+                  .attr("y",function(d){ if(y(d.y) == height){return height-15} else{return y(d.y);}})
+                  .attr("height",function(d){if(y(d.y) == height){return 15} else{return height- y(d.y);}})
                   .style("fill",function(d){
                     return d.city.color;
                   })  

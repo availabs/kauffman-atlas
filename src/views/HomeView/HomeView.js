@@ -12,13 +12,6 @@ import NationalMap from 'components/maps/NationalMap'
 // import DensityView from 'views/'
 import { browserHistory } from 'react-router'
 
-
-type Props = {
-  counter: number,
-  doubleAsync: Function,
-  increment: Function
-};
-
 export class HomeView extends React.Component<void, Props, void> {
    constructor () {
     super()
@@ -73,15 +66,13 @@ export class HomeView extends React.Component<void, Props, void> {
 
     let msaClick = (d) =>{
       console.log(d.id);
-
-
+      console.log(this.props);
       if(d.id){
        this.props.history.push('/metro/'+d.id);       
       }
       else{
         this.props.history.push('/metro/'+d.target.id);  
-      }        
-    
+      }  
 
     }
 
@@ -226,7 +217,7 @@ export class HomeView extends React.Component<void, Props, void> {
           
         <div className='row'>
           <div className='col-xs-12'>
-            <NationalMap click={msaClick}/>
+            <NationalMap />
           </div>
         </div>  
       </div>

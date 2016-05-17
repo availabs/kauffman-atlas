@@ -5,17 +5,21 @@ import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
+import { withRouter } from 'react-router'
 
 
 export class NationalMap extends React.Component<void, Props, void> {
+
   constructor () {
     super()
+
     this.state = {
       statesGeo: null, 
       metrosGeo: null,
     }
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
+    this._msaClick = this._msaClick.bind(this)
   }
 
   componentDidMount (){
@@ -78,10 +82,9 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr("d", path)
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
-      .on('click',props.click || null);
+      .on('click',this._msaClick);
 
     function mouseover(d) {
-      console.log(d);
         var popText = "",
             name;
 
@@ -96,7 +99,14 @@ export class NationalMap extends React.Component<void, Props, void> {
     function mouseout(d) {                              
         focus.attr("transform", "translate(-100,-100)");
     }
+
   }
+
+   _msaClick (d) {
+      console.log(d.id);
+      this.context.router.push('/metro/'+d.id);   
+  }
+
 
   _initGraph () {
     if(!this.props.loaded){
@@ -113,6 +123,10 @@ export class NationalMap extends React.Component<void, Props, void> {
       </div>
     )
   }
+}
+
+NationalMap.contextTypes = {
+  router: React.PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
