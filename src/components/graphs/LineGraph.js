@@ -170,16 +170,15 @@ export class LineGraph extends React.Component<void, Props, void> {
 
 
       if(scope.props.plot != 'rank'){
-        if(scope.props.graph != "combinedcomposite"){
-          xAxis.ticks(x.domain()[1]-x.domain()[0])             
-        }
-    
         if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite" && scope.props.graph != "inc"){
             yAxis.tickFormat(axisPercFormat);
         }
-        if(scope.props.dataType != "raw" && scope.props.graph == "inc"){
+        else if(scope.props.dataType != "raw" && scope.props.graph == "inc"){
             yAxis.tickFormat(percFormat);         
-        }          
+        }    
+        else{
+          xAxis.ticks(x.domain()[1]-x.domain()[0])           
+        }      
       }
 
 
