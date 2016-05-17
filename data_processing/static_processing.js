@@ -346,28 +346,33 @@ function _processData(props) {
 
   return graphData;
 }
-function _rankCities(cities){
+function _rankCities(cities,dataset){
+  if(dataset == "opportunity"){
+    var years = ['lowIncome','highIncome'];
+  }
+  else{
     var years = d3.range(
             [d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.x }); })],
             [d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.x }); })+1]
-        );
+        );    
+  }
 
-    years.forEach(year => {
-        var rank = 1;
-        //Sort cities according to each year
-        cities.sort(_sortCities(year));
+  years.forEach(year => {
+      var rank = 1;
+      //Sort cities according to each year
+      cities.sort(_sortCities(year));
 
-        //Go through and assign ranks for current year
-        cities.forEach(city => {
-            city.values.forEach(yearValues => {
-                if(yearValues.x == year){
-                    yearValues.rank = rank;
-                }
-            })
-            rank++;
-        })
-    })          
-    return cities;   
+      //Go through and assign ranks for current year
+      cities.forEach(city => {
+          city.values.forEach(yearValues => {
+              if(yearValues.x == year){
+                  yearValues.rank = rank;
+              }
+          })
+          rank++;
+      })
+  })          
+  return cities;   
 }
 function _polishData(data,dataset){
   var newData = [];
@@ -560,8 +565,9 @@ function _processequalOpp(data){
 
   var finalData = _convertToCoordinateArray(msaGains,"opportunity");
   
-  finalData.sort(_sortCities("lowIncome"));
-  var polishedData = _polishData(finalData,"opportunity");
+  var rankedData = _rankCities(finalData,"opportunity");
+
+  var polishedData = _polishData(rankedData,"opportunity");
 
   return polishedData;
 }
