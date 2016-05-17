@@ -53,6 +53,15 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
+
+    //Focus is the hover popup text
+    var focus = svg.append("g")
+          .attr("transform", "translate(-100,-100)")
+          .attr("class", "focus");
+
+    focus.append("text")
+      .attr("y", 10)
+      .style("font-size",".75em");
     
     svg.selectAll(".state")
       .data(statesGeo.features)
@@ -67,7 +76,26 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr("class",classes['msa'])
       .attr("id",function(d){return "msa"+d.id;})
       .attr("d", path)
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
       .on('click',props.click || null);
+
+    function mouseover(d) {
+      console.log(d);
+        var popText = "",
+            name;
+
+        name = d.properties.NAME;
+   
+        popText += name 
+
+        focus.attr("transform", "translate(50,0)");
+        focus.select("text").text(popText);
+    }
+
+    function mouseout(d) {                              
+        focus.attr("transform", "translate(-100,-100)");
+    }
   }
 
   _initGraph () {
