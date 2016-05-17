@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { loadMetroGdp, loadMetroGdpPerCapita } from 'redux/modules/metroGdpData'
+import { loadMetroScores } from 'redux/modules/metroScoresData'
 import MetroMap from 'components/maps/MetroMap'
 import LineGraph from 'components/graphs/SimpleLineGraph'
 
@@ -11,6 +12,9 @@ export class MetroHeader extends React.Component<void, Props, void> {
     }
     if(!this.props.gdpData[this.props.metroId] || !this.props.gdpData[this.props.metroId].gdp_per_capita){
       return this.props.loadGdpPerCapita(this.props.metroId)
+    }
+    if(!this.props.metroScores[this.props.metroId]){
+      return this.props.loadMetroScores(this.props.metroId)
     }
   }
 
@@ -25,7 +29,8 @@ export class MetroHeader extends React.Component<void, Props, void> {
   hasData () {
     return this.props.gdpData[this.props.metroId] &&
       this.props.gdpData[this.props.metroId].gdp &&
-      this.props.gdpData[this.props.metroId].gdp_per_capita
+      this.props.gdpData[this.props.metroId].gdp_per_capita &&
+      this.props.metroScores[this.props.metroId]      
   }
 
   render () {
@@ -66,7 +71,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
       strokeWidth: 2,
       values: this.props.gdpData[this.props.metroId].gdp
         .map((d,i) => {
-        console.log('test', d.key, d.value, popData[0].values[i].values.y)
+        //console.log('test', d.key, d.value, popData[0].values[i].values.y)
         return {
           key: d.key,
           values:{
@@ -76,7 +81,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
         }
       })
     }]
-    console.log('header', this.props.gdpData[this.props.metroId])
+    console.log('header', this.props.gdpData[this.props.metroId],this.props.metroScores[this.props.metroId])
     let growth = (this.props.metroData.pop[2014] - this.props.metroData.pop[2001]) / this.props.metroData.pop[2001] * 100
     let last_gdp = this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2014 })[0].value
     let first_gdp = this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2001 })[0].value
@@ -142,12 +147,13 @@ export class MetroHeader extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => {
   return ({
-   
+    metroScores : state.metroScoresData,
     gdpData : state.metroGdpData
   })
 }
 
 export default connect((mapStateToProps), {
   loadGdpPerCapita: (currentMetro) => loadMetroGdpPerCapita (currentMetro),
-  loadGdpData: (currentMetro) => loadMetroGdp (currentMetro)
+  loadGdpData: (currentMetro) => loadMetroGdp (currentMetro),
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
 })(MetroHeader)

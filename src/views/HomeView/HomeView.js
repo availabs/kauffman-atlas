@@ -121,7 +121,6 @@ export class HomeView extends React.Component<void, Props, void> {
     }
 
     if(this.props.diversitycomposite){
-      console.log(this.props.diversitycomposite);
       topFiveDiversity = this.props.diversitycomposite.reduce((prev,msa) => {
         if(msa.values[msa.values.length-1].rank < 6){
           prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
