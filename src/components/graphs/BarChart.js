@@ -16,6 +16,7 @@ export class BarChart extends React.Component<void, Props, void> {
         //   graph:"composite"
         // }
         this._renderGraph = this._renderGraph.bind(this)
+        this._labelFunction = this._labelFunction.bind(this)
     }
 
     componentWillMount () {
@@ -140,9 +141,11 @@ export class BarChart extends React.Component<void, Props, void> {
         console.log("data",data);
         console.log("filtered",filteredData);
 
-        var margin = {top: 0, right: 40, bottom: 0, left: 55},
-            width = window.innerWidth*.98 - margin.left - margin.right,
-            height = window.innerHeight*.95 - margin.top - margin.bottom;
+        var margin = {top: 0, right: -0, bottom: 0, left: -0},
+            width = document.getElementById("mapDiv").offsetWidth - margin.left - margin.right,
+            height = document.getElementById("mapDiv").offsetWidth*.5  - margin.top - margin.bottom;
+
+
 
 		var x0 = d3.scale.ordinal()
 		    .rangeBands([0, width], .5,1);
@@ -177,13 +180,18 @@ export class BarChart extends React.Component<void, Props, void> {
           d3.select("#barChart svg").selectAll("*").remove();
 
           var svg = d3.select("#barChart svg")
-          .attr('viewBox','-90 -10 ' + (width) + ' ' + (height+60))
+          .attr('viewBox','-90 -10 ' + (width+90) + ' ' + (height+60))
 
 		x0.domain(filteredData.map(function(d) { return +d.key; }));
-        if(scope.props.graph != "combinedcomposite"){
-            x1.domain(['lowIncome','highIncome']).rangeRoundBands([0,x0.rangeBand()]);
+        if(scope.props.graph == "opportunity"){
+            console.log(x0.rangeBand())
+            x1.domain(['lowIncome','highIncome']).rangeBands([0,x0.rangeBand()]);
+            y.domain([d3.min(filteredData, function(d) { return d['values'][0]['y']; }), d3.max(filteredData, function(d) { return d['values'][0]['y'] })]);
+                  console.log(x1.rangeBand())
         } 
-		y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
+        else{
+            y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
+        }
 
 		svg.append("g")
 		    .attr("class", "x axis")
@@ -250,13 +258,13 @@ export class BarChart extends React.Component<void, Props, void> {
         }
         else{
             metroArea.selectAll("rect")
-                  .data(function(d){console.log(d);  return d.values;})
+                  .data(function(d){ return d.values;})
                 .enter().append("rect")
                   .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
                   .attr("width",x1.rangeBand())
                   .attr("x",function(d){ return x1(d.x);})
                   .attr("y",function(d){ return y(d.y);})
-                  .attr("height",function(d){return height- y(d.y);})
+                  .attr("height",function(d){return height- +y(d.y);})
                   .style("fill",function(d){
                     if(scope.props.dataType == "composite"){ 
                         return compColor(d.x);
@@ -350,7 +358,14 @@ export class BarChart extends React.Component<void, Props, void> {
 
         }
     }
-
+    _labelFunction () {
+        if(this.props.graph != "opportunity"){
+            return "Composite " + this.props.title.split("composite")[0] + " score " + "(" + this.props.data[0].values[this.props.data[0].values.length-1].x + ")"
+        }
+        else{
+            return "Income gain/loss relative to parental income by metro area"
+        }
+    }
     render () {
     	var scope = this;
 
@@ -359,7 +374,7 @@ export class BarChart extends React.Component<void, Props, void> {
         return (
             <div className={classes['graphContainer']}>
                 <div className={classes['title']}>
-
+                    <h4>{scope._labelFunction()}</h4>
                 </div>
                 <div id="barChart" className={classes['svg-container']}>
                   <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
