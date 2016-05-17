@@ -84,12 +84,21 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		    emp:0, est:0, empShare:0, estShare:0, 
 		}
 	    }
-	    let t1 = scope._quarterReduce(current.values,'month1_emplvl')
+	    let empkeys = ['month1_emplvl','month2_emplvl','month3_emplvl']
+	    let t1 = 0
+	    t1 = empkeys.map(key => {
+		return scope._quarterReduce(current.values,key)
+	    }).reduce((a,b) => a+b)/empkeys.length
+	    
 	    let t2 = scope._quarterReduce(current.values,'qtrly_estabs_count')
 	    totalEmp += t1
 	    totalEst += t2
-
-	    let lqt1 = scope._quarterReduce(current.values,'lq_month1_emplvl')
+	    let lqempkeys = empkeys.map(x => 'lq_'+x)
+	    
+	    let lqt1 = 0
+	    lqt1 = lqempkeys.map(key =>{
+		return scope._quarterReduce(current.values,'lq_month1_emplvl')
+	    }).reduce((a,b) => a+b)/lqempkeys.length
 	    let lqt2 = scope._quarterReduce(current.values,'lq_qtrly_estabs_count')
 	    
 	    prev[twoDigit].empQuot = lqt1
@@ -134,6 +143,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
     renderRadar(year,depth, filter){
 	let naicsCodes = this._processData(year,depth,filter)
 	let naicsLib = this.props.naicsKeys
+	if(!naicsCodes || !Object.keys(naicsCodes).length)
+	    return (<span></span>)
 	let estQuot =  Object.keys(naicsCodes).map(d => {
             naicsCodes[d].est_quot = naicsCodes[d].estQuot
             return d

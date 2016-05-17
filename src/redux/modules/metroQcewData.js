@@ -14,8 +14,20 @@ const industries = [
 		'72', '81', '92'
 ]
 
-var defIndCodes = industries.map(code => '0000'+code);
+let years = [
+    '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011',
+    '2012','2013','2014'
+	    ]
+let defIndCodes = industries.map(code => '0000'+code);
 
+let fields = [
+    'area_fips','qtr','industry_codes','year','qtrly_estabs_count',
+    'lq_qtrly_estabs_count','month1_emplvl','month2_emplvl',
+    'month3_emplvl','lq_month1_emplvl','lq_month2_emplvl',
+    'lq_month3_emplvl'
+	     ]
+
+let fieldString = fields.map(x => 'fields[]='+x).join('&')
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -35,25 +47,30 @@ export function receiveDataWithYear (value, msaId, year) {
 
 export const loadMetroData = (msaId) => {
 	var indcodes = defIndCodes.join('');
-  return (dispatch) => {
-    return fetch(qcewApi + 'data/fips' + 'C' + msaId.slice(0, 4) + '/ind' + indcodes)
-           .then(response => response.json() )
-           .then(json =>  dispatch(receiveData(json, msaId)) )
+    return (dispatch) => {
+	let url = qcewApi
+	url += 'data/fips' + 'C' + msaId.slice(0, 4)
+	url += '/ind' + indcodes + '/yr' + years.join('') +'?'+fieldString;
+	console.log(url)
+	
+	return fetch(url)  
+            .then(response => {console.log(response);return response.json()} )
+            .then(json =>  dispatch(receiveData(json, msaId)) )
   }
 }
 
 export const loadMetroDataYear = (msaId, year) => {
 		var indcodes = defIndCodes.join('');
 		if(!year)
-				throw "Attempted to load qcew year data with no year"
-		let query = qcewApi + 'data/fips' + 'C' + msaId.slice(0,4) + '/yr' +
-				year + '/ind' + indcodes + '?fields[]=all'
+		    throw "Attempted to load qcew year data with no year"
+		let query = qcewApi + 'data/fips' + 'C' + msaId.slice(0,4) + '/yr'+
+		    year + '/ind' + indcodes + '?fields[]=year&fields[]=all'
 		console.log(JSON.stringify(query))
 		
 		return (dispatch) => {
-				return fetch(query)
-				            .then(response => response.json() )
-				            .then(json => dispatch(receiveDataWithYear(json,msaId,year)) )
+		    return fetch(query)
+			.then(response => response.json() )
+			.then(json => dispatch(receiveDataWithYear(json,msaId,year)) )
 		}
 }
 
@@ -63,11 +80,12 @@ const ACTION_HANDLERS = {
 	let msa = action.payload[1]
 	let colors = d3.scale.category20()
 	newState.data = action.payload[0]
-	newState.data[0].values.map((ind,i) => {
+	newState.data[0].values.forEach((ind,i) => {
 	    ind.color = colors(i%20)
-	    return ind
+	    ind.values = ind.values.reduce((acc,year) => {
+		return acc.concat(year.values)
+	    },[])
 	})
-		
 	return newState
     },
     [RECEIVE_METROQCEW_DATA_WITH_YEAR]: (state, action) => {
