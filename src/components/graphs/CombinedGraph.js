@@ -46,9 +46,9 @@ export class CombinedGraph extends React.Component<void, Props, void> {
     console.log(this.props.selectedMetric)
     if(this.props[(this.props.selectedMetric)]){
       console.log("combined render making line chart")
-      if(this.props.selectedMetric == "combinedcomposite"){
+      if(this.props.graphType == "bar"){
         return (
-                <BarChart data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
+          <BarChart data={this.props[this.props.selectedMetric]} plot={this.props.plot} dataType={this.props.dataType} title={this.props.selectedMetric} graph={this.props.selectedMetric}/>
         )
       }
       else{

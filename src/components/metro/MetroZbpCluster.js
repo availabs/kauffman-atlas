@@ -7,7 +7,7 @@ import clusterLib from 'static/data/clusterLib'
 import NetworkGraph from 'components/vis/NetworkGraph/NetworkGraph'
 
 
-export class MetroZbp extends React.Component<void, Props, void> {
+export class MetroZbpCluster extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
@@ -244,5 +244,5 @@ export default connect((mapStateToProps), {
   loadZbpData: (currentMetro) => loadMetroData(currentMetro),
   loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year),
   loadNaicsKeys: () => loadNaicsKeys()
-})(MetroZbp)
+})(MetroZbpCluster)
 

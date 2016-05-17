@@ -10,9 +10,11 @@ import fluidityData from './modules/fluidityData'
 import metroQcewData from './modules/metroQcewData'
 import diversityData from './modules/diversityData'
 import combinedData from './modules/combinedData'
+import metroScoresData from './modules/metroScoresData'
 
 
 export default combineReducers({
+  metroScoresData,
   combinedData,
   diversityData,
   fluidityData,

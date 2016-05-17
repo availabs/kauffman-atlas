@@ -8,14 +8,9 @@ export class BarChart extends React.Component<void, Props, void> {
 
     constructor () {
         super()
-        // this.props = {
-        //   data:[],
-        //   plot:"rank",
-        //   dataType:"raw",
-        //   title:"",
-        //   graph:"composite"
-        // }
+
         this._renderGraph = this._renderGraph.bind(this)
+        this._labelFunction = this._labelFunction.bind(this)
     }
 
     componentWillMount () {
@@ -27,7 +22,6 @@ export class BarChart extends React.Component<void, Props, void> {
     }
 
     _renderGraph () {
-        console.log("bar_rendergraph");
         var percFormat = d3.format(".3%");
         var scope = this;
 
@@ -35,12 +29,10 @@ export class BarChart extends React.Component<void, Props, void> {
             .domain(["lowIncome","highIncome"])
             .range(['red','green']);
 
-
-
     	var data = scope.props.data;
 
+        //Need to add a circular reference to each value
         data.forEach(metro => {
-
             var city = metro;
 
             metro.values.forEach(yearValue => {
@@ -49,35 +41,15 @@ export class BarChart extends React.Component<void, Props, void> {
 
         })
 
-
-
-
-        if(scope.props.graph == "combinedcomposite"){
-            var data = data.filter(metroArea => {
-                if(scope.props.dataType == "composite"){
-                    if(metroArea.values[0].y == null || metroArea.values[1].y == null){
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }
-                }
-                else{
-                    if(metroArea.values[0] == null){
-                        return false;
-                    }
-                    else{
-                        return true;
-                    }                
-                }
-
-
+        if(scope.props.graph != "opportunity"){
+            //Sort data so bar chart descends
+            data.sort(function(a,b){
+              return b.values[(b.values.length-1)].y - a.values[(a.values.length-1)].y
             })
-          data.sort(function(a,b){
-              return b.values[0].y - a.values[0].y
-          })
+            var filteredData = data;
         }
         else{
+            //Sort data so bar chart descends
             if(scope.props.dataType != "composite"){
                 data.sort(function(a,b){
                     var aVal,
@@ -94,7 +66,7 @@ export class BarChart extends React.Component<void, Props, void> {
                         }
                     })
 
-                    if(aVal<bVal){
+                    if(aVal<=bVal){
                         return 1;
                     }
                     else if(aVal>bVal){
@@ -103,21 +75,12 @@ export class BarChart extends React.Component<void, Props, void> {
                     else{
                         return 0;
                     }
-
                 })                
-            }            
-        }
+            }
 
-
-
-        if(scope.props.graph == "combinedcomposite"){
-            var filteredData = data;
-        }
-        else{
+            //Trim data so that each city only has the values for the current selected metric
             var trimmedData = data.map(function(metroArea){
-
                 var values = [];
-
                 var filteredMetro = {
                     "key":metroArea.key,
                     "name":metroArea.name,
@@ -134,9 +97,10 @@ export class BarChart extends React.Component<void, Props, void> {
                         }
                     }
                 })
-
                 return filteredMetro;
-            })    
+            })   
+
+            //Make sure the cities we are using have the selected dataset
             var filteredData = trimmedData.filter(metroArea => {
                 if(scope.props.dataType == "composite"){
                     if(metroArea.values[0].y == null || metroArea.values[1].y == null){
@@ -154,15 +118,12 @@ export class BarChart extends React.Component<void, Props, void> {
                         return true;
                     }                
                 }
-            })       
+            })          
         }
 
-        console.log("data",data);
-        console.log("filtered",filteredData);
-
-        var margin = {top: 0, right: 40, bottom: 0, left: 55},
-            width = window.innerWidth*.98 - margin.left - margin.right,
-            height = window.innerHeight*.95 - margin.top - margin.bottom;
+        var margin = {top: 0, right: -0, bottom: 0, left: -0},
+            width = document.getElementById("mapDiv").offsetWidth,
+            height = width*.5;
 
 		var x0 = d3.scale.ordinal()
 		    .rangeBands([0, width], .5,1);
@@ -181,29 +142,33 @@ export class BarChart extends React.Component<void, Props, void> {
 		    .scale(y)
 		    .orient("left");
 
-            if(scope.props.graph == "combinedcomposite"){
-
-            }
-            else{
-                yAxis.ticks(20, "%");
-            }
+        if(scope.props.graph != "opportunity"){}
+        else{
+            yAxis.ticks(20, "%");
+        }
 		    
-
         var voronoi = d3.geom.voronoi()
             .x(function(d) { return x0(d.city.key); })
             .y(function(d) { return y(d.y); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]])
 
-          d3.select("#barChart svg").selectAll("*").remove();
+        //Remove everything currently in the svg
+        d3.select("#barChart svg").selectAll("*").remove();
 
-          var svg = d3.select("#barChart svg")
-          .attr('viewBox','-90 -10 ' + (width) + ' ' + (height+60))
+        //Make a new svg
+        var svg = d3.select("#barChart svg")
+            .attr('viewBox','-90 -10 ' + (width+110) + ' ' + (height+60))
 
 		x0.domain(filteredData.map(function(d) { return +d.key; }));
-        if(scope.props.graph != "combinedcomposite"){
-            x1.domain(['lowIncome','highIncome']).rangeRoundBands([0,x0.rangeBand()]);
+
+        //Opportunity data uses 
+        if(scope.props.graph == "opportunity"){
+            x1.domain(['lowIncome','highIncome']).rangeBands([0,x0.rangeBand()]);
+            y.domain([d3.min(filteredData, function(d) { return d['values'][0]['y']; }), d3.max(filteredData, function(d) { return d['values'][0]['y'] })]);
+        } 
+        else{
+            y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
         }
-		y.domain([d3.min(filteredData, function(d) { return d['values'][0]['y']; }), d3.max(filteredData, function(d) { return d['values'][0]['y']; })]);
 
 		svg.append("g")
 		    .attr("class", "x axis")
@@ -221,14 +186,13 @@ export class BarChart extends React.Component<void, Props, void> {
 		      .attr("dy", "-3.5em")
 		      .style("text-anchor", "end")
 		      .text(function(){
-                if(scope.props.graph == "combinedcomposite"){
+                if(scope.props.graph != "opportunity"){
                     return "Score"
                 }
                 else{
                     return "Percent Income Gain/loss"
                 }
-                });
-
+              });
 
         var metroArea = svg.selectAll(".metroArea")
               .data(filteredData)
@@ -242,15 +206,15 @@ export class BarChart extends React.Component<void, Props, void> {
               .style("stroke","#000000")
               .style("opacity","0")
 
-        if(scope.props.graph == "combinedcomposite"){
+        if(scope.props.graph != "opportunity"){
             metroArea.selectAll("rect")
-                  .data(function(d){ return d.values;})
+                  .data(function(d){var val = [d.values[d.values.length-1]]; return val;})
                 .enter().append("rect")
                   .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
                   .attr("width",x0.rangeBand())
                   .attr("x",function(d){ return x0(d.x);})
-                  .attr("y",function(d){ return y(d.y);})
-                  .attr("height",function(d){return height- y(d.y);})
+                  .attr("y",function(d){ if(y(d.y) == height){return height-15} else{return y(d.y);}})
+                  .attr("height",function(d){if(y(d.y) == height){return 15} else{return height- y(d.y);}})
                   .style("fill",function(d){
                     return d.city.color;
                   })  
@@ -259,7 +223,7 @@ export class BarChart extends React.Component<void, Props, void> {
                 .data(voronoi(d3.nest()
                     .key(function(d) {return x0(d.city.key) + "," + y(d.y); })
                     .rollup(function(v) { return v[0]; })
-                    .entries(d3.merge(filteredData.map(function(d) { return d.values; })) )
+                    .entries(d3.merge(filteredData.map(function(d) {var val = [d.values[d.values.length-1]]; return val; })) )
                     .map(function(d) { return d.values; })))
             .enter().append("path")
                 .attr("d", function(d) { if(d!=undefined){return "M" + d.join("L") + "Z"}; })
@@ -276,7 +240,7 @@ export class BarChart extends React.Component<void, Props, void> {
                   .attr("width",x1.rangeBand())
                   .attr("x",function(d){ return x1(d.x);})
                   .attr("y",function(d){ return y(d.y);})
-                  .attr("height",function(d){return height- y(d.y);})
+                  .attr("height",function(d){return height- +y(d.y);})
                   .style("fill",function(d){
                     if(scope.props.dataType == "composite"){ 
                         return compColor(d.x);
@@ -301,6 +265,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
         }
 
+        //Focus is the hover popup text
         var focus = svg.append("g")
             .attr("transform", "translate(-100,-100)")
             .attr("class", "focus");
@@ -309,21 +274,17 @@ export class BarChart extends React.Component<void, Props, void> {
         .attr("y", 10)
         .style("font-size",".75em");
 
-
-
-
-    
         function mouseover(d) {
             var popText = "",
                 name;
+
             name = d.city.name;
        
             var rect = d3.select("#metroArea"+d.city.key+d.x);
 
-
             popText = "Name: " + name
 
-            if(scope.props.graph == "combinedcomposite"){
+            if(scope.props.graph != "opportunity"){
                 rect.attr("width",(x0.rangeBand()*2));
                 popText += " | " + d.y;
             }
@@ -338,8 +299,6 @@ export class BarChart extends React.Component<void, Props, void> {
                 }                
             }
 
-
-
           focus.attr("transform", "translate(10,-5)");
           focus.select("text").text(popText);
         }
@@ -348,11 +307,10 @@ export class BarChart extends React.Component<void, Props, void> {
             console.log("d.city",d.city);
         }
 
-
         function mouseout(d) {                          
             var rect = d3.select("#metroArea"+d.city.key+d.x);
 
-            if(scope.props.graph == "combinedcomposite"){
+            if(scope.props.graph != "opportunity"){
                 rect.attr("width",(x0.rangeBand()));     
                 rect.style("fill",function(){return d.city.color})     
             }
@@ -365,12 +323,16 @@ export class BarChart extends React.Component<void, Props, void> {
                 }
                 rect.attr("width",(x1.rangeBand()));                        
             }
-
-            
-
         }
     }
-
+    _labelFunction () {
+        if(this.props.graph != "opportunity"){
+            return "Composite " + this.props.title.split("composite")[0] + " score " + "(" + this.props.data[0].values[this.props.data[0].values.length-1].x + ")"
+        }
+        else{
+            return "Income gain/loss relative to parental income by metro area"
+        }
+    }
     render () {
     	var scope = this;
 
@@ -379,7 +341,7 @@ export class BarChart extends React.Component<void, Props, void> {
         return (
             <div className={classes['graphContainer']}>
                 <div className={classes['title']}>
-
+                    <h4>{scope._labelFunction()}</h4>
                 </div>
                 <div id="barChart" className={classes['svg-container']}>
                   <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
@@ -387,7 +349,6 @@ export class BarChart extends React.Component<void, Props, void> {
             </div>
         );            
     }
-
 }
 
 const mapStateToProps = (state) => ({

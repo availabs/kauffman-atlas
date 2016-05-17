@@ -5,17 +5,21 @@ import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
+import { withRouter } from 'react-router'
 
 
 export class NationalMap extends React.Component<void, Props, void> {
+
   constructor () {
     super()
+
     this.state = {
       statesGeo: null, 
       metrosGeo: null,
     }
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
+    this._msaClick = this._msaClick.bind(this)
   }
 
   componentDidMount (){
@@ -53,6 +57,15 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
+
+    //Focus is the hover popup text
+    var focus = svg.append("g")
+          .attr("transform", "translate(-100,-100)")
+          .attr("class", "focus");
+
+    focus.append("text")
+      .attr("y", 10)
+      .style("font-size",".75em");
     
     svg.selectAll(".state")
       .data(statesGeo.features)
@@ -67,8 +80,33 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr("class",classes['msa'])
       .attr("id",function(d){return "msa"+d.id;})
       .attr("d", path)
-      .on('click',props.click || null);
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .on('click',this._msaClick);
+
+    function mouseover(d) {
+        var popText = "",
+            name;
+
+        name = d.properties.NAME;
+   
+        popText += name 
+
+        focus.attr("transform", "translate(50,0)");
+        focus.select("text").text(popText);
+    }
+
+    function mouseout(d) {                              
+        focus.attr("transform", "translate(-100,-100)");
+    }
+
   }
+
+   _msaClick (d) {
+      console.log(d.id);
+      this.context.router.push('/metro/'+d.id);   
+  }
+
 
   _initGraph () {
     if(!this.props.loaded){
@@ -85,6 +123,10 @@ export class NationalMap extends React.Component<void, Props, void> {
       </div>
     )
   }
+}
+
+NationalMap.contextTypes = {
+  router: React.PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
