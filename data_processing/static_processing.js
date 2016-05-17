@@ -55,7 +55,7 @@ var processedCombinedComposite = _processCombinedComposite(processedDensityCompo
 // fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
 // fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
-// fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
+fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
 
 
 //Want to build an array of objects
@@ -1087,9 +1087,23 @@ function _processCombinedComposite(density,diversity,fluidity){
   }
 
 
-  var yearCityFilteredDiversity = _trimYears(([2009,2009]),cityFilteredDiversity);
-  var yearCityFilteredFluidity = _trimYears(([2009,2009]),cityFilteredFluidity);
-  var yearCityFilteredDensity = _trimYears(([2009,2009]),cityFilteredDensity);
+  var cityFilteredDiversityYearRange = ([d3.min(cityFilteredDiversity, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredDiversity, function(c) { return d3.max(c.values, function(v) { return v.x }); })]
+                    )
+  var cityFilteredFluidityYearRange = ([d3.min(cityFilteredFluidity, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredFluidity, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var cityFilteredDensityYearRange = ([d3.min(cityFilteredDensity, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                  d3.max(cityFilteredDensity, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+
+  var minYear = d3.max([cityFilteredDiversityYearRange[0],cityFilteredFluidityYearRange[0],cityFilteredDensityYearRange[0]])
+  var maxYear = d3.min([cityFilteredDiversityYearRange[1],cityFilteredFluidityYearRange[1],cityFilteredDensityYearRange[1]])
+
+  var yearCityFilteredDiversity = _trimYears(([minYear,maxYear]),cityFilteredDiversity);
+  var yearCityFilteredFluidity = _trimYears(([minYear,maxYear]),cityFilteredFluidity);
+  var yearCityFilteredDensity = _trimYears(([minYear,maxYear]),cityFilteredDensity);
+
+
+
 
   var densityScale = d3.scale.linear()
     .range([0,100])
