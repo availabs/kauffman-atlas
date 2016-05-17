@@ -598,7 +598,7 @@ function _convertToCoordinateArray(data,dataset){
                 valueArray.push( {x:+year,y:+data[msaId][year]});                  
               }
               else{
-                valueArray.push( {x:+year,y:-1});                  
+                valueArray.push( {x:+year,y:0});                  
               }
             }           
           })          
@@ -933,18 +933,13 @@ function _processdetailMigration(data,dataset){
 function _processFluidityComposite(inc5000,irsNet,totalMigration){
 
   var filteredRawInc = inc5000.raw.filter(metroArea => {
-    metroArea.values = metroArea.values.filter(yearValue => {
-      return !(yearValue.y == null || yearValue.y < 0)
-    })
-    return (metroArea.values.length > 0)
+    return true;
   })
 
   var filteredRelInc = inc5000.relative.filter(metroArea => {
-    metroArea.values = metroArea.values.filter(yearValue => {
-      return !(yearValue.y == null || yearValue.y < 0)
-    })
-    return (metroArea.values.length > 0);
+    return true;
   })
+
 
   var filteredIrsNet = irsNet['relative'].filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
@@ -986,10 +981,11 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
                     )
   var totalMigrationyearRange = ([d3.min(cityFilteredTotalMigrationFlow, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
                     d3.max(cityFilteredTotalMigrationFlow, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
-  var rawIncyearRange = ([d3.min(cityFilteredRawInc, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+  var rawIncyearRange = ([2007,
                   d3.max(cityFilteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
-  var relIncyearRange = ([d3.min(cityFilteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+  var relIncyearRange = ([2007,
                   d3.max(cityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+
 
 
   var minYear = d3.max([irsNetYearRange[0],totalMigrationyearRange[0],rawIncyearRange[0],relIncyearRange[0]])
@@ -999,8 +995,6 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   var yearCityFilteredTotalMigrationFlow = _trimYears(([minYear,maxYear]),cityFilteredTotalMigrationFlow);
   var yearCityFilteredRawInc = _trimYears(([minYear,maxYear]),cityFilteredRawInc);
   var yearCityFilteredRelInc = _trimYears(([minYear,maxYear]),cityFilteredRelInc);
-
-
 
   var irsNetScale = d3.scale.linear()
     .range([0,100])

@@ -45,6 +45,15 @@ export class CombinedView extends React.Component<void, Props, void> {
 
     e.target.className = classes["active"] + " " + classes["barLineBox"];     
 
+    if(e.target.id == "bar"){
+      d3.select("#rank")[0][0].className = classes["disabled"] + " " + classes["rankValBox"];
+      d3.select("#value")[0][0].className = classes["disabled"] + " " +  classes["rankValBox"];
+    }
+    else{
+      d3.select("#rank")[0][0].className = classes["rankValBox"];
+      d3.select("#value")[0][0].className = classes["rankValBox"];
+      d3.select("#"+this.state.plot)[0][0].className += " " + classes["active"];
+    }
     this.setState({'graphType':e.target.id});
   }
 
@@ -86,11 +95,11 @@ export class CombinedView extends React.Component<void, Props, void> {
         <div className='container text-center'>
           <div className='row'>
             <div className={'col-xs-3 ' + classes["metricBoxContainer"]}>
-              <div className={classes["rankValContainer"]}>
-                <div id="rank" onClick={this._setRankVal} className={classes["rankValBox"]}>Rank</div>
-                <div id="value" onClick={this._setRankVal} className={classes["active"] + " " + classes["rankValBox"]}>Value</div>
+              <div id="rankValButtons" className={classes["rankValContainer"]}>
+                <div id="rank" onClick={this._setRankVal} className={classes["disabled"] + " " + classes["rankValBox"]}>Rank</div>
+                <div id="value" onClick={this._setRankVal} className={classes["disabled"] + " " + classes["active"] + " " + classes["rankValBox"]}>Value</div>
               </div>      
-              <div className={classes["rankValContainer"]}>
+              <div id= "barLineButtons" className={classes["rankValContainer"]}>
                 <div id="bar" onClick={this._setBarLine} className={classes["active"] + " " + classes["barLineBox"]}>Bar</div>
                 <div id="line" onClick={this._setBarLine} className={classes["barLineBox"]}>Line</div>
               </div>         
