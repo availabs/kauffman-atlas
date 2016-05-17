@@ -45,19 +45,15 @@ export class CombinedView extends React.Component<void, Props, void> {
 
     e.target.className = classes["active"] + " " + classes["barLineBox"];     
 
-
-
-      if(e.target.id == "bar"){
-        d3.select("#rank")[0][0].className = classes["disabled"] + " " + classes["rankValBox"];
-        d3.select("#value")[0][0].className = classes["disabled"] + " " +  classes["rankValBox"];
-      }
-      else{
-        d3.select("#rank")[0][0].className = classes["rankValBox"];
-        d3.select("#value")[0][0].className = classes["rankValBox"];
-        d3.select("#"+this.state.plot)[0][0].className += " " + classes["active"];
-      }
-
-
+    if(e.target.id == "bar"){
+      d3.select("#rank")[0][0].className = classes["disabled"] + " " + classes["rankValBox"];
+      d3.select("#value")[0][0].className = classes["disabled"] + " " +  classes["rankValBox"];
+    }
+    else{
+      d3.select("#rank")[0][0].className = classes["rankValBox"];
+      d3.select("#value")[0][0].className = classes["rankValBox"];
+      d3.select("#"+this.state.plot)[0][0].className += " " + classes["active"];
+    }
     this.setState({'graphType':e.target.id});
   }
 

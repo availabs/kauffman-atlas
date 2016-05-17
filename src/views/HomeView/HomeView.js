@@ -92,7 +92,7 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveDensity = Object.keys(topFiveDensity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveDensity[rank].id} className={classes["msa"]}>{rank + ". " + topFiveDensity[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveDensity[rank]["score"])}</div></div>
+              <div onClick={msaClick} id={topFiveDensity[rank].id} className={classes["msa"]}><div className={classes["name"]}>{rank + ". " + topFiveDensity[rank]["name"]}</div> <div className={classes["score"]}>{roundFormat(topFiveDensity[rank]["score"])}</div></div>
         )
       })
     }
@@ -110,7 +110,7 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveFluidity = Object.keys(topFiveFluidity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveFluidity[rank].id} className={classes["msa"]}>{rank + ". " + topFiveFluidity[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveFluidity[rank]["score"])}</div></div>
+              <div onClick={msaClick} id={topFiveFluidity[rank].id} className={classes["msa"]}><div className={classes["name"]}>{rank + ". " + topFiveFluidity[rank]["name"]}</div> <div className={classes["score"]}>{roundFormat(topFiveFluidity[rank]["score"])}</div></div>
         )
       })
     }
@@ -128,7 +128,7 @@ export class HomeView extends React.Component<void, Props, void> {
       topFiveDiversity = Object.keys(topFiveDiversity).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveDiversity[rank].id} className={classes["msa"]}>{rank + ". " + topFiveDiversity[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveDiversity[rank]["score"])}</div></div>
+              <div onClick={msaClick} id={topFiveDiversity[rank].id} className={classes["msa"]}><div className={classes["name"]}>{rank + ". " + topFiveDiversity[rank]["name"]} </div><div className={classes["score"]}>{roundFormat(topFiveDiversity[rank]["score"])}</div></div>
         )
       })
     }
@@ -143,11 +143,10 @@ export class HomeView extends React.Component<void, Props, void> {
         }
         return prev;
       },{})
-      console.log("composite",topFiveCombined)
       topFiveCombined = Object.keys(topFiveCombined).map(rank => {
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveCombined[rank].id} className={classes["msa"]}>{rank + ". " + topFiveCombined[rank]["name"]} <div className={classes["score"]}>{roundFormat(topFiveCombined[rank]["score"])}</div></div>
+              <div onClick={msaClick} id={topFiveCombined[rank].id} className={classes["msa"]}> <div className={classes["name"]}>{rank + ". " + topFiveCombined[rank]["name"]}</div> <div className={classes["score"]}>{roundFormat(topFiveCombined[rank]["score"])}</div></div>
         )
       })
     }
