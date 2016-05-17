@@ -39,12 +39,23 @@ export class LineGraph extends React.Component<void, Props, void> {
       city.values = metroArea.values.map(yearValue => {
         return {x:yearValue.x, y:yearValue.y, city:city, rank:yearValue.rank}
       }).filter(yearValue => {
-          if(yearValue.y < 0){
+        if(this.props.graph == "inc"){
+          if(yearValue.y <= 0){
             return false;
           }
           else{
             return true;
+          }  
+        }
+        else{
+          if(yearValue.y == null){
+            return false;
           }
+          else{
+            return true;
+          }          
+        }
+
         })
 
         return city;
