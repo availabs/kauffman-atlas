@@ -25,6 +25,18 @@
 	padding:10px;	
 }
 
+.barLineBox{
+	display:inline-block;
+	width:50%;
+	border: 1px solid red;
+	min-height: 50px;
+	padding:10px;	
+}
+
+.barLineBox:hover {
+	background-color:#DCDCDC;
+}
+
 .rawRelBox:hover {
 	background-color:#DCDCDC;
 }
