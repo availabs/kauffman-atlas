@@ -82,33 +82,37 @@ export class HomeView extends React.Component<void, Props, void> {
     console.log(popScale.quantiles())
 
 
-    var bucketDisplay = popScale.quantiles().map(quantileValue => {
+    var bucketDisplay = [];
+
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            All Metros
+          </div>)
+
+    popScale.quantiles().forEach(quantileValue => {
 
       var curIndex = popScale.quantiles().indexOf(quantileValue);
 
       if(curIndex == 0){
-        return (
-          <div className={'col-xs-3'}>
+        bucketDisplay.push(
+          <div className={'col-xs-2'}>
             {Math.round(d3.min(popDomain))} to {Math.round(quantileValue)}
           </div>
           )        
       }
-      else if(curIndex == popScale.quantiles().length){
-        return (
-          <div className={'col-xs-3'}>
-            {Math.round(quantileValue)}+
-          </div>
-          )   
-      }
       else{
-        return (
-          <div className={'col-xs-3'}>
+        bucketDisplay.push (
+          <div className={'col-xs-2'}>
             {Math.round(popScale.quantiles()[curIndex-1])} to {Math.round(quantileValue)}
           </div>
           )             
       }
     })
 
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            {Math.round(popScale.quantiles()[popScale.quantiles().length-1])}+
+          </div>)
 
 
     let msaClick = (d) =>{
