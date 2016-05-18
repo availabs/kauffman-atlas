@@ -41,7 +41,12 @@ export class Navbar extends React.Component<void, Props, void> {
           <div className='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
            
             <ul className='nav navbar-nav navbar-right'>
-            
+              <li>
+                <a className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Research</a>
+              </li>
+              <li>
+                <a href="#" className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Resources</a>
+              </li>
             </ul>
           </div>
         </div>
