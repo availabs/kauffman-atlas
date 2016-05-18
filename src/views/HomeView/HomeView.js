@@ -178,7 +178,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
         
           <div className='col-xs-10'>
-            <NationalMap metros={metrosInBucket}/>
+            <NationalMap metros={metrosInBucket} activeComponent={this.state.activeComponent}/>
           </div>
           <div className='col-xs-2'>
             info and stuff
