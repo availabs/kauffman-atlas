@@ -64,6 +64,57 @@ export class HomeView extends React.Component<void, Props, void> {
     var topFiveDiversity;
     var topFiveCombined;
 
+    var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
+      if(this.props.metros[msaId].pop){
+        if(this.props.metros[msaId].pop[2014]){
+          popDomain.push(this.props.metros[msaId].pop[2014]);          
+        }
+      }
+      return popDomain;
+    },[])
+    console.log(popDomain);
+
+    var popScale = d3.scale.quantile()
+                    .domain(popDomain)
+                    .range([0,1,2,3,4])
+
+
+    console.log(popScale.quantiles())
+
+
+    var bucketDisplay = [];
+
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            All Metros
+          </div>)
+
+    popScale.quantiles().forEach(quantileValue => {
+
+      var curIndex = popScale.quantiles().indexOf(quantileValue);
+
+      if(curIndex == 0){
+        bucketDisplay.push(
+          <div className={'col-xs-2'}>
+            {Math.round(d3.min(popDomain))} to {Math.round(quantileValue)}
+          </div>
+          )        
+      }
+      else{
+        bucketDisplay.push (
+          <div className={'col-xs-2'}>
+            {Math.round(popScale.quantiles()[curIndex-1])} to {Math.round(quantileValue)}
+          </div>
+          )             
+      }
+    })
+
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            {Math.round(popScale.quantiles()[popScale.quantiles().length-1])}+
+          </div>)
+
+
     let msaClick = (d) =>{
       console.log(d.id);
       console.log(this.props);
@@ -194,20 +245,7 @@ export class HomeView extends React.Component<void, Props, void> {
           </div>
         </div>
          <div className='row' style={{padding:15, border:'1px solid black', marginTop: 15}}>
-          <div className={'col-xs-3'}>
-              <strong style={{color:'chartreuse'}}>All Metros</strong> 
-          </div>
-           <div className={'col-xs-3'}>
-              <strong>Big Metros</strong>
-              <br /> 2m+
-          </div>
-          <div className={'col-xs-3'}>
-              <strong>Medium Metros</strong>
-               <br />1m - 2m
-          </div>
-          <div className={'col-xs-3'}>
-              <strong>Small Metros</strong> 
-          </div>
+          {bucketDisplay}
         </div>
         <div className='row'>
          <div className={'col-xs-12 ' + classes['text-div']}>
@@ -236,7 +274,8 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,
   fluiditycomposite:state.fluidityData.compositeData,
   diversitycomposite : state.diversityData.diversitycomposite,
-  combinedcomposite : state.combinedData.combinedcomposite 
+  combinedcomposite : state.combinedData.combinedcomposite,
+  metros : state.metros
 })
 
 export default connect((mapStateToProps), {
