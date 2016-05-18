@@ -107,7 +107,6 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     else{
       return (
-        
         <div>
           <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
             <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
@@ -120,10 +119,8 @@ export class MetroHome extends React.Component<void, Props, void> {
             </div>
           </div>
           {this.renderNav()}
-          <div className='container'>
-            <div className='row'>
-                {this.renderDisplay()}
-            </div>
+          <div>
+            {this.renderDisplay()}
           </div>   
         </div>
       )      
