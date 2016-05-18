@@ -56,22 +56,24 @@
 }
 
 
- .whitelink {
+
+  .whitelink {
+    color:#efefef!important;
     text-decoration: none;
   }
 
   .whitelink:active {
-    color: white;
+    color: #efefef;
     text-decoration: none;
   }
 
   .whitelink:hover {
-    color: #e7eff2;
+    color: darken(#db9a36, 5%)!important;
     text-decoration:none;
   }
 
   .whitelink:visited {
-    color: white;
+    color: #efefef;
     text-decoration: none;
   }
 
