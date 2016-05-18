@@ -200,7 +200,7 @@ export class MetroZbp extends React.Component {
     })
 
     return (
-      <table className='table'>
+      <table className='table table-striped'>
         <thead>
           <tr>
             <td>Employment</td>

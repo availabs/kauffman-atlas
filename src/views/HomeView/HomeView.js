@@ -152,7 +152,7 @@ export class HomeView extends React.Component<void, Props, void> {
     }
 
     return (
-     
+      <div>
       <div className='container'>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
@@ -214,12 +214,18 @@ export class HomeView extends React.Component<void, Props, void> {
               <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
            </div>
         </div>
-          
+      </div>
+      <div className='container-fluid'>
         <div className='row'>
-          <div className='col-xs-12'>
+        
+          <div className='col-xs-10'>
             <NationalMap />
           </div>
+          <div className='col-xs-2'>
+            info and stuff
+          </div>
         </div>  
+      </div>
       </div>
       
     )

@@ -38,6 +38,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let popData = [{
       key:'Population',
       strokeWidth: 2,
+      color:'#efefef',
       values: Object.keys(this.props.metroData.pop)
         .filter(d => {return +d > 2000})
         .map((d,i) => {
@@ -54,6 +55,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let gdpData = [{
       key:'Population',
       strokeWidth: 2,
+      color:'#efefef',
       values: this.props.gdpData[this.props.metroId].gdp
         .map((d,i) => {
         return {
@@ -69,6 +71,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let gdpDataPerCapita = [{
       key:'Population',
       strokeWidth: 2,
+      color:'#efefef',
       values: this.props.gdpData[this.props.metroId].gdp
         .map((d,i) => {
         return {
