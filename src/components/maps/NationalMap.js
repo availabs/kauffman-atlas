@@ -20,6 +20,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
     this._drawMetros = this._drawMetros.bind(this)
+    this._colorMetros = this._colorMetros.bind(this)
     this._msaClick = this._msaClick.bind(this)
   }
 
@@ -31,11 +32,31 @@ export class NationalMap extends React.Component<void, Props, void> {
     if(this.props.loaded !== nextProps.loaded){
       this._drawGraph(nextProps);
     }
-    if(this.props.metros !== nextProps.metros){
+    if(this.props.metros !== nextProps.metros && this.props.activeComponent === nextProps.activeComponent){
       if(nextProps.loaded){
         this._drawMetros(nextProps);        
       }
     }
+    if(this.props.activeComponent !== nextProps.activeComponent){
+      if(nextProps.loaded){
+        this._colorMetros(nextProps);        
+      }      
+    }
+  }
+
+  _colorMetros(props){
+    let metrosGeo = Object.assign({},props.metrosGeo);
+
+    d3.selectAll("."+classes['msa'])
+      .style("fill",function(d){   
+        var color = "chartreuse"  
+        props[(props.activeComponent+"composite")].forEach(metroArea => {
+          if(metroArea.key == d.id){
+            color = metroArea.color;
+          }
+        })
+        return color;
+      })
   }
 
   _drawMetros (props) {
@@ -50,8 +71,8 @@ export class NationalMap extends React.Component<void, Props, void> {
         } 
       })
       return inBucket;
-    })     
-    
+    })      
+
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -72,7 +93,8 @@ export class NationalMap extends React.Component<void, Props, void> {
         .scale(s)
         .translate(t);
 
-    let svg = d3.select("#mapDiv svg");
+    let svg = d3.select("#mapDiv svg")
+      .attr('viewBox','0 0 ' + width + ' ' + height)
 
     //Focus is the hover popup text
     var focus = svg.append("g")
@@ -89,28 +111,58 @@ export class NationalMap extends React.Component<void, Props, void> {
       .data(metrosGeo.features)
       .enter().append('path')
       .attr("class",classes['msa'])
-      .attr("id",function(d){return "msa"+d.id;})
+      .attr("id",function(d){d.shape =this; return "msa"+d.id;})
       .attr("d", path)
+      .style("fill",function(d){   
+        var color = "chartreuse"  
+        props[(props.activeComponent+"composite")].forEach(metroArea => {
+          if(metroArea.key == d.id){
+            color = metroArea.color;
+          }
+        })
+        return color;
+      })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on('click',this._msaClick);
 
+    function shadeRGBColor(color, percent) {
+        var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+        return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
+    }
+
     function mouseover(d) {
-        var popText = "",
-            name;
 
-        name = d.properties.NAME;
-   
-        popText += name 
+      var oldColor = d3.select(d.shape).style("fill")
+      d3.select(d.shape).style("fill",shadeRGBColor(oldColor,-.2))
 
-        focus.attr("transform", "translate(50,0)");
-        focus.select("text").text(popText);
+      var popText = "",
+          name;
+
+      name = d.properties.NAME;
+ 
+      popText += name 
+
+      focus.attr("transform", "translate(50,0)");
+      focus.select("text").text(popText);
+
     }
 
     function mouseout(d) {                              
-        focus.attr("transform", "translate(-100,-100)");
-    }
+      focus.attr("transform", "translate(-100,-100)");
 
+      var oldColor = d3.select(d.shape).style("fill")
+
+      d3.select(d.shape).style("fill",function(d){   
+        var color = "chartreuse"  
+        props[(props.activeComponent+"composite")].forEach(metroArea => {
+          if(metroArea.key == d.id){
+            color = metroArea.color;
+          }
+        })
+        return color;
+      })
+    }
   }
 
   _drawGraph (props) {
@@ -125,8 +177,10 @@ export class NationalMap extends React.Component<void, Props, void> {
         } 
       })
       return inBucket;
-    })     
-    
+    })        
+    console.log(metrosGeo)
+
+
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -170,26 +224,55 @@ export class NationalMap extends React.Component<void, Props, void> {
       .data(metrosGeo.features)
       .enter().append('path')
       .attr("class",classes['msa'])
-      .attr("id",function(d){return "msa"+d.id;})
+      .attr("id",function(d){d.shape =this; return "msa"+d.id;})
       .attr("d", path)
+      .style("fill",function(d){   
+        var color = "chartreuse"  
+        props[(props.activeComponent+"composite")].forEach(metroArea => {
+          if(metroArea.key == d.id){
+            color = metroArea.color;
+          }
+        })
+        return color;
+      })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on('click',this._msaClick);
 
+    function shadeRGBColor(color, percent) {
+        var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+        return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
+    }
+
     function mouseover(d) {
-        var popText = "",
-            name;
+      var oldColor = d3.select(d.shape).style("fill")
+      d3.select(d.shape).style("fill",shadeRGBColor(oldColor,-.2))
 
-        name = d.properties.NAME;
-   
-        popText += name 
+      var popText = "",
+          name;
 
-        focus.attr("transform", "translate(50,0)");
-        focus.select("text").text(popText);
+      name = d.properties.NAME;
+ 
+      popText += name 
+
+      focus.attr("transform", "translate(50,0)");
+      focus.select("text").text(popText);
     }
 
     function mouseout(d) {                              
-        focus.attr("transform", "translate(-100,-100)");
+      focus.attr("transform", "translate(-100,-100)");
+
+      var oldColor = d3.select(d.shape).style("fill")
+
+      d3.select(d.shape).style("fill",function(d){   
+        var color = "chartreuse"  
+        props[(props.activeComponent+"composite")].forEach(metroArea => {
+          if(metroArea.key == d.id){
+            color = metroArea.color;
+          }
+        })
+        return color;
+      })
     }
   }
 
@@ -197,7 +280,6 @@ export class NationalMap extends React.Component<void, Props, void> {
       console.log(d.id);
       this.context.router.push('/metro/'+d.id);   
   }
-
 
   _initGraph () {
     if(!this.props.loaded){
@@ -223,7 +305,11 @@ NationalMap.contextTypes = {
 const mapStateToProps = (state) => ({
   loaded : state.geoData.loaded,
   statesGeo : state.geoData.statesGeo,
-  metrosGeo : state.geoData.metrosGeo
+  metrosGeo : state.geoData.metrosGeo,
+  densitycomposite:state.densityData.compositeData,
+  fluiditycomposite:state.fluidityData.compositeData,
+  diversitycomposite : state.diversityData.diversitycomposite,
+  combinedcomposite : state.combinedData.combinedcomposite
 })
 
 export default connect((mapStateToProps), {

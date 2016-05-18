@@ -128,6 +128,6 @@ const mapStateToProps = (state) => {
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
   loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro) 
 })(MetroMap)
 

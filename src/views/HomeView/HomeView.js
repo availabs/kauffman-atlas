@@ -170,7 +170,7 @@ export class HomeView extends React.Component<void, Props, void> {
         var curIndex = topDensityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+              <div onClick={msaClick}  className={classes["msa"]}><div id={metro.key} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.key} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
         )        
       })
     }
@@ -202,7 +202,7 @@ export class HomeView extends React.Component<void, Props, void> {
         var curIndex = topFluidityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+              <div onClick={msaClick}  className={classes["msa"]}><div id={metro.key} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.key} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
         )        
       })
     }
@@ -234,7 +234,7 @@ export class HomeView extends React.Component<void, Props, void> {
         var curIndex = topDiversityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+              <div onClick={msaClick}  className={classes["msa"]}><div id={metro.key} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.key} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
         )        
       })
     }
@@ -354,7 +354,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
         
           <div className='col-xs-10'>
-            <NationalMap metros={metrosInBucket}/>
+            <NationalMap metros={metrosInBucket} activeComponent={this.state.activeComponent}/>
           </div>
           <div className='col-xs-2'>
             info and stuff
