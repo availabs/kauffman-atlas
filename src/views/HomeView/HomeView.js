@@ -16,7 +16,8 @@ export class HomeView extends React.Component<void, Props, void> {
    constructor () {
     super()
     this.state = {
-      activeComponent:'combined'
+      activeComponent:'combined',
+      bucket:'all'
     }
     this._initGraph = this._initGraph.bind(this)
     this._isActive = this._isActive.bind(this)
@@ -72,52 +73,18 @@ export class HomeView extends React.Component<void, Props, void> {
       }
       return popDomain;
     },[])
-    console.log(popDomain);
 
     var popScale = d3.scale.quantile()
                     .domain(popDomain)
-                    .range([0,1,2,3,4])
+                    .range([0,1,2,3])
 
 
-    console.log(popScale.quantiles())
 
 
     var bucketDisplay = [];
 
-    bucketDisplay.push(          
-          <div className={'col-xs-2'}>
-            All Metros
-          </div>)
-
-    popScale.quantiles().forEach(quantileValue => {
-
-      var curIndex = popScale.quantiles().indexOf(quantileValue);
-
-      if(curIndex == 0){
-        bucketDisplay.push(
-          <div className={'col-xs-2'}>
-            {Math.round(d3.min(popDomain))} to {Math.round(quantileValue)}
-          </div>
-          )        
-      }
-      else{
-        bucketDisplay.push (
-          <div className={'col-xs-2'}>
-            {Math.round(popScale.quantiles()[curIndex-1])} to {Math.round(quantileValue)}
-          </div>
-          )             
-      }
-    })
-
-    bucketDisplay.push(          
-          <div className={'col-xs-2'}>
-            {Math.round(popScale.quantiles()[popScale.quantiles().length-1])}+
-          </div>)
-
-
     let msaClick = (d) =>{
-      console.log(d.id);
-      console.log(this.props);
+
       if(d.id){
        this.props.history.push('/metro/'+d.id);       
       }
@@ -127,18 +94,84 @@ export class HomeView extends React.Component<void, Props, void> {
 
     }
 
+    let bucketClick = (d) =>{
+      d3.selectAll("."+classes["bucket"])[0].forEach(bucketDiv => {
+        bucketDiv.className = classes["bucket"];
+      })
+
+      d.target.className = classes["active"] + " " + classes["bucket"];
+
+
+      this.setState({'bucket':d.target.id});
+    }
+
+
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            <div id="all" onClick={bucketClick} className={classes["active"] + " " + classes["bucket"]}>
+              All Metros
+            </div>
+          </div>)
+
+    popScale.quantiles().forEach(quantileValue => {
+      var curIndex = popScale.quantiles().indexOf(quantileValue);
+
+      if(curIndex == 0){
+        bucketDisplay.push(
+          <div className={'col-xs-2'}>
+            <div id={curIndex} onClick={bucketClick} className={classes["bucket"]}>
+              {Math.round(d3.min(popDomain))} to {Math.round(quantileValue)}
+            </div>
+          </div>
+          )        
+      }
+      else{
+        bucketDisplay.push (
+          <div className={'col-xs-2'}>
+            <div id={curIndex} onClick={bucketClick} className={classes["bucket"]}>
+              {Math.round(popScale.quantiles()[curIndex-1])} to {Math.round(quantileValue)}
+            </div>
+          </div>
+          )             
+      }
+    })
+
+    bucketDisplay.push(          
+          <div className={'col-xs-2'}>
+            <div id={popScale.quantiles().length} onClick={bucketClick} className={classes["bucket"]}>
+              {Math.round(popScale.quantiles()[popScale.quantiles().length-1])}+
+            </div>
+          </div>)
+
+
+
+
     if(this.props.densitycomposite){
-      topFiveDensity = this.props.densitycomposite.reduce((prev,msa) => {
-        if(msa.values[msa.values.length-1].rank < 6){
-          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+      var topDensityValues = [];
+      var i=0;
+
+      while(topDensityValues.length < 5 && i<this.props.densitycomposite.length-1){
+        //If we have population data on this metro, proceed
+        if(this.state.bucket != "all"){
+          if(this.props.metros[this.props.densitycomposite[i].key] && this.props.metros[this.props.densitycomposite[i].key].pop && this.props.metros[this.props.densitycomposite[i].key].pop[2014]){
+            if(popScale(this.props.metros[this.props.densitycomposite[i].key].pop[2014]) == this.state.bucket){
+              topDensityValues.push(this.props.densitycomposite[i])
+            }
+          }          
         }
-        return prev;
-      },{})
-      topFiveDensity = Object.keys(topFiveDensity).map(rank => {
+        else{
+          topDensityValues.push(this.props.densitycomposite[i])          
+        }
+
+        i++;
+      }
+
+      topFiveDensity = topDensityValues.map(metro => {
+        var curIndex = topDensityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick}  className={classes["msa"]}><div id={topFiveDensity[rank].id} className={classes["name"]}>{rank + ". " + topFiveDensity[rank]["name"]}</div> <div id={topFiveDensity[rank].id} className={classes["score"]}>{roundFormat(topFiveDensity[rank]["score"])}</div></div>
-        )
+              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+        )        
       })
     }
     else{
@@ -146,17 +179,31 @@ export class HomeView extends React.Component<void, Props, void> {
     }
 
     if(this.props.fluiditycomposite){
-      topFiveFluidity = this.props.fluiditycomposite.reduce((prev,msa) => {
-        if(msa.values[msa.values.length-1].rank < 6){
-          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+      var topFluidityValues = [];
+      var i=0;
+
+      while(topFluidityValues.length < 5 && i<this.props.fluiditycomposite.length-1){
+        //If we have population data on this metro, proceed
+        if(this.state.bucket != "all"){
+          if(this.props.metros[this.props.fluiditycomposite[i].key] && this.props.metros[this.props.fluiditycomposite[i].key].pop && this.props.metros[this.props.fluiditycomposite[i].key].pop[2014]){
+            if(popScale(this.props.metros[this.props.fluiditycomposite[i].key].pop[2014]) == this.state.bucket){
+              topFluidityValues.push(this.props.fluiditycomposite[i])
+            }
+          }          
         }
-        return prev;
-      },{})
-      topFiveFluidity = Object.keys(topFiveFluidity).map(rank => {
+        else{
+          topFluidityValues.push(this.props.fluiditycomposite[i])          
+        }
+
+        i++;
+      }
+
+      topFiveFluidity = topFluidityValues.map(metro => {
+        var curIndex = topFluidityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveFluidity[rank].id} className={classes["msa"]}><div id={topFiveFluidity[rank].id} className={classes["name"]}>{rank + ". " + topFiveFluidity[rank]["name"]}</div> <div id={topFiveFluidity[rank].id} className={classes["score"]}>{roundFormat(topFiveFluidity[rank]["score"])}</div></div>
-        )
+              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+        )        
       })
     }
     else{
@@ -164,17 +211,31 @@ export class HomeView extends React.Component<void, Props, void> {
     }
 
     if(this.props.diversitycomposite){
-      topFiveDiversity = this.props.diversitycomposite.reduce((prev,msa) => {
-        if(msa.values[msa.values.length-1].rank < 6){
-          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+      var topDiversityValues = [];
+      var i=0;
+
+      while(topDiversityValues.length < 5 && i<this.props.diversitycomposite.length-1){
+        //If we have population data on this metro, proceed
+        if(this.state.bucket != "all"){
+          if(this.props.metros[this.props.diversitycomposite[i].key] && this.props.metros[this.props.diversitycomposite[i].key].pop && this.props.metros[this.props.diversitycomposite[i].key].pop[2014]){
+            if(popScale(this.props.metros[this.props.diversitycomposite[i].key].pop[2014]) == this.state.bucket){
+              topDiversityValues.push(this.props.diversitycomposite[i])
+            }
+          }          
         }
-        return prev;
-      },{})
-      topFiveDiversity = Object.keys(topFiveDiversity).map(rank => {
+        else{
+          topDiversityValues.push(this.props.diversitycomposite[i])          
+        }
+
+        i++;
+      }
+
+      topFiveDiversity = topDiversityValues.map(metro => {
+        var curIndex = topDiversityValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveDiversity[rank].id} className={classes["msa"]}><div id={topFiveDiversity[rank].id} className={classes["name"]}>{rank + ". " + topFiveDiversity[rank]["name"]} </div><div id={topFiveDiversity[rank].id} className={classes["score"]}>{roundFormat(topFiveDiversity[rank]["score"])}</div></div>
-        )
+              <div onClick={msaClick}  className={classes["msa"]}><div id={curIndex} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+        )        
       })
     }
     else{
@@ -182,22 +243,58 @@ export class HomeView extends React.Component<void, Props, void> {
     }
 
     if(this.props.combinedcomposite){
-      topFiveCombined = this.props.combinedcomposite.reduce((prev,msa) => {
-        if(msa.values[msa.values.length-1].rank < 6){
-          prev[msa.values[msa.values.length-1].rank] = {name:msa.name,score:msa.values[msa.values.length-1].y,id:msa.key}
+      var topCombinedValues = [];
+      var i=0;
+
+      while(topCombinedValues.length < 5 && i<this.props.combinedcomposite.length-1){
+        //If we have population data on this metro, proceed
+        if(this.state.bucket != "all"){
+          if(this.props.metros[this.props.combinedcomposite[i].key] && this.props.metros[this.props.combinedcomposite[i].key].pop && this.props.metros[this.props.combinedcomposite[i].key].pop[2014]){
+            if(popScale(this.props.metros[this.props.combinedcomposite[i].key].pop[2014]) == this.state.bucket){
+              topCombinedValues.push(this.props.combinedcomposite[i])
+            }
+          }          
         }
-        return prev;
-      },{})
-      topFiveCombined = Object.keys(topFiveCombined).map(rank => {
+        else{
+          topCombinedValues.push(this.props.combinedcomposite[i])          
+        }
+
+        i++;
+      }
+
+      topFiveCombined = topCombinedValues.map(metro => {
+        var curIndex = topCombinedValues.indexOf(metro) + 1
         var roundFormat = d3.format(".2f")
         return(
-              <div onClick={msaClick} id={topFiveCombined[rank].id} className={classes["msa"]}> <div id={topFiveCombined[rank].id} className={classes["name"]}>{rank + ". " + topFiveCombined[rank]["name"]}</div> <div id={topFiveCombined[rank].id} className={classes["score"]}>{roundFormat(topFiveCombined[rank]["score"])}</div></div>
-        )
+              <div onClick={msaClick}  className={classes["msa"]}><div id={metro.key} className={classes["name"]}>{curIndex + ". " + metro["name"]}</div> <div id={metro.key} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div></div>
+        )        
       })
     }
     else{
       topFiveCombined = "Loading..."
     }
+
+    var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
+      //If it isn't all, only take those in the bucket
+      if(this.state.bucket != "all"){
+        if(this.props.metros[msaId] && this.props.metros[msaId].pop && this.props.metros[msaId].pop[2014]){
+          if(popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+        //If we don't have pop data, we can't take it
+        else{
+          return false;
+        }
+      }
+      //If this.state.bucket is all, we want all of them
+      else{
+        return true;
+      }
+    })
 
     const sectionStyle = {
     }
@@ -257,7 +354,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
         
           <div className='col-xs-10'>
-            <NationalMap />
+            <NationalMap metros={metrosInBucket}/>
           </div>
           <div className='col-xs-2'>
             info and stuff

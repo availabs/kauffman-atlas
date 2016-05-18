@@ -19,6 +19,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     }
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
+    this._drawMetros = this._drawMetros.bind(this)
     this._msaClick = this._msaClick.bind(this)
   }
 
@@ -30,11 +31,102 @@ export class NationalMap extends React.Component<void, Props, void> {
     if(this.props.loaded !== nextProps.loaded){
       this._drawGraph(nextProps);
     }
+    if(this.props.metros !== nextProps.metros){
+      if(nextProps.loaded){
+        this._drawMetros(nextProps);        
+      }
+    }
+  }
+
+  _drawMetros (props) {
+    let statesGeo = props.statesGeo
+    let metrosGeo = Object.assign({},props.metrosGeo);
+
+    metrosGeo.features = metrosGeo.features.filter(d => {
+      var inBucket = false;
+      props.metros.forEach(msaId => {
+        if(d.id == msaId){
+          inBucket = true;
+        } 
+      })
+      return inBucket;
+    })     
+    
+    let width = document.getElementById("mapDiv").offsetWidth
+    let height = width  * 0.6
+
+    var projection = d3.geo.albersUsa();
+
+    var path = d3.geo.path()
+      .projection(projection);
+
+    projection
+        .scale(1)
+        .translate([0, 0]);
+
+    var b = path.bounds(statesGeo),
+        s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+        t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+    projection
+        .scale(s)
+        .translate(t);
+
+    let svg = d3.select("#mapDiv svg");
+
+    //Focus is the hover popup text
+    var focus = svg.append("g")
+          .attr("transform", "translate(-100,-100)")
+          .attr("class", "focus");
+
+    focus.append("text")
+      .attr("y", 10)
+      .style("font-size",".75em");
+    
+    d3.selectAll("."+classes['msa']).remove()
+
+    svg.selectAll(".msa")
+      .data(metrosGeo.features)
+      .enter().append('path')
+      .attr("class",classes['msa'])
+      .attr("id",function(d){return "msa"+d.id;})
+      .attr("d", path)
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .on('click',this._msaClick);
+
+    function mouseover(d) {
+        var popText = "",
+            name;
+
+        name = d.properties.NAME;
+   
+        popText += name 
+
+        focus.attr("transform", "translate(50,0)");
+        focus.select("text").text(popText);
+    }
+
+    function mouseout(d) {                              
+        focus.attr("transform", "translate(-100,-100)");
+    }
+
   }
 
   _drawGraph (props) {
     let statesGeo = props.statesGeo
-    let metrosGeo = props.metrosGeo
+    let metrosGeo = Object.assign({},props.metrosGeo);
+
+    metrosGeo.features = metrosGeo.features.filter(d => {
+      var inBucket = false;
+      props.metros.forEach(msaId => {
+        if(d.id == msaId){
+          inBucket = true;
+        } 
+      })
+      return inBucket;
+    })     
+    
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
@@ -99,7 +191,6 @@ export class NationalMap extends React.Component<void, Props, void> {
     function mouseout(d) {                              
         focus.attr("transform", "translate(-100,-100)");
     }
-
   }
 
    _msaClick (d) {

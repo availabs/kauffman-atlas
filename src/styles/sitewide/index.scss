@@ -55,62 +55,72 @@
    color: white;
 }
 
+.bucket{
+  background-color:#f7f7f7;
+  cursor: pointer;
+}
+
+.bucket.active{
+  color:chartreuse;
+}
 
 
-  .whitelink {
-    color:#efefef!important;
-    text-decoration: none;
-  }
 
-  .whitelink:active {
-    color: #efefef;
-    text-decoration: none;
-  }
 
-  .whitelink:hover {
-    color: darken(#db9a36, 5%)!important;
-    text-decoration:none;
-  }
+.whitelink {
+  color:#efefef!important;
+  text-decoration: none;
+}
 
-  .whitelink:visited {
-    color: #efefef;
-    text-decoration: none;
-  }
+.whitelink:active {
+  color: #efefef;
+  text-decoration: none;
+}
 
-  //.whitelink:focus {
-  // color: white;
-  // text-decoration: none;
-  //}
+.whitelink:hover {
+  color: darken(#db9a36, 5%)!important;
+  text-decoration:none;
+}
 
-  .bluelink {
-    text-decoration: none;
-    color: #7D8FAF;
-    font-weight: bold;
-  }
+.whitelink:visited {
+  color: #efefef;
+  text-decoration: none;
+}
 
-  .bluelink:active {
-    color: #7D8FAF;
-  }
+//.whitelink:focus {
+// color: white;
+// text-decoration: none;
+//}
 
-  .bluelink:hover {
-    color: #7D8FAF;
-    text-decoration:none;
-  }
+.bluelink {
+  text-decoration: none;
+  color: #7D8FAF;
+  font-weight: bold;
+}
 
-  .darklink {
-    text-decoration: none;
-    color: #5d5d5d;
-    font-weight: bold;
-  }
+.bluelink:active {
+  color: #7D8FAF;
+}
 
-  .darklink:active {
-    color: white;
-  }
+.bluelink:hover {
+  color: #7D8FAF;
+  text-decoration:none;
+}
 
-  .darklink:hover {
-    color: #e7eff2;
-    text-decoration:none;
-  }
+.darklink {
+  text-decoration: none;
+  color: #5d5d5d;
+  font-weight: bold;
+}
+
+.darklink:active {
+  color: white;
+}
+
+.darklink:hover {
+  color: #e7eff2;
+  text-decoration:none;
+}
 
 
 .active-link {
