@@ -9,7 +9,9 @@ import { loadCombinedComposite } from 'redux/modules/combinedData'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
 import NationalMap from 'components/maps/NationalMap'
-import RankBoxes from 'components/ranks/RankBoxes'
+import RankBox from 'components/ranks/RankBox'
+import PopBuckets from 'components/ranks/PopBuckets'
+import ComponentButtons from 'components/ranks/ComponentButtons'
 // import DensityView from 'views/'
 import { browserHistory } from 'react-router'
 
@@ -24,6 +26,7 @@ export class HomeView extends React.Component<void, Props, void> {
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
+    this._setActiveBucket = this._setActiveBucket.bind(this)
   }
 
   componentWillMount () {
@@ -45,9 +48,13 @@ export class HomeView extends React.Component<void, Props, void> {
     }        
   }
 
-  _setActiveComponent(type){
+  _setActiveComponent (type) {
     this.setState({activeComponent:type})
   }
+
+  _setActiveBucket (bucket) {
+    this.setState({'bucket':bucket});
+  }   
 
   _isActive(type){
     return type === this.state.activeComponent ? classes['active'] : ''
@@ -69,12 +76,9 @@ export class HomeView extends React.Component<void, Props, void> {
     },[])
 
     var popScale = d3.scale.quantile()
-        .domain([100000, 500000, 1000000, 3000000])
-        .range([0,1,2,3,4])
-
-
-    var bucketDisplay = [];
-
+        .domain(popDomain)
+        .range([0,1,2,3])
+    
     let msaClick = (d) =>{
 
       if(d.id){
@@ -86,64 +90,64 @@ export class HomeView extends React.Component<void, Props, void> {
 
     }
 
-    let bucketClick = (d) =>{
-      d3.selectAll("."+classes["bucket"])[0].forEach(bucketDiv => {
-        bucketDiv.className = classes["bucket"];
-      })
-
-      d.target.className = classes["active"] + " " + classes["bucket"];
-
-
-      this.setState({'bucket':d.target.id});
-    }
-
-
-    bucketDisplay.push(          
-      <div className={'col-xs-2'}>
-        <div id="all" onClick={bucketClick} className={classes["active"] + " " + classes["bucket"]}>
-          All Metros
-        </div>
-      </div>
-    )
-
-    popScale.domain().forEach(quantileValue => {
-      var curIndex = popScale.domain().indexOf(quantileValue);
-
-      if(curIndex == 0){
-        bucketDisplay.push(
-          <div className={'col-xs-2'}>
-            <div id={curIndex} onClick={bucketClick} className={classes["bucket"]}>
-              {'< '} {Math.round(quantileValue)}
-            </div>
-          </div>
-          )        
-      }
-      else{
-        bucketDisplay.push (
-          <div className={'col-xs-2'}>
-            <div id={curIndex} onClick={bucketClick} className={classes["bucket"]}>
-              {Math.round(popScale.domain()[curIndex-1])} to {Math.round(quantileValue)}
-            </div>
-          </div>
-          )             
-      }
-    })
-
-    bucketDisplay.push(          
-      <div className={'col-xs-2'}>
-        <div id={popScale.domain().length} onClick={bucketClick} className={classes["bucket"]}>
-          {Math.round(popScale.domain()[popScale.domain().length-1])}+
-        </div>
-      </div>
-    )
-
     var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
-      return (this.state.bucket === 'all' ||
-        (this.props.metros[msaId] && 
-        this.props.metros[msaId].pop && 
-        this.props.metros[msaId].pop[2014] && 
-        popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket))
-     
+      // if(
+      //     this.state.bucket !== 'all' &&
+      //   (
+      //     this.props.metros[msaId] && 
+      //     this.props.metros[msaId].pop && 
+      //     this.props.metros[msaId].pop[2014] && 
+      //     this.props.metros[msaId].pop[2014] >= +popGroups[this.state.bucket] &&
+      //     (
+      //       !popGroups[this.state.bucket+1] ||
+      //       this.props.metros[msaId].pop[2014] <= +popGroups[(+this.state.bucket+1)] 
+      //     ) 
+      //   )
+      // )
+      // {
+      //   console.log(
+      //     msaId,
+      //     this.state.bucket,
+      //     (+this.state.bucket+1),
+      //     this.props.metros[msaId].pop[2014],
+      //     +popGroups[this.state.bucket],
+      //     +popGroups[(+this.state.bucket+1)] || 'highest',
+      //     this.props.metros[msaId].pop[2014] >= +popGroups[this.state.bucket] &&
+      //     (
+      //       !popGroups[+this.state.bucket+1] ||
+      //       this.props.metros[msaId].pop[2014] <= +popGroups[+this.state.bucket+1] 
+      //     )
+      //   )
+      // }
+
+       if(
+          this.state.bucket !== 'all' &&
+        (
+          this.props.metros[msaId] && 
+          this.props.metros[msaId].pop && 
+          this.props.metros[msaId].pop[2014] && 
+          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
+        )
+      )
+      {
+        console.log(
+          msaId,
+          this.state.bucket,
+          this.props.metros[msaId].pop[2014],
+          popScale(this.props.metros[msaId].pop[2014]),
+          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
+        )
+      }
+
+      return (
+          this.state.bucket === 'all' ||
+        (
+          this.props.metros[msaId] && 
+          this.props.metros[msaId].pop && 
+          this.props.metros[msaId].pop[2014] && 
+          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
+        )
+      )
     })
 
     return (
@@ -154,29 +158,37 @@ export class HomeView extends React.Component<void, Props, void> {
             <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
           </div>
         </div>
-        <RankBoxes popScale={popScale} bucket={this.state.bucket} onComponentChange={this._setActiveComponent} />
-        <div className='row' style={{padding:15, border:'1px solid black', marginTop: 15}}>
-          {bucketDisplay}
-        </div>
-        {this.state.bucket} {metrosInBucket.length}
-        <div className='row'>
-         <div className={'col-xs-12 ' + classes['text-div']}>
-              <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
-           </div>
+        <div className='row' style={{padding:15, marginTop: 15}}>
+          <ComponentButtons
+            onComponentChange={this._setActiveComponent} 
+            activeComponent={this.state.activeComponent}
+          />
+          <PopBuckets 
+            popScale={popScale} 
+            onBucketChange={this._setActiveBucket} 
+            bucket={this.state.bucket}
+          />
         </div>
       </div>
-      <div className='container-fluid'>
+      <div className='container'>
         <div className='row'>
-          <div className='col-xs-10'>
-            <NationalMap metros={metrosInBucket} activeComponent={this.state.activeComponent}/>
-          </div>
           <div className='col-xs-2'>
-            info and stuff
+            <RankBox 
+              activeComponent={this.state.activeComponent} 
+              popScale={popScale}
+              bucket={this.state.bucket}
+            />
           </div>
+          <div className='col-xs-10'>
+            <NationalMap 
+              metros={metrosInBucket} 
+              activeComponent={this.state.activeComponent}
+            />
+          </div>
+
         </div>  
       </div>
       </div>
-      
     )
   }
 }
