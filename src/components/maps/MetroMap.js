@@ -80,7 +80,7 @@ export class MetroMap extends React.Component<void, Props, void> {
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')
-      .attr("class",'msa '+classes['msa'])
+      .attr("class",'msa '+classes['singleMsa'])
       .attr("id",function(d){return "msa"+d.id;})
       .attr("d", path)
       .on('click',props.click || null);
@@ -128,6 +128,6 @@ const mapStateToProps = (state) => {
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
   loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro) 
 })(MetroMap)
 

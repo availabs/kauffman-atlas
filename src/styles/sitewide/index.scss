@@ -49,66 +49,90 @@
 	color: white;
 }
 
+.list-boxes {
+  //height: 200px;
+  padding: 15px;
+  //background-color: #efefef;
+  //border-style: solid;
+  //border-width: 0px;
+  //border-color: #5d5d5d;
+  border-radius: 3px;
+  box-shadow: 2px 2px 2px #5d5d5d;
+  color: #5d5d5d;
+}
+
 .active {
    //border: 2px solid white;
    background-color: #5d5d5d;
    color: white;
 }
 
+.bucket{
+  background-color:#f7f7f7;
+  cursor: pointer;
+}
 
- .whitelink {
-    text-decoration: none;
-  }
+.bucket.active{
+  color:chartreuse;
+}
 
-  .whitelink:active {
-    color: white;
-    text-decoration: none;
-  }
 
-  .whitelink:hover {
-    color: #e7eff2;
-    text-decoration:none;
-  }
 
-  .whitelink:visited {
-    color: white;
-    text-decoration: none;
-  }
 
-  //.whitelink:focus {
-  // color: white;
-  // text-decoration: none;
-  //}
+.whitelink {
+  color:#efefef!important;
+  text-decoration: none;
+}
 
-  .bluelink {
-    text-decoration: none;
-    color: #7D8FAF;
-    font-weight: bold;
-  }
+.whitelink:active {
+  color: #efefef;
+  text-decoration: none;
+}
 
-  .bluelink:active {
-    color: #7D8FAF;
-  }
+.whitelink:hover {
+  color: darken(#db9a36, 5%)!important;
+  text-decoration:none;
+}
 
-  .bluelink:hover {
-    color: #7D8FAF;
-    text-decoration:none;
-  }
+.whitelink:visited {
+  color: #efefef;
+  text-decoration: none;
+}
 
-  .darklink {
-    text-decoration: none;
-    color: #5d5d5d;
-    font-weight: bold;
-  }
+//.whitelink:focus {
+// color: white;
+// text-decoration: none;
+//}
 
-  .darklink:active {
-    color: white;
-  }
+.bluelink {
+  text-decoration: none;
+  color: #7D8FAF;
+  font-weight: bold;
+}
 
-  .darklink:hover {
-    color: #e7eff2;
-    text-decoration:none;
-  }
+.bluelink:active {
+  color: #7D8FAF;
+}
+
+.bluelink:hover {
+  color: #7D8FAF;
+  text-decoration:none;
+}
+
+.darklink {
+  text-decoration: none;
+  color: #5d5d5d;
+  font-weight: bold;
+}
+
+.darklink:active {
+  color: white;
+}
+
+.darklink:hover {
+  color: #e7eff2;
+  text-decoration:none;
+}
 
 
 .active-link {

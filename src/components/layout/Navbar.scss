@@ -1,21 +1,23 @@
 .kauffman-nav {
 	background-color: #5d5d5d;
 	color: #fff;
-	min-height: 100px;
-	box-shadow: 2px 2px 10px #5d5d5d;
+	min-height: 70px;
+	box-shadow: 2px 2px 5px #5d5d5d;
+	margin-bottom: 0px;
+	border-radius: 0px;
 }
 
 .kauffman-navbar-brand {
 	color: white;
 	position: absolute;
-	padding-top: 25px;
+	padding-top: 12px;
 	font-size: 25px;
 	font-weight: 100;
 }
 
 .kauffman-navbar-logo {
 	display: inline;
-	width: 75px;
+	width: 65px;
 	padding-right: 20px;
 	padding-bottom: 5px;
 }

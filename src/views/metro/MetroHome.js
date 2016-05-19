@@ -22,16 +22,12 @@ export class MetroHome extends React.Component<void, Props, void> {
 
     this.renderDisplay = this.renderDisplay.bind(this)
     this._selectDisplay = this._selectDisplay.bind(this)
-    this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
   }
 
-  _isActive(type){
-    return type === this.state.display ? classes['active'] : ''
-  }
 
   _linkIsActive(type){
-    return type === this.state.display ? classes['active-link'] : ''
+    return type === this.state.display ? {backgroundColor:'#db9a36'} : {}
   }
 
   _selectDisplay (display) {
@@ -42,6 +38,10 @@ export class MetroHome extends React.Component<void, Props, void> {
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
     console.log('render Dsiplay', 2012, metroId)
     switch(this.state.display){
+      case 'combined':
+        return (
+          <MetroScores metroId={metroId} metroData={this.props.metros[metroId]} />
+        )
       case 'industry':
         return (
            <MetroZbp currentMetro={metroId} year='2012'/>
@@ -61,6 +61,40 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
   }
 
+  renderNav () {
+    let navStyle = {
+      backgroundColor: '#5d5d5d',//'#5d5d5d',//'#7d8faf'//'#db9a36',
+      borderRadius: 0,
+      border: 'none',
+      //borderTop: '1px solid #efefef'
+    }
+    let linkStyle = {
+
+       color: '#efefef'
+    }
+    return (
+      <nav className="navbar navbar-default" style={navStyle}> 
+        <div className="container">
+          <div className="collapse navbar-collapse">
+              <ul className="nav navbar-nav">
+                <li style={this._linkIsActive('combined')} onClick={this._selectDisplay.bind(null,'combined')}>
+                   <a className={classes['whitelink']}>Combined</a>
+                </li>
+                <li style={this._linkIsActive('industry')} onClick={this._selectDisplay.bind(null,'industry')}>
+                  <a className={classes['whitelink']}>Industry Analysis</a>
+                </li>
+                <li style={this._linkIsActive('cluster')} onClick={this._selectDisplay.bind(null,'cluster')}> 
+                  <a className={classes['whitelink']}>Cluster Analysis</a>
+                </li>
+                <li onClick={this._selectDisplay.bind(null,'combined')}>
+                  <a className={classes['whitelink']}>Workforce Analysis</a>
+                </li>
+              </ul>
+          </div>
+        </div>
+      </nav>
+    )
+  }
   render () {
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
     if(!this.props.metros[metroId]){
@@ -79,48 +113,20 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     else{
       return (
-        
         <div>
-          <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
-          <MetroScores metroId={metroId} metroData={this.props.metros[metroId]} />
-          <div className='container text-center'>
-            <div className='row'>
-              <div className={'col-xs-12 ' + classes['text-div']}>
-                <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+          <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
+            <MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
+            <div className='container'>
+              <div className='row'>
+                <div className={'col-xs-12 ' + classes['text-div']}>
+                  <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+                </div>
               </div>
             </div>
-
-            <div className='row'>
-             
-              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'combined')}>
-                <div className={classes['selector-buttons']+' '+this._isActive('combined')}>
-                  <Link className={this._linkIsActive('combined') +' '+ classes['darklink']} to='/combined'>Combined</Link>
-                </div>    
-              </div>
-
-														
-
-              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'industry')}>
-                <div className={classes['selector-buttons']+' '+this._isActive('industry')}>
-                  <Link className={this._linkIsActive('industry') +' '+ classes['darklink']} to='/industry'>Industries (By NAICS)</Link>
-                </div>    
-              </div>
-              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'cluster')}>
-                <div className={classes['selector-buttons']+' '+this._isActive('cluster')}>
-                  <Link className={this._linkIsActive('cluster') +' '+ classes['darklink']} to='/cluster'>Industry Clusters</Link>
-                </div>    
-              </div>
-              <div className='col-xs-3' onClick={this._selectDisplay.bind(null,'workforce')}>
-                <div className={classes['selector-buttons']+' '+this._isActive('workforce')}>
-                  <Link className={this._linkIsActive('workforce') +' '+ classes['darklink']} to='/workforce'>Workforce</Link>
-                </div>    
-
-              </div>
-            </div>
-
-            <div className='row'>
-                {this.renderDisplay()}
-            </div>
+          </div>
+          {this.renderNav()}
+          <div>
+            {this.renderDisplay()}
           </div>   
         </div>
       )

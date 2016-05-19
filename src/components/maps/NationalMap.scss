@@ -12,13 +12,17 @@
     left: 0;
 }
 
-.msa {
-    fill:#7d8faf;
+.singleMsa {
+    fill:#db9a36;
     stroke:white;
 }
 
-.msa:hover {
-    fill:darken(#7d8faf,15%);
+.singeMsa:hover {
+    fill:darken(#db9a36,15%);
+}
+
+.msa{
+    stroke:white;
 }
 
 .state {
