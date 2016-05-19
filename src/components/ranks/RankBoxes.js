@@ -75,9 +75,11 @@ export class RankBoxes extends React.Component<void, Props, void> {
 
   _topFiveList(type,length=5){
     let currentData = this.props[type + 'composite']
-    return currentData.filter((msa, index) => {
-      return this._inBucket(msa.key) && index < length
-    }).map((metro,i) => {
+    return currentData.filter((msa) => {
+      return this._inBucket(msa.key)
+    })
+    .filter((d,i) => { return i < length })
+    .map((metro,i) => {
       return (
         <div className={classes["msa"]}>
           <div id={i} className={classes["name"]}>{(i+1) + ". " + metro["name"]}</div>

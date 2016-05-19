@@ -29,7 +29,6 @@ export class HomeView extends React.Component<void, Props, void> {
   componentWillMount () {
     this._initGraph();
   }
- 
 
   _initGraph () {
     if(!this.props['densitycomposite']){
