@@ -59,13 +59,7 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   render () {
-
-    this._initGraph();
-    var topFiveDensity;
-    var topFiveFluidity;
-    var topFiveDiversity;
-    var topFiveCombined;
-
+    
     var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
       if(this.props.metros[msaId].pop){
         if(this.props.metros[msaId].pop[2014]){
@@ -76,10 +70,8 @@ export class HomeView extends React.Component<void, Props, void> {
     },[])
 
     var popScale = d3.scale.quantile()
-                    .domain([250000, 1000000, 2000000])
-                    .range([0,1,2,3])
-
-
+        .domain([100000, 500000, 1000000, 3000000])
+        .range([0,1,2,3,4])
 
 
     var bucketDisplay = [];
@@ -167,7 +159,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row' style={{padding:15, border:'1px solid black', marginTop: 15}}>
           {bucketDisplay}
         </div>
-        {this.state.bucket}
+        {this.state.bucket} {metrosInBucket.length}
         <div className='row'>
          <div className={'col-xs-12 ' + classes['text-div']}>
               <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
@@ -176,7 +168,6 @@ export class HomeView extends React.Component<void, Props, void> {
       </div>
       <div className='container-fluid'>
         <div className='row'>
-        
           <div className='col-xs-10'>
             <NationalMap metros={metrosInBucket} activeComponent={this.state.activeComponent}/>
           </div>
