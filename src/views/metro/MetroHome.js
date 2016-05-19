@@ -50,13 +50,13 @@ export class MetroHome extends React.Component<void, Props, void> {
         return (
            <MetroZbpCluster currentMetro={metroId} year='2012'/>
         )
-		case 'workforce':
-				return (
-						<MetroQcew currentMetro={metroId} year='2014' qtr='1'/>
-				)
-      default: 
+    case 'workforce':
+	return (
+		<MetroQcew currentMetro={metroId} year='2014'/>
+	)
+    default: 
         return (
-          <MetroZbp currentMetro={metroId} year='2012'/>
+		<MetroZbp currentMetro={metroId} year='2012'/>
         )
     }
   }

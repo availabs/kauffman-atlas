@@ -28,12 +28,11 @@ export class MetroQcew extends React.Component<void, Props, void> {
     
     _fecthData () {
 	//console.log(this.props.zbpData[this.props.year])
-	if((!this.props.qcewData || !this.props.qcewData.length || 
-	    !this.props.qcewData[this.props.year][this.props.currentMetro]) && 
-	   (!this.props.year_requests || 
-	    !this.props.year_requests[this.props.currentMetro] || 
-	    !this.props.year_requests[this.props.currentMetro][this.props.year])
-	  ) {
+	let qcew = this.props.qcewData
+	let msa = this.props.currentMetro
+	let year = this.props.year
+	if((!qcew || !qcew.length || !qcew[msa][year]) )
+	{
 	    this.props.loadQcewDataYear(this.props.currentMetro,
 					this.props.year)
 	}
@@ -43,10 +42,11 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	}
     }
 
-    _processData (year,depth,filter) {
-	if(!this.props.qcewData)
+    _processData (msa,year,depth,filter) {
+	if(!this.props.qcewData || !this.props.qcewData[msa] ||
+	   !this.props.qcewData[msa][year])
 	    return
-	let currentData = this.props.qcewData[year].values[0].values;
+	let currentData = this.props.qcewData[msa][year].values[0].values;
 	let naicsLib = this.props.naicsKeys
 	if(!depth) depth = 2
 	//if(!filter) filter = 'x'
@@ -141,7 +141,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
     }
 
     renderRadar(year,depth, filter){
-	let naicsCodes = this._processData(year,depth,filter)
+	let msa = this.props.currentMetro;
+	let naicsCodes = this._processData(msa,year,depth,filter)
 	let naicsLib = this.props.naicsKeys
 	if(!naicsCodes || !Object.keys(naicsCodes).length)
 	    return (<span></span>)
@@ -206,10 +207,12 @@ export class MetroQcew extends React.Component<void, Props, void> {
 
     renderNaicsOverview (year, depth, filter) {
 	let sortVariable = 'emp_quot'
-
-	if(!this.props.qcewData)
+	let msa = this.props.currentMetro
+	if(!this.props.qcewData || !this.props.qcewData[msa] ||
+	   !this.props.qcewData[msa][year])
 	    return null
-	let naicsCodes = this._processData(year,depth, filter)
+
+	let naicsCodes = this._processData(msa, year, depth, filter)
 	let naicsLib = this.props.naicsKeys
 	let colors = !this.props.colorInd ? {} : this.props.colorInd[0].values
 	    .reduce((obj,rec)=>{

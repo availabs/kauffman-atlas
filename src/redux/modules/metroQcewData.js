@@ -6,14 +6,14 @@ import {qcewApi} from '../../AppConfig'
 // ------------------------------------
 export const RECEIVE_METROQCEW_DATA = 'RECEIVE_METROQCEW_DATA'
 export const RECEIVE_METROQCEW_DATA_WITH_YEAR = 'RECEIVE_METROQCEW_DATA_WITH_YEAR'
-export const REQUEST_METROQCEW_DATA_WITH_YEAR = 'REQUEST_METROQCEW_DATA_WITH_YEAR'
+export const QCEW_NULL_ACTION = 'QCEW_NULL_ACTION'
 const industries = [
 		'11', '21', '22', '23', '31', '32', '33',
 		'42', '44', '45', '48', '49', '51', '52',
 		'53', '54', '55', '56', '61', '62', '71',
 		'72', '81', '92'
 ]
-
+let msayears ={}
 let years = [
     '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011',
     '2012','2013','2014'
@@ -45,8 +45,14 @@ export function receiveDataWithYear (value, msaId, year) {
   }
 }
 
+export function nullAction() {
+    return {
+	type: QCEW_NULL_ACTION
+    }
+}
+
 export const loadMetroData = (msaId) => {
-	var indcodes = defIndCodes.join('');
+    var indcodes = defIndCodes.join('');
     return (dispatch) => {
 	let url = qcewApi
 	url += 'data/fips' + 'C' + msaId.slice(0, 4)
@@ -56,22 +62,37 @@ export const loadMetroData = (msaId) => {
 	return fetch(url)  
             .then(response => {console.log(response);return response.json()} )
             .then(json =>  dispatch(receiveData(json, msaId)) )
-  }
+    }
 }
 
 export const loadMetroDataYear = (msaId, year) => {
-		var indcodes = defIndCodes.join('');
-		if(!year)
-		    throw "Attempted to load qcew year data with no year"
-		let query = qcewApi + 'data/fips' + 'C' + msaId.slice(0,4) + '/yr'+
-		    year + '/ind' + indcodes + '?fields[]=year&fields[]=all'
-		console.log(JSON.stringify(query))
-		
-		return (dispatch) => {
-		    return fetch(query)
-			.then(response => response.json() )
-			.then(json => dispatch(receiveDataWithYear(json,msaId,year)) )
-		}
+    var indcodes = defIndCodes.join('')
+    if(msayears[msaId] && msayears[msaId][year])
+	return (dispatch) => dispatch(nullAction())
+    msayears[msaId] = msayears[msaId] || {}
+    msayears[msaId][year] = 'loading'
+    
+    if(!year)
+	throw "Attempted to load qcew year data with no year"
+    let query = qcewApi + 'data/fips' + 'C' + msaId.slice(0,4) + '/yr'+
+	year + '/ind' + indcodes + '?fields[]=year&fields[]=all'
+    console.log(JSON.stringify(query))
+    
+    return (dispatch) => {
+	return fetch(query)
+	    .then(response =>{
+		if(!response.ok)
+		    msayears[msaId][year] = null
+		else
+		    msayears[msaId][year] = 'loaded'
+		return response.json()
+	    })
+	    .then(json => {
+		debugger;
+		dispatch(receiveDataWithYear(json,msaId,year))	
+	    })
+
+    }
 }
 
 const ACTION_HANDLERS = {
@@ -93,24 +114,20 @@ const ACTION_HANDLERS = {
 	let msa = action.payload[1]
 	let year = action.payload[2]
 				
-	newState.yeardata = newState.yeardata || {}
-	newState.yeardata[year] = action.payload[0][0]
+	newState.yeardata = Object.assign({},newState.yeardata) || {}
+	newState.yeardata[msa] = newState.yeardata[msa] || {}
+	newState.yeardata[msa][year] = action.payload[0][0]
 	console.log(action.payload[0][0].key)
-	newState.yeardata[year].values[0].values.map((ind,i) => {
+	newState.yeardata[msa][year].values[0].values.map((ind,i) => {
 	    ind.color = d3.scale.category20()(i%20)
 	    return ind
 	})
 	
-      return newState
+	return newState
     },
-    [REQUEST_METROQCEW_DATA_WITH_YEAR] : (state, action) => {
-	var newState = Object.assign({}, state)
-	let msa = action.payload[0]
-	let year = action.payload[1]
-	newState.year_requests = newState.year_requests || {}
-	newState.year_requests[msa] = newState.year_requests[msa] || {}
-	newState.year_requests[msa][year] = 
-	    newState.year_requests[msa][year]|| 'loading'
+    [QCEW_NULL_ACTION]: (state, action) => {
+	var newState = Object.assign({},state)
+	return newState
     }
     
 }
