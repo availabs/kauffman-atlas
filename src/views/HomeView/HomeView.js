@@ -158,6 +158,7 @@ export class HomeView extends React.Component<void, Props, void> {
             <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
           </div>
         </div>
+        
         <div className='row' style={{padding:15, marginTop: 15}}>
           <ComponentButtons
             onComponentChange={this._setActiveComponent} 
@@ -169,17 +170,23 @@ export class HomeView extends React.Component<void, Props, void> {
             bucket={this.state.bucket}
           />
         </div>
+        <div className='row'>
+          <div className={'col-xs-12 ' + classes['text-div']}>
+            <strong>{this.state.activeComponent.toUpperCase()}</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+          </div>
+        </div>
+        
       </div>
       <div className='container'>
         <div className='row'>
-          <div className='col-xs-2'>
+          <div className='col-xs-2' style={{ paddingRight: 0}}>
             <RankBox 
               activeComponent={this.state.activeComponent} 
               popScale={popScale}
               bucket={this.state.bucket}
             />
           </div>
-          <div className='col-xs-10'>
+          <div className='col-xs-10' style={{ padding: 0}}>
             <NationalMap 
               metros={metrosInBucket} 
               activeComponent={this.state.activeComponent}
