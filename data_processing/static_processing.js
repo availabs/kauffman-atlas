@@ -592,7 +592,7 @@ function _convertToCoordinateArray(data,dataset){
         else{
           years.forEach(year => {
             if(dataset != "inc5000"){
-              if(data[msaId][year]){
+              if(typeof +data[msaId][year] == "number"){
                 valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});                   
               }
               else{
@@ -600,7 +600,7 @@ function _convertToCoordinateArray(data,dataset){
               }
             }
             else{
-              if(data[msaId][year]){
+              if(typeof +data[msaId][year] == "number"){
                 valueArray.push( {x:+year,y:+data[msaId][year]});                  
               }
               else{
@@ -874,7 +874,7 @@ function _processdetailMigration(data,dataset){
   Object.keys(data).forEach(msaId => {
       var valueArray = [];
       Object.keys(data[msaId]).forEach(year => {
-          if(data[msaId][year]){
+          if(typeof +data[msaId][year] == "number"){
               if(data[msaId][year]['outflow']){
                   if(year > 12){
                       var curYear = "19" + year;
