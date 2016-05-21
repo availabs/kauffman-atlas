@@ -556,7 +556,7 @@ function _processequalOpp(data){
 
   //filter out null rows
   Object.keys(data).forEach(function(msaId){
-      if(data[msaId]["highIncome"] != null && data[msaId]["lowIncome"] != null){
+      if(data[msaId]["highIncome"] !== null && data[msaId]["lowIncome"] !== null){
           msaGains[msaId] = {};
           msaGains[msaId] = data[msaId];
       }
@@ -581,7 +581,7 @@ function _convertToCoordinateArray(data,dataset){
 
         if(dataset == 'opportunity'){
           Object.keys(data[msaId]).forEach(oppYear => {
-            if(data[msaId][oppYear]){
+            if(typeof data[msaId][oppYear] == "number"){
               valueArray.push( {x:oppYear,y:+data[msaId][oppYear]});                 
             }
             else{
