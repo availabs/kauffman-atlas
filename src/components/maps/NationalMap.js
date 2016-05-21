@@ -277,7 +277,6 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   render () {
-    console.log("nat render", (d3.selectAll("."+classes['msa'])[0].length))
     this._initGraph()
     return (
       <div id="mapDiv" className={classes['svg-container']}>

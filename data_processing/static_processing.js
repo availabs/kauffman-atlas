@@ -574,7 +574,13 @@ function _processequalOpp(data){
 
 function _convertToCoordinateArray(data,dataset){
     var finalData = [];
-    var years = d3.range(1990,2013);
+    if(dataset == 'inc5000'){
+      var years = d3.range(1990,2016);      
+    }
+    else{
+      var years = d3.range(1990,2014);            
+    }
+
 
     Object.keys(data).forEach(msaId => {
         var valueArray = [];
@@ -805,7 +811,7 @@ function _processinc5000(data,newFirms){
 
   var totalEmp = {};
 
-  var years = d3.range(1990,2013);
+  var years = d3.range(2007,2016);
 
   newFirms.forEach(city => {
 
