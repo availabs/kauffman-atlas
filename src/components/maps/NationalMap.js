@@ -25,7 +25,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   componentDidMount (){
-    //this._initGraph()
+    this._initGraph()
   }
   
   componentWillReceiveProps (nextProps){
