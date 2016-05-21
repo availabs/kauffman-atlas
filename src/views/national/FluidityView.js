@@ -99,7 +99,7 @@ export class FluidityView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="irsOutflowMigration" className={classes["metricBox"]}>Outflow Migration</div> 
             </div>
             <div className='col-xs-9'>
-                  <NationalMap />
+                  <NationalMap activeComponent="fluidity"/>
             </div>
           </div>
           <div className = 'row'>

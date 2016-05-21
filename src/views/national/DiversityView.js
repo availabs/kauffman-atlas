@@ -119,7 +119,7 @@ export class DiversityView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="opportunity" className={classes["metricBox"]}>Income Gain/Loss from Childhood Residence</div>
             </div>
             <div className='col-xs-9'>
-                <NationalMap />
+                <NationalMap activeComponent="diversity"/>
             </div>
           </div>
           <div className = 'row'>
