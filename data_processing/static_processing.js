@@ -408,7 +408,7 @@ function _colorFunction(params,dataset){
     var cityColor;
 
     if(params){
-        if(dataset == "opportunity" && params.x){
+        if(dataset == "opportunity" && params.x && (params.x == "lowIncome" || params.x == "highIncome")){
             var color = _colorOppGroup(params.x);    
             cityColor = color(params.y);                             
         }
