@@ -47,6 +47,14 @@ export class LineGraph extends React.Component<void, Props, void> {
             return true;
           }  
         }
+        if(this.props.graph == "foreignBorn"){
+          if(yearValue.y < 0){
+            return false;
+          }
+          else{
+            return true;
+          }  
+        }
         else{
           if(yearValue.y == null){
             return false;
