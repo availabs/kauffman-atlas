@@ -119,8 +119,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           <div className='col-xs-6'>
             <div>
               <LineGraph data={combinedGraph} uniq='compGraph' options={{height: 100}} />
-              <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
+              <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
+              <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
           </div>
         </div>
