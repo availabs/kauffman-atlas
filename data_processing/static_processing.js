@@ -578,7 +578,7 @@ function _convertToCoordinateArray(data,dataset){
       var years = d3.range(1990,2016);      
     }
     else{
-      var years = d3.range(1990,2014);            
+      var years = d3.range(1990,2015);            
     }
 
 
@@ -628,7 +628,7 @@ function _convertToCoordinateArray(data,dataset){
 function _relativeAgainstPopulation(graphRawData){
   var maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
-  var years = d3.range(1990,2013);
+  var years = d3.range(1990,2015);
 
   var graphRelativeData = graphRawData.map(metroArea => {
       var newValues = [];
@@ -811,7 +811,7 @@ function _processinc5000(data,newFirms){
 
   var totalEmp = {};
 
-  var years = d3.range(2007,2016);
+  var years = d3.range(2007,2014);
 
   newFirms.forEach(city => {
 
