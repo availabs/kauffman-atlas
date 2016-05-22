@@ -5,7 +5,6 @@ import { loadNewValues,loadShare,loadDensityComposite } from 'redux/modules/dens
 import topojson from 'topojson'
 import classes from '../../components/maps/NationalMap.scss'
 import LineGraph from '../../components/graphs/LineGraph.js'
-import { data } from 'static/data/test'
 
 export class DensityGraph extends React.Component<void, Props, void> {
   constructor () {
