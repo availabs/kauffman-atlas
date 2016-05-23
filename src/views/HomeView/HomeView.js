@@ -14,6 +14,7 @@ import { loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityComposite } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { browserHistory } from 'react-router'
+let roundFormat = d3.format(".2f")
 
 export class HomeView extends React.Component<void, Props, void> {
    constructor () {
@@ -26,6 +27,7 @@ export class HomeView extends React.Component<void, Props, void> {
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setActiveBucket = this._setActiveBucket.bind(this)
+    this.onMouseover = this.onMouseover.bind(this)
   }
   componentWillMount () {    
     this._initGraph();    
@@ -62,6 +64,37 @@ export class HomeView extends React.Component<void, Props, void> {
     return type === this.state.activeComponent ? classes['active-link'] : ''
   }
 
+  onMouseover(hoverBox,feature){
+    let year = 2012;
+
+    let combinedScore = this.props.combinedcomposite.filter(metro => { 
+      return metro.key == feature.id})[0].values.filter(d => 
+        { return d.x === year })[0] || {}
+
+    let densityScore = this.props.densitycomposite.filter(metro => { 
+      return metro.key == feature.id})[0].values.filter(d => 
+        { return d.x === year })[0] || {}
+
+    let fluidityScore = this.props.fluiditycomposite.filter(metro => { 
+      return metro.key == feature.id})[0].values.filter(d => 
+        { return d.x === year })[0] || {}
+
+    let diversityScore = this.props.diversitycomposite.filter(metro => { 
+      return metro.key == feature.id})[0].values.filter(d => 
+        { return d.x === year })[0] || {}
+
+
+    var combinedText = "Combined " + combinedScore.rank + " " + roundFormat(combinedScore.y)
+    var densityText = "Density " + densityScore.rank + " " + roundFormat(densityScore.y)
+    var fluidityText = "Fluidity " + fluidityScore.rank + " " + roundFormat(fluidityScore.y)
+    var diversityText = "Diversity " + diversityScore.rank + " " + roundFormat(diversityScore.y)
+
+    d3.select("#combinedScore").text(combinedText)
+    d3.select("#densityScore").text(densityText)
+    d3.select("#fluidityScore").text(fluidityText)
+    d3.select("#diversityScore").text(diversityText)
+  }
+
   render () {
     
     var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
@@ -78,54 +111,6 @@ export class HomeView extends React.Component<void, Props, void> {
         .range([0,1,2,3])
 
     var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
-      // if(
-      //     this.state.bucket !== 'all' &&
-      //   (
-      //     this.props.metros[msaId] && 
-      //     this.props.metros[msaId].pop && 
-      //     this.props.metros[msaId].pop[2014] && 
-      //     this.props.metros[msaId].pop[2014] >= +popGroups[this.state.bucket] &&
-      //     (
-      //       !popGroups[this.state.bucket+1] ||
-      //       this.props.metros[msaId].pop[2014] <= +popGroups[(+this.state.bucket+1)] 
-      //     ) 
-      //   )
-      // )
-      // {
-      //   console.log(
-      //     msaId,
-      //     this.state.bucket,
-      //     (+this.state.bucket+1),
-      //     this.props.metros[msaId].pop[2014],
-      //     +popGroups[this.state.bucket],
-      //     +popGroups[(+this.state.bucket+1)] || 'highest',
-      //     this.props.metros[msaId].pop[2014] >= +popGroups[this.state.bucket] &&
-      //     (
-      //       !popGroups[+this.state.bucket+1] ||
-      //       this.props.metros[msaId].pop[2014] <= +popGroups[+this.state.bucket+1] 
-      //     )
-      //   )
-      // }
-
-       if(
-          this.state.bucket !== 'all' &&
-        (
-          this.props.metros[msaId] && 
-          this.props.metros[msaId].pop && 
-          this.props.metros[msaId].pop[2014] && 
-          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
-        )
-      )
-      {
-        console.log(
-          msaId,
-          this.state.bucket,
-          this.props.metros[msaId].pop[2014],
-          popScale(this.props.metros[msaId].pop[2014]),
-          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
-        )
-      }
-
       return (
           this.state.bucket === 'all' ||
         (
@@ -138,15 +123,32 @@ export class HomeView extends React.Component<void, Props, void> {
     })
 
   if(this.props[this.state.activeComponent + "composite"]){
-    var graph = (          
-      <div className='col-xs-10' style={{ padding: 0}}>
-            <LineGraph data={this.props[this.state.activeComponent + "composite"]} plot="value" dataType="raw" title={this.state.activeComponent + "composite"} graph={this.state.activeComponent + "composite"}/>
-          </div>
+    var graph = (       
+        <div className='col-xs-10' style={{ padding: 0}}>
+          <LineGraph data={this.props[this.state.activeComponent + "composite"]} plot="value" dataType="raw" title={this.state.activeComponent + "composite"} graph={this.state.activeComponent + "composite"}/>
+        </div>
           )
   }
   else{
     var graph = 'Loading...'
   }
+
+  var hoverBox = (
+    <div style={{marginTop: 15,marginLeft: 15}}>
+      <div className = 'row'>
+      Metro Area Scores
+      </div> 
+      <div className={"row "+classes['hoverScoreHeader']}>
+        <strong >Index</strong><strong >Rank</strong><strong >Score</strong>      
+      </div>
+      <div className={classes['hoverScoreContainer']}>
+        <div id="combinedScore" className={"row " +classes['hoverScore']}></div>
+        <div id="densityScore" className={"row " +classes['hoverScore']}></div>
+        <div id="fluidityScore" className={"row " +classes['hoverScore']}></div>
+        <div id="diversityScore" className={"row " +classes['hoverScore']}></div>
+      </div>
+    </div>
+    )
 
     return (
       <div>
@@ -183,15 +185,20 @@ export class HomeView extends React.Component<void, Props, void> {
               popScale={popScale}
               bucket={this.state.bucket}
             />
+            {hoverBox}
           </div>
           <div className='col-xs-10' style={{ padding: 0}}>
             <NationalMap 
               metros={metrosInBucket} 
               activeComponent={this.state.activeComponent}
+              onMouseover={this.onMouseover.bind(null,hoverBox)}
             />
           </div>
+        </div>
+          <div className='row'>
           {graph}
-        </div>  
+          </div>  
+
       </div>
       </div>
     )

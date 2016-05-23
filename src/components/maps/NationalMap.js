@@ -29,6 +29,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     this._drawMetros = this._drawMetros.bind(this)
     this._msaClick = this._msaClick.bind(this)
     this._mouseout = this._mouseout.bind(this)
+    this._mouseover = this._mouseover.bind(this)
   }
 
   _initGraph () {
@@ -265,6 +266,9 @@ export class NationalMap extends React.Component<void, Props, void> {
         var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
         return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
     }                            
+
+    this.props.onMouseover.bind(d);
+    this.props.onMouseover(d)
 
     var oldColor = d3.select(d.shape).style("fill")
     d3.select(d.shape).style("fill",shadeRGBColor(oldColor,-.2))
