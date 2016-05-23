@@ -8,7 +8,11 @@ import NationalMap from 'components/maps/NationalMap'
 import RankBox from 'components/ranks/RankBox'
 import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
-// import DensityView from 'views/'
+import LineGraph from '../../components/graphs/LineGraph.js'
+import { loadDensityComposite } from 'redux/modules/densityData'   
+import { loadFluidityComposite } from 'redux/modules/fluidityData'    
+import { loadDiversityComposite } from 'redux/modules/diversityData'    
+import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { browserHistory } from 'react-router'
 
 export class HomeView extends React.Component<void, Props, void> {
@@ -22,6 +26,24 @@ export class HomeView extends React.Component<void, Props, void> {
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setActiveBucket = this._setActiveBucket.bind(this)
+  }
+  componentWillMount () {    
+    this._initGraph();    
+  }   
+    
+  _initGraph () {   
+    if(!this.props['densitycomposite']){    
+      this.props['getdensitycomposite']()   
+    }   
+    if(!this.props['fluiditycomposite']){   
+      this.props['getfluiditycomposite']()    
+    }   
+    if(!this.props['diversitycomposite']){    
+      this.props['getdiversitycomposite']()   
+    }   
+    if(!this.props['combinedcomposite']){   
+      this.props['getcombinedcomposite']()            
+    }           
   }
 
   _setActiveComponent (type) {
@@ -115,6 +137,17 @@ export class HomeView extends React.Component<void, Props, void> {
       )
     })
 
+  if(this.props[this.state.activeComponent + "composite"]){
+    var graph = (          
+      <div className='col-xs-10' style={{ padding: 0}}>
+            <LineGraph data={this.props[this.state.activeComponent + "composite"]} plot="value" dataType="raw" title={this.state.activeComponent + "composite"} graph={this.state.activeComponent + "composite"}/>
+          </div>
+          )
+  }
+  else{
+    var graph = 'Loading...'
+  }
+
     return (
       <div>
       <div className='container'>
@@ -157,6 +190,7 @@ export class HomeView extends React.Component<void, Props, void> {
               activeComponent={this.state.activeComponent}
             />
           </div>
+          {graph}
         </div>  
       </div>
       </div>
@@ -165,9 +199,16 @@ export class HomeView extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
+  densitycomposite:state.densityData.compositeData,    
+  fluiditycomposite:state.fluidityData.compositeData,   
+  diversitycomposite : state.diversityData.diversitycomposite,    
+  combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros
 })
 
 export default connect((mapStateToProps), {
-
+  getdensitycomposite: () => loadDensityComposite(),    
+  getfluiditycomposite: () => loadFluidityComposite(),    
+  getdiversitycomposite: () => loadDiversityComposite(),    
+  getcombinedcomposite: () => loadCombinedComposite()
 })(HomeView)
