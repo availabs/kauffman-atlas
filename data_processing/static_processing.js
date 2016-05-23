@@ -949,7 +949,10 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   })
 
   var filteredRelInc = inc5000.relative.filter(metroArea => {
-    return true;
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return (metroArea.values.length > 0)
   })
 
 
