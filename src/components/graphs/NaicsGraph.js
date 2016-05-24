@@ -1,7 +1,8 @@
 "use strict"
 import React from 'react'
+import {StickyContainer,Sticky} from 'react-sticky'
 import { connect } from 'react-redux'
-import { loadMetroData } from 'redux/modules/metroQcewData.js'
+import { loadMetroData, setMetroQuarter } from 'redux/modules/metroQcewData.js'
 import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
@@ -15,7 +16,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	this.state={
 	    data: null,	    
 	}
-	
+	this._onMouse = this._onMouse.bind(this)
     }
 
     _init (id) {
@@ -26,7 +27,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    this.props.loadNaicsKeys()
 	}
     }
-
+    
     componentWillMount () {
 	this._init(this.props.currentMetro)
     }		
@@ -35,7 +36,32 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    this._init(nextProps.currentMetro)
     }
 
+    renderToolTip() {
+	if(!this.props.qtrData)
+	    return (<span></span>)
+	//otherwise
+	let data = this.props.qtrData
+	let rows = data.map( x => {
+	    return (<tr key={x.key}>
+		    <td> {x.key}  </td>
+		    <td style={{backgroundColor:x.color}}></td>
+		    <td> {x.value} </td>
+		    </tr>)
+	})
 
+	return (<div id={'tooltip' + this.props.uniq}
+		style={{position:'absolute',overflow:'hidden'}}
+		>
+
+		<table className='table'>
+		<thead><tr><td>Naics</td><td>color</td><td>value</td></tr></thead>
+		<tbody>{rows}</tbody>
+		</table>
+		
+		</div>
+	       )
+    }
+    
     
     
     xmap (year,qtr) {
@@ -103,6 +129,11 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    console.log(rec,val)
 	return val
     }
+
+    _onMouse (data) {
+	console.log(data)
+	this.props.setQtr(data)
+    }
     
     render () {
 	console.log(this.props.naicsKeys)
@@ -145,7 +176,8 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
 	
 	return (
-		<div>
+		<div className='row' >
+		<div className='col-xs-8'>
 		<LineGraph 
 		key={'empCount'}
 		data={empCount} 
@@ -155,7 +187,9 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		xScaleType={'linear'}
 		yAxis={true}
 		margin={graphMargin}
-		tooltip={true}
+	        tooltip={true}
+	        onMouse={this._onMouse}
+	        graphSlice={this.props.qtrData}
 		/>
 
 	        <LineGraph 
@@ -168,7 +202,10 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		yAxis={true}
 		margin={graphMargin}
 		tooltip={true}
+	        onMouse={this._onMouse}
+	        graphSlice={this.props.qtrData}
 		/>
+		
 	    
 		<LineGraph 
 		key={'normCount'}
@@ -180,6 +217,8 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		yAxis={true}
 		margin={graphMargin}
 		tooltip={true}
+	        onMouse={this._onMouse}
+	        graphSlice={this.props.qtrData}
 		/>
 		
 		<LineGraph 
@@ -193,18 +232,31 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		yAxis={true}
 		margin={graphMargin}
 		tooltip={true}
+	        onMouse={this._onMouse}
+	        graphSlice={this.props.qtrData}
 		/>
+		</div>
+		<StickyContainer>
+		<div className='col-xs-4' style={{height:1000}}>
+
+		<Sticky>
+		{this.renderToolTip()}
+	        </Sticky>
+		</div>
+		</StickyContainer>
 		</div>)
     }
 }
 
 const mapStateToProps = (state) => ({
     data : state.metroQcewData.data,
-    naicsKeys : state.metros.naicsKeys
+    naicsKeys : state.metros.naicsKeys,
+    qtrData : state.metroQcewData.qtrData
     
 })
 
 export default connect((mapStateToProps), {
     loadData : (msaId, year) => loadMetroData(msaId),
-    loadNaicsKeys : () => loadNaicsKeys()
+    loadNaicsKeys : () => loadNaicsKeys(),
+    setQtr : (d) => setMetroQuarter(d),
 })(NaicsGraph)

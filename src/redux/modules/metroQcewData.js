@@ -9,8 +9,9 @@ export const RECEIVE_METROQCEW_DATA = 'RECEIVE_METROQCEW_DATA'
 export const RECEIVE_METROQCEW_DATA_WITH_YEAR = 'RECEIVE_METROQCEW_DATA_WITH_YEAR'
 export const QCEW_NULL_ACTION = 'QCEW_NULL_ACTION'
 export const SET_QCEW_YEAR_DATA = 'SET_QCEW_YEAR_DATA'
+export const SET_QCEW_COMP_QTR_DATA = 'SET_QCEW_COMP_QTR_DATA'
 const industries = [
-		'11', '21', '22', '23', '31', '32', '33',
+		'11', '21', '22', '23', '31','33',
 		'42', '44', '45', '48', '49', '51', '52',
 		'53', '54', '55', '56', '61', '62', '71',
 		'72', '81', '92'
@@ -59,13 +60,24 @@ export function receiveDataWithYear (msaId, year, value) {
 export function setCurrentMetroYear (msaId,year) {
     return {
 	type: SET_QCEW_YEAR_DATA,
-	payload: [msaId, year],
+	payload: [null,msaId, year],
+    }
+}
+
+export function setCurrentMetroQuarter(tableData){
+    return {
+	type: SET_QCEW_COMP_QTR_DATA,
+	payload: tableData
     }
 }
 export function nullAction() {
     return {
 	type: QCEW_NULL_ACTION,
     }
+}
+
+export const setMetroQuarter = (td) => {
+    return (dispatch) => dispatch(setCurrentMetroQuarter(td))
 }
 
 export const loadMetroData = (msaId,codes,event) => {
@@ -181,6 +193,12 @@ const ACTION_HANDLERS = {
     },
     [QCEW_NULL_ACTION]: (state, action) => {
 	return state
+    },
+    [SET_QCEW_COMP_QTR_DATA]: (state, action) => {
+	let newState = Object.assign({},state)
+	let data = action.payload
+	newState.qtrData = data
+	return newState
     }
     
 }
