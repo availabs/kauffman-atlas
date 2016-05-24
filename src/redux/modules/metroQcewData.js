@@ -11,8 +11,8 @@ export const QCEW_NULL_ACTION = 'QCEW_NULL_ACTION'
 export const SET_QCEW_YEAR_DATA = 'SET_QCEW_YEAR_DATA'
 export const SET_QCEW_COMP_QTR_DATA = 'SET_QCEW_COMP_QTR_DATA'
 const industries = [
-		'11', '21', '22', '23', '31','33',
-		'42', '44', '45', '48', '49', '51', '52',
+		'11', '21', '22', '23', '31-33',
+		'42', '44-45', '48-49', '51', '52',
 		'53', '54', '55', '56', '61', '62', '71',
 		'72', '81', '92'
 ]
@@ -21,7 +21,7 @@ let years = [
     '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011',
     '2012','2013','2014'
 	    ]
-let defIndCodes = industries.map(code => '0000'+code);
+
 
 let fields = [
     'area_fips','qtr','industry_codes','year','qtrly_estabs_count',
@@ -38,6 +38,8 @@ let zeropad = (code) => {
     }
     return code
 }
+
+let defIndCodes = industries.map(zeropad);
 
 let fieldString = fields.map(x => 'fields[]='+x).join('&')
 // ------------------------------------

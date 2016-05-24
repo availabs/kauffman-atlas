@@ -42,7 +42,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    this.props.loadQcewDataYear(
 		this.props.currentMetro,
 		this.props.year,
-		this.props.naicsTable.query(this.state.filter,1,true))
+		this.props.naicsTable.Query(this.state.filter,1,true))
 	}
 	
 	
@@ -73,7 +73,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	})
 
 	if(filter){
-	    let truekeys = this.props.naicsTable.query(filter,1,true)
+	    let truekeys = this.props.naicsTable.Query(filter,1,true)
 	    naicsKeys = naicsKeys.filter(obj => truekeys.indexOf(obj.key) >= 0)
 	}
 	let totalEmp = 0, totalEst = 0;
@@ -295,7 +295,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	if (!this.hasData()) return <span />
 	    let naicsLib = this.props.naicsKeys
 	let filter = this.state.filter
-	let fkeys = (filter) ? this.props.naicsTable.query(filter,1,true) : null
+	let fkeys = (filter) ? this.props.naicsTable.Query(filter,1,true) : null
 	let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
 	    return (
 		    <div className='container'>

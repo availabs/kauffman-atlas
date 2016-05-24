@@ -145,12 +145,12 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    .key( x=>x.area_fips)
 	    .rollup( values => values)
 	    .map(this.props.data)['C'+this.props.currentMetro.substr(0,4)]
-
+	
 	
 	let data = d3.nest()
 	    .key(x=>x.industry_code)
 	    .rollup( values => values)
-	    .entries(metrodata)
+	    .entries(metrodata || [])
 	    
 
 	
@@ -237,7 +237,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		/>
 		</div>
 		<StickyContainer>
-		<div className='col-xs-4' style={{height:1000}}>
+		<div className='col-xs-4'>
 
 		<Sticky>
 		{this.renderToolTip()}
