@@ -56,7 +56,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	if(!this.props.qcewData || !this.props.qcewData[msa] ||
 	   !this.props.qcewData[msa][year])
 	    return
-	let currentData = this.props.qcewData[msa][year];
+	let currentData = d3.nest()
+	    .key( x=>x.industry_code )
+	    .entries(this.props.qcewData[msa][year]);
 	let naicsLib = this.props.naicsKeys
 	if(!depth) depth = 2
 	
@@ -143,12 +145,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	})
     }
 
-    renderRadar(year,depth, filter){
-	let msa = this.props.currentMetro;
-	let naicsCodes = this._processData(msa,year,depth,filter)
-	let naicsLib = this.props.naicsKeys
-	if(!naicsCodes || !Object.keys(naicsCodes).length)
-	    return (<span></span>)
+    summarizeData(naicsCodes,naicsLib) {
 	let estQuot =  Object.keys(naicsCodes).map(d => {
             naicsCodes[d].est_quot = naicsCodes[d].estQuot
             return d
@@ -186,23 +183,45 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		}
 
 	    })
+	return {empShare:empShare,estShare:estShare,estQuot:estQuot,empQuot:empQuot}
+    }
+    
+    renderRadar(year,depth, filter,year2){
+	let msa = this.props.currentMetro;
+	let naicsCodes = this._processData(msa,year,depth,filter)
+	let naicsCodesPast = this._processData(msa,year2 ||'2001',depth,filter)
+	let naicsLib = this.props.naicsKeys
+	if(!naicsCodes || !Object.keys(naicsCodes).length)
+	    return (<span></span>)
+	let curQuants = this.summarizeData(naicsCodes, naicsLib)
+	let pastQuants = this.summarizeData(naicsCodesPast, naicsLib)
+	let empShares = [pastQuants.empShare,curQuants.empShare]
+	let empQuots = [pastQuants.empQuot, curQuants.empQuot]
+	let estShares = [pastQuants.estShare, curQuants.estShare]
+	let estQuots = [pastQuants.estQuot, curQuants.estQuot]
+
+	let rOpts = {
+	    w:190, h:190,
+	    ExtraWidthX:130, TranslateX:50,
+	    color: d3.scale.ordinal().range(['#7D8FAF','#FFF200'])
+	}
 	return (
 		<div className='row'>
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
 		<strong>Employment Share by Industry</strong>
-		<RadarChart divID='empShare' data={[empShare]} options={{w:190, h:190, ExtraWidthX:130, TranslateX: 50}} />
+		<RadarChart divID='empShare' data={empShares} options={rOpts} />
 		</div>
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
 		<strong>Employment Quotient by Industry</strong>
-		<RadarChart divID='empQout' data={[empQuot]} options={{w:190, h:190, ExtraWidthX:130, TranslateX: 50}} />
+		<RadarChart divID='empQout' data={empQuots} options={rOpts} />
 		</div>
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
 		<strong>Establishment Share by Industry</strong>
-		<RadarChart divID='estShare' data={[estShare]} options={{w:190, h:190, ExtraWidthX:130, TranslateX: 50}} />
+		<RadarChart divID='estShare' data={estShares} options={rOpts} />
 		</div>
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
 		<strong>Establishment Quotient by Industry</strong>
-		<RadarChart divID='estQout' data={[estQuot]} options={{w:190, h:190, ExtraWidthX:130, TranslateX: 50}} />
+		<RadarChart divID='estQout' data={estQuots} options={rOpts} />
 		</div>
 		</div>
 	)

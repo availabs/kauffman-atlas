@@ -165,10 +165,6 @@ let setYearData = (state,action) => {
 	.key( x=> x.year )
 	.rollup( value => value )
 	.map( state.data || [] )
-    if(state.yeardata[msa][year])
-	state.yeardata[msa][year] = d3.nest()
-	.key( x=> x.industry_code )
-	.entries(state.yeardata[msa][year])
     return state
 }
 
