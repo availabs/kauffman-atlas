@@ -146,46 +146,38 @@ export class MetroQcew extends React.Component<void, Props, void> {
     }
 
     summarizeData(naicsCodes,naicsLib) {
-	let estQuot =  Object.keys(naicsCodes).map(d => {
-            naicsCodes[d].est_quot = naicsCodes[d].estQuot
-            return d
-	})
-	    .map(d => {
-		return {
-		    axis: naicsLib[d].title.substr(0,6),
-		    value:naicsCodes[d].est_quot
-		}
-	    })
-
-	let empQuot =  Object.keys(naicsCodes).map(d => {
-            naicsCodes[d].emp_quot = naicsCodes[d].empQuot
-            return d
-	})
-	    .map(d => {
-		return {
+	let codeRunner = (field1,field2,d) => {
+	    naicsCodes[d][field1] = naicsCodes[d][field2]
+	    return d
+	}
+	let dataFormatter = (field,d) => {
+	    return {
 		    axis:naicsLib[d].title.substr(0,6),
-		    value:naicsCodes[d].emp_quot
-		}
-	    })
+		    value:naicsCodes[d][field]
+		}	
+	}
+	
+	let estQuot =  Object.keys(naicsCodes)
+            .map(codeRunner.bind(null,'est_quot','estQuot'))
+	    .map(dataFormatter.bind(null,'est_quot'))
+
+	let empQuot =  Object.keys(naicsCodes)
+	    .map(codeRunner.bind(null,'emp_quot','empQuot'))
+	    .map(dataFormatter.bind(null,'emp_quot'))
 
 	let empShare = Object.keys(naicsCodes)
-	    .map(d => {
-		return {
-		    axis:naicsLib[d].title.substr(0,6),
-		    value:naicsCodes[d].empShare
-		}
-	    })
+	    .map(dataFormatter.bind(null,'empShare'))
 	let estShare = Object.keys(naicsCodes)
-	    .map(d => {
-		return {
-		    axis:naicsLib[d].title.substr(0,6),
-		    value:naicsCodes[d].estShare
-		}
-
-	    })
-	return {empShare:empShare,estShare:estShare,estQuot:estQuot,empQuot:empQuot}
-    }
+	    .map(dataFormatter.bind(null,'estShare'))
     
+	return {
+	    empShare:empShare,
+	    estShare:estShare,
+	    estQuot:estQuot,
+	    empQuot:empQuot
+	}
+    }
+
     renderRadar(year,depth, filter,year2){
 	let msa = this.props.currentMetro;
 	let naicsCodes = this._processData(msa,year,depth,filter)
@@ -203,7 +195,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let rOpts = {
 	    w:190, h:190,
 	    ExtraWidthX:130, TranslateX:50,
-	    color: d3.scale.ordinal().range(['#7D8FAF','#FFF200'])
+	    color: d3.scale.ordinal().range(['#FFF200','#7D8FAF'])
 	}
 	return (
 		<div className='row'>
