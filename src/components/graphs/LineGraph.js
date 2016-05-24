@@ -28,6 +28,18 @@ export class LineGraph extends React.Component<void, Props, void> {
         var data = scope.props.data[scope.props.dataType];
     }
 
+    if(this.props.metros){
+      data = data.filter(d => {
+        var inBucket = false;
+        this.props.metros.forEach(msaId => {
+          if(d.key == msaId){
+            inBucket = true;
+          } 
+        })
+        return inBucket;
+      }) 
+    }
+
     var cityData = data.map(metroArea => {
       var city = {
         name:metroArea.name,
@@ -69,6 +81,8 @@ export class LineGraph extends React.Component<void, Props, void> {
         return city;
       })
 
+
+
     var filteredData =  cityData.filter(metroArea => {
       if(metroArea.values.length == 0){
         return false;
@@ -80,7 +94,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
     var margin = {top: 10, right: 10, bottom: 10, left: 10}
     let width = document.getElementById("mapDiv").offsetWidth
-    let height = width  * 0.5
+    let height = width  * 0.6
 
     let paddedWidth = width-100;
     let paddedHeight = height-100;
@@ -282,6 +296,10 @@ export class LineGraph extends React.Component<void, Props, void> {
         d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+2))
         d3.select(d.city.line).style("stroke","#000000")
         d3.select(d.city.line).style("opacity","2")
+
+        scope.props.onMouseover.bind(d);
+        scope.props.onMouseover(d)
+
 
         var popText = "",
             name;

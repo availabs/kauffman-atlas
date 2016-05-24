@@ -8,6 +8,7 @@ import NationalMap from 'components/maps/NationalMap'
 import RankBox from 'components/ranks/RankBox'
 import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
+import MapGraphButtons from 'components/ranks/MapGraphButtons'
 import LineGraph from '../../components/graphs/LineGraph.js'
 import { loadDensityComposite } from 'redux/modules/densityData'   
 import { loadFluidityComposite } from 'redux/modules/fluidityData'    
@@ -21,12 +22,14 @@ export class HomeView extends React.Component<void, Props, void> {
     super()
     this.state = {
       activeComponent:'combined',
-      bucket:'all'
+      bucket:'all',
+      activeMapGraph:'map'
     }
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setActiveBucket = this._setActiveBucket.bind(this)
+    this._setMapGraph = this._setMapGraph.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
   }
   componentWillMount () {    
@@ -52,6 +55,18 @@ export class HomeView extends React.Component<void, Props, void> {
     this.setState({activeComponent:type})
   }
 
+  _setMapGraph (type) {
+    if(type == 'graph'){
+      d3.select('#mapComponent')[0][0].className = 'hidden'
+      d3.select('#graphComponent')[0][0].className = ''
+    }
+    else{
+      d3.select('#mapComponent')[0][0].className = ''
+      d3.select('#graphComponent')[0][0].className = 'hidden'      
+    }
+    this.setState({activeMapGraph:type})
+  }
+
   _setActiveBucket (bucket) {
     this.setState({'bucket':bucket});
   }   
@@ -67,22 +82,29 @@ export class HomeView extends React.Component<void, Props, void> {
   onMouseover(hoverBox,feature){
     let year = 2012;
 
+    if(feature.city){
+      var curFeature = feature.city
+      curFeature.id = curFeature.key
+    }
+    else{
+      var curFeature = feature      
+    }
+
     let combinedScore = this.props.combinedcomposite.filter(metro => { 
-      return metro.key == feature.id})[0].values.filter(d => 
+      return metro.key == curFeature.id})[0].values.filter(d => 
         { return d.x === year })[0] || {}
 
     let densityScore = this.props.densitycomposite.filter(metro => { 
-      return metro.key == feature.id})[0].values.filter(d => 
+      return metro.key == curFeature.id})[0].values.filter(d => 
         { return d.x === year })[0] || {}
 
     let fluidityScore = this.props.fluiditycomposite.filter(metro => { 
-      return metro.key == feature.id})[0].values.filter(d => 
+      return metro.key == curFeature.id})[0].values.filter(d => 
         { return d.x === year })[0] || {}
 
     let diversityScore = this.props.diversitycomposite.filter(metro => { 
-      return metro.key == feature.id})[0].values.filter(d => 
-        { return d.x === year })[0] || {}
-
+      return metro.key == curFeature.id})[0].values.filter(d => 
+        { return d.x === year })[0] || {}      
 
     var combinedText = "Combined " + combinedScore.rank + " " + roundFormat(combinedScore.y)
     var densityText = "Density " + densityScore.rank + " " + roundFormat(densityScore.y)
@@ -122,16 +144,31 @@ export class HomeView extends React.Component<void, Props, void> {
       )
     })
 
-  if(this.props[this.state.activeComponent + "composite"]){
-    var graph = (       
-        <div className='col-xs-10' style={{ padding: 0}}>
-          <LineGraph data={this.props[this.state.activeComponent + "composite"]} plot="value" dataType="raw" title={this.state.activeComponent + "composite"} graph={this.state.activeComponent + "composite"}/>
-        </div>
-          )
-  }
-  else{
-    var graph = 'Loading...'
-  }
+    if(this.props[this.state.activeComponent + "composite"]){
+      var graph = (       
+          <div className='col-xs-10' style={{ padding: 0}}>
+            <LineGraph    
+            metros={metrosInBucket} 
+            data={this.props[this.state.activeComponent + "composite"]} 
+            plot="value" dataType="raw" title={this.state.activeComponent + "composite"} 
+            graph={this.state.activeComponent + "composite"}
+            onMouseover={this.onMouseover.bind(null,hoverBox)}
+            />
+          </div>
+            )
+    }
+    else{
+        var graph = 'Loading...'
+    }    
+  
+    var map=
+      (<NationalMap 
+        metros={metrosInBucket} 
+        activeComponent={this.state.activeComponent}
+        onMouseover={this.onMouseover.bind(null,hoverBox)}
+      />)
+  
+
 
   var hoverBox = (
     <div style={{marginTop: 15,marginLeft: 15}}>
@@ -179,7 +216,7 @@ export class HomeView extends React.Component<void, Props, void> {
       </div>
       <div className='container'>
         <div className='row'>
-          <div className='col-xs-2' style={{ paddingRight: 0}}>
+          <div className='col-xs-2' style={{padding:15}}>
             <RankBox 
               activeComponent={this.state.activeComponent} 
               popScale={popScale}
@@ -187,18 +224,19 @@ export class HomeView extends React.Component<void, Props, void> {
             />
             {hoverBox}
           </div>
-          <div className='col-xs-10' style={{ padding: 0}}>
-            <NationalMap 
-              metros={metrosInBucket} 
-              activeComponent={this.state.activeComponent}
-              onMouseover={this.onMouseover.bind(null,hoverBox)}
+          <div id="mapDiv" className='col-xs-10' style={{padding:15}}>
+            <MapGraphButtons
+              onComponentChange={this._setMapGraph} 
+              activeComponent={this.state.activeMapGraph}
             />
+            <div id='mapComponent'>
+            {map}
+            </div>
+            <div id='graphComponent'  className='hidden'>
+            {graph} 
+            </div>         
           </div>
         </div>
-          <div className='row'>
-          {graph}
-          </div>  
-
       </div>
       </div>
     )
