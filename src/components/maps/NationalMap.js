@@ -181,6 +181,17 @@ export class NationalMap extends React.Component<void, Props, void> {
     let statesGeo = props.statesGeo
     let metrosGeo = Object.assign({},props.metrosGeo);
 
+    metrosGeo.features = metrosGeo.features.filter(d => {
+      var inBucket = false;
+      props.metros.forEach(msaId => {
+        if(d.id == msaId){
+          inBucket = true;
+        } 
+      })
+      return inBucket;
+    })  
+
+
     let width = this.state.width;
     let height = this.state.height;
 
@@ -338,7 +349,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   render () {
     this._initGraph()
     return (
-      <div id="mapDiv" className={classes['svg-container']}>
+      <div className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
       </div>
     )
