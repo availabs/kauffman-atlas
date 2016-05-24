@@ -56,11 +56,20 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     }
 
     dataMap (data,fields,recfunc) {
-	return data.values.map(industry => {
+	let colors = d3.scale.category20()
+	let filterfun = (x) => {
+	    if(this.props.filter && this.props.filter.length)
+		return this.props.filter.indexOf(x.key) >= 0
+	    else
+		return x.key.length == 2
+	}
+	return data.filter(filterfun)
+	    .map((industry,i) => {
 	    var obj = {}
 	    obj.key = industry.key
-	    obj.color = industry.color
+	    obj.color = colors(i%20)
 	    obj.values = industry.values.map( recfunc.bind(this,fields) )
+		.sort((a,b) => a.values.x - b.values.x)
 	    obj.values.reduce(( a, b ) => {
 		if(!b.values.y){
 		    b.values.y = a.values.y
@@ -101,7 +110,20 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	if(!this.props.data || !this.props.data.length)
 	    return <span></span>
 
-	let data = this.props.data[0]
+	let metrodata = d3.nest()
+	    .key( x=>x.area_fips)
+	    .rollup( values => values)
+	    .map(this.props.data)['C'+this.props.currentMetro.substr(0,4)]
+
+	
+	let data = d3.nest()
+	    .key(x=>x.industry_code)
+	    .rollup( values => values)
+	    .entries(metrodata)
+	    
+
+	
+	
 
 	let noagg = this.aggfunc.bind(this,x=>x)
 	

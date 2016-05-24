@@ -1,4 +1,5 @@
 import { msaLookup , populationData } from 'static/data/msaDetails'
+import {SimpleTrie} from 'support/simpletrie'
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
@@ -12,6 +13,8 @@ export function recieveData (value) {
 }
 
 
+
+
 export const loadNaicsKeys = () => {
   return (dispatch) => {
     return fetch('/data/naicsKeys.json')
@@ -22,9 +25,15 @@ export const loadNaicsKeys = () => {
 
 const ACTION_HANDLERS = {
   [RECEIVE_NAICS_KEYS]: (state,action) => {
-    let newState = Object.assign({},state);
-    newState.naicsKeys = action.payload;
-    return newState;
+      let newState = Object.assign({},state);
+      newState.naicsKeys = action.payload;
+      newState.naicsLookup = new SimpleTrie()
+      Object.keys(newState.naicsKeys).sort((a,b)=> a.length-b.length).forEach( key =>{
+	  newState.naicsLookup.addString(key)
+      })
+      newState.naicsLookup.query('11',1)
+      console.log(action.payload)
+      return newState;
   }
 }
 

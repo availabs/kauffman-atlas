@@ -1,12 +1,14 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
 import {qcewApi} from '../../AppConfig'
+import d3 from 'd3'
 // ------------------------------------
 // Constants
 // ------------------------------------
 export const RECEIVE_METROQCEW_DATA = 'RECEIVE_METROQCEW_DATA'
 export const RECEIVE_METROQCEW_DATA_WITH_YEAR = 'RECEIVE_METROQCEW_DATA_WITH_YEAR'
 export const QCEW_NULL_ACTION = 'QCEW_NULL_ACTION'
+export const SET_QCEW_YEAR_DATA = 'SET_QCEW_YEAR_DATA'
 const industries = [
 		'11', '21', '22', '23', '31', '32', '33',
 		'42', '44', '45', '48', '49', '51', '52',
@@ -27,6 +29,15 @@ let fields = [
     'lq_month3_emplvl'
 	     ]
 
+let zeropad = (code) => {
+    let need = 6 - code.length
+    while(need > 0){
+	code = '0'+ code
+	need -= 1
+    }
+    return code
+}
+
 let fieldString = fields.map(x => 'fields[]='+x).join('&')
 // ------------------------------------
 // Actions
@@ -38,96 +49,142 @@ export function receiveData (value, msaId) {
   }
 }
 
-export function receiveDataWithYear (value, msaId, year) {
+export function receiveDataWithYear (msaId, year, value) {
   return {
     type: RECEIVE_METROQCEW_DATA_WITH_YEAR,
     payload: [value, msaId, year],
   }
 }
 
+export function setCurrentMetroYear (msaId,year) {
+    return {
+	type: SET_QCEW_YEAR_DATA,
+	payload: [msaId, year],
+    }
+}
 export function nullAction() {
     return {
-	type: QCEW_NULL_ACTION
+	type: QCEW_NULL_ACTION,
     }
 }
 
-export const loadMetroData = (msaId) => {
-    var indcodes = defIndCodes.join('');
+export const loadMetroData = (msaId,codes,event) => {
+    let ncodes = codes || defIndCodes
+    ncodes = ncodes.map(zeropad)
+    let indcodes = ncodes.join('');
+    msayears[msaId] = msayears[msaId] || {}
+    msayears[msaId].history = msayears[msaId].history || {}
+    
+    ncodes = ncodes.filter( code => {
+	let exists = !msayears[msaId] ||
+	    !msayears[msaId].history[code]
+	msayears[msaId].history[code] = true
+	return exists
+    })
+    if(ncodes.length === 0)
+	return (dispatch) => dispatch(nullAction())
     return (dispatch) => {
 	let url = qcewApi
 	url += 'data/fips' + 'C' + msaId.slice(0, 4)
-	url += '/ind' + indcodes + '/yr' + years.join('') +'?'+fieldString;
+	url += '/ind' + indcodes + '/yr' + years.join('') +'?'+fieldString
+	url += '&flat=true'
+	
 	console.log(url)
 	
 	return fetch(url)  
-            .then(response => {console.log(response);return response.json()} )
-            .then(json =>  dispatch(receiveData(json, msaId)) )
+            .then(response => {
+		console.log(response);
+		let isOk = response.ok
+		ncodes.forEach( code =>{
+		    msayears[msaId].history[code] = (isOk)? true:null
+		})
+		return response.json()
+	    })
+            .then(json =>{
+
+		if(!event)
+		    dispatch(receiveData(json, msaId))
+		else
+		    dispatch(event(json))
+	    })
     }
 }
 
-export const loadMetroDataYear = (msaId, year) => {
-    var indcodes = defIndCodes.join('')
-    if(msayears[msaId] && msayears[msaId][year])
-	return (dispatch) => dispatch(nullAction())
-    msayears[msaId] = msayears[msaId] || {}
-    msayears[msaId][year] = 'loading'
-    
-    if(!year)
-	throw "Attempted to load qcew year data with no year"
-    let query = qcewApi + 'data/fips' + 'C' + msaId.slice(0,4) + '/yr'+
-	year + '/ind' + indcodes + '?fields[]=year&fields[]=all'
-    console.log(JSON.stringify(query))
-    
-    return (dispatch) => {
-	return fetch(query)
-	    .then(response =>{
-		if(!response.ok)
-		    msayears[msaId][year] = null
-		else
-		    msayears[msaId][year] = 'loaded'
-		return response.json()
-	    })
-	    .then(json => {
-		debugger;
-		dispatch(receiveDataWithYear(json,msaId,year))	
-	    })
 
+
+export const loadMetroDataYear = (msaId, year, codes) => {
+    let ncodes = codes || defIndCodes
+    ncodes = ncodes.map(zeropad)
+    msayears[msaId] = msayears[msaId] || {}
+    msayears[msaId].history = msayears[msaId].history || {}
+    
+    ncodes = ncodes.filter( code => {
+	let exists = !msayears[msaId] ||
+	    !msayears[msaId].history[code]
+	return exists
+    })
+    if(ncodes.length >0)
+	return loadMetroData(msaId,codes,receiveDataWithYear.bind(null,msaId,year))
+    
+    
+    return (dispatch) => dispatch(setCurrentMetroYear(msaId,year))	
+    
+
+}
+
+
+let datamaper = (schema,x) => {
+    let t = {}
+    schema.forEach((sch,i) => {
+	t[sch] = x[i]
+    })
+    return t
+}
+
+let addQcewRows = (state,action) => {
+    var newState = Object.assign({}, state)
+    let msa = action.payload[1]
+    let data = action.payload[0].rows
+    let schema = action.payload[0].schema
+    data = data.map(datamaper.bind(null,schema))
+    if(newState.data && newState.data.length){
+	newState.data = newState.data.concat(data)
     }
+    else
+	newState.data = data
+    return newState
+}
+
+let setYearData = (state,action) => {
+    let year = action.payload[2]
+    let msa = action.payload[1]
+    let shell ={}
+    shell[msa] = null
+    state.yeardata = Object.assign({},shell) || {}
+    state.yeardata[msa] = d3.nest()
+	.key( x=> x.year )
+	.rollup( value => value )
+	.map( state.data || [] )
+    if(state.yeardata[msa][year])
+	state.yeardata[msa][year] = d3.nest()
+	.key( x=> x.industry_code )
+	.entries(state.yeardata[msa][year])
+    return state
 }
 
 const ACTION_HANDLERS = {
     [RECEIVE_METROQCEW_DATA]: (state, action) => {
-	var newState = Object.assign({}, state)
-	let msa = action.payload[1]
-	let colors = d3.scale.category20()
-	newState.data = action.payload[0]
-	newState.data[0].values.forEach((ind,i) => {
-	    ind.color = colors(i%20)
-	    ind.values = ind.values.reduce((acc,year) => {
-		return acc.concat(year.values)
-	    },[])
-	})
-	return newState
+	return addQcewRows(state,action)
     },
     [RECEIVE_METROQCEW_DATA_WITH_YEAR]: (state, action) => {
-	var newState = Object.assign({}, state)
-	let msa = action.payload[1]
-	let year = action.payload[2]
-				
-	newState.yeardata = Object.assign({},newState.yeardata) || {}
-	newState.yeardata[msa] = newState.yeardata[msa] || {}
-	newState.yeardata[msa][year] = action.payload[0][0]
-	console.log(action.payload[0][0].key)
-	newState.yeardata[msa][year].values[0].values.map((ind,i) => {
-	    ind.color = d3.scale.category20()(i%20)
-	    return ind
-	})
-	
-	return newState
+	let newState = addQcewRows(state, action)
+	return setYearData(newState,action)
+    },
+    [SET_QCEW_YEAR_DATA]: (state, action) => {
+	return setYearData(state,action)
     },
     [QCEW_NULL_ACTION]: (state, action) => {
-	var newState = Object.assign({},state)
-	return newState
+	return state
     }
     
 }

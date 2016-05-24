@@ -34,9 +34,19 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	if((!qcew || !qcew.length || !qcew[msa][year]) )
 	{
 	    this.props.loadQcewDataYear(this.props.currentMetro,
-					this.props.year)
+					this.props.year
+				       )
 	}
 
+	if(this.state.filter){
+	    this.props.loadQcewDataYear(
+		this.props.currentMetro,
+		this.props.year,
+		this.props.naicsTable.query(this.state.filter,1,true))
+	}
+	
+	
+	
 	if(!this.props.naicsKeys){
 	    return this.props.loadNaicsKeys()
 	}
@@ -46,11 +56,10 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	if(!this.props.qcewData || !this.props.qcewData[msa] ||
 	   !this.props.qcewData[msa][year])
 	    return
-	let currentData = this.props.qcewData[msa][year].values[0].values;
+	let currentData = this.props.qcewData[msa][year];
 	let naicsLib = this.props.naicsKeys
 	if(!depth) depth = 2
-	//if(!filter) filter = 'x'
-	//console.log('test ',currentData, nationalData)
+	
 	let naicsKeys = currentData.filter((ind)=>{
 	    return ind.values.reduce((a,b) => { 
 		return a && b['lq_qtrly_estabs_count'] &&
@@ -62,14 +71,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	})
 
 	if(filter){
-	    naicsKeys = naicsKeys.filter(k => {
-		let key = k.key.substr(0,depth)
-		//filter = naicsLib[filter].part_of_range ? naicsLib[filter].part_of_range : filter
-		k = naicsLib[k].part_of_range ? naicsLib[k].part_of_range : k
-		//console.log(k,filter,k.indexOf(filter))
-		return k.indexOf(filter) == 0
-
-	    })
+	    let truekeys = this.props.naicsTable.query(filter,1,true)
+	    naicsKeys = naicsKeys.filter(obj => truekeys.indexOf(obj.key) >= 0)
 	}
 	let totalEmp = 0, totalEst = 0;
 	var scope = this
@@ -110,8 +113,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	},{})
 	Object.keys(data).map((k) => {
 	    let x = data[k]
-	    x.empShare = x.emp/totalEmp
-	    x.estShare = x.est/totalEst
+	    x.empShare = x.emp/totalEmp || 0
+	    x.estShare = x.est/totalEst || 0
 	    return x
 	})
 	return data
@@ -214,11 +217,6 @@ export class MetroQcew extends React.Component<void, Props, void> {
 
 	let naicsCodes = this._processData(msa, year, depth, filter)
 	let naicsLib = this.props.naicsKeys
-	let colors = !this.props.colorInd ? {} : this.props.colorInd[0].values
-	    .reduce((obj,rec)=>{
-		obj[rec.key]=(<div style={{backgroundColor:rec.color,height:10,width:10}}></div>)
-		return obj
-	    },{})
 	let naicsRows = Object.keys(naicsCodes)
 	    .map(d => {
 		naicsCodes[d].emp_quot = naicsCodes[d].empQuot
@@ -232,7 +230,6 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		return (
 			<tr key={d}>
 			<td><a className={classes['bluelink']} onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
-			<td>{colors[d]}</td>   
 			<td>{naicsCodes[d].emp.toLocaleString()}</td>
 			<td>{+(naicsCodes[d].empShare*100).toLocaleString()}%</td>
 			<td>{+(naicsCodes[d].emp_quot).toLocaleString()}</td>
@@ -248,7 +245,6 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		<thead>
 		<tr>
 		<td>Employment</td>
-		<td>Color</td>
 		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp')}>Employment</a></td>
 		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'empShare')}>Employment Share</a></td>
 		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp_quot')}>Employment Quotient</a></td>
@@ -274,6 +270,11 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	this._fecthData ()
     }
 
+    componentDidUpdate (p,prevState){
+	if(this.state.filter !== prevState.filter)
+	    this._fecthData()
+    }
+    
     hasData () {
 	return  this.props.naicsKeys
     }
@@ -282,15 +283,18 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	
 	if (!this.hasData()) return <span />
 	    let naicsLib = this.props.naicsKeys
+	let filter = this.state.filter
+	let fkeys = (filter) ? this.props.naicsTable.query(filter,1,true) : null
 	let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
 	    return (
 		    <div className='container'>
-		    <NaicsGraph currentMetro={this.props.currentMetro} />
+		    <NaicsGraph filter={fkeys}
+		currentMetro={this.props.currentMetro} />
 		    <div className='row' style={{'textAlign': 'center'}}>
 		    <h4>{this.state.filter || '--'} | {naicsLib[this.state.filter] ? naicsLib[this.state.filter].title : 'All Sectors'} {this.state.depth > 2 ? reset : ''}</h4>
 		    </div>
-		    <div style={{textAlign: 'left', padding: 15}}>
-		    {naicsLib[this.state.filter] && naicsLib[this.state.filter].description ? naicsLib[this.state.filter].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map(d => { return <p>{d}</p> }) : ''}
+		    <div key='leftpad' style={{textAlign: 'left', padding: 15}}>
+		    {naicsLib[this.state.filter] && naicsLib[this.state.filter].description ? naicsLib[this.state.filter].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map((d,i) => { return <p key={'desc'+i}>{d}</p> }) : ''}
 		</div>
 		    <div>
 	    	    {this.renderRadar(this.props.year,this.state.depth, this.state.filter)}
@@ -311,14 +315,14 @@ const mapStateToProps = (state) => {
 	metrosGeo : state.geoData.metrosGeo,
 	qcewData  : state.metroQcewData.yeardata,
 	naicsKeys : state.metros.naicsKeys,
+	naicsTable: state.metros.naicsLookup,
 	loadState : state.metroQcewData.year_requests,
-	colorInd  : state.metroQcewData.data
     })
 }
 
 export default connect((mapStateToProps), {
-    loadQcewData : (msaId) => loadMetroData(msaId),
-    loadQcewDataYear : (msaId, year) => loadMetroDataYear(msaId, year),
+    loadQcewData : (msaId,codes) => loadMetroData(msaId,codes),
+    loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes),
     loadNaicsKeys: () => loadNaicsKeys()
 })(MetroQcew)
 
