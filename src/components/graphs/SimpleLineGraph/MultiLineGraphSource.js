@@ -56,7 +56,7 @@ module.exports = function () {
   let transitionTime = 250
   let plotPoints = false
   let pointAttr = {}
-
+  let mouseListener = null 
   function showLine () {
     if (showGuideLine) {
       guideLine.attr('stroke', '#000')
@@ -227,7 +227,7 @@ module.exports = function () {
           })
         }, this)
       })
-      var vPoints = voronoi(points).filter(function (d) { return d })
+      var vPoints = voronoi(points).filter(function (d) { return d && d.length })
       var vLines = voronoiGroup.selectAll('path')
         .data(vPoints)
       vLines.exit().remove()
@@ -521,6 +521,12 @@ module.exports = function () {
     }
     return graph
   }
+  graph.mouseListener = function (ml) {
+      if(!arguments.length)
+	  return ml
+      mouseListener = ml
+      return graph
+  }
 
   return graph
 
@@ -537,8 +543,13 @@ module.exports = function () {
 
   function __mouseover (d) {
     if (mouseover) {
-      mouseover.call(this, d, svg)
+	mouseover.call(this, d, svg)
     }
+      if(mouseListener) {
+	    Object.keys(mouseListener).forEach(id => {
+//		mouseListener[id](d)
+	    })
+	}
   }
   function __mousemove (d) {
     var x = xScale(d.point.x)
@@ -547,7 +558,12 @@ module.exports = function () {
       x2: x
     })
     if (mousemove) {
-      mousemove.call(this, d, svg)
+	mousemove.call(this, d, svg)
     }
+      if(mouseListener) {
+	  Object.keys(mouseListener).forEach(id => {
+	      mouseListener[id](d,data)
+	  })
+      }
   }
 }

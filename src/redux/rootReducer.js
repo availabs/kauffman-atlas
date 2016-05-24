@@ -7,9 +7,11 @@ import metroGdpData from './modules/metroGdpData'
 import metros from './modules/msaLookup'
 import densityData from './modules/densityData'
 import fluidityData from './modules/fluidityData'
+import metroQcewData from './modules/metroQcewData'
 import diversityData from './modules/diversityData'
 import combinedData from './modules/combinedData'
 import metroScoresData from './modules/metroScoresData'
+
 
 export default combineReducers({
   metroScoresData,
@@ -19,6 +21,7 @@ export default combineReducers({
   densityData,
   metros,
   metroZbpData,
+  metroQcewData,
   metroGdpData,
   geoData,
   counter,

@@ -1,4 +1,6 @@
 import { msaLookup , populationData } from 'static/data/msaDetails'
+import {SimpleTrie} from 'support/simpletrie'
+import _ from 'lodash'
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
@@ -12,6 +14,8 @@ export function recieveData (value) {
 }
 
 
+
+
 export const loadNaicsKeys = () => {
   return (dispatch) => {
     return fetch('/data/naicsKeys.json')
@@ -20,11 +24,32 @@ export const loadNaicsKeys = () => {
   }
 }
 
+let naicsRangeHelper = (trie,prefix,depth,exact) =>{
+    prefix = prefix.split('-')
+    let numCodes = prefix.map(x => parseInt(x))
+    if(numCodes.length === 1)
+	return trie.gQuery(prefix,depth,exact)    
+    else{
+	let query = _.range(numCodes[0],numCodes[1]+1).map(x=> x+'')
+	return trie.gQuery(query,depth,exact)
+    }
+}
+
 const ACTION_HANDLERS = {
   [RECEIVE_NAICS_KEYS]: (state,action) => {
-    let newState = Object.assign({},state);
-    newState.naicsKeys = action.payload;
-    return newState;
+      let newState = Object.assign({},state);
+      newState.naicsKeys = action.payload;
+      newState.naicsLookup = new SimpleTrie()
+      newState.naicsLookup.Query = naicsRangeHelper.bind(null,newState.naicsLookup)
+      Object.keys(newState.naicsKeys)
+	  .sort((a,b)=> a.length-b.length)
+	  .forEach( key =>{
+	      if(key.indexOf('-') !== -1)
+		  return
+	      newState.naicsLookup.addString(key)
+	  })
+      console.log(action.payload)
+      return newState;
   }
 }
 

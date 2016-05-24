@@ -5,8 +5,10 @@ import { Link } from 'react-router'
 import MetroHeader from 'components/metro/MetroHeader'
 import MetroScores from 'components/metro/MetroScores'
 import MetroZbp from 'components/metro/MetroZbp'
+import MetroQcew from 'components/metro/MetroQcew'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import classes from 'styles/sitewide/index.scss'
+
 
 type Props = {
 };
@@ -15,7 +17,7 @@ export class MetroHome extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-     display: 'combined'
+     display: 'workforce'
     }
 
     this.renderDisplay = this.renderDisplay.bind(this)
@@ -48,9 +50,13 @@ export class MetroHome extends React.Component<void, Props, void> {
         return (
            <MetroZbpCluster currentMetro={metroId} year='2012'/>
         )
-      default: 
+    case 'workforce':
+	return (
+		<MetroQcew currentMetro={metroId} year='2014'/>
+	)
+    default: 
         return (
-          <MetroZbp currentMetro={metroId} year='2012'/>
+		<MetroZbp currentMetro={metroId} year='2012'/>
         )
     }
   }
@@ -123,7 +129,7 @@ export class MetroHome extends React.Component<void, Props, void> {
             {this.renderDisplay()}
           </div>   
         </div>
-      )      
+      )
     }
 
   }
