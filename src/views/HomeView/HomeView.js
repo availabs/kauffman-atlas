@@ -125,7 +125,12 @@ export class HomeView extends React.Component<void, Props, void> {
   if(this.props[this.state.activeComponent + "composite"]){
     var graph = (       
         <div className='col-xs-10' style={{ padding: 0}}>
-          <LineGraph data={this.props[this.state.activeComponent + "composite"]} plot="value" dataType="raw" title={this.state.activeComponent + "composite"} graph={this.state.activeComponent + "composite"}/>
+          <LineGraph    
+          metros={metrosInBucket} 
+          data={this.props[this.state.activeComponent + "composite"]} 
+          plot="value" dataType="raw" title={this.state.activeComponent + "composite"} 
+          graph={this.state.activeComponent + "composite"}
+          />
         </div>
           )
   }
@@ -195,10 +200,10 @@ export class HomeView extends React.Component<void, Props, void> {
             />
           </div>
         </div>
-          <div className='row'>
+        <div className='row'>
+          <div className='col-xs-2' style={{ paddingRight: 0}}></div>
           {graph}
-          </div>  
-
+        </div>  
       </div>
       </div>
     )

@@ -28,6 +28,18 @@ export class LineGraph extends React.Component<void, Props, void> {
         var data = scope.props.data[scope.props.dataType];
     }
 
+    if(this.props.metros){
+      data = data.filter(d => {
+        var inBucket = false;
+        this.props.metros.forEach(msaId => {
+          if(d.key == msaId){
+            inBucket = true;
+          } 
+        })
+        return inBucket;
+      }) 
+    }
+
     var cityData = data.map(metroArea => {
       var city = {
         name:metroArea.name,
@@ -68,6 +80,8 @@ export class LineGraph extends React.Component<void, Props, void> {
 
         return city;
       })
+
+
 
     var filteredData =  cityData.filter(metroArea => {
       if(metroArea.values.length == 0){
