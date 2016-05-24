@@ -109,7 +109,7 @@ export class CombinedView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="diversitycomposite" className={classes["metricBox"]}>Diversity Composite</div>
             </div>
             <div className='col-xs-9'>
-                  <NationalMap />
+                  <NationalMap activeComponent="combined"/>
             </div>
           </div>       
         </div>

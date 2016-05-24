@@ -97,7 +97,7 @@ export class DensityView extends React.Component<void, Props, void> {
               <div onClick={this._setMetric} id="3" className={classes["metricBox"]}>Sector Density</div>
             </div>
             <div className='col-xs-9'>
-                  <NationalMap />
+                  <NationalMap activeComponent="density"/>
             </div>
           </div>       
         </div>

@@ -93,6 +93,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [])
     let diversityForeignBorn =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x === year })[0] || {}
     let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [])
+    
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
 
@@ -118,8 +119,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           <div className='col-xs-6'>
             <div>
               <LineGraph data={combinedGraph} uniq='compGraph' options={{height: 100}} />
-              <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
+              <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
+              <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
           </div>
         </div>
@@ -170,24 +171,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
            <div className='col-xs-2' style={graphBox}>
-            <h4> High Growth Firms / 1k Pop </h4>
+            <h4> High Growth Firms / Total Firms </h4>
             <h4>{typeof fluidityHighGrowth.y !== 'undefined' ? fluidityHighGrowth.y.toLocaleString() : 'NA'}</h4> 
             Rank {fluidityHighGrowth.rank}
-           
             <div>
-              <LineGraph data={fluidityHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
-              <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
-              <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
-            </div>
+              <LineGraph data={fluidityHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
+              <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
+              <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
+            </div>           
           </div>
           <div className='col-xs-2' style={graphBox}>
             <h4> High Growth Firms </h4>
             <h4>{typeof fluidityHighRaw.y !== 'undefined' ? fluidityHighRaw.y.toLocaleString() : 'NA'}</h4> 
             Rank {fluidityHighRaw.rank}
             <div>
-              <LineGraph data={fluidityHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
-              <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
-              <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
+              <LineGraph data={fluidityHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
+              <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
+              <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
             </div>
           </div>
           <div className='col-xs-2' style={graphBox}>

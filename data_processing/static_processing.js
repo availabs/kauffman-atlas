@@ -408,7 +408,7 @@ function _colorFunction(params,dataset){
     var cityColor;
 
     if(params){
-        if(dataset == "opportunity" && params.x){
+        if(dataset == "opportunity" && params.x && (params.x == "lowIncome" || params.x == "highIncome")){
             var color = _colorOppGroup(params.x);    
             cityColor = color(params.y);                             
         }
@@ -556,7 +556,7 @@ function _processequalOpp(data){
 
   //filter out null rows
   Object.keys(data).forEach(function(msaId){
-      if(data[msaId]["highIncome"] != null && data[msaId]["lowIncome"] != null){
+      if(data[msaId]["highIncome"] !== null && data[msaId]["lowIncome"] !== null){
           msaGains[msaId] = {};
           msaGains[msaId] = data[msaId];
       }
@@ -574,14 +574,20 @@ function _processequalOpp(data){
 
 function _convertToCoordinateArray(data,dataset){
     var finalData = [];
-    var years = d3.range(1990,2013);
+    if(dataset == 'inc5000'){
+      var years = d3.range(1990,2016);      
+    }
+    else{
+      var years = d3.range(1990,2015);            
+    }
+
 
     Object.keys(data).forEach(msaId => {
         var valueArray = [];
 
         if(dataset == 'opportunity'){
           Object.keys(data[msaId]).forEach(oppYear => {
-            if(data[msaId][oppYear]){
+            if(typeof data[msaId][oppYear] == "number"){
               valueArray.push( {x:oppYear,y:+data[msaId][oppYear]});                 
             }
             else{
@@ -592,7 +598,7 @@ function _convertToCoordinateArray(data,dataset){
         else{
           years.forEach(year => {
             if(dataset != "inc5000"){
-              if(data[msaId][year]){
+              if(typeof +data[msaId][year] == "number"){
                 valueArray.push( {x:+year,y:+Math.round(+data[msaId][year])});                   
               }
               else{
@@ -600,7 +606,7 @@ function _convertToCoordinateArray(data,dataset){
               }
             }
             else{
-              if(data[msaId][year]){
+              if(typeof +data[msaId][year] == "number"){
                 valueArray.push( {x:+year,y:+data[msaId][year]});                  
               }
               else{
@@ -622,7 +628,7 @@ function _convertToCoordinateArray(data,dataset){
 function _relativeAgainstPopulation(graphRawData){
   var maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
-  var years = d3.range(1990,2013);
+  var years = d3.range(1990,2015);
 
   var graphRelativeData = graphRawData.map(metroArea => {
       var newValues = [];
@@ -805,7 +811,7 @@ function _processinc5000(data,newFirms){
 
   var totalEmp = {};
 
-  var years = d3.range(1990,2013);
+  var years = d3.range(2007,2014);
 
   newFirms.forEach(city => {
 
@@ -874,7 +880,7 @@ function _processdetailMigration(data,dataset){
   Object.keys(data).forEach(msaId => {
       var valueArray = [];
       Object.keys(data[msaId]).forEach(year => {
-          if(data[msaId][year]){
+          if(typeof +data[msaId][year] == "number"){
               if(data[msaId][year]['outflow']){
                   if(year > 12){
                       var curYear = "19" + year;
@@ -943,7 +949,10 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   })
 
   var filteredRelInc = inc5000.relative.filter(metroArea => {
-    return true;
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return (metroArea.values.length > 0)
   })
 
 

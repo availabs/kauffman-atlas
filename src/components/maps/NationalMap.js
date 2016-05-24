@@ -3,6 +3,10 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
+import { loadDensityComposite } from 'redux/modules/densityData'
+import { loadFluidityComposite } from 'redux/modules/fluidityData'
+import { loadDiversityComposite } from 'redux/modules/diversityData'
+import { loadCombinedComposite } from 'redux/modules/combinedData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 import { withRouter } from 'react-router'
@@ -16,27 +20,76 @@ export class NationalMap extends React.Component<void, Props, void> {
     this.state = {
       statesGeo: null, 
       metrosGeo: null,
+      height:0,
+      width:0
     }
+
     this._initGraph = this._initGraph.bind(this)
     this._drawGraph = this._drawGraph.bind(this)
     this._drawMetros = this._drawMetros.bind(this)
     this._msaClick = this._msaClick.bind(this)
     this._mouseout = this._mouseout.bind(this)
+    this._mouseover = this._mouseover.bind(this)
+  }
+
+  _initGraph () {
+    //Load map data if it is not present
+    if(!this.props.loaded){
+      return this.props.loadData()
+    }
+    //Load data about the active componsent if it is not present
+    if(!this.props[(this.props.activeComponent+"composite")]){
+      console.log(this.props.activeComponent);
+      return this.props[('get'+this.props.activeComponent+"composite")]()
+    }
+    //If we already have metros drawn, we only want to redraw the metros
+    if(d3.selectAll("."+classes['msa'])[0].length > 0){
+      this._drawMetros(this.props);       
+    }
+    //All other cases result in drawing the whole map
+    else{
+      this._drawGraph(this.props)      
+    }
   }
 
   componentDidMount (){
-    this._initGraph()
+    let width = document.getElementById("mapDiv").offsetWidth
+    let height = width  * 0.6
+
+    //Triggers render(_initGraph)
+    this.setState({width:width,height:height})          
   }
-  
-  componentWillReceiveProps (nextProps){
-    if(this.props.loaded !== nextProps.loaded){
-      this._drawGraph(nextProps);
+
+  //Returning true triggers render(_initGraph)
+  shouldComponentUpdate(nextProps,nextState){
+    //If there are no drawn metro areas, we need to update the map
+    if(d3.selectAll("."+classes['msa'])[0].length == 0){
+      return true
     }
-    if(this.props.metros !== nextProps.metros && this.props.activeComponent === nextProps.activeComponent){
-      if(nextProps.loaded){
-        this._drawMetros(nextProps);        
+    //Case to remedy issue on graph pages -- which dont have a list of metros
+    else if(!this.props.metros){
+      return false
+    }
+    //If both metro lists are the same length, it is possible they are the same.
+    else if(this.props.metros.length == nextProps.metros.length){
+      //Check to see if they are
+      for(var i=0; i<this.props.metros.length; i++){
+        if(this.props.metros[i] != nextProps.metros[i]){
+          return true;
+        }
       }
+      //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
+      return false; 
     }
+    //If the length of the metro lists are not the same, we know we need to update the map
+    else{
+      return true;
+    }
+  }
+
+  //We would only want to change the colors after a props change
+  //Changing the color does NOT trigger a render(_initGraph)
+  componentWillReceiveProps (nextProps){
     if(this.props.activeComponent !== nextProps.activeComponent){
       if(nextProps.loaded){
         this._colorMetros(nextProps);        
@@ -45,6 +98,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   _colorMetros(props){
+    console.log("color nat map")
     d3.selectAll("."+classes['msa'])
       .style("fill",function(d){   
         var color = "chartreuse"  
@@ -58,6 +112,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   _drawMetros (props) {
+    console.log("draw metro nat map")
     let statesGeo = props.statesGeo
     let metrosGeo = Object.assign({},props.metrosGeo);
 
@@ -70,9 +125,9 @@ export class NationalMap extends React.Component<void, Props, void> {
       })
       return inBucket;
     })      
+    let width = this.state.width;
+    let height = this.state.height;
 
-    let width = document.getElementById("mapDiv").offsetWidth
-    let height = width  * 0.6
 
     var projection = d3.geo.albersUsa();
 
@@ -118,11 +173,12 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   _drawGraph (props) {
+    console.log("drawgraph nat map")
     let statesGeo = props.statesGeo
     let metrosGeo = Object.assign({},props.metrosGeo);
 
-    let width = document.getElementById("mapDiv").offsetWidth
-    let height = width  * 0.6
+    let width = this.state.width;
+    let height = this.state.height;
 
     var projection = d3.geo.albersUsa();
 
@@ -140,6 +196,8 @@ export class NationalMap extends React.Component<void, Props, void> {
     projection
         .scale(s)
         .translate(t);
+
+    d3.selectAll("."+classes['msa']).remove()
 
     let svg = d3.select("#mapDiv svg")
     .attr('viewBox','0 0 ' + width + ' ' + height)
@@ -209,6 +267,9 @@ export class NationalMap extends React.Component<void, Props, void> {
         return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
     }                            
 
+    this.props.onMouseover.bind(d);
+    this.props.onMouseover(d)
+
     var oldColor = d3.select(d.shape).style("fill")
     d3.select(d.shape).style("fill",shadeRGBColor(oldColor,-.2))
 
@@ -219,14 +280,8 @@ export class NationalMap extends React.Component<void, Props, void> {
     focus.select("text").text(popText);
   }
 
-  _initGraph () {
-    if(!this.props.loaded){
-      return this.props.loadData()
-    }
-    this._drawGraph(this.props)
-  }
-
   render () {
+    this._initGraph()
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
@@ -251,4 +306,8 @@ const mapStateToProps = (state) => ({
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
+  getdensitycomposite: () => loadDensityComposite(),
+  getfluiditycomposite: () => loadFluidityComposite(),
+  getdiversitycomposite: () => loadDiversityComposite(),
+  getcombinedcomposite: () => loadCombinedComposite()
 })(NationalMap)

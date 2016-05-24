@@ -48,6 +48,7 @@ const ACTION_HANDLERS = {
 
     var newState = Object.assign({},state);
     let us = action.payload;
+
     newState.loaded = true;
     newState.statesGeo = topojson.feature(us,us["objects"]["states.geo"]),
     newState.metrosGeo = topojson.feature(us,us["objects"]["fixMsa.geo"])

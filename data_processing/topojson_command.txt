@@ -1,0 +1,4 @@
+topojson -o test_us.json -q 1e4 -p id=GEOID,NAME --id-property GEOID -- states.geo=state_test.geojson fixMsa.geo=msa_test.geojson 
+
+
+http://www.fhfa.gov/datatools/downloads/documents/hpi_focus_pieces/2013q2_hpifocus_n508.pdf
