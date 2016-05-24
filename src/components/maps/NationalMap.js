@@ -10,7 +10,7 @@ import { loadCombinedComposite } from 'redux/modules/combinedData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 import { withRouter } from 'react-router'
-
+let roundFormat = d3.format(".1f")
 
 export class NationalMap extends React.Component<void, Props, void> {
 
@@ -30,6 +30,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     this._msaClick = this._msaClick.bind(this)
     this._mouseout = this._mouseout.bind(this)
     this._mouseover = this._mouseover.bind(this)
+    this._drawLegend = this._drawLegend.bind(this)
   }
 
   _initGraph () {
@@ -109,6 +110,7 @@ export class NationalMap extends React.Component<void, Props, void> {
         })
         return color;
       })
+    this._drawLegend(props);
   }
 
   _drawMetros (props) {
@@ -170,6 +172,8 @@ export class NationalMap extends React.Component<void, Props, void> {
       .on("mouseover", this._mouseover)
       .on("mouseout", this._mouseout)
       .on('click',this._msaClick);
+
+
   }
 
   _drawGraph (props) {
@@ -235,6 +239,57 @@ export class NationalMap extends React.Component<void, Props, void> {
       .on("mouseover", this._mouseover)
       .on("mouseout", this._mouseout)
       .on('click',this._msaClick);
+
+    this._drawLegend(props);
+  }
+
+  _drawLegend (props) {
+    d3.selectAll(".legend").remove()
+
+    var svg = d3.select("#mapDiv svg")
+
+    var valueArray = [];
+    props[(props.activeComponent+"composite")].forEach(metro => {
+      valueArray.push(metro.values[metro.values.length-1].y)
+    })
+
+
+    var color = d3.scale.quantile()
+      .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
+      .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse()) 
+
+    let legend = svg.append("g")
+      .attr("transform", "translate(" + (this.state.width-260) + "," + 10 + ")")
+      .attr("class", "legend")
+      .append('g')
+    
+    legend
+      .append('text')
+      .attr("dx", 0)
+      .attr("dy", ".35em")
+      .text( 'Score')
+
+    let legendCells = legend
+      .selectAll('.legendCells')
+      .data(color.quantiles())
+      .enter()
+      
+    legendCells
+      .append('rect')
+      .attr("height", 15)
+      .attr("width", 30)
+      .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",24)" })
+      .attr('fill', function(d) {return color(d)} )
+      
+    legendCells
+      .append('text')
+      .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",16)" })
+      .attr("dx", 4)
+      .attr("dy", ".35em")
+      .style('font-size', '10px')
+      .text(function(d) {
+        return roundFormat(d);
+      })
   }
 
   _msaClick (d) {
