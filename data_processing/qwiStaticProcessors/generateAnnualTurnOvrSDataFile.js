@@ -71,6 +71,8 @@ const handleLeaf = (d) => {
 
   agg.turnovrs_quarterly = new Array(4).fill(null)
 
+  agg.msa = agg.geography.slice(2)
+
   for (let i = 0; i < d.length; ++i) {
     agg.turnovrs_quarterly[parseInt(d[i].quarter)-1] = d[i].turnovrs
   }
@@ -122,7 +124,6 @@ const getTurnoverStatistics = (acc, fipsCode, cb) => {
 
     _.forEach(data, (annualTurnvrsData, geography) => {
       let msaCode = geography.slice(2)
-      annualTurnvrsData.msa = msaCode 
       acc[msaCode] = annualTurnvrsData  
     })
 
