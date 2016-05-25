@@ -6,6 +6,7 @@ import { loadMetroData, setMetroQuarter } from 'redux/modules/metroQcewData.js'
 import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
+import { typemap } from 'support/qcew/typemap'
 type Props = {
 };
 let ttHeight = 500
@@ -138,17 +139,11 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
     _process (data,agg,noagg) {
 	let pdata = {}
-	switch(this.props.field){
-	case 'employment':
-	    let empfields = ['month1_emplvl','month2_emplvl','month3_emplvl']
-	    let lqempfields = empfields.map(x => 'lq_' + x)
-	    pdata.data = this.dataMap(data,empfields,agg)
-	    pdata.lqdata = this.dataMap(data,lqempfields,agg)
-	    break
-	default :
-	    pdata.data = this.dataMap(data,field,noagg)
-	    pdata.lqdata = this.dataMap(data,'lq_'+field,noagg)
-	}
+	let fields = typemap[this.props.type]
+	let lqfields = fields.map(x => 'lq_' + x)
+	pdata.data = this.dataMap(data,fields,noagg)
+	pdata.lqdata = this.dataMap(data,lqfields,noagg)
+	
 	return pdata
     }
     
@@ -183,7 +178,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		<div className='col-xs-8'>
 		<LineGraph 
 		key={this.props.field}
-		data={empCount} 
+		data={mData.data} 
 		uniq={this.props.field}
 		title={'Quarterly ' + this.props.title}
 		yFormat={(x)=>x}
@@ -198,7 +193,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	      		
 		<LineGraph 
 		key={'lq_'+this.props.field}
-		data={lqCount} 
+		data={mData.lqdata} 
 	        uniq={'lq_'+this.props.field} 
 		xFormat={(x)=>this.revMap(x)} 
 		title={'Quarterly LQ '+ this.props.title}

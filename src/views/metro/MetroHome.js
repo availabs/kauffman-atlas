@@ -17,7 +17,7 @@ export class MetroHome extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-     display: 'workforce'
+     display: 'Establishment'
     }
 
     this.renderDisplay = this.renderDisplay.bind(this)
@@ -36,23 +36,40 @@ export class MetroHome extends React.Component<void, Props, void> {
 
   renderDisplay(){
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
-    console.log('render Dsiplay', 2012, metroId)
+    console.log('render Display', 2012, metroId)
     switch(this.state.display){
-      case 'combined':
+    case 'combined':
         return (
           <MetroScores metroId={metroId} metroData={this.props.metros[metroId]} />
         )
-      case 'industry':
+    case 'Employment':
         return (
-           <MetroZbp currentMetro={metroId} year='2012'/>
+		<MetroQcew currentMetro={metroId} year='2014'
+	        type={'employment'}
+	        title={'Employment'}
+		/>
         )
-      case 'cluster':
+    case 'Establishment':
+	return (
+		<MetroQcew currentMetro={metroId} year='2012'
+	    type='establishment'
+	    title='Establishment'
+		/>
+	)
+    case 'Wages' :
+	return (
+		<MetroQcew currentMetro={metroId} year='2012'
+	    type='totalwages'
+	    title='Wages'
+		/>
+	)
+    case 'cluster':
         return (
-           <MetroZbpCluster currentMetro={metroId} year='2012'/>
+		<MetroZbpCluster currentMetro={metroId} year='2012'/>
         )
     case 'workforce':
 	return (
-		<MetroQcew currentMetro={metroId} year='2014'/>
+	    <span></span>
 	)
     default: 
         return (
@@ -80,8 +97,14 @@ export class MetroHome extends React.Component<void, Props, void> {
                 <li style={this._linkIsActive('combined')} onClick={this._selectDisplay.bind(null,'combined')}>
                    <a className={classes['whitelink']}>Combined</a>
                 </li>
-                <li style={this._linkIsActive('industry')} onClick={this._selectDisplay.bind(null,'industry')}>
-                  <a className={classes['whitelink']}>Industry Analysis</a>
+                <li style={this._linkIsActive('Employment')} onClick={this._selectDisplay.bind(null,'Employment')}>
+                  <a className={classes['whitelink']}>Employment</a>
+                </li>
+	        <li style={this._linkIsActive('Establishment')} onClick={this._selectDisplay.bind(null,'Establishment')}>
+                  <a className={classes['whitelink']}>Establishment</a>
+                </li>
+	        <li style={this._linkIsActive('Wages')} onClick={this._selectDisplay.bind(null,'Wages')}>
+                  <a className={classes['whitelink']}>Wages</a>
                 </li>
                 <li style={this._linkIsActive('cluster')} onClick={this._selectDisplay.bind(null,'cluster')}> 
                   <a className={classes['whitelink']}>Cluster Analysis</a>
