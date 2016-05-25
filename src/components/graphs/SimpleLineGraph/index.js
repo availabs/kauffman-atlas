@@ -85,8 +85,6 @@ class LineGraph extends React.Component {
     }
 
     componentWillReceiveProps (nProps) {
-	console.log('MLG new PROPS',nProps)
-	console.log(this.state.graph.data())
 	if(!_.isEqual(this.state.graph.data(),nProps.data)){
 	    this.state.graph.data(nProps.data)
 	    this.state.graph

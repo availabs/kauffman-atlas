@@ -8,7 +8,7 @@ import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 type Props = {
 };
-
+let ttHeight = 500
 let yearConst = 2001
 export class NaicsGraph extends React.Component<void, Props, void> {
     constructor () {
@@ -50,7 +50,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	})
 
 	return (<div id={'tooltip' + this.props.uniq}
-		style={{position:'absolute',overflow:'hidden'}}
+		style={{overflow:'scroll',height:ttHeight}}
 		>
 
 		<table className='table'>
@@ -176,7 +176,8 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
 	
 	return (
-		<div className='row' >
+	        <StickyContainer>
+		<div className='row' style={{overflow:'hidden'}} >
 		<div className='col-xs-8'>
 		<LineGraph 
 		key={'empCount'}
@@ -236,15 +237,16 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	        graphSlice={this.props.qtrData}
 		/>
 		</div>
-		<StickyContainer>
+	
 		<div className='col-xs-4'>
 
 		<Sticky>
 		{this.renderToolTip()}
 	        </Sticky>
 		</div>
-		</StickyContainer>
-		</div>)
+	
+	    </div>
+		</StickyContainer>)
     }
 }
 
