@@ -6,6 +6,7 @@ import { loadMetroData, setMetroQuarter } from 'redux/modules/metroQcewData.js'
 import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
+import { typemap } from 'support/qcew/typemap'
 type Props = {
 };
 let ttHeight = 500
@@ -17,6 +18,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    data: null,	    
 	}
 	this._onMouse = this._onMouse.bind(this)
+	this._process = this._process.bind(this)
     }
 
     _init (id) {
@@ -134,6 +136,16 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	console.log(data)
 	this.props.setQtr(data)
     }
+
+    _process (data,agg,noagg) {
+	let pdata = {}
+	let fields = typemap[this.props.type]
+	let lqfields = fields.map(x => 'lq_' + x)
+	pdata.data = this.dataMap(data,fields,noagg)
+	pdata.lqdata = this.dataMap(data,lqfields,noagg)
+	
+	return pdata
+    }
     
     render () {
 	console.log(this.props.naicsKeys)
@@ -145,33 +157,18 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    .key( x=>x.area_fips)
 	    .rollup( values => values)
 	    .map(this.props.data)['C'+this.props.currentMetro.substr(0,4)]
-	
-	
+
 	let data = d3.nest()
 	    .key(x=>x.industry_code)
 	    .rollup( values => values)
 	    .entries(metrodata || [])
-	    
-
 	
-	
-
 	let noagg = this.aggfunc.bind(this,x=>x)
 	
-	let normCount = this.dataMap(data,'qtrly_estabs_count',noagg)
-	let lqCount = this.dataMap(data,'lq_qtrly_estabs_count',noagg)
-
-	let empfields = ['month1_emplvl','month2_emplvl','month3_emplvl']
-	let lqempfields = empfields.map(x => 'lq_' + x)
-
 	let agg = this.aggfunc.bind(this,x => (x/empfields.length))
 
-	let empCount = this.dataMap(data,empfields,agg)
-	let lqempCount = this.dataMap(data,lqempfields,agg)
+	let mData = this._process(data,agg,noagg)
 	
-	console.log('normCounts',normCount)
-	console.log('lqCounts',lqCount)
-
 	let graphMargin = {top: 0, left: 60, right: 20, bottom: 20}
 
 	
@@ -180,10 +177,10 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		<div className='row' style={{overflow:'hidden'}} >
 		<div className='col-xs-8'>
 		<LineGraph 
-		key={'empCount'}
-		data={empCount} 
-		uniq={'empCount'}
-		title={'Quarterly (Avg) Employment Count'}
+		key={this.props.field}
+		data={mData.data} 
+		uniq={this.props.field}
+		title={'Quarterly ' + this.props.title}
 		yFormat={(x)=>x}
 		xScaleType={'linear'}
 		yAxis={true}
@@ -193,41 +190,13 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	        graphSlice={this.props.qtrData}
 		/>
 
-	        <LineGraph 
-		key={'lqempCount'}
-		data={lqempCount} 
-		uniq={'lqempCount'}
-		title={'Quarterly (Avg) LQ Employment Count'}
-		yFormat={(x)=>x}
-		xScaleType={'linear'}
-		yAxis={true}
-		margin={graphMargin}
-		tooltip={true}
-	        onMouse={this._onMouse}
-	        graphSlice={this.props.qtrData}
-		/>
-		
-	    
+	      		
 		<LineGraph 
-		key={'normCount'}
-		data={normCount} 
-		uniq={'qtrlyCount'}
-		title={'Quarterly Establishment Count'}
-		yFormat={(x)=>x}
-		xScaleType={'linear'}
-		yAxis={true}
-		margin={graphMargin}
-		tooltip={true}
-	        onMouse={this._onMouse}
-	        graphSlice={this.props.qtrData}
-		/>
-		
-		<LineGraph 
-		key={'lqCount'}
-		data={lqCount} 
-		uniq='lqCount' 
+		key={'lq_'+this.props.field}
+		data={mData.lqdata} 
+	        uniq={'lq_'+this.props.field} 
 		xFormat={(x)=>this.revMap(x)} 
-		title={'Quarterly LQ Establishment Count'}
+		title={'Quarterly LQ '+ this.props.title}
 		xAxis={true}
 		xScaleType={'linear'}
 		yAxis={true}
@@ -245,7 +214,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	        </Sticky>
 		</div>
 	
-	    </div>
+	        </div>
 		</StickyContainer>)
     }
 }

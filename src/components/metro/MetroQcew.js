@@ -8,7 +8,7 @@ import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
 import classes from 'styles/sitewide/index.scss'
 import NaicsGraph from 'components/graphs/NaicsGraph'
-
+import {typemap} from 'support/qcew/typemap'
 
 export class MetroQcew extends React.Component<void, Props, void> {
     constructor () {
@@ -16,7 +16,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	this.state = {
 	    depth: 2,
 	    filter: null,
-	    sort: 'emp_quot'
+	    sort: 'type_quot'
 	}
 	this._fecthData = this._fecthData.bind(this)
 	this._processData = this._processData.bind(this)
@@ -61,14 +61,10 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    .entries(this.props.qcewData[msa][year]);
 	let naicsLib = this.props.naicsKeys
 	if(!depth) depth = 2
-	
+	let fields = typemap[this.props.type]
 	let naicsKeys = currentData.filter((ind)=>{
 	    return ind.values.reduce((a,b) => { 
-		return a && b['lq_qtrly_estabs_count'] &&
-		    b['qtrly_estabs_count'] &&
-		    b['month1_emplvl'] && b['month2_emplvl']&&
-		    b['month3_emplvl'] 
-		
+		return a && fields.reduce((tf,field) => tf && b[field],true)
 	    },true)
 	})
 
@@ -76,47 +72,43 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    let truekeys = this.props.naicsTable.Query(filter,1,true)
 	    naicsKeys = naicsKeys.filter(obj => truekeys.indexOf(obj.key) >= 0)
 	}
-	let totalEmp = 0, totalEst = 0;
+	let totalType = 0
 	var scope = this
 	var data = naicsKeys.reduce((prev,current) => {
 	    var twoDigit = current.key.substr(0,depth)
 	    if(naicsLib[twoDigit].part_of_range){
 		twoDigit = naicsLib[twoDigit].part_of_range;
 	    }
-	    
 	    if(!prev[twoDigit]){
 		prev[twoDigit] = {
-		    emp:0, est:0, empShare:0, estShare:0, 
+		    type:0,  typeShare:0 
 		}
 	    }
-	    let empkeys = ['month1_emplvl','month2_emplvl','month3_emplvl']
+
 	    let t1 = 0
-	    t1 = empkeys.map(key => {
+	    t1 = fields.map(key => {
 		return scope._quarterReduce(current.values,key)
-	    }).reduce((a,b) => a+b)/empkeys.length
+	    }).reduce((a,b) => a+b)/fields.length
 	    
-	    let t2 = scope._quarterReduce(current.values,'qtrly_estabs_count')
-	    totalEmp += t1
-	    totalEst += t2
-	    let lqempkeys = empkeys.map(x => 'lq_'+x)
+	    totalType += t1
+
+	    let lqtypekeys = fields.map(x => 'lq_'+x)
 	    
 	    let lqt1 = 0
-	    lqt1 = lqempkeys.map(key =>{
-		return scope._quarterReduce(current.values,'lq_month1_emplvl')
-	    }).reduce((a,b) => a+b)/lqempkeys.length
-	    let lqt2 = scope._quarterReduce(current.values,'lq_qtrly_estabs_count')
 	    
-	    prev[twoDigit].empQuot = lqt1
-	    prev[twoDigit].estQuot = lqt2
+	    lqt1 = lqtypekeys.map(key =>{
+		return scope._quarterReduce(current.values,key)
+	    }).reduce((a,b) => a+b)/lqtypekeys.length
 	    
-	    prev[twoDigit].emp += t1
-	    prev[twoDigit].est += t2
+	    prev[twoDigit].typeQuot = lqt1
+	    
+	    prev[twoDigit].type += t1
+	    
 	    return prev
 	},{})
 	Object.keys(data).map((k) => {
 	    let x = data[k]
-	    x.empShare = x.emp/totalEmp || 0
-	    x.estShare = x.est/totalEst || 0
+	    x.typeShare = x.type/totalType || 0
 	    return x
 	})
 	return data
@@ -157,24 +149,18 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		}	
 	}
 	
-	let estQuot =  Object.keys(naicsCodes)
-            .map(codeRunner.bind(null,'est_quot','estQuot'))
-	    .map(dataFormatter.bind(null,'est_quot'))
+	let typeQuot =  Object.keys(naicsCodes)
+            .map(codeRunner.bind(null,'type_quot','typeQuot'))
+	    .map(dataFormatter.bind(null,'type_quot'))
 
-	let empQuot =  Object.keys(naicsCodes)
-	    .map(codeRunner.bind(null,'emp_quot','empQuot'))
-	    .map(dataFormatter.bind(null,'emp_quot'))
 
-	let empShare = Object.keys(naicsCodes)
-	    .map(dataFormatter.bind(null,'empShare'))
-	let estShare = Object.keys(naicsCodes)
-	    .map(dataFormatter.bind(null,'estShare'))
+	let typeShare = Object.keys(naicsCodes)
+	    .map(dataFormatter.bind(null,'typeShare'))
+
     
 	return {
-	    empShare:empShare,
-	    estShare:estShare,
-	    estQuot:estQuot,
-	    empQuot:empQuot
+	    typeShare:typeShare,
+	    typeQuot:typeQuot
 	}
     }
 
@@ -187,10 +173,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    return (<span></span>)
 	let curQuants = this.summarizeData(naicsCodes, naicsLib)
 	let pastQuants = this.summarizeData(naicsCodesPast, naicsLib)
-	let empShares = [pastQuants.empShare,curQuants.empShare]
-	let empQuots = [pastQuants.empQuot, curQuants.empQuot]
-	let estShares = [pastQuants.estShare, curQuants.estShare]
-	let estQuots = [pastQuants.estQuot, curQuants.estQuot]
+	let typeShares = [pastQuants.typeShare,curQuants.typeShare]
+	let typeQuots = [pastQuants.typeQuot, curQuants.typeQuot]
+	
 
 	let rOpts = {
 	    w:190, h:190,
@@ -200,27 +185,20 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	return (
 		<div className='row'>
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>Employment Share by Industry</strong>
-		<RadarChart divID='empShare' data={empShares} options={rOpts} />
+		<strong>{this.props.title} Share by Industry</strong>
+		<RadarChart divID='typeShare' data={typeShares} options={rOpts} />
 		</div>
+
 		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>Employment Quotient by Industry</strong>
-		<RadarChart divID='empQout' data={empQuots} options={rOpts} />
-		</div>
-		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>Establishment Share by Industry</strong>
-		<RadarChart divID='estShare' data={estShares} options={rOpts} />
-		</div>
-		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>Establishment Quotient by Industry</strong>
-		<RadarChart divID='estQout' data={estQuots} options={rOpts} />
+		<strong>{this.props.title} Quotient by Industry</strong>
+		<RadarChart divID='typeQout' data={typeQuots} options={rOpts} />
 		</div>
 		</div>
 	)
     }
 
     renderNaicsOverview (year, depth, filter) {
-	let sortVariable = 'emp_quot'
+	let sortVariable = 'type_quot'
 	let msa = this.props.currentMetro
 	if(!this.props.qcewData || !this.props.qcewData[msa] ||
 	   !this.props.qcewData[msa][year])
@@ -230,8 +208,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let naicsLib = this.props.naicsKeys
 	let naicsRows = Object.keys(naicsCodes)
 	    .map(d => {
-		naicsCodes[d].emp_quot = naicsCodes[d].empQuot
-		naicsCodes[d].est_quot = naicsCodes[d].estQuot
+		naicsCodes[d].type_quot = naicsCodes[d].typeQuot
 		return d
 	    })
 	    .sort((a,b) => {
@@ -241,12 +218,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		return (
 			<tr key={d}>
 			<td><a className={classes['bluelink']} onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
-			<td>{naicsCodes[d].emp.toLocaleString()}</td>
-			<td>{+(naicsCodes[d].empShare*100).toLocaleString()}%</td>
-			<td>{+(naicsCodes[d].emp_quot).toLocaleString()}</td>
-			<td>{naicsCodes[d].est.toLocaleString()}</td>
-			<td>{+(naicsCodes[d].estShare*100).toLocaleString()}%</td>
-			<td>{+(naicsCodes[d].est_quot).toLocaleString()}</td>
+			<td>{naicsCodes[d].type.toLocaleString()}</td>
+			<td>{+(naicsCodes[d].typeShare*100).toLocaleString()}%</td>
+			<td>{+(naicsCodes[d].type_quot).toLocaleString()}</td>
 			</tr>
 		)
 	    })
@@ -255,13 +229,10 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		<table className='table'>
 		<thead>
 		<tr>
-		<td>Employment</td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp')}>Employment</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'empShare')}>Employment Share</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'emp_quot')}>Employment Quotient</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'est')}>Establishments</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'estShare')}>Establishment Share</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'est_quot')}>Establishment Quotient</a></td>
+		<td>{this.props.title}</td>
+		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'type')}>{this.props.title}</a></td>
+		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'typeShare')}>{this.props.title} Share</a></td>
+		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'type_quot')}>{this.props.title} Quotient</a></td>
 		</tr>
 		</thead>
 		<tbody>
@@ -300,7 +271,10 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    return (
 		    <div className='container'>
 		    <NaicsGraph filter={fkeys}
-		currentMetro={this.props.currentMetro} />
+		currentMetro={this.props.currentMetro}
+		type={this.props.type}
+		title={this.props.title}
+		    />
 		    <div className='row' style={{'textAlign': 'center'}}>
 		    <h4>{this.state.filter || '--'} | {naicsLib[this.state.filter] ? naicsLib[this.state.filter].title : 'All Sectors'} {this.state.depth > 2 ? reset : ''}</h4>
 		    </div>
