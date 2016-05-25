@@ -1,6 +1,7 @@
 "use strict"
 import React from 'react'
 import d3 from 'd3'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
@@ -183,17 +184,21 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    color: d3.scale.ordinal().range(['#FFF200','#7D8FAF'])
 	}
 	return (
-		<div className='row'>
-		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>{this.props.title} Share by Industry</strong>
-		<RadarChart divID='typeShare' data={typeShares} options={rOpts} />
+	    <div className='row'>
+		<div className='col-sm-6'
+		     style={{'textAlign': 'center',padding:0}}>
+		    <strong>{this.props.title} Share by Industry</strong>
+		    <RadarChart divID='typeShare' data={typeShares}
+				options={rOpts} />
 		</div>
 
-		<div className='col-sm-3' style={{'textAlign': 'center',padding:0}}>
-		<strong>{this.props.title} Quotient by Industry</strong>
-		<RadarChart divID='typeQout' data={typeQuots} options={rOpts} />
+		<div className='col-sm-6'
+		     style={{'textAlign': 'center',padding:0}}>
+		    <strong>{this.props.title} Quotient by Industry</strong>
+		    <RadarChart divID='typeQout' data={typeQuots}
+				options={rOpts} />
 		</div>
-		</div>
+	    </div>
 	)
     }
 
@@ -204,6 +209,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	   !this.props.qcewData[msa][year])
 	    return null
 
+	let metro = this.props.currentMetro
+	let page = this.props.title
 	let naicsCodes = this._processData(msa, year, depth, filter)
 	let naicsLib = this.props.naicsKeys
 	let naicsRows = Object.keys(naicsCodes)
@@ -216,29 +223,44 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    })
 	    .map((d) =>{
 		return (
-			<tr key={d}>
-			<td><a className={classes['bluelink']} onClick={this._setFilter.bind(this, d, this.state.depth+1)} alt={naicsLib[d].description}>{d} | {naicsLib[d].title}</a></td>
+		    <tr key={d}>
+			<td>
+			    <Link to ={'/metro/'+metro+'/'+page+'/'+d}
+				  className={classes['bluelink']}
+				  onClick={this._setFilter
+					       .bind(this, d,
+						     this.state.depth+1)}
+				  alt={naicsLib[d].description}>
+				{d} | {naicsLib[d].title}
+			    </Link>
+			</td>
 			<td>{naicsCodes[d].type.toLocaleString()}</td>
 			<td>{+(naicsCodes[d].typeShare*100).toLocaleString()}%</td>
 			<td>{+(naicsCodes[d].type_quot).toLocaleString()}</td>
-			</tr>
+		    </tr>
 		)
 	    })
 
 	return (
-		<table className='table'>
+	    <table className='table'>
 		<thead>
-		<tr>
-		<td>{this.props.title}</td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'type')}>{this.props.title}</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'typeShare')}>{this.props.title} Share</a></td>
-		<td><a className={classes['bluelink']}  onClick={this._setSort.bind(this,'type_quot')}>{this.props.title} Quotient</a></td>
-		</tr>
+		    <tr>
+			<td>{this.props.title}</td>
+			<td><a className={classes['bluelink']}
+			       onClick={this._setSort.bind(this,'type')}>
+			    {this.props.title}</a></td>
+			<td><a className={classes['bluelink']}
+			       onClick={this._setSort.bind(this,'typeShare')}>
+			    {this.props.title} Share</a></td>
+			<td><a className={classes['bluelink']}
+			       onClick={this._setSort.bind(this,'type_quot')}>
+			    {this.props.title} Quotient</a></td>
+		    </tr>
 		</thead>
 		<tbody>
-		{naicsRows}
-            </tbody>
-		</table>
+		    {naicsRows}
+		</tbody>
+	    </table>
 	)
     }
 
@@ -247,9 +269,13 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	this._fecthData ()
     }
     
-    componentWillReceiveProps (nextProps){
-	console.info('fetching new data')
-	this._fecthData ()
+    componentWillReceiveProps (nextProps) {
+	this._fecthData();
+	let naics_code = nextProps.params.naics_code
+	if(naics_code && (naics_code !== this.state.filter)){
+	    this.setState({filter:naics_code,depth:naics_code.length+1})
+	}
+	    
     }
 
     componentDidUpdate (p,prevState){
@@ -267,28 +293,35 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    let naicsLib = this.props.naicsKeys
 	let filter = this.state.filter
 	let fkeys = (filter) ? this.props.naicsTable.Query(filter,1,true) : null
-	let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
+	let reset =(
+	    <Link to={'/metro/'+this.props.currentMetro+'/'+this.props.title}
+		onClick={this._setFilter.bind(this,null,2)}>
+		{' reset'}
+	    </Link>)
 	    return (
-		    <div className='container'>
-		    <NaicsGraph filter={fkeys}
-		currentMetro={this.props.currentMetro}
-		type={this.props.type}
-		title={this.props.title}
-		    />
-		    <div className='row' style={{'textAlign': 'center'}}>
-		    <h4>{this.state.filter || '--'} | {naicsLib[this.state.filter] ? naicsLib[this.state.filter].title : 'All Sectors'} {this.state.depth > 2 ? reset : ''}</h4>
-		    </div>
-		    <div key='leftpad' style={{textAlign: 'left', padding: 15}}>
+	    <div className='container'>
+		<div className='row' style={{'textAlign': 'center'}}>
+		    <h4>{this.state.filter || '--'} |
+			{naicsLib[this.state.filter] ?
+			 naicsLib[this.state.filter].title : 'All Sectors'}
+			{this.state.depth > 2 ? reset : ''}</h4>
+		</div>
+		<div key='leftpad' style={{textAlign: 'left', padding: 15}}>
 		    {naicsLib[this.state.filter] && naicsLib[this.state.filter].description ? naicsLib[this.state.filter].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map((d,i) => { return <p key={'desc'+i}>{d}</p> }) : ''}
 		</div>
-		    <div>
+		<NaicsGraph filter={fkeys}
+			    currentMetro={this.props.currentMetro}
+			    type={this.props.type}
+			    title={this.props.title}
+		/>
+		<div>
 	    	    {this.renderRadar(this.props.year,this.state.depth, this.state.filter)}
 	    	</div>
-		    <div>
+		<div>
 
 		    {this.renderNaicsOverview(this.props.year,this.state.depth, this.state.filter)}
 		</div>
-		    </div>
+	    </div>
 	    )
     }
     

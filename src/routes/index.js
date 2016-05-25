@@ -22,5 +22,8 @@ export default (store) => (
     <Route path='/fluidity' component={FluidityView} />
 	<Route path='/combined' component={CombinedView} />
 	<Route path='/metro/:geoid' component={MetroHome} />
+	<Route path='/metro/:geoid/:pageid' component={MetroHome} />
+	<Route path='/metro/:geoid/:pageid/:naics_code' component={MetroHome} />
+	<Route path='/metro/:geoid/:pageid/:naics_code/:year' component={MetroHome}/>
   </Route>
 )
