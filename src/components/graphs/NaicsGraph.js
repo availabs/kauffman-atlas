@@ -17,6 +17,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    data: null,	    
 	}
 	this._onMouse = this._onMouse.bind(this)
+	this._process = this._process.bind(this)
     }
 
     _init (id) {
@@ -134,6 +135,22 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	console.log(data)
 	this.props.setQtr(data)
     }
+
+    _process (data,agg,noagg) {
+	let pdata = {}
+	switch(this.props.field){
+	case 'employment':
+	    let empfields = ['month1_emplvl','month2_emplvl','month3_emplvl']
+	    let lqempfields = empfields.map(x => 'lq_' + x)
+	    pdata.data = this.dataMap(data,empfields,agg)
+	    pdata.lqdata = this.dataMap(data,lqempfields,agg)
+	    break
+	default :
+	    pdata.data = this.dataMap(data,field,noagg)
+	    pdata.lqdata = this.dataMap(data,'lq_'+field,noagg)
+	}
+	return pdata
+    }
     
     render () {
 	console.log(this.props.naicsKeys)
@@ -145,33 +162,18 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    .key( x=>x.area_fips)
 	    .rollup( values => values)
 	    .map(this.props.data)['C'+this.props.currentMetro.substr(0,4)]
-	
-	
+
 	let data = d3.nest()
 	    .key(x=>x.industry_code)
 	    .rollup( values => values)
 	    .entries(metrodata || [])
-	    
-
 	
-	
-
 	let noagg = this.aggfunc.bind(this,x=>x)
 	
-	let normCount = this.dataMap(data,'qtrly_estabs_count',noagg)
-	let lqCount = this.dataMap(data,'lq_qtrly_estabs_count',noagg)
-
-	let empfields = ['month1_emplvl','month2_emplvl','month3_emplvl']
-	let lqempfields = empfields.map(x => 'lq_' + x)
-
 	let agg = this.aggfunc.bind(this,x => (x/empfields.length))
 
-	let empCount = this.dataMap(data,empfields,agg)
-	let lqempCount = this.dataMap(data,lqempfields,agg)
+	let mData = this._process(data,agg,noagg)
 	
-	console.log('normCounts',normCount)
-	console.log('lqCounts',lqCount)
-
 	let graphMargin = {top: 0, left: 60, right: 20, bottom: 20}
 
 	
@@ -180,10 +182,10 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		<div className='row' style={{overflow:'hidden'}} >
 		<div className='col-xs-8'>
 		<LineGraph 
-		key={'empCount'}
+		key={this.props.field}
 		data={empCount} 
-		uniq={'empCount'}
-		title={'Quarterly (Avg) Employment Count'}
+		uniq={this.props.field}
+		title={'Quarterly ' + this.props.title}
 		yFormat={(x)=>x}
 		xScaleType={'linear'}
 		yAxis={true}
@@ -193,41 +195,13 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	        graphSlice={this.props.qtrData}
 		/>
 
-	        <LineGraph 
-		key={'lqempCount'}
-		data={lqempCount} 
-		uniq={'lqempCount'}
-		title={'Quarterly (Avg) LQ Employment Count'}
-		yFormat={(x)=>x}
-		xScaleType={'linear'}
-		yAxis={true}
-		margin={graphMargin}
-		tooltip={true}
-	        onMouse={this._onMouse}
-	        graphSlice={this.props.qtrData}
-		/>
-		
-	    
+	      		
 		<LineGraph 
-		key={'normCount'}
-		data={normCount} 
-		uniq={'qtrlyCount'}
-		title={'Quarterly Establishment Count'}
-		yFormat={(x)=>x}
-		xScaleType={'linear'}
-		yAxis={true}
-		margin={graphMargin}
-		tooltip={true}
-	        onMouse={this._onMouse}
-	        graphSlice={this.props.qtrData}
-		/>
-		
-		<LineGraph 
-		key={'lqCount'}
+		key={'lq_'+this.props.field}
 		data={lqCount} 
-		uniq='lqCount' 
+	        uniq={'lq_'+this.props.field} 
 		xFormat={(x)=>this.revMap(x)} 
-		title={'Quarterly LQ Establishment Count'}
+		title={'Quarterly LQ '+ this.props.title}
 		xAxis={true}
 		xScaleType={'linear'}
 		yAxis={true}
@@ -245,7 +219,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	        </Sticky>
 		</div>
 	
-	    </div>
+	        </div>
 		</StickyContainer>)
     }
 }

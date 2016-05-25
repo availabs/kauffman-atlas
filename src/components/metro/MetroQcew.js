@@ -300,7 +300,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    return (
 		    <div className='container'>
 		    <NaicsGraph filter={fkeys}
-		currentMetro={this.props.currentMetro} />
+		currentMetro={this.props.currentMetro}
+		field={this.props.field}
+		    />
 		    <div className='row' style={{'textAlign': 'center'}}>
 		    <h4>{this.state.filter || '--'} | {naicsLib[this.state.filter] ? naicsLib[this.state.filter].title : 'All Sectors'} {this.state.depth > 2 ? reset : ''}</h4>
 		    </div>
