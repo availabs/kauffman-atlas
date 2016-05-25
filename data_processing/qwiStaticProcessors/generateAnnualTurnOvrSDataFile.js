@@ -22,7 +22,7 @@ let qwiGeographiesByFipsCode = JSON.parse(fs.readFileSync(qwiGeographiesByFipsCo
 qwiGeographiesByFipsCode = _.pick(qwiGeographiesByFipsCode, ['34', '36'])
 
 
-
+let byYearCollector = {}
 
 
 const requestTheData = (dynamicQueryRoute, cb) => {
@@ -67,7 +67,7 @@ const handleLeaf = (d) => {
   let turnovrs = d.map(o => o.turnovrs).filter(t => t)
 
   let turnovrs_sum = turnovrs.reduce((a, t) => a += t, 0)
-  agg.turnovrs_avg = (turnovrs.length) ? (turnovrs_sum / turnovrs.length) : null
+  agg.turnovrs_avg = (turnovrs.length) ? (turnovrs_sum/turnovrs.length) : null
 
   agg.turnovrs_quarterly = new Array(4).fill(null)
 
@@ -76,6 +76,8 @@ const handleLeaf = (d) => {
   for (let i = 0; i < d.length; ++i) {
     agg.turnovrs_quarterly[parseInt(d[i].quarter)-1] = d[i].turnovrs
   }
+
+  (byYearCollector[agg.year] || (byYearCollector[agg.year] = [])).push(agg)
 
   return agg
 }
@@ -136,6 +138,24 @@ async.reduce(Object.keys(qwiGeographiesByFipsCode), {}, getTurnoverStatistics, (
   if (err) {
     return console.error(err.stack)
   } 
+
+  let comparator = (a,b) => ((b.turnovrs_avg || Number.NEGATIVE_INFINITY) - (a.turnovrs_avg || Number.NEGATIVE_INFINITY)) 
+
+  _.forEach(_.values(byYearCollector), annualTurnOversArr => {
+    annualTurnOversArr.sort(comparator)
+
+    let previous = _.head(annualTurnOversArr)
+    let rank = previous.rank = 1
+    _.tail(annualTurnOversArr).forEach((d, i) => {
+      if (d.turnovrs_avg !== previous.turnovrs_avg) {
+        rank = i+2
+      }
+
+      d.turnovrs_avg = d.turnovrs_avg && d.turnovrs_avg.toPrecision(3)
+      d.rank = rank
+      previous = d
+    })
+  })
 
   let outputDir = path.join(projectRoot, 'src/static/data/metroAnnualTurnOvrS/')
 
