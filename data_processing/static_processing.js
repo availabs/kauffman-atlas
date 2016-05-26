@@ -31,14 +31,14 @@ var processedDiversityComposite = _processDiversityComposite(processedOpportunit
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
 var fluidityInc5000Data = JSON.parse(fs.readFileSync('../src/static/data/inc5000.json'));
-const annualChurnData = JSON.parse(fs.readFileSync('../src/static/data/annualTurnOvrS.json'));/*PJT*/
+var annualChurnData = JSON.parse(fs.readFileSync('../src/static/data/annualTurnOvrS.json'));
 var processedInc5000 = _processinc5000(fluidityInc5000Data,processedNewFirms['raw']);
 var processedNetMigration = _processdetailMigration(fluidityIrsData,"irsNet");
 var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigrationFlow");
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
 var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration);
-const processedAnnualChurn = require('./qwiStaticProcessors/processAnnualTurnOvrS')(annualChurnData);/*PJT*/
+var processedAnnualChurn = require('./qwiStaticProcessors/processAnnualTurnOvrS')(annualChurnData);
 
 
 //Combined
@@ -157,6 +157,7 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['fluidity']['totalMigration'] = {};
   curMsaObj['fluidity']['inflowMigration'] = {};
   curMsaObj['fluidity']['outflowMigration'] = {};
+  curMsaObj['fluidity']['churn'] = {};
   curMsaObj['fluidity']['composite'];
 
   processedInc5000['raw'].forEach(metro => {

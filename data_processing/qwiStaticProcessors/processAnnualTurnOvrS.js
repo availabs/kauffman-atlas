@@ -4,12 +4,13 @@ const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
 
-const msaToName = JSON.parse(fs.readFileSync('../../src/static/data/msaName.json'))
+const projectRoot = path.join(__dirname, '../../')
 
-const processedTurnOvrSFilePath = path.join(__dirname, '../../src/static/data/processedAnnualTurnOvrS.json')
+const msaToName = JSON.parse(fs.readFileSync(path.join(projectRoot, 'src/static/data/msaName.json')))
+
+const processedTurnOvrSFilePath = path.join(projectRoot, 'src/static/data/processedAnnualTurnOvrS.json')
 
 process.on('uncaughtException', function (err) { console.log(err); })
-
 
 
 
@@ -87,7 +88,7 @@ module.exports = processAnnualTurnOvrS
 // If this module was run as a script.
 if (require.main === module) {
 
-  const annualChurnData = JSON.parse(fs.readFileSync('../../src/static/data/annualTurnOvrS.json'));/*PJT*/
+  const annualChurnData = JSON.parse(fs.readFileSync(path.join(projectRoot, 'src/static/data/annualTurnOvrS.json'));
 
   const processed = processAnnualTurnOvrS(annualChurnData)
 
