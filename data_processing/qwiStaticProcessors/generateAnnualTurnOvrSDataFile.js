@@ -9,7 +9,6 @@ import {qwiAPIServer} from '../../src/AppConfig'
 
 import async from 'async'
 import _ from 'lodash'
-import mkdirp from 'mkdirp'
 
 
 const projectRoot = path.join(__dirname, '../../')

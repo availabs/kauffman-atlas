@@ -10,8 +10,6 @@ const msaToName = JSON.parse(fs.readFileSync(path.join(projectRoot, 'src/static/
 
 const processedTurnOvrSFilePath = path.join(projectRoot, 'src/static/data/processedAnnualTurnOvrS.json')
 
-process.on('uncaughtException', function (err) { console.log(err); })
-
 
 
 const getRankingsByYear = data => {
