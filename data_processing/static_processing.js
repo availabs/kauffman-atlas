@@ -5,6 +5,7 @@ require('isomorphic-fetch');
 var fs = require('fs');
 var colorbrewer = require('colorbrewer');
 var d3 = require('d3');
+const _ = require('lodash')
 
 //Data about each MSA
 var msaPop = JSON.parse(fs.readFileSync('../src/static/data/msaPop.json')); 
@@ -30,12 +31,15 @@ var processedDiversityComposite = _processDiversityComposite(processedOpportunit
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
 var fluidityInc5000Data = JSON.parse(fs.readFileSync('../src/static/data/inc5000.json'));
+const annualChurnData = JSON.parse(fs.readFileSync('../src/static/data/annualTurnOvrS.json'));/*PJT*/
 var processedInc5000 = _processinc5000(fluidityInc5000Data,processedNewFirms['raw']);
 var processedNetMigration = _processdetailMigration(fluidityIrsData,"irsNet");
 var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigrationFlow");
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
 var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration);
+const processedAnnualChurn = require('./qwiStaticProcessors/processAnnualTurnOvrS')(annualChurnData);/*PJT*/
+
 
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
@@ -205,6 +209,12 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
     }
   })
+  processedAnnualChurn['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['churn']['raw'] = metro;        
+    }
+  })
+
   processedFluidityComposite.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['composite'] = metro;        
@@ -1152,3 +1162,5 @@ function _processCombinedComposite(density,diversity,fluidity){
 
   return graphData;
 }
+
+

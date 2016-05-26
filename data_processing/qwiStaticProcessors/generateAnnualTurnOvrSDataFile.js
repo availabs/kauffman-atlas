@@ -15,14 +15,13 @@ import mkdirp from 'mkdirp'
 const projectRoot = path.join(__dirname, '../../')
 
 
+
 const qwiGeographiesByFipsCodeFilePath = path.join(projectRoot, 'src/static/data/qwiGeographiesByFipsCode.json')
-
-let qwiGeographiesByFipsCode = JSON.parse(fs.readFileSync(qwiGeographiesByFipsCodeFilePath))
-// NOTE: The dev qwiAPI server currently only has 'ny' and 'nj'.
-qwiGeographiesByFipsCode = _.pick(qwiGeographiesByFipsCode, ['34', '36'])
+const qwiGeographiesByFipsCode = JSON.parse(fs.readFileSync(qwiGeographiesByFipsCodeFilePath))
 
 
-let byYearCollector = {}
+let lastYearWithData = Number.NEGATIVE_INFINITY
+
 
 
 const requestTheData = (dynamicQueryRoute, cb) => {
@@ -31,10 +30,17 @@ const requestTheData = (dynamicQueryRoute, cb) => {
 
   opts.path = `/data/${dynamicQueryRoute}?fields=TurnOvrS`
 
-  let req = http.get(opts, response => {
+  return http.get(opts, response => {
+
+    response.on('close', () => {
+      cb(new Error('Response closed'))
+    })
+
+    response.setTimeout(300000, () => {
+      cb(new Error('Response Timed out'))
+    })
 
     let body = ''
-
     response.on('data', d => (body += d))
 
     response.on('end', () => {
@@ -47,62 +53,41 @@ const requestTheData = (dynamicQueryRoute, cb) => {
 
         return cb(null, respJSON.data)
       } catch (e) {
-        console.log(e.stack)
         return cb(e) 
       }
     })
-  })
 
-  req.on('error', e => {
-    console.log(e.stack)  
-    return cb(e)
-  })
-  req.end()
+  }).on('error', e => cb)
+    .setTimeout(300000, () => cb(new Error('Request timed out.')))
+    .end()
 }
+
 
 
 const handleLeaf = (d) => {
-  let agg = _.omit(d[0], ['turnovrs', 'quarter'])
-
-  let turnovrs = d.map(o => o.turnovrs).filter(t => t)
-
+  let turnovrs = d.map(o => o.turnovrs).filter(t => !isNaN(parseFloat(t)))
   let turnovrs_sum = turnovrs.reduce((a, t) => a += t, 0)
-  agg.turnovrs_avg = (turnovrs.length) ? (turnovrs_sum/turnovrs.length) : null
 
-  agg.turnovrs_quarterly = new Array(4).fill(null)
+  let turnovrs_avg = (turnovrs.length) ? parseFloat((turnovrs_sum/turnovrs.length).toPrecision(3)) : null;
 
-  agg.msa = agg.geography.slice(2)
-
-  for (let i = 0; i < d.length; ++i) {
-    agg.turnovrs_quarterly[parseInt(d[i].quarter)-1] = d[i].turnovrs
+  if ((turnovrs_avg !== null) && (+d[0].year > lastYearWithData)) {
+    lastYearWithData = +d[0].year
   }
 
-  (byYearCollector[agg.year] || (byYearCollector[agg.year] = [])).push(agg)
-
-  return agg
+  return turnovrs_avg
 }
+
+
 
 const flattenLeaves = (d) => {
   // Because we limit the fields to TurnOvrs, the leaves should be arrays by quarter.
   if (Array.isArray(d)) {
-    if (d.length > 4) {
-      throw new Error('Assumption that leaf data is quarterly at most failed.')
-    }
-    
     return handleLeaf(d)
-
   } else {
-
-    let agg = {}
-    let keys = Object.keys(d)
-
-    for (let i = 0; i < keys.length; ++i) {
-      agg[keys[i]] = flattenLeaves(d[keys[i]])
-    }
-
-    return agg
+    return _.mapValues(d, flattenLeaves)
   }
 } 
+
 
 
 const aggregateLeafData = (data, cb) => {
@@ -113,20 +98,29 @@ const aggregateLeafData = (data, cb) => {
   }
 }
 
+
+
 const getTurnoverStatistics = (acc, fipsCode, cb) => {
 
+  console.time(fipsCode)
+
   let dynamicQueryRoute = `geography${qwiGeographiesByFipsCode[fipsCode].join('')}/year`
+  //let dynamicQueryRoute = `geography${_.take(qwiGeographiesByFipsCode[fipsCode],2).join('')}/year`
 
   let tasks = [
     requestTheData.bind(null, dynamicQueryRoute),
     aggregateLeafData,
   ]
+
   async.waterfall(tasks, (err, data) => {
+
+    console.timeEnd(fipsCode)
     if (err) { return cb(err) }
 
-    _.forEach(data, (annualTurnvrsData, geography) => {
+    _.forEach(data, (annualTurnOvrS, geography) => {
       let msaCode = geography.slice(2)
-      acc[msaCode] = annualTurnvrsData  
+
+      acc[msaCode] = _.pickBy(annualTurnOvrS, (turnovrs, year) => (year <= lastYearWithData))
     })
 
     return cb(null, acc)
@@ -134,34 +128,15 @@ const getTurnoverStatistics = (acc, fipsCode, cb) => {
 } 
 
 
-async.reduce(Object.keys(qwiGeographiesByFipsCode), {}, getTurnoverStatistics, (err, result) => {
+let fipsCodes = Object.keys(qwiGeographiesByFipsCode).sort()
+
+async.reduce(fipsCodes, {}, getTurnoverStatistics, (err, result) => {
+
   if (err) {
-    return console.error(err.stack)
+    return console.error(err.stack || err)
   } 
 
-  let comparator = (a,b) => ((b.turnovrs_avg || Number.NEGATIVE_INFINITY) - (a.turnovrs_avg || Number.NEGATIVE_INFINITY)) 
+  let outputFilePath = path.join(projectRoot, 'src/static/data/annualTurnOvrS.json')
 
-  _.forEach(_.values(byYearCollector), annualTurnOversArr => {
-    annualTurnOversArr.sort(comparator)
-
-    let previous = _.head(annualTurnOversArr)
-    let rank = previous.rank = 1
-    _.tail(annualTurnOversArr).forEach((d, i) => {
-      if (d.turnovrs_avg !== previous.turnovrs_avg) {
-        rank = i+2
-      }
-
-      d.turnovrs_avg = d.turnovrs_avg && d.turnovrs_avg.toPrecision(3)
-      d.rank = rank
-      previous = d
-    })
-  })
-
-  let outputDir = path.join(projectRoot, 'src/static/data/metroAnnualTurnOvrS/')
-
-  mkdirp.sync(outputDir)
-
-  _.forEach(result, (annualTurnvrsData, msa) => {
-    fs.writeFileSync(path.join(outputDir, `${msa}.json`), JSON.stringify(annualTurnvrsData))
-  })
+  fs.writeFileSync(outputFilePath, JSON.stringify(result))
 })
