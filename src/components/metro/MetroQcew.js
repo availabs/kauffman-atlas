@@ -275,7 +275,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	if(naics_code && (naics_code !== this.state.filter)){
 	    this.setState({filter:naics_code,depth:naics_code.length+1})
 	}
-	    
+	if(!naics_code && (this.state.filter)){
+	    this.setState({filter:null,depth:2})
+	}
     }
 
     componentDidUpdate (p,prevState){

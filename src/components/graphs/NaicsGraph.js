@@ -54,7 +54,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				   <td style={nameStyle}>
 				       <span title={naics[x.key].title}>
 					   <div style={{color:'#eee'}}>
-					       {naics[x.key].title.substr(0,6)}
+					       {naics[x.key].title.substr(0,16)}
 					   </div>
 				       </span>
 				   </td>
@@ -72,7 +72,6 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			<thead>
 			    <tr>
 				<td>Naics</td>
-				<td>color</td>
 				<td>value</td>
 			    </tr>
 			</thead>
