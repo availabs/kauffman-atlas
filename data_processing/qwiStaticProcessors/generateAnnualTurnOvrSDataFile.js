@@ -56,7 +56,7 @@ const requestTheData = (dynamicQueryRoute, cb) => {
       }
     })
 
-  }).on('error', e => cb)
+  }).on('error', cb)
     .setTimeout(300000, () => cb(new Error('Request timed out.')))
     .end()
 }
