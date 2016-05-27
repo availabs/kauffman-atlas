@@ -24,10 +24,7 @@ let years = [
 
 
 let fields = [
-    'area_fips','qtr','industry_codes','year','qtrly_estabs_count',
-    'lq_qtrly_estabs_count','month1_emplvl','month2_emplvl',
-    'month3_emplvl','lq_month1_emplvl','lq_month2_emplvl',
-    'lq_month3_emplvl'
+    'area_fips','qtr','all'
 	     ]
 
 let zeropad = (code) => {

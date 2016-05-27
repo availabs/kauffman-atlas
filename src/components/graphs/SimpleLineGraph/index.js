@@ -70,10 +70,17 @@ class LineGraph extends React.Component {
 	if(this.props.onMouse){
 	    let tableData = data.map(x => {
 		let offset = x.values[0].key
-		return {
-		    key:x.key,
-		    value:x.values[d.point.x-offset].values.y || 0,
-		    color:x.color,
+		try{
+		    return {
+			key:x.key,
+			value:x.values[d.point.x-offset].values.y || 0,
+			color:x.color,
+		    }
+		}catch(e){
+		    console.info('Mouse Error',d.point.x,offset)
+		    return {key:x.key,
+			    value:0,
+			    color:x.color}
 		}
 	    })
 	    this.props.onMouse(tableData)
@@ -85,8 +92,6 @@ class LineGraph extends React.Component {
     }
 
     componentWillReceiveProps (nProps) {
-	console.log('MLG new PROPS',nProps)
-	console.log(this.state.graph.data())
 	if(!_.isEqual(this.state.graph.data(),nProps.data)){
 	    this.state.graph.data(nProps.data)
 	    this.state.graph
