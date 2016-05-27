@@ -135,7 +135,7 @@ async.reduce(fipsCodes, {}, getTurnoverStatistics, (err, result) => {
     return console.error(err.stack || err)
   } 
 
-  let outputFilePath = path.join(projectRoot, 'src/static/data/annualTurnOvrS.json')
+  let outputFilePath = path.join(projectRoot, 'src/static/data/churn.json')
 
   fs.writeFileSync(outputFilePath, JSON.stringify(result))
 })
