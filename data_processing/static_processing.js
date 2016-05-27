@@ -5,6 +5,7 @@ require('isomorphic-fetch');
 var fs = require('fs');
 var colorbrewer = require('colorbrewer');
 var d3 = require('d3');
+var _ = require('lodash')
 
 //Data about each MSA
 var msaPop = JSON.parse(fs.readFileSync('../src/static/data/msaPop.json')); 
@@ -30,12 +31,15 @@ var processedDiversityComposite = _processDiversityComposite(processedOpportunit
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
 var fluidityInc5000Data = JSON.parse(fs.readFileSync('../src/static/data/inc5000.json'));
+var annualChurnData = JSON.parse(fs.readFileSync('../src/static/data/churn.json'));
 var processedInc5000 = _processinc5000(fluidityInc5000Data,processedNewFirms['raw']);
 var processedNetMigration = _processdetailMigration(fluidityIrsData,"irsNet");
 var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigrationFlow");
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
 var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration);
+var processedAnnualChurn = _processAnnualTurnOvrS(annualChurnData);
+
 
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
@@ -153,6 +157,7 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['fluidity']['totalMigration'] = {};
   curMsaObj['fluidity']['inflowMigration'] = {};
   curMsaObj['fluidity']['outflowMigration'] = {};
+  curMsaObj['fluidity']['churn'] = {};
   curMsaObj['fluidity']['composite'];
 
   processedInc5000['raw'].forEach(metro => {
@@ -205,6 +210,12 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
     }
   })
+  processedAnnualChurn['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['churn']['raw'] = metro;        
+    }
+  })
+
   processedFluidityComposite.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['composite'] = metro;        
@@ -1076,6 +1087,78 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   return graphData;
 }
 
+
+/**
+ * Parameter: data { msa: { year: <turnovrs> } }
+ */
+function _processAnnualTurnOvrS (data) {
+
+  //Begin: Helpers -----------------------------------------------------------
+  const getRankingsByYear = data => {
+
+    const byYearRankings = _.reduce(data, (acc, annualChurnForMSA, msaCode) => {
+      _.forEach(annualChurnForMSA, (churnValue, year) => {
+        (acc[year] || (acc[year] = [])).push({ msa: msaCode, value: churnValue })
+      })
+
+      return acc
+    }, {})
+
+    const comparator = (a,b) => (((b.value !== null) ? b.value : -1) - ((a.value !== null) ? a.value : -1))
+
+    // Sort (in-place) each year's list of {msa, value} objects.
+    _.forEach(byYearRankings, msaChurnArrForYear => msaChurnArrForYear.sort(comparator))
+
+    return byYearRankings
+  }
+
+
+  // For each year, create a table of MSA -> rank.
+  const getMSAByYearRankingTables = byYearRankings => 
+    _.mapValues(byYearRankings, (sortedChurnForYear, year) => {
+
+      let h = _.head(sortedChurnForYear)
+      let previousChurnValue = h.value
+      let rank = 1
+
+      return _.reduce(_.tail(sortedChurnForYear), (acc, d, i) => {
+        // All MSAs with same churn value should be tied in rank.
+        if (previousChurnValue !== d.value) {
+          // As we are using tail on a zero-indexed array, the ordinal # of an element is the index + 2.
+          rank = (i + 2)
+        }
+
+        acc[d.msa] = rank
+        previousChurnValue = d.value
+
+        return acc
+      }, { [h.msa]: rank })
+    })
+  //End: Helpers -----------------------------------------------------------
+
+
+  const rankingsByYear = getRankingsByYear(data)
+
+  const msaByYearRankingTables = getMSAByYearRankingTables(rankingsByYear)
+
+  // We order the metros in the output file by their ranking in the last year with data.
+  const lastYearRankings = rankingsByYear[_.max(_.keys(rankingsByYear))].map(d => d.msa)
+
+  return {
+    raw : _.map(lastYearRankings, msa => ({
+              key : msa,
+              name: msaName[msa],
+              values: _.sortBy(_.map(data[msa], (tovr, yr) => ({
+                x: +yr, 
+                y: tovr, 
+                rank: msaByYearRankingTables[yr][msa],
+              })),'x')
+          }))
+  }
+}
+
+
+
 function _processCombinedComposite(density,diversity,fluidity){
   var cityFilteredDensity = [],
       cityFilteredDiversity = [],
@@ -1152,3 +1235,4 @@ function _processCombinedComposite(density,diversity,fluidity){
 
   return graphData;
 }
+
