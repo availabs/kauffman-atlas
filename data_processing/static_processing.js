@@ -1104,7 +1104,8 @@ function _processAnnualTurnOvrS (data) {
       return acc
     }, {})
 
-    const comparator = (a,b) => (((b.value !== null) ? b.value : -1) - ((a.value !== null) ? a.value : -1))
+    const comparator = (a,b) => 
+      (((b.value !== null) ? b.value : Number.NEGATIVE_INFINITY) - ((a.value !== null) ? a.value : Number.NEGATIVE_INFINITY))
 
     // Sort (in-place) each year's list of {msa, value} objects.
     _.forEach(byYearRankings, msaChurnArrForYear => msaChurnArrForYear.sort(comparator))
