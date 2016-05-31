@@ -1,61 +1,55 @@
-import { RECEIVE_METRO_QWI_DATA, SET_QWI_COMP_QTR_DATA, QWI_ACTION_ERROR } from './actions'
+import _ from 'lodash'
+
+import { QWI_DATA_REQUESTED, 
+         QWI_DATA_RECEIVED, 
+         QWI_MSA_CHANGE, 
+         QWI_MEASURE_CHANGE, 
+         QWI_QUARTER_CHANGE, 
+         QWI_ACTION_ERROR } from './actions'
 
 
-import { industryTitles } from './constants'
-
-
-const receiveQwiData = (state, action) => {
-  let newState = Object.assign(({}, state))
-
-  let newData = _.mapKeys(action.payload.data, (v,k) => k.substring(2))
-
-  _.defaultsDeep(newState.data, newData)
-
-  return newState
+const initialState = {
+  data : {},
+  msa  : '',
+  quarter : {
+    yr  : null,
+    qtr : null,
+  },
+  measure : {},
+  inventory : {},
 }
 
 
-//const setYearData = (state,action) => {
-    //let year = action.payload[2]
-    //let msaId = action.payload[1]
-    //let shell ={}
 
-    //shell[msaId] = null
-    //state.yeardata = Object.assign({},shell) || {}
-    //state.yeardata[msaId] = d3.nest()
-        //.key( x=> x.year )
-        //.rollup( value => value )
-        //.map( state.data || [] )
-    //return state
-//}
+const insertNewData = (state, action) => _.merge(_.clone(state), action.payload)
+
+
+const setStateField = (field, state, action) => 
+  _.isEqual(state[field], action.payload[field]) ? state : _.merge(_.clone(state), action.payload)
+
+   
+const handleActionError = (state, action) => {
+  console.error(action.payload.err.stack)
+  return state
+}
 
 
 
 export const ACTION_HANDLERS = {
-  [RECEIVE_METRO_QWI_DATA]: (state, action) => {
-    return receiveQwiData(state, action)
-  },
 
-  [SET_QWI_COMP_QTR_DATA]: (state, action) => {
-    let newState = Object.assign({},state)
-    let data = action.payload
-    newState.qtrData = data
-    return newState
-  },
+  [QWI_DATA_REQUESTED]: setStateField.bind(null, 'inventory'),
 
-  [QWI_ACTION_ERROR]: (state, action) => {
-    console.error(action.payload.err.stack) 
+  [QWI_DATA_RECEIVED]: insertNewData,
 
-    return state
-  }
+  [QWI_MSA_CHANGE]: setStateField.bind(null, 'msa'),
+
+  [QWI_QUARTER_CHANGE]: setStateField.bind(null, 'quarter'),
+
+  [QWI_MEASURE_CHANGE]: setStateField.bind(null, 'measure'),
+
+  [QWI_ACTION_ERROR]: handleActionError,
 }
 
-
-
-let initialState = {
-  data : {},
-  industryTitles,
-}
 
 
 export const metroQwiReducer = (state = initialState, action) => {

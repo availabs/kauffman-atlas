@@ -71,25 +71,22 @@ export class MetroHome extends React.Component<void, Props, void> {
 				   params={this.props.params}
 			/>
 		    )
-
-            // Begin QWI-----------------------------------------
-            case 'StartupEmployment':
-              return (
-                <MetroQwi currentMetro={metroId}
-                     type='emp'
-                     title='Startup Employment'
-                     params={this.props.params}
-                />
-              )
-            case 'StartupPayroll':
-              return (
-                <MetroQwi currentMetro={metroId}
-                     type='payroll'
-                     title='Startup Payroll'
-                     params={this.props.params}
-                />
-              )
-            // End QWI-----------------------------------------
+      case 'StartupEmployment':
+        return (
+          <MetroQwi msa={metroId}
+               measure='emp'
+               title='Startup Employment'
+               params={this.props.params}
+          />
+        )
+      case 'StartupPayroll':
+        return (
+          <MetroQwi msa={metroId}
+               measure='payroll'
+               title='Startup Payroll'
+               params={this.props.params}
+          />
+        )
 
 		    case 'cluster':
 		    return (
@@ -145,27 +142,22 @@ export class MetroHome extends React.Component<void, Props, void> {
 				<Link to={'/metro/'+metroId+'/Wages'+extension}
 				      className={classes['whitelink']}>Wages</Link>
 			    </li>
-
-                // Begin QWI-------------------------------------------------------
 			    <li style={this._linkIsActive('StartupEmployment')}
                     onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
 
                     <Link to={`/metro/${metroId}/StartupEmployment`}
-				          className={classes['whitelink']}>
-                            Startup Employment
+                          className={classes['whitelink']}>
+                            Startups Employment
                     </Link>
 			    </li>
-
 			    <li style={this._linkIsActive('StartupPayroll')}
                     onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
 
                     <Link to={`/metro/${metroId}/StartupPayroll`}
                           className={classes['whitelink']}>
-                            Startup Payroll
+                            Startups Payroll
                     </Link>
 			    </li>
-                // End QWI---------------------------------------------------------
-
 			    <li style={this._linkIsActive('cluster')}
 				onClick={this._selectDisplay.bind(null,'cluster')}> 
 				<Link to={'/metro/'+metroId + '/cluster'}
