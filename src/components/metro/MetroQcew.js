@@ -10,7 +10,8 @@ import RadarChart from 'components/vis/RadarChart/RadarChart'
 import classes from 'styles/sitewide/index.scss'
 import NaicsGraph from 'components/graphs/NaicsGraph'
 import {typemap} from 'support/qcew/typemap'
-
+import {YearSelect} from 'components/misc/yearselect'
+let startingYear = '2001'
 export class MetroQcew extends React.Component<void, Props, void> {
     constructor () {
 	super()
@@ -19,6 +20,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    filter: null,
 	    sort: 'type_quot'
 	}
+
 	this._fecthData = this._fecthData.bind(this)
 	this._processData = this._processData.bind(this)
 	this._setFilter = this._setFilter.bind(this)
@@ -185,14 +187,23 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	}
 	return (
 	    <div className='row'>
-		<div className='col-sm-6'
+		<div className='col-sm-2'>
+		    <strong>Year Select</strong>
+		    <div className='row'>
+			<YearSelect id='current' type='year' year={this.props.year}/>
+		    </div>
+		    <div className='row'>
+			<YearSelect id='secondary' type='syear' year={this.props.syear}/>
+		    </div>
+		</div>
+		<div className='col-sm-5'
 		     style={{'textAlign': 'center',padding:0}}>
 		    <strong>{this.props.title} Share by Industry</strong>
 		    <RadarChart divID='typeShare' data={typeShares}
 				options={rOpts} />
 		</div>
 
-		<div className='col-sm-6'
+		<div className='col-sm-5'
 		     style={{'textAlign': 'center',padding:0}}>
 		    <strong>{this.props.title} Quotient by Industry</strong>
 		    <RadarChart divID='typeQout' data={typeQuots}
@@ -317,11 +328,11 @@ export class MetroQcew extends React.Component<void, Props, void> {
 			    title={this.props.title}
 		/>
 		<div>
-	    	    {this.renderRadar(this.props.year,this.state.depth, this.state.filter)}
+	    	    {this.renderRadar(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
 	    	</div>
 		<div>
 
-		    {this.renderNaicsOverview(this.props.year,this.state.depth, this.state.filter)}
+		    {this.renderNaicsOverview(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
 		</div>
 	    </div>
 	    )

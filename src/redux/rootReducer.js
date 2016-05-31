@@ -11,9 +11,10 @@ import metroQcewData from './modules/metroQcewData'
 import diversityData from './modules/diversityData'
 import combinedData from './modules/combinedData'
 import metroScoresData from './modules/metroScoresData'
-
+import metroTime from './modules/metroTime'
 
 export default combineReducers({
+  metroTime,
   metroScoresData,
   combinedData,
   diversityData,
