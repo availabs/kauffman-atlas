@@ -5,6 +5,7 @@ require('isomorphic-fetch');
 var fs = require('fs');
 var colorbrewer = require('colorbrewer');
 var d3 = require('d3');
+var _ = require('lodash')
 
 //Data about each MSA
 var msaPop = JSON.parse(fs.readFileSync('../src/static/data/msaPop.json')); 
@@ -30,12 +31,14 @@ var processedDiversityComposite = _processDiversityComposite(processedOpportunit
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
 var fluidityInc5000Data = JSON.parse(fs.readFileSync('../src/static/data/inc5000.json'));
+var annualChurnData = JSON.parse(fs.readFileSync('../src/static/data/churn.json'));
 var processedInc5000 = _processinc5000(fluidityInc5000Data,processedNewFirms['raw']);
 var processedNetMigration = _processdetailMigration(fluidityIrsData,"irsNet");
 var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigrationFlow");
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
-var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration);
+var processedAnnualChurn = _processAnnualTurnOvrS(annualChurnData);
+var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration,processedAnnualChurn);
 
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
@@ -53,6 +56,8 @@ fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(
 fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
 fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
 fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
+fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(processedAnnualChurn));
+
 fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
 fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
@@ -153,6 +158,7 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['fluidity']['totalMigration'] = {};
   curMsaObj['fluidity']['inflowMigration'] = {};
   curMsaObj['fluidity']['outflowMigration'] = {};
+  curMsaObj['fluidity']['churn'] = {};
   curMsaObj['fluidity']['composite'];
 
   processedInc5000['raw'].forEach(metro => {
@@ -205,6 +211,12 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
     }
   })
+  processedAnnualChurn['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['fluidity']['churn']['raw'] = metro;        
+    }
+  })
+
   processedFluidityComposite.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['composite'] = metro;        
@@ -775,7 +787,7 @@ function _processDiversityComposite(opportunity,foreignbornObj){
       if(cityFilteredHighOpp[i].values.length > 0 && cityFilteredLowOpp[i].values.length > 0){
         for(var j=0; j<cityFilteredForeignborn[i]['values'].length; j++){
           //console.log( foreignBornScale(cityFilteredForeignborn[i].values[j].y), highOppScale(cityFilteredHighOpp[i].values[0].y), lowOppScale(cityFilteredLowOpp[i].values[0].y))
-          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + highOppScale(cityFilteredHighOpp[i].values[0].y) + lowOppScale(cityFilteredLowOpp[i].values[0].y))/3)})      
+          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + ((highOppScale(cityFilteredHighOpp[i].values[0].y) + lowOppScale(cityFilteredLowOpp[i].values[0].y))/2) )/2)})      
         }         
       }
 
@@ -942,7 +954,9 @@ function _processdetailMigration(data,dataset){
   }             
 }
 
-function _processFluidityComposite(inc5000,irsNet,totalMigration){
+function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
+
+
 
   var filteredRawInc = inc5000.raw.filter(metroArea => {
     return true;
@@ -970,20 +984,37 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
     return (metroArea.values.length > 0);
   })
 
+  var filteredAnnualChurn = annualChurn['raw'].filter(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return !(yearValue.y == null || yearValue.y == -1)
+    })
+    return (metroArea.values.length > 0);
+  })
+
+
+
   var cityFilteredIrsNet = [],
       cityFilteredTotalMigrationFlow = [],
       cityFilteredRawInc = [],
-      cityFilteredRelInc = [];
+      cityFilteredRelInc = [],
+      cityFilteredAnnualChurn = [];
 
   for(var i=0; i<filteredIrsNet.length; i++){
     for(var j=0; j<filteredRawInc.length; j++){
-      for(var k=0; k<filteredRelInc.length; k++){
-        if(filteredIrsNet[i].key == filteredRawInc[j].key && filteredIrsNet[i].key == filteredRelInc[k].key){
-          cityFilteredIrsNet.push(filteredIrsNet[i]); 
-          cityFilteredTotalMigrationFlow.push(filteredTotalMigrationFlow[i]);
-          cityFilteredRawInc.push(filteredRawInc[j])
-          cityFilteredRelInc.push(filteredRelInc[k])
-        }          
+      if(filteredIrsNet[i].key == filteredRawInc[j].key){
+        for(var k=0; k<filteredRelInc.length; k++){
+          if(filteredIrsNet[i].key == filteredRelInc[k].key){
+            for(var l=0; l<filteredAnnualChurn.length; l++){
+              if(filteredIrsNet[i].key == filteredAnnualChurn[l].key){
+                cityFilteredIrsNet.push(filteredIrsNet[i]); 
+                cityFilteredTotalMigrationFlow.push(filteredTotalMigrationFlow[i]);
+                cityFilteredRawInc.push(filteredRawInc[j])
+                cityFilteredRelInc.push(filteredRelInc[k])
+                cityFilteredAnnualChurn.push(filteredAnnualChurn[l])
+              }              
+            }            
+          }
+        }
       }
     }
   }
@@ -1000,16 +1031,20 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
                   d3.max(cityFilteredRawInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
   var relIncyearRange = ([2007,
                   d3.max(cityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  
+  var annualChurnYearRange = ([d3.min(cityFilteredAnnualChurn, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredAnnualChurn, function(c) { return d3.max(c.values, function(v) { return v.x }); })]
+                    )
 
 
-
-  var minYear = d3.max([irsNetYearRange[0],totalMigrationyearRange[0],rawIncyearRange[0],relIncyearRange[0]])
-  var maxYear = d3.min([irsNetYearRange[1],totalMigrationyearRange[1],rawIncyearRange[1],relIncyearRange[1]])
+  var minYear = d3.max([irsNetYearRange[0],totalMigrationyearRange[0],rawIncyearRange[0],relIncyearRange[0],annualChurnYearRange[0]])
+  var maxYear = d3.min([irsNetYearRange[1],totalMigrationyearRange[1],rawIncyearRange[1],relIncyearRange[1],annualChurnYearRange[1]])
 
   var yearCityFilteredIrsNet = _trimYears(([minYear,maxYear]),cityFilteredIrsNet);
   var yearCityFilteredTotalMigrationFlow = _trimYears(([minYear,maxYear]),cityFilteredTotalMigrationFlow);
   var yearCityFilteredRawInc = _trimYears(([minYear,maxYear]),cityFilteredRawInc);
   var yearCityFilteredRelInc = _trimYears(([minYear,maxYear]),cityFilteredRelInc);
+  var yearCityFilteredAnnualChurn = _trimYears(([minYear,maxYear]),cityFilteredAnnualChurn);
 
   var irsNetScale = d3.scale.linear()
     .range([0,100])
@@ -1031,12 +1066,19 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   .domain(      [d3.min(yearCityFilteredRelInc, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
                 d3.max(yearCityFilteredRelInc, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
+  var annualChurnScale = d3.scale.linear()
+  .range([0,100])
+  .domain(      [d3.min(yearCityFilteredAnnualChurn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredAnnualChurn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
 
   yearCityFilteredIrsNet.sort(_sortMsaCities());
   yearCityFilteredTotalMigrationFlow.sort(_sortMsaCities());
   yearCityFilteredRawInc.sort(_sortMsaCities());
   yearCityFilteredRelInc.sort(_sortMsaCities());
+  yearCityFilteredAnnualChurn.sort(_sortMsaCities());
 
+console.log(yearCityFilteredIrsNet.length,yearCityFilteredAnnualChurn.length)
 
   for(var i=0; i<yearCityFilteredIrsNet.length;i++){
     var resultValues = [];
@@ -1045,6 +1087,7 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
       var relObj = {}
       if(yearCityFilteredRawInc[i]['values'].length < yearCityFilteredIrsNet[i]['values'].length){
         for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
+
           for(var k = 0; k<yearCityFilteredRawInc[i]['values'].length; k++){
             if(yearCityFilteredRawInc[i]['values'][k].x == yearCityFilteredIrsNet[i]['values'][j].x){
               rawObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRawInc[i]['values'][k].y
@@ -1058,7 +1101,6 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
 
           resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(relObj[yearCityFilteredIrsNet[i]['values'][j].x])+ rawIncScale(rawObj[yearCityFilteredIrsNet[i]['values'][j].x]))/4)})      
         }
-        //console.log(yearObj);
       }
       else{
         for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
@@ -1075,6 +1117,79 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration){
   var graphData = _polishData(compositeCityRanks,"fluidityComposite");
   return graphData;
 }
+
+
+/**
+ * Parameter: data { msa: { year: <turnovrs> } }
+ */
+function _processAnnualTurnOvrS (data) {
+
+  //Begin: Helpers -----------------------------------------------------------
+  const getRankingsByYear = data => {
+
+    const byYearRankings = _.reduce(data, (acc, annualChurnForMSA, msaCode) => {
+      _.forEach(annualChurnForMSA, (churnValue, year) => {
+        (acc[year] || (acc[year] = [])).push({ msa: msaCode, value: churnValue })
+      })
+
+      return acc
+    }, {})
+
+    const comparator = (a,b) => 
+      (((b.value !== null) ? b.value : Number.NEGATIVE_INFINITY) - ((a.value !== null) ? a.value : Number.NEGATIVE_INFINITY))
+
+    // Sort (in-place) each year's list of {msa, value} objects.
+    _.forEach(byYearRankings, msaChurnArrForYear => msaChurnArrForYear.sort(comparator))
+
+    return byYearRankings
+  }
+
+
+  // For each year, create a table of MSA -> rank.
+  const getMSAByYearRankingTables = byYearRankings => 
+    _.mapValues(byYearRankings, (sortedChurnForYear, year) => {
+
+      let h = _.head(sortedChurnForYear)
+      let previousChurnValue = h.value
+      let rank = 1
+
+      return _.reduce(_.tail(sortedChurnForYear), (acc, d, i) => {
+        // All MSAs with same churn value should be tied in rank.
+        if (previousChurnValue !== d.value) {
+          // As we are using tail on a zero-indexed array, the ordinal # of an element is the index + 2.
+          rank = (i + 2)
+        }
+
+        acc[d.msa] = rank
+        previousChurnValue = d.value
+
+        return acc
+      }, { [h.msa]: rank })
+    })
+  //End: Helpers -----------------------------------------------------------
+
+
+  const rankingsByYear = getRankingsByYear(data)
+
+  const msaByYearRankingTables = getMSAByYearRankingTables(rankingsByYear)
+
+  // We order the metros in the output file by their ranking in the last year with data.
+  const lastYearRankings = rankingsByYear[_.max(_.keys(rankingsByYear))].map(d => d.msa)
+
+  return {
+    raw : _.map(lastYearRankings, msa => ({
+              key : msa,
+              name: msaName[msa],
+              values: _.sortBy(_.map(data[msa], (tovr, yr) => ({
+                x: +yr, 
+                y: tovr, 
+                rank: msaByYearRankingTables[yr][msa],
+              })),'x')
+          }))
+  }
+}
+
+
 
 function _processCombinedComposite(density,diversity,fluidity){
   var cityFilteredDensity = [],
@@ -1152,3 +1267,4 @@ function _processCombinedComposite(density,diversity,fluidity){
 
   return graphData;
 }
+
