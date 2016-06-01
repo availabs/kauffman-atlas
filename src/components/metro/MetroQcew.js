@@ -184,7 +184,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let rOpts = {
 	    w:190, h:190,
 	    ExtraWidthX:130, TranslateX:50,
-	    color: d3.scale.ordinal().range(['#FFF200','#7D8FAF'])
+	    color: d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
 	}
 	return (
 	    <div className='row'>
