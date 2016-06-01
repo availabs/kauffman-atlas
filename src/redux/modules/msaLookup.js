@@ -24,9 +24,10 @@ export const loadNaicsKeys = () => {
   }
 }
 
-let naicsRangeHelper = (trie,prefix,depth,exact) =>{
+let naicsRangeHelper = (trie,prefix,depth) =>{
     prefix = prefix.split('-')
     let numCodes = prefix.map(x => parseInt(x))
+    let exact = (x) => x.length!==6	
     if(numCodes.length === 1)
 	return trie.gQuery(prefix,depth,exact)    
     else{

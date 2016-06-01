@@ -42,7 +42,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	if(!this.props.qtrData)
 	    return (<span></span>)
 	    //otherwise
-	    let naics = this.props.naicsKeys
+	let naics = this.props.naicsKeys
 	let data = this.props.qtrData
 	let innerStyle = {paddingBottom:1,paddingTop:1}
 	let rows = data.sort((b,a) => a.value-b.value)
@@ -54,7 +54,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				   <td style={nameStyle}>
 				       <span title={naics[x.key].title}>
 					   <div style={{color:'#eee'}}>
-					       {naics[x.key].title.substr(0,6)}
+					       {naics[x.key].title.substr(0,16)}
 					   </div>
 				       </span>
 				   </td>
@@ -72,7 +72,6 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			<thead>
 			    <tr>
 				<td>Naics</td>
-				<td>color</td>
 				<td>value</td>
 			    </tr>
 			</thead>
@@ -108,14 +107,15 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		if(this.props.filter && this.props.filter.length)
 		    return this.props.filter.indexOf(x.key) >= 0
 		else
-		    return x.key.length == 2
+		    return x.key.split('-')[0].length === 2
 	    }
 	return data.filter(filterfun)
 		   .map((industry,i) => {
 		       var obj = {}
 		       obj.key = industry.key
 		       obj.color = colors(i%20)
-			   obj.values = industry.values.map( recfunc.bind(this,fields) )
+			   obj.values = industry.values
+						.map( recfunc.bind(this,fields) )
 						.sort((a,b) => a.values.x - b.values.x)
 			   obj.values.reduce(( a, b ) => {
 			       if(!b.values.y){
@@ -239,8 +239,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
     data : state.metroQcewData.data,
     naicsKeys : state.metros.naicsKeys,
-    qtrData : state.metroQcewData.qtrData
-    
+    qtrData : state.metroQcewData.qtrData    
 })
 
     export default connect((mapStateToProps), {
