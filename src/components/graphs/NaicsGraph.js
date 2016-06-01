@@ -239,8 +239,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
     data : state.metroQcewData.data,
     naicsKeys : state.metros.naicsKeys,
-    qtrData : state.metroQcewData.qtrData
-    
+    qtrData : state.metroQcewData.qtrData    
 })
 
     export default connect((mapStateToProps), {

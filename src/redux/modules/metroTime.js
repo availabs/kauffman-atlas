@@ -1,5 +1,5 @@
 /* @flow */
-import d3 from 'd3'
+import fetch from 'isomorphic-fetch'
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -20,9 +20,9 @@ const ACTION_HANDLERS = {
 
     [SET_METRO_YEAR]: (state, action) => {
 	let newState = Object.assign({},state)
-	newState.years = Object.assign({},newState.years)
+	newState.year = Object.assign({},newState.year)
 	let data = action.payload
-	newState.years[data.key] = data.value
+	newState.year[data.key] = data.value
 	return newState
     },
 }

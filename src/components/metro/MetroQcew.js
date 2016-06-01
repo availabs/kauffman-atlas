@@ -5,12 +5,13 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
+import { setYear } from 'redux/modules/metroTime'
 //import naicsLib from 'static/data/naicsKeys'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
 import classes from 'styles/sitewide/index.scss'
 import NaicsGraph from 'components/graphs/NaicsGraph'
 import {typemap} from 'support/qcew/typemap'
-import {YearSelect} from 'components/misc/yearselect'
+import YearSelect from 'components/misc/yearselect'
 let startingYear = '2001'
 export class MetroQcew extends React.Component<void, Props, void> {
     constructor () {
@@ -190,7 +191,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 		<div className='col-sm-2'>
 		    <strong>Year Select</strong>
 		    <div className='row'>
-			<YearSelect id='current' type='year' year={this.props.year}/>
+			<YearSelect id='current' type='current' year={this.props.year}/>
 		    </div>
 		    <div className='row'>
 			<YearSelect id='secondary' type='syear' year={this.props.syear}/>
@@ -354,6 +355,7 @@ const mapStateToProps = (state) => {
 export default connect((mapStateToProps), {
     loadQcewData : (msaId,codes) => loadMetroData(msaId,codes),
     loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes),
-    loadNaicsKeys: () => loadNaicsKeys()
+    loadNaicsKeys: () => loadNaicsKeys(),
+    loadYear : (year) => setYear(year)
 })(MetroQcew)
 

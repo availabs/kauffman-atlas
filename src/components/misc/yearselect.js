@@ -1,14 +1,6 @@
 "use strict"
 import React from 'react'
-import {StickyContainer,Sticky} from 'react-sticky'
 import { connect } from 'react-redux'
-import { loadMetroData, setMetroQuarter } from 'redux/modules/metroQcewData.js'
-import d3 from 'd3'
-import LineGraph from 'components/graphs/SimpleLineGraph/index'
-import { loadNaicsKeys } from 'redux/modules/msaLookup'
-import { typemap } from 'support/qcew/typemap'
-
-
 import { setYear } from 'redux/modules/metroTime'
 import _  from 'lodash'
 import Select from 'react-select'
@@ -27,9 +19,11 @@ export class YearSelect extends React.Component<void,Props,void>{
 
     _change (x) {
         console.log('change',x)
-	    debugger
-	this.props.loadYear({key:this.props.type,value:x.value})
-	this.setState({year:x})
+
+
+	this.props.loadYear({key:this.props.type,value:x.value+''})
+	    
+
     }
 
     componentWillReceiveProps (nextProps) {
@@ -60,16 +54,9 @@ export class YearSelect extends React.Component<void,Props,void>{
     }
 }
 
-const mapStateToProps = (state) => ({
-    data : state.metroQcewData.data,
-    naicsKeys : state.metros.naicsKeys,
-    qtrData : state.metroQcewData.qtrData
-    
-})
-
-    export default connect((mapStateToProps), {
-	loadData : (msaId, year) => loadMetroData(msaId),
-	loadNaicsKeys : () => loadNaicsKeys(),
-	setQtr : (d) => setMetroQuarter(d),
-    })(YearSelect)
+const mapStateToProps = (state) => ({})
+console.info('connection',mapStateToProps,setYear)
+export default connect ((mapStateToProps), {
+    loadYear: (year) => setYear(year)
+})(YearSelect)
   
