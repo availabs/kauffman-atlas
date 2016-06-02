@@ -175,7 +175,7 @@ export class HomeView extends React.Component<void, Props, void> {
               metros={metrosInBucket} 
               data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
               plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph={this.state.activeComponent + "composite"}
+              graph="opportunitycomposite"
               onMouseover={this.onMouseover.bind(null,hoverBox)}
               />
             </div>
