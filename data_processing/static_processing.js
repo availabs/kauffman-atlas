@@ -1083,31 +1083,35 @@ console.log(yearCityFilteredIrsNet.length,yearCityFilteredAnnualChurn.length)
   for(var i=0; i<yearCityFilteredIrsNet.length;i++){
     var resultValues = [];
     if(yearCityFilteredIrsNet[i].key == yearCityFilteredRawInc[i].key){
-      var  rawObj= {}
+      var rawObj= {}
       var relObj = {}
-      if(yearCityFilteredRawInc[i]['values'].length < yearCityFilteredIrsNet[i]['values'].length){
-        for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
+      var churnObj = {}
 
-          for(var k = 0; k<yearCityFilteredRawInc[i]['values'].length; k++){
-            if(yearCityFilteredRawInc[i]['values'][k].x == yearCityFilteredIrsNet[i]['values'][j].x){
-              rawObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRawInc[i]['values'][k].y
-              relObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRelInc[i]['values'][k].y
-            }
-          }
-          if(!rawObj[yearCityFilteredIrsNet[i]['values'][j].x]){
-            rawObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
-            relObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
-          }
+      for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
 
-          resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(relObj[yearCityFilteredIrsNet[i]['values'][j].x])+ rawIncScale(rawObj[yearCityFilteredIrsNet[i]['values'][j].x]))/4)})      
+        for(var k = 0; k<yearCityFilteredRawInc[i]['values'].length; k++){
+          if(yearCityFilteredRawInc[i]['values'][k].x == yearCityFilteredIrsNet[i]['values'][j].x){
+            rawObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRawInc[i]['values'][k].y
+            relObj[yearCityFilteredRawInc[i]['values'][k].x] = yearCityFilteredRelInc[i]['values'][k].y
+          }
         }
-      }
-      else{
-        for(var j=0; j<yearCityFilteredIrsNet[i]['values'].length; j++){
-          resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(yearCityFilteredRelInc[i].values[j].y)+ rawIncScale(yearCityFilteredRawInc[i].values[j].y))/4)})      
-        }         
-      }
 
+        if(!rawObj[yearCityFilteredIrsNet[i]['values'][j].x]){
+          rawObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
+          relObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
+        }
+
+        for(var k = 0; k<yearCityFilteredAnnualChurn[i]['values'].length; k++){
+          if(yearCityFilteredAnnualChurn[i]['values'][k].x == yearCityFilteredIrsNet[i]['values'][j].x){
+            churnObj[yearCityFilteredAnnualChurn[i]['values'][k].x] = yearCityFilteredAnnualChurn[i]['values'][k].y
+          }
+        }
+
+        if(!churnObj[yearCityFilteredIrsNet[i]['values'][j].x]){
+          churnObj[yearCityFilteredIrsNet[i]['values'][j].x] = 0;
+        }  
+        resultValues.push({x:yearCityFilteredIrsNet[i].values[j].x,y:((irsNetScale(yearCityFilteredIrsNet[i].values[j].y) + totalMigrationScale(yearCityFilteredTotalMigrationFlow[i].values[j].y) + relIncScale(relObj[yearCityFilteredIrsNet[i]['values'][j].x])+ rawIncScale(rawObj[yearCityFilteredIrsNet[i]['values'][j].x]) + annualChurnScale(churnObj[yearCityFilteredIrsNet[i]['values'][j].x]))/5)})      
+      }
       compositeCityRanks.push({key:yearCityFilteredIrsNet[i]['key'],values:resultValues})          
     }
   }
