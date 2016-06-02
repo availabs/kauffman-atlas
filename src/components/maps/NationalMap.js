@@ -10,7 +10,7 @@ import { loadCombinedComposite } from 'redux/modules/combinedData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 import { withRouter } from 'react-router'
-let roundFormat = d3.format(".1f")
+let roundFormat = d3.format(".2f")
 
 export class NationalMap extends React.Component<void, Props, void> {
 
@@ -300,8 +300,6 @@ export class NationalMap extends React.Component<void, Props, void> {
       var data = props[(props.activeComponent)]
     }
 
-
-    console.log("legend",data);
     data.forEach(metro => {
       if(metro.values[metro.values.length-1]){
        valueArray.push(metro.values[metro.values.length-1].y)       
