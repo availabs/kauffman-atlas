@@ -13,7 +13,7 @@ import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from '../../components/graphs/LineGraph.js'
 import BarChart from '../../components/graphs/BarChart.js'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
-import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration } from 'redux/modules/fluidityData'    
+import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { browserHistory } from 'react-router'
@@ -190,7 +190,7 @@ export class HomeView extends React.Component<void, Props, void> {
     var map=
       (<NationalMap 
         metros={metrosInBucket} 
-        activeComponent={this.state.activeComponent}
+        activeComponent={this.state.activeComponent + (this.state.metric).replace(/ /g,'')}
         onMouseover={this.onMouseover.bind(null,hoverBox)}
       />)
   
@@ -283,6 +283,7 @@ const mapStateToProps = (state) => ({
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
   fluiditytotalmigration:state.fluidityData.totalMigrationFlow,
+  fluidityannualchurn:state.fluidityData.annualChurn,
   diversitycomposite : state.diversityData.diversitycomposite,    
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
@@ -298,6 +299,7 @@ export default connect((mapStateToProps), {
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),
   getfluiditytotalmigration: () => loadTotalMigration(),
+  getfluidityannualchurn:() => loadAnnualChurn(),
   getdiversitycomposite: () => loadDiversityComposite(),    
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),

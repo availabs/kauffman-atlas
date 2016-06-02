@@ -31,7 +31,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       var components = ['composite','income based on childhood','percentage of foriegn born population']      
     }
     if(this.props.activeComponent == "fluidity"){
-      var components = ['composite','high growth firms','net migration','total migration']      
+      var components = ['composite','high growth firms','net migration','total migration','annual churn']      
     }
 
 
