@@ -6,11 +6,21 @@ import classes from './Navbar.scss'
 import sitewideClasses from 'styles/sitewide/index.scss'
 // import classes from './HomeView.scss'
 
-export class Navbar extends React.Component<void, Props, void> {
-  static propTypes = {
-    router: PropTypes.object.isRequired,
-    metros: PropTypes.object
-  };
+export class Navbar extends React.Component {
+  constructor () {
+    super()
+
+    this.state = {
+      dropdown : false
+    }
+
+    this._toggleDropdown = this._toggleDropdown.bind(this)
+    
+  }
+
+  _toggleDropdown () {
+    this.setState({dropdown: !this.state.dropdown})
+  }
 
   render () {
 
@@ -21,6 +31,7 @@ export class Navbar extends React.Component<void, Props, void> {
 
     let metroId = this.props.router.locationBeforeTransitions.pathname.split('/')[2]
     var metro = this.props.metros[metroId] && this.props.metros[metroId].name ? this.props.metros[metroId].name : ''
+    let open = this.state.dropdown ? ' open' : ''
     return (
       <nav className={'navbar ' + classes['kauffman-nav']}>
         <div className='container'>
@@ -34,7 +45,7 @@ export class Navbar extends React.Component<void, Props, void> {
             
             <Link className={classes['kauffman-navbar-brand'] + ' ' + sitewideClasses['whitelink']} to='/'>
               <img src='/images/entrepreneurial-ecosystem-symbol.png' className={classes['kauffman-navbar-logo']} />
-              Atlas of Entrepreneurial Activity
+              Entrepreneurial Ecosystem Atlas
             </Link>
           </div>
 
@@ -42,11 +53,20 @@ export class Navbar extends React.Component<void, Props, void> {
            
             <ul className='nav navbar-nav navbar-right'>
               <li>
-                <a className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Research</a>
+                <Link to='/research' className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Research</Link>
               </li>
-              <li>
-                <a href="#" className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Resources</a>
+              <li className={'dropdown' + open} onClick={this._toggleDropdown}>
+                <a onClick={this._toggleDropdown} className={ sitewideClasses['whitelink']+' dropdown-toggle' }  style={{paddingTop:25, paddingBottom:25}} href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  Resources <span className="caret"></span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li><Link to="/about">About</Link></li>
+                  <li><Link to="/datasources">Data Sources</Link></li>
+                  <li><Link to="/apis">APIs</Link></li>
+                  
+                </ul>
               </li>
+      
             </ul>
           </div>
         </div>
