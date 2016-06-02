@@ -95,14 +95,23 @@ export const loadMetroData = (msaId,codes,event) => {
     if(ncodes.length === 0)
 	return (dispatch) => dispatch(nullAction())
     return (dispatch) => {
-	let url = qcewApi
-	url += 'data/fips' + 'C' + msaId.slice(0, 4)
-	url += '/ind' + indcodes + '/yr' + years.join('') +'?'+fieldString
-	url += '&flat=true'
+	let url = qcewApi + 'data/'
+	let body = {query:''}
+	body.query += 'fips' + 'C' + msaId.slice(0, 4)
+	body.query += '/ind' + indcodes + '/yr' + years.join('')
+	body.fields = fields 
+	body.flat = '&flat=true'
 	
-	console.log(url)
+	console.log(url,body)
 	
-	return fetch(url)  
+	return fetch(url,{
+	    method:'POST',
+	    headers:{
+		'Accept':'application/json',
+		'Content-Type': 'application/json'
+	    },
+	    body:JSON.stringify(body)
+	})  
             .then(response => {
 		console.log(response);
 		let isOk = response.ok

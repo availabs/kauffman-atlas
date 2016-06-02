@@ -80,9 +80,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	var scope = this
 	var data = naicsKeys.reduce((prev,current) => {
 	    var twoDigit = current.key.substr(0,depth)
-	    if(naicsLib[twoDigit].part_of_range){
-		twoDigit = naicsLib[twoDigit].part_of_range;
-	    }
+		if(naicsLib[twoDigit].part_of_range){
+		    twoDigit = naicsLib[twoDigit].part_of_range;
+		}
 	    if(!prev[twoDigit]){
 		prev[twoDigit] = {
 		    type:0,  typeShare:0 
@@ -97,8 +97,8 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    totalType += t1
 
 	    let lqtypekeys = fields.map(x => 'lq_'+x)
-	    
-	    let lqt1 = 0
+		
+		let lqt1 = 0
 	    
 	    lqt1 = lqtypekeys.map(key =>{
 		return scope._quarterReduce(current.values,key)
