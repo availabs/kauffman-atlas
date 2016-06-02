@@ -37,7 +37,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 
     renderDisplay(){
 	let metroId = this.props.params.geoid
-	let year = this.props.params.year || '2012'
+	let year = this.props.year || '2012'
+	let syear = this.props.syear || '2001'
 	let page = this.props.params.pageid || this.state.display
 	console.log('render Display', year, metroId)
 	    switch(page){
@@ -48,6 +49,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    case 'Employment':
 		    return (
 			<MetroQcew currentMetro={metroId} year={year}
+				   syear={syear}
 				   type={'employment'}
 				   title={'Employment'}
 				   params={this.props.params}
@@ -56,6 +58,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    case 'Establishment':
 		    return (
 			<MetroQcew currentMetro={metroId} year={year}
+				   syear={syear}
 				   type='establishment'
 				   title='Establishment'
 				   params={this.props.params}
@@ -64,6 +67,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    case 'Wages' :
 		    return (
 			<MetroQcew currentMetro={metroId} year={year}
+				   syear={syear}
 				   type='totalwages'
 				   title='Wages'
 				   params={this.props.params}
@@ -180,7 +184,10 @@ export class MetroHome extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => ({
     router : state.router,
-    metros : state.metros
+    metros : state.metros,
+    year   : state.metroTime.year.current,
+    syear  : state.metroTime.year.syear
+    
 })
 
     export default connect((mapStateToProps), {})(MetroHome)

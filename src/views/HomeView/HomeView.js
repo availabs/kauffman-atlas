@@ -201,11 +201,11 @@ export class HomeView extends React.Component<void, Props, void> {
       <div className='container'>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
-            <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+            The <strong> Atlas of Entreprenurial Activity </strong> is a set of interactive tools and indices designed to provide a visual understanding of the economic indicators of entreprenurial ecosystems in the United States. Take a broad view of the United States with AEA Inddex which combines a dozen different indicators to rank metropolitan areas on their entreprenurial ecosystems or get a detailed overview of entreprenurial and economic activity of individual metropolitan areas. 
           </div>
         </div>
         
-        <div className='row' style={{padding:15, marginTop: 15}}>
+        <div className='row' style={{padding:15, marginTop: 15}} >
           <ComponentButtons
             onComponentChange={this._setActiveComponent} 
             activeComponent={this.state.activeComponent}
