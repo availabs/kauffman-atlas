@@ -108,8 +108,9 @@ export default {
 			.attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-20*Math.cos(i*cfg.radians/total);});
 	}
 
- 	let dataValues = [];
+
 	d.forEach(function(y, x){
+	  let dataValues = [];
 	  g.selectAll(".nodes")
 		.data(y, function(j, i){
 		  dataValues.push([
@@ -124,7 +125,7 @@ export default {
 		 .append("polygon")
 		 .attr("class", "radar-chart-serie"+series)
 		 .style("stroke-width", "2px")
-		 .style("stroke", cfg.color(series))
+	         .style("stroke", cfg.color(series))
 		 .attr("points",function(d) {
 			 var str="";
 			 for(var pti=0;pti<d.length;pti++){
@@ -132,7 +133,7 @@ export default {
 			 }
 			 return str;
 		  })
-		 .style("fill", function(j, i){return cfg.color(series)})
+	         .style("fill", cfg.color(series))
 		 .style("fill-opacity", cfg.opacityArea)
 		 .on('mouseover', function (d){
 							let z = "polygon."+d3.select(this).attr("class");
@@ -153,7 +154,8 @@ export default {
 	series=0;
 
 
-	d.forEach(function(y, x){
+      d.forEach(function(y, x){
+	  
 	  g.selectAll(".nodes")
 		.data(y).enter()
 		.append("svg:circle")
@@ -161,10 +163,10 @@ export default {
 		.attr('r', cfg.radius)
 		.attr("alt", function(j){return Math.max(j.value, 0)})
 		.attr("cx", function(j, i){
-		  dataValues.push([
+		/*  dataValues.push([
 			cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)), 
 			cfg.h/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.cos(i*cfg.radians/total))
-		]);
+		]);*/
 		return cfg.w/2*(1-(Math.max(j.value, 0)/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total));
 		})
 		.attr("cy", function(j, i){

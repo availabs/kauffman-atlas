@@ -36,7 +36,7 @@ export class MapGraphButtons extends React.Component<void, Props, void> {
     })
     
     return (
-      <div className='pull-left'>
+      <div className='pull-right'>
         <div className="btn-group" role="group">
           {bucketDisplay}
         </div>

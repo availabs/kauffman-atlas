@@ -103,15 +103,17 @@ export class SimpleTrie {
     }
     
     gQuery(prefix,depth,exact){
+	if(!exact)
+	    exact = (x) => true
 	if(Array.isArray(prefix))
 	{
 	    return prefix.reduce( (acc,pfx) => {
-		return acc.concat(this.query(pfx,depth,exact))
+		return acc.concat(this.query(pfx,depth,exact(pfx)))
 	    },[])
 	}
 	else
 	{
-	    return this.query(prefix,depth,exact)
+	    return this.query(prefix,depth,exact(prefix))
 	}
     }
     
