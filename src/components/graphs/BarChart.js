@@ -31,6 +31,18 @@ export class BarChart extends React.Component<void, Props, void> {
 
     	var data = scope.props.data;
 
+        if(this.props.metros){
+          data = data.filter(d => {
+            var inBucket = false;
+            this.props.metros.forEach(msaId => {
+              if(d.key == msaId){
+                inBucket = true;
+              } 
+            })
+            return inBucket;
+          }) 
+        }
+        
         //Need to add a circular reference to each value
         data.forEach(metro => {
             var city = metro;

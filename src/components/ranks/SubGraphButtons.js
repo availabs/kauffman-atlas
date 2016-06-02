@@ -41,7 +41,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
             id={v}
             onClick={this._bucketClick} 
             type="button" 
-            className={"btn btn-default " + (v == "composite" ? classes["active"] : '')}
+            className={"btn btn-default " + (v == this.props.metric ? classes["active"] : '')}
           >
             { v }
           </button>
