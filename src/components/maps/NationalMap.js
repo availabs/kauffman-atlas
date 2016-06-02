@@ -300,8 +300,12 @@ export class NationalMap extends React.Component<void, Props, void> {
       var data = props[(props.activeComponent)]
     }
 
+
+    console.log("legend",data);
     data.forEach(metro => {
-      valueArray.push(metro.values[metro.values.length-1].y)
+      if(metro.values[metro.values.length-1]){
+       valueArray.push(metro.values[metro.values.length-1].y)       
+     }
     })
 
 
