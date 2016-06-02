@@ -358,9 +358,16 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     var oldColor = d3.select(d.shape).style("fill")
 
+    if(!Array.isArray(this.props[(this.props.activeComponent)])){
+      var data = this.props[(this.props.activeComponent)]['relative']
+    }
+    else{
+      var data = this.props[(this.props.activeComponent)]
+    }
+
     d3.select(d.shape).style("fill",function(d){   
       var color = "chartreuse"  
-      scope.props[(scope.props.activeComponent)].forEach(metroArea => {
+      data.forEach(metroArea => {
         if(metroArea.key == d.id){
           color = metroArea.color;
         }
