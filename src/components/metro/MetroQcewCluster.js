@@ -26,11 +26,10 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	let year = this.props.year
 	
 
-	if(!qcew || !qcew.length || !qcew[msa][year]){
-	    return this.props.loadZbpDataYear(this.props.currentMetro,
-					      this.props.year
-	    )
-	}
+	
+	return this.props.loadZbpDataYear(this.props.currentMetro,
+					      this.props.year,
+					      Object.keys(this._naicsToCluster()))
     }
 
     _naicsToCluster () {
@@ -57,17 +56,18 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 			    .entries(this.props.qcewData[msa][year])
 
 	let naicsToCluster = this._naicsToCluster()
+	console.log('my typemap',typemap)    
 	let fields = typemap[this.props.type].reduce((a,b) => a.concat(b),[])
 	let naicsKeys = currentData.filter((ind) => {
 	    return ind.values.reduce((a,b) => {
-		return a && fields.reduce((tf,field) => tf && b[field],true)
+		return a && naicsToCluster[ind.key] && fields.reduce((tf,field) => tf && b[field],true)
 	    })
 	})
 	let totals = {emp:0, est:0, wages:0}
+	console.log('my typemap',typemap)
 	let fieldSegs = typemap[this.props.type]
-	let data = naicsKeys.reduce(function(prev,current){
-	    var clusterCode = naicsToCluster[current]
-
+	let data = naicsKeys.reduce((prev,current)=>{
+	    var clusterCode = naicsToCluster[current.key]
 	    if(!prev[clusterCode]){
 		prev[clusterCode] = {
 		    emp:0, est:0, empShare:0, estShare:0,emp_quot:0,est_quot:0 
@@ -76,7 +76,7 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	    }
 
 	    let computed = {emp:0,est:0,wages:0,empQuot:0,estQuot:0,wagesQuot:0}
-	    let catMap = ['emp','emp_quot','est','estQuot','wages','wages_quot']
+	    let catMap = ['emp','emp_quot','est','est_quot','wages','wages_quot']
 	    fieldSegs.forEach((cat,i) => {
 		let temp = cat.map(key => {
 		    return this._quarterReduce(current.values,key)
@@ -84,13 +84,20 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 		computed[catMap[2*i]] = temp
 		let templq = cat.map(key => {
 		    return this._quarterReduce(current.values,'lq_'+key)
-		}).reduce((a,b) => a+b)/cat.length
+		}).reduce((a,b) => {
+		    if(isNaN(b))
+			console.log(clusterCode,cat)
+	            return a+b
+		})/cat.length
+		computed[catMap[2*i+1]] = templq*temp
 	    })
-	    
+	    if(clusterCode === '22')
+		console.log(current.key,computed.emp,computed.emp_quot)
+		
 	    totals.emp += computed.emp
 	    totals.est += computed.est
 	    totals.wages += computed.wages
-	    	    
+
 	    prev[clusterCode].emp += computed.emp
 	    prev[clusterCode].est += computed.est
 	    prev[clusterCode].wages += computed.wages
@@ -98,14 +105,18 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	    prev[clusterCode].est_quot += computed.est_quot
 	    prev[clusterCode].wages_quot += computed.wages_quot
 
-	    
+	    if(isNaN(prev[clusterCode].emp_quot))
+		console.log(currrent.key)
 	    return prev
 	},{})
 
 	    Object.keys(data).forEach(d => {
-		data[d].empShare = (data[d].emp / totals.emp)/100
-		data[d].estShare = (data[d].est / totals.est)/100
-		data[d].wagesShare = (data[d].wages/totals.wages)/100
+		data[d].emp_quot = (data[d].emp_quot/data[d].emp) || 0
+		data[d].est_quot = (data[d].est_quot/data[d].est) || 0
+		data[d].wages_quot = (data[d].wages_quot/data[d].wages) || 0    
+		data[d].empShare = (data[d].emp / totals.emp) 
+		data[d].estShare = (data[d].est / totals.est)
+		data[d].wagesShare = (data[d].wages/totals.wages)
 	    })
 	    return data
 	
@@ -167,10 +178,13 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 						    <a onClick={this._setFilter.bind(this, d, this.state.depth+1)}>{d} | {clusterDict[d] ? clusterDict[d].name_t : '' } </a></td>
 						<td>{clusterCodes[d].emp.toLocaleString()}</td>
 						<td>{+(clusterCodes[d].empShare*100).toLocaleString()}%</td>
-						<td>{+(clusterCodes[d].emp_quot*100).toLocaleString()}</td>
+						<td>{+(clusterCodes[d].emp_quot).toLocaleString()}</td>
 						<td>{clusterCodes[d].est.toLocaleString()}</td>
 						<td>{+(clusterCodes[d].estShare*100).toLocaleString()}%</td>
-						<td>{+(clusterCodes[d].est_quot*100).toLocaleString()}</td>
+						<td>{+(clusterCodes[d].est_quot).toLocaleString()}</td>
+						<td>{clusterCodes[d].wages.toLocaleString()}</td>
+						<td>{+(clusterCodes[d].wagesShare*100).toLocaleString()}%</td>
+						<td>{+(clusterCodes[d].wages_quot).toLocaleString()}</td>
 					    </tr>
 					)
 				    })
@@ -186,6 +200,9 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 			    <td><a onClick={this._setSort.bind(this,'est')}>Establishments</a></td>
 			    <td><a onClick={this._setSort.bind(this,'estShare')}>Establishment Share</a></td>
 			    <td><a onClick={this._setSort.bind(this,'est_quot')}>Establishment Quotient</a></td>
+			    <td><a onClick={this._setSort.bind(this,'wages')}>Total Wages</a></td>
+			    <td><a onClick={this._setSort.bind(this,'wagesShare')}>Total Wages Share</a></td>
+			    <td><a onClick={this._setSort.bind(this,'wages_quot')}>Total Wages Quotient</a></td>
 			    
 			</tr>
 		    </thead>
@@ -223,13 +240,17 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
     }
 
     hasData () {
-	return this.props.naicsKeys
+	let msa = this.props.currentMetro
+	let year = this.props.year
+	let data = this.props.qcewData
+	return this.props.naicsKeys && data && data[msa] &&
+	       data[msa][year]
     }
 
     render () {
 	let msa = this.props.currentMetro
 	let year = this.props.year
-	console.info('typemap',typemap)
+
 	if (!this.hasData()) return <span />
 		let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
 		return (
@@ -257,7 +278,7 @@ const mapStateToProps = (state) => {
 
 export default connect((mapStateToProps), {
     loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-    loadZbpDataYear: (currentMetro,year) => loadMetroDataYear(currentMetro,year),
+    loadZbpDataYear: (currentMetro,year,codes) => loadMetroDataYear(currentMetro,year,codes),
     loadNaicsKeys: () => loadNaicsKeys()
 })(MetroQcewCluster)
 
