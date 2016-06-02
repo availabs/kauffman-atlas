@@ -9,6 +9,7 @@ import RankBox from 'components/ranks/RankBox'
 import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import MapGraphButtons from 'components/ranks/MapGraphButtons'
+import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from '../../components/graphs/LineGraph.js'
 import { loadDensityComposite } from 'redux/modules/densityData'   
 import { loadFluidityComposite } from 'redux/modules/fluidityData'    
@@ -23,13 +24,15 @@ export class HomeView extends React.Component<void, Props, void> {
     this.state = {
       activeComponent:'combined',
       bucket:'all',
-      activeMapGraph:'map'
+      activeMapGraph:'map',
+      metric:'composite'
     }
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setActiveBucket = this._setActiveBucket.bind(this)
     this._setMapGraph = this._setMapGraph.bind(this)
+    this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
   }
   componentWillMount () {    
@@ -66,6 +69,12 @@ export class HomeView extends React.Component<void, Props, void> {
     }
     this.setState({activeMapGraph:type})
   }
+
+  _setMetric (type) {
+    console.log(type);
+    this.setState({metric:type})
+  }
+
 
   _setActiveBucket (bucket) {
     this.setState({'bucket':bucket});
@@ -225,6 +234,10 @@ export class HomeView extends React.Component<void, Props, void> {
             {hoverBox}
           </div>
           <div id="mapDiv" className='col-xs-10' style={{padding:15}}>
+            <SubGraphButtons
+              onComponentChange={this._setMetric} 
+              activeComponent={this.state.activeComponent}
+            />
             <MapGraphButtons
               onComponentChange={this._setMapGraph} 
               activeComponent={this.state.activeMapGraph}
