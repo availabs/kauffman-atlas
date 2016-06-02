@@ -6,7 +6,7 @@ import MetroHeader from 'components/metro/MetroHeader'
 import MetroScores from 'components/metro/MetroScores'
 import MetroZbp from 'components/metro/MetroZbp'
 import MetroQcew from 'components/metro/MetroQcew'
-import MetroZbpCluster from 'components/metro/MetroZbpCluster'
+import MetroQcewCluster from 'components/metro/MetroQcewCluster'
 import classes from 'styles/sitewide/index.scss'
 
 
@@ -75,7 +75,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    )
 		    case 'cluster':
 		    return (
-			<MetroZbpCluster currentMetro={metroId} year={year}/>
+			<MetroQcewCluster currentMetro={metroId} year={year}
+					  type='cluster'/>
 		    )
 		    case 'workforce':
 		    return (
