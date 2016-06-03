@@ -28,8 +28,8 @@ const initialState = {
     raw: {},
     ratiosByFirmage: {},
   },
-  focusedLineGraph : 'qwi-rawData-linegraph',
-  overviewTableSortField : 'measure',
+  focusedLineGraph: 'qwi-rawData-linegraph',
+  overviewTableSortField: 'measure',
 }
 
 
@@ -54,6 +54,17 @@ const handleActionError = (state, action) => {
   return state
 }
 
+const handleQuarterChange = (state, action) => {
+  let quarter = action.payload.quarter
+
+console.log(quarter)
+
+  if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, quarter.yr, quarter.qrt]))) {
+    return setStateField('quarter', state, action)
+  }
+
+  return state
+}
 
 
 export const ACTION_HANDLERS = {
@@ -68,7 +79,7 @@ export const ACTION_HANDLERS = {
 
   [QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE]: setStateField.bind(null, 'overviewTableSortField'),
 
-  [QWI_QUARTER_CHANGE]: setStateField.bind(null, 'quarter'),
+  [QWI_QUARTER_CHANGE]: handleQuarterChange,
 
   [QWI_MEASURE_CHANGE]: setStateField.bind(null, 'measure'),
 

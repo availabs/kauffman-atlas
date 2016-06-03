@@ -72,15 +72,10 @@ export const measureChange = (measure) => ({
   payload : { measure, }
 })
 
-export const lineGraphFocusChange = (focusedLineGraph) => {
-
-console.log('################', focusedLineGraph)
-
-  return {
-    type : QWI_LINEGRAPH_FOCUS_CHANGE,
-    payload : { focusedLineGraph, }
-  }
-}
+export const lineGraphFocusChange = (focusedLineGraph) => ({
+  type : QWI_LINEGRAPH_FOCUS_CHANGE,
+  payload : { focusedLineGraph, }
+})
 
 export const overviewTableSortFieldChange = (overviewTableSortField) => ({
   type : QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
@@ -147,7 +142,7 @@ function getQuarterObjFromDateObj (dateObj) {
   let splitDate = d3.time.format("%m-%Y")(dateObj).split('-')
 
   return {
-    qrt : Math.floor(+splitDate[0]/3).toString(),
+    qrt : Math.floor((+splitDate[0]/3) + 1).toString(),
     yr  : splitDate[1],
   }
 }

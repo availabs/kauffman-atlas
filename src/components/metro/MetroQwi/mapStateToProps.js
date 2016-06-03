@@ -70,8 +70,6 @@ const getData = (state, ownProps) => {
             (+year === +tooltipQuarter.yr) && 
             (+quarter === +tooltipQuarter.qrt)) {
 
-console.log('=========>', focusedLineGraph)
-
               tooltipData.push({
                 color: color,
                 key: naics,
