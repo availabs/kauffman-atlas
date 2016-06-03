@@ -158,8 +158,15 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	let pdata = {}
 	let fields = typemap[this.props.type]
 	let lqfields = fields.map(x => 'lq_' + x)
+	if(this.props.type !== 'employment'){
 	    pdata.data = this.dataMap(data,fields,noagg)
 	    pdata.lqdata = this.dataMap(data,lqfields,noagg)
+	
+	}
+	else{
+	    pdata.data = this.dataMap(data,fields,agg)
+	    pdata.lqdata = this.dataMap(data,lqfields,agg)
+	}
 	    
 	    return pdata
     }
@@ -179,7 +186,8 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    .key(x=>x.industry_code)
 	    .rollup( values => values)
 	    .entries(metrodata || [])
-	    
+
+	    let empfields = typemap[this.props.type]
 	    let noagg = this.aggfunc.bind(this,x=>x)
 	    
 	    let agg = this.aggfunc.bind(this,x => (x/empfields.length))

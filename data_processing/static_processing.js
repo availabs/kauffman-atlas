@@ -38,7 +38,8 @@ var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigr
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
 var processedAnnualChurn = _processAnnualTurnOvrS(annualChurnData);
-var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration,processedAnnualChurn);
+var coloredAnnualChurn = _polishData(processedAnnualChurn['raw'],"annualChurn")
+var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration,coloredAnnualChurn);
 
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
@@ -56,7 +57,8 @@ fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(
 fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
 fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
 fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(processedAnnualChurn));
+
+fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(coloredAnnualChurn));
 
 fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
@@ -984,7 +986,7 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
     return (metroArea.values.length > 0);
   })
 
-  var filteredAnnualChurn = annualChurn['raw'].filter(metroArea => {
+  var filteredAnnualChurn = annualChurn.filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return !(yearValue.y == null || yearValue.y == -1)
     })

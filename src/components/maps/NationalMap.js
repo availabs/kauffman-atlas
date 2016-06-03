@@ -3,14 +3,14 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
-import { loadDensityComposite } from 'redux/modules/densityData'
-import { loadFluidityComposite } from 'redux/modules/fluidityData'
-import { loadDiversityComposite } from 'redux/modules/diversityData'
+import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
 import { withRouter } from 'react-router'
-let roundFormat = d3.format(".1f")
+let roundFormat = d3.format(".2f")
 
 export class NationalMap extends React.Component<void, Props, void> {
 
@@ -39,9 +39,9 @@ export class NationalMap extends React.Component<void, Props, void> {
       return this.props.loadData()
     }
     //Load data about the active componsent if it is not present
-    if(!this.props[(this.props.activeComponent+"composite")]){
-      console.log(this.props.activeComponent);
-      return this.props[('get'+this.props.activeComponent+"composite")]()
+    if(!this.props[(this.props.activeComponent)]){
+      console.log("loading active", this.props.activeComponent);
+      return this.props[('get'+this.props.activeComponent)]()
     }
     //If we already have metros drawn, we only want to redraw the metros
     if(d3.selectAll("."+classes['msa'])[0].length > 0){
@@ -67,6 +67,10 @@ export class NationalMap extends React.Component<void, Props, void> {
     if(d3.selectAll("."+classes['msa'])[0].length == 0){
       return true
     }
+    if(!nextProps[(nextProps.activeComponent)]){
+      console.log("should comp update getting active")
+      return true;
+    }
     //Case to remedy issue on graph pages -- which dont have a list of metros
     else if(!this.props.metros){
       return false
@@ -91,6 +95,11 @@ export class NationalMap extends React.Component<void, Props, void> {
   //We would only want to change the colors after a props change
   //Changing the color does NOT trigger a render(_initGraph)
   componentWillReceiveProps (nextProps){
+    //Load data about the active componsent if it is not present
+    if(!nextProps[(nextProps.activeComponent)]){
+      console.log("loading active", nextProps.activeComponent);
+      nextProps[('get'+nextProps.activeComponent)]()
+    }
     if(this.props.activeComponent !== nextProps.activeComponent){
       if(nextProps.loaded){
         this._colorMetros(nextProps);        
@@ -99,11 +108,18 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   _colorMetros(props){
-    console.log("color nat map")
+    console.log("color nat map",props)
+
+    if(!Array.isArray(props[(props.activeComponent)])){
+      var data = props[(props.activeComponent)]['relative']
+    }
+    else{
+      var data = props[(props.activeComponent)]
+    }
     d3.selectAll("."+classes['msa'])
       .style("fill",function(d){   
         var color = "chartreuse"  
-        props[(props.activeComponent+"composite")].forEach(metroArea => {
+        data.forEach(metroArea => {
           if(metroArea.key == d.id){
             color = metroArea.color;
           }
@@ -154,6 +170,12 @@ export class NationalMap extends React.Component<void, Props, void> {
     //Remove all of the old metros
     d3.selectAll("."+classes['msa']).remove()
 
+    if(!Array.isArray(props[(props.activeComponent)])){
+      var data = props[(props.activeComponent)]['relative']
+    }
+    else{
+      var data = props[(props.activeComponent)]
+    }
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')
@@ -161,7 +183,7 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr("d", path)
       .style("fill",function(d){   
         var color = "chartreuse"  
-        props[(props.activeComponent+"composite")].forEach(metroArea => {
+        data.forEach(metroArea => {
           if(metroArea.key == d.id){
             color = metroArea.color;
           }
@@ -232,6 +254,16 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr('class',classes['state'])
       .attr("d", path);
 
+    var data;
+
+    if(!Array.isArray(props[(props.activeComponent)])){
+      data = props[(props.activeComponent)]['relative']
+    }
+    else{
+      data = props[(props.activeComponent)]
+    }
+
+    console.log("drawgraph data",data)
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')
@@ -239,7 +271,7 @@ export class NationalMap extends React.Component<void, Props, void> {
       .attr("d", path)
       .style("fill",function(d){   
         var color = "chartreuse"  
-        props[(props.activeComponent+"composite")].forEach(metroArea => {
+        data.forEach(metroArea => {
           if(metroArea.key == d.id){
             color = metroArea.color;
           }
@@ -260,8 +292,18 @@ export class NationalMap extends React.Component<void, Props, void> {
     var svg = d3.select("#mapDiv svg")
 
     var valueArray = [];
-    props[(props.activeComponent+"composite")].forEach(metro => {
-      valueArray.push(metro.values[metro.values.length-1].y)
+
+    if(!Array.isArray(props[(props.activeComponent)])){
+      var data = props[(props.activeComponent)]['relative']
+    }
+    else{
+      var data = props[(props.activeComponent)]
+    }
+
+    data.forEach(metro => {
+      if(metro.values[metro.values.length-1]){
+       valueArray.push(metro.values[metro.values.length-1].y)       
+     }
     })
 
 
@@ -316,9 +358,16 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     var oldColor = d3.select(d.shape).style("fill")
 
+    if(!Array.isArray(this.props[(this.props.activeComponent)])){
+      var data = this.props[(this.props.activeComponent)]['relative']
+    }
+    else{
+      var data = this.props[(this.props.activeComponent)]
+    }
+
     d3.select(d.shape).style("fill",function(d){   
       var color = "chartreuse"  
-      scope.props[(scope.props.activeComponent+"composite")].forEach(metroArea => {
+      data.forEach(metroArea => {
         if(metroArea.key == d.id){
           color = metroArea.color;
         }
@@ -364,16 +413,32 @@ const mapStateToProps = (state) => ({
   loaded : state.geoData.loaded,
   statesGeo : state.geoData.statesGeo,
   metrosGeo : state.geoData.metrosGeo,
-  densitycomposite:state.densityData.compositeData,
-  fluiditycomposite:state.fluidityData.compositeData,
-  diversitycomposite : state.diversityData.diversitycomposite,
-  combinedcomposite : state.combinedData.combinedcomposite
+  densitycomposite:state.densityData.compositeData,    
+  densitynewfirms:state.densityData.newValuesData,
+  densityshareofemploymentinnewfirms:state.densityData.shareData,
+  fluiditycomposite:state.fluidityData.compositeData,   
+  fluidityhighgrowthfirms:state.fluidityData.inc5000,
+  fluiditynetmigration:state.fluidityData.irsNet,
+  fluiditytotalmigration:state.fluidityData.totalMigrationFlow,
+  fluidityannualchurn:state.fluidityData.annualChurn,
+  diversitycomposite : state.diversityData.diversitycomposite,    
+  diversityincomebasedonchildhood:state.diversityData.opportunity,
+  diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
+  combinedcomposite : state.combinedData.combinedcomposite,
 })
 
 export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
   getdensitycomposite: () => loadDensityComposite(),
-  getfluiditycomposite: () => loadFluidityComposite(),
-  getdiversitycomposite: () => loadDiversityComposite(),
-  getcombinedcomposite: () => loadCombinedComposite()
+  getdensitynewfirms: () => loadNewValues(),
+  getdensityshareofemploymentinnewfirms: () => loadShare(),    
+  getfluiditycomposite: () => loadFluidityComposite(),    
+  getfluidityhighgrowthfirms: () => loadInc5000Data(),
+  getfluiditynetmigration: () => loadNetMigrationIrs(),
+  getfluiditytotalmigration: () => loadTotalMigration(),
+  getfluidityannualchurn:() => loadAnnualChurn(),
+  getdiversitycomposite: () => loadDiversityComposite(),    
+  getdiversityincomebasedonchildhood: () => loadOpportunityData(),
+  getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
+  getcombinedcomposite: () => loadCombinedComposite(),
 })(NationalMap)
