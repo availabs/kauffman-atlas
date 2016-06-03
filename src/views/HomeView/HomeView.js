@@ -9,10 +9,12 @@ import RankBox from 'components/ranks/RankBox'
 import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import MapGraphButtons from 'components/ranks/MapGraphButtons'
+import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from '../../components/graphs/LineGraph.js'
-import { loadDensityComposite } from 'redux/modules/densityData'   
-import { loadFluidityComposite } from 'redux/modules/fluidityData'    
-import { loadDiversityComposite } from 'redux/modules/diversityData'    
+import BarChart from '../../components/graphs/BarChart.js'
+import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { browserHistory } from 'react-router'
 let roundFormat = d3.format(".2f")
@@ -23,13 +25,15 @@ export class HomeView extends React.Component<void, Props, void> {
     this.state = {
       activeComponent:'combined',
       bucket:'all',
-      activeMapGraph:'map'
+      activeMapGraph:'map',
+      metric:'composite'
     }
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setActiveBucket = this._setActiveBucket.bind(this)
     this._setMapGraph = this._setMapGraph.bind(this)
+    this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
   }
   componentWillMount () {    
@@ -52,7 +56,7 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   _setActiveComponent (type) {
-    this.setState({activeComponent:type})
+    this.setState({activeComponent:type,metric:"composite"})
   }
 
   _setMapGraph (type) {
@@ -66,6 +70,12 @@ export class HomeView extends React.Component<void, Props, void> {
     }
     this.setState({activeMapGraph:type})
   }
+
+  _setMetric (type) {
+
+    this.setState({metric:type})
+  }
+
 
   _setActiveBucket (bucket) {
     this.setState({'bucket':bucket});
@@ -144,27 +154,43 @@ export class HomeView extends React.Component<void, Props, void> {
       )
     })
 
-    if(this.props[this.state.activeComponent + "composite"]){
-      var graph = (       
-          <div className='col-xs-10' style={{ padding: 0}}>
-            <LineGraph    
-            metros={metrosInBucket} 
-            data={this.props[this.state.activeComponent + "composite"]} 
-            plot="value" dataType="raw" title={this.state.activeComponent + "composite"} 
-            graph={this.state.activeComponent + "composite"}
-            onMouseover={this.onMouseover.bind(null,hoverBox)}
-            />
-          </div>
-            )
+    if(this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
+      if((this.state.metric).replace(/ /g,'') != 'incomebasedonchildhood'){
+        var graph = (       
+            <div className='col-xs-10' style={{ padding: 0}}>
+              <LineGraph    
+              metros={metrosInBucket} 
+              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+              plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+              graph={this.state.activeComponent + "composite"}
+              onMouseover={this.onMouseover.bind(null,hoverBox)}
+              />
+            </div>
+              )
+      }
+      else{
+         var graph = (       
+            <div className='col-xs-10' style={{ padding: 0}}>
+              <BarChart    
+              metros={metrosInBucket} 
+              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+              plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+              graph="opportunitycomposite"
+              onMouseover={this.onMouseover.bind(null,hoverBox)}
+              />
+            </div>
+              )       
+      }
+
     }
     else{
-        var graph = 'Loading...'
+        this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
     }    
   
     var map=
       (<NationalMap 
         metros={metrosInBucket} 
-        activeComponent={this.state.activeComponent}
+        activeComponent={this.state.activeComponent + (this.state.metric).replace(/ /g,'')}
         onMouseover={this.onMouseover.bind(null,hoverBox)}
       />)
   
@@ -225,7 +251,13 @@ export class HomeView extends React.Component<void, Props, void> {
             {hoverBox}
           </div>
           <div id="mapDiv" className='col-xs-10' style={{padding:15}}>
+            <SubGraphButtons
+              metric={this.state.metric}
+              onComponentChange={this._setMetric} 
+              activeComponent={this.state.activeComponent}
+            />
             <MapGraphButtons
+              mapGraph={this.state.activeMapGraph}
               onComponentChange={this._setMapGraph} 
               activeComponent={this.state.activeMapGraph}
             />
@@ -245,15 +277,31 @@ export class HomeView extends React.Component<void, Props, void> {
 
 const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
+  densitynewfirms:state.densityData.newValuesData,
+  densityshareofemploymentinnewfirms:state.densityData.shareData,
   fluiditycomposite:state.fluidityData.compositeData,   
+  fluidityhighgrowthfirms:state.fluidityData.inc5000,
+  fluiditynetmigration:state.fluidityData.irsNet,
+  fluiditytotalmigration:state.fluidityData.totalMigrationFlow,
+  fluidityannualchurn:state.fluidityData.annualChurn,
   diversitycomposite : state.diversityData.diversitycomposite,    
+  diversityincomebasedonchildhood:state.diversityData.opportunity,
+  diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros
 })
 
 export default connect((mapStateToProps), {
-  getdensitycomposite: () => loadDensityComposite(),    
+  getdensitycomposite: () => loadDensityComposite(),
+  getdensitynewfirms: () => loadNewValues(),
+  getdensityshareofemploymentinnewfirms: () => loadShare(),    
   getfluiditycomposite: () => loadFluidityComposite(),    
+  getfluidityhighgrowthfirms: () => loadInc5000Data(),
+  getfluiditynetmigration: () => loadNetMigrationIrs(),
+  getfluiditytotalmigration: () => loadTotalMigration(),
+  getfluidityannualchurn:() => loadAnnualChurn(),
   getdiversitycomposite: () => loadDiversityComposite(),    
-  getcombinedcomposite: () => loadCombinedComposite()
+  getdiversityincomebasedonchildhood: () => loadOpportunityData(),
+  getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
+  getcombinedcomposite: () => loadCombinedComposite(),
 })(HomeView)

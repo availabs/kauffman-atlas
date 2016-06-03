@@ -1,5 +1,7 @@
 /*global d3:true*/
 /*eslint no-undef: 2*/
+import _ from 'lodash'
+
 var UNIQUE_CLIP_ID = 0
 
 module.exports = function () {
@@ -71,6 +73,7 @@ module.exports = function () {
   let yAccessor = yAccessorDefault
   let getValues = getValuesDefault
 
+  function timeDomain (d) { return d3.extent(_.flatMap(d, x => [_.first(x.values).key, _.last(x.values).key])) }
   function linearDomain (d) { return [0, d.length ? getValues(d[0]).length - 1 : 1] }
   function ordinalDomain (d) { return d.length ? getValues(d[0]).map(function (d, i) { return xAccessor(d, i) }) : [] }
 
@@ -282,6 +285,9 @@ module.exports = function () {
     if (xScaleType === 'ordinal') {
       xScale = d3.scale.ordinal()
       xDomain = ordinalDomain
+    } else if (xScaleType === 'time') {
+      xScale = d3.time.scale()
+      xDomain = timeDomain 
     } else {
       xScale = d3.scale.linear()
       xDomain = linearDomain

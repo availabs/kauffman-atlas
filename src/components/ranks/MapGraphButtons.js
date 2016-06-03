@@ -28,7 +28,7 @@ export class MapGraphButtons extends React.Component<void, Props, void> {
             id={v}
             onClick={this._bucketClick} 
             type="button" 
-            className={"btn btn-default " + (v == this.props.activeComponent ? classes["active"] : '')}
+            className={"btn btn-default " + (v == this.props.mapGraph ? classes["active"] : '')}
           >
             { v }
           </button>
@@ -36,7 +36,7 @@ export class MapGraphButtons extends React.Component<void, Props, void> {
     })
     
     return (
-      <div className='pull-left'>
+      <div className='pull-right'>
         <div className="btn-group" role="group">
           {bucketDisplay}
         </div>

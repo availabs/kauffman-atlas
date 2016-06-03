@@ -3,6 +3,7 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import classes from '../../components/maps/NationalMap.scss'
+import { withRouter } from 'react-router'
 
 export class BarChart extends React.Component<void, Props, void> {
 
@@ -11,6 +12,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
         this._renderGraph = this._renderGraph.bind(this)
         this._labelFunction = this._labelFunction.bind(this)
+        this._msaClick = this._msaClick.bind(this)
     }
 
     componentWillMount () {
@@ -20,16 +22,31 @@ export class BarChart extends React.Component<void, Props, void> {
         console.log("barchartmount");
         this._renderGraph();
     }
-
+  _msaClick (d) {
+    console.log(d.key);
+    this.context.router.push('/metro/'+d.key);   
+  }
     _renderGraph () {
         var percFormat = d3.format(".3%");
         var scope = this;
-
+        
         var compColor = d3.scale.ordinal()
             .domain(["lowIncome","highIncome"])
             .range(['red','green']);
 
     	var data = scope.props.data;
+
+        if(this.props.metros){
+          data = data.filter(d => {
+            var inBucket = false;
+            this.props.metros.forEach(msaId => {
+              if(d.key == msaId){
+                inBucket = true;
+              } 
+            })
+            return inBucket;
+          }) 
+        }
 
         //Need to add a circular reference to each value
         data.forEach(metro => {
@@ -305,6 +322,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
         function click(d){ 
             console.log("d.city",d.city);
+            scope._msaClick(d.city)
         }
 
         function mouseout(d) {                          
@@ -350,7 +368,9 @@ export class BarChart extends React.Component<void, Props, void> {
         );            
     }
 }
-
+BarChart.contextTypes = {
+  router: React.PropTypes.object.isRequired
+}
 const mapStateToProps = (state) => ({
 
 })
