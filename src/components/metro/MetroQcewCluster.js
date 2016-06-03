@@ -18,6 +18,7 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	this._fecthData = this._fecthData.bind(this)
 	    this._processData = this._processData.bind(this)
 	    this._setFilter = this._setFilter.bind(this)
+	    this._calcLocRatio = this._calcLocRatio.bind(this)
     }
     
     _fecthData () {
@@ -162,11 +163,39 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	    )
     }
 
+    _calcLocRatio (clusters) {
+	let clusterDict = this._clusterToDict()
+	let clusterKeys = Object.keys(clusterDict)
+	let localkeys = clusterKeys.filter(d => (clusterDict[d]
+					       && clusterDict[d].name_t
+					       && (clusterDict[d].name_t.toLowerCase().indexOf('local') >=0)))
+	let nonlocalkeys = clusterKeys.filter(d =>    !( clusterDict[d]
+						      && clusterDict[d].name_t
+						      && (clusterDict[d].name_t.toLowerCase().indexOf('local') >=0)))
+	console.log('localkeys',localkeys)
+	console.log('nonlocalkeys',nonlocalkeys)    
+	console.info('clusters',clusters)
+	let ratios  =  ['emp','emp_quot','est','est_quot','wages','wages_quot'].map(x => {
+	    let locTotal =  localkeys.reduce((a,b) => {
+		return a + (clusters[b]?clusters[b][x]:0)
+	    },0)
+
+	    let nonLocTotal = nonlocalkeys.reduce((a,b) => {
+		return a + (clusters[b]?clusters[b][x]:0)
+	    },0)
+
+	    return {id:x,r:locTotal/nonLocTotal}
+	}).reduce((a,b) => {a[b.id] = b.r; return a} ,{})
+
+	return ratios
+    }
+
     renderClusterOverview (year, depth, filter) {
 	let clusterCodes = this._processData(year,depth, filter)
 	    let clusterDict = this._clusterToDict()
 	    //console.log('cluster Dictionary', clusterDict)
-	    
+	    let loc_non_loc = this._calcLocRatio(clusterCodes)
+	 
 	    let clusterRows = Object.keys(clusterCodes)
 				    .sort((a,b) => {
 					return clusterCodes[b][this.state.sort] - clusterCodes[a][this.state.sort]
@@ -190,6 +219,42 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 				    })
 
 	    return (
+		<div>
+		<div className='row'>
+		<h2>{"Local to Non Local Ratios Across Clusters"}</h2>
+		<table className='table'>
+		<thead>
+			<tr>
+			   
+			    <td>Employment</td>
+			    <td>Employment Quotient</td>
+			    <td>Establishments</td>
+			    <td>Establishment Quotient</td>
+			    <td>Total Wages</td>
+			    <td>Total Wages Quotient</td>
+			    
+		        </tr>
+		</thead>
+		<tbody>
+		         <tr>
+
+		            <td>{loc_non_loc.emp.toLocaleString()}</td>
+
+			    <td>{loc_non_loc.emp_quot.toLocaleString()}</td>
+			    <td>{loc_non_loc.est.toLocaleString()}</td>
+
+			    <td>{loc_non_loc.est_quot.toLocaleString()}</td>
+			    <td>{loc_non_loc.wages.toLocaleString()}</td>
+
+			    <td>{loc_non_loc.wages_quot.toLocaleString()}</td>
+			 </tr>
+
+		</tbody>    
+		</table>
+		</div>
+
+		<div className='row'>
+		<h2>{'Cluster Breakdown'}</h2>
 		<table className='table'>
 		    <thead>
 			<tr>
@@ -207,9 +272,11 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 			</tr>
 		    </thead>
 		    <tbody>
-			{clusterRows}
+		 	{clusterRows}
 		    </tbody>
 		</table>
+		</div>
+		</div>
 	    )
 
     }
