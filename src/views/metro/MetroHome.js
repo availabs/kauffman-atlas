@@ -6,6 +6,8 @@ import MetroHeader from 'components/metro/MetroHeader'
 import MetroScores from 'components/metro/MetroScores'
 import MetroZbp from 'components/metro/MetroZbp'
 import MetroQcew from 'components/metro/MetroQcew'
+import MetroQwi from 'components/metro/MetroQwi'
+import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroQcewCluster from 'components/metro/MetroQcewCluster'
 import classes from 'styles/sitewide/index.scss'
 
@@ -41,6 +43,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	let syear = this.props.syear || '2001'
 	let page = this.props.params.pageid || this.state.display
 	console.log('render Display', year, metroId)
+
 	    switch(page){
 		case 'combined':
 		    return (
@@ -73,6 +76,23 @@ export class MetroHome extends React.Component<void, Props, void> {
 				   params={this.props.params}
 			/>
 		    )
+      case 'StartupEmployment':
+        return (
+          <MetroQwi msa={metroId}
+               measure='emp'
+               title='Startup Employment'
+               params={this.props.params}
+          />
+        )
+      case 'StartupPayroll':
+        return (
+          <MetroQwi msa={metroId}
+               measure='payroll'
+               title='Startup Payroll'
+               params={this.props.params}
+          />
+        )
+
 		    case 'cluster':
 		    return (
 			<MetroQcewCluster currentMetro={metroId} year={year}
@@ -127,6 +147,22 @@ export class MetroHome extends React.Component<void, Props, void> {
 				onClick={this._selectDisplay.bind(null,'Wages')}>
 				<Link to={'/metro/'+metroId+'/Wages'+extension}
 				      className={classes['whitelink']}>Wages</Link>
+			    </li>
+			    <li style={this._linkIsActive('StartupEmployment')}
+                    onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
+
+                    <Link to={`/metro/${metroId}/StartupEmployment`}
+                          className={classes['whitelink']}>
+                            Startups Employment
+                    </Link>
+			    </li>
+			    <li style={this._linkIsActive('StartupPayroll')}
+                    onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
+
+                    <Link to={`/metro/${metroId}/StartupPayroll`}
+                          className={classes['whitelink']}>
+                            Startups Payroll
+                    </Link>
 			    </li>
 			    <li style={this._linkIsActive('cluster')}
 				onClick={this._selectDisplay.bind(null,'cluster')}> 

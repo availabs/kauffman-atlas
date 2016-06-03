@@ -1,6 +1,6 @@
 import React from 'react'
 import d3 from 'd3'
-import GraphSouce from './MultiLineGraphSource'
+import GraphSource from './MultiLineGraphSource'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 
@@ -10,7 +10,7 @@ class LineGraph extends React.Component {
     constructor (props) {
 	super()
 	this.state = {
-	    graph: GraphSouce()
+	    graph: GraphSource()
 		.xScaleType('ordinal')
 		.tickPadding(0.5)
 		.showY(false)
@@ -87,6 +87,10 @@ class LineGraph extends React.Component {
 	    })
 	    this.props.onMouse(tableData)
 	}
+
+      if (this.props.quarterChangeListener) {
+        this.props.quarterChangeListener(d.point.x) 
+      }
     }
     
     componentWillUnmount () {
