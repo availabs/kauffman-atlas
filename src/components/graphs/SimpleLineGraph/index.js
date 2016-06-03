@@ -48,6 +48,8 @@ class LineGraph extends React.Component {
 	    this.state.graph.xScaleType(this.props.xScaleType)
 	if(this.props.tooltip)
 	    this.state.graph.mouseListener({ml:this._mouseListener})
+	if(this.props.hover)
+		this.state.graph.mouseListener({ml:this.props.hover})
 	d3.select('#lineGraph' + this.props.uniq)
 	    .append('svg')
 	    .call(this.state.graph)
