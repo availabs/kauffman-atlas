@@ -2,11 +2,12 @@
 
 import React from 'react'
 import { Link } from 'react-router'
+import Select from 'react-select'
 
 
 import LineGraph from '../../../components/graphs/SimpleLineGraph'
 import StartupsNaicsTooltip from './StartupsNaicsTooltip'
-import StartupsRadarChart from './StartupsRadarChart'
+import RadarChart from '../../../components/vis/RadarChart/RadarChart'
 import StartupsOverviewTable from './StartupsOverviewTable'
 
 const graphMargin = {
@@ -49,7 +50,7 @@ console.log(props)
                              yAxis={true}
                              margin={graphMargin}
                              tooltip={true}
-                             quarterChangeListener={props.quarterChange} />
+                             quarterChangeListener={props.lineGraphYearQuarterChange} />
             </div>
 
             <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
@@ -57,12 +58,14 @@ console.log(props)
                     <LineGraph data={props.lineGraphLQData}
                                key='qwi-lqData-linegraph'
                                uniq='qwi-lqData-linegraph'
-                               yFormat={y=>y}
                                xScaleType={'time'}
+                               xAxis={true}
+                               xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
                                yAxis={true}
+                               yFormat={y=>y}
                                margin={graphMargin}
                                tooltip={true}
-                               quarterChangeListener={props.quarterChange} />
+                               quarterChangeListener={props.lineGraphYearQuarterChange} />
             </div>
           </div>
 
@@ -75,8 +78,29 @@ console.log(props)
       </div>
     )
 }
+        //<div className='row' style={{overflow:'hidden'}} >
+          //<RadarChart divID='typeQout'
+                      //data={}
+                      //options={} />
+        //</div>
 
-        //<StartupsRadarChart/>
+          //<div className='col-xs-3'>
+
+            //<div className='row'>
+              //<Select
+                  //clearable={false}
+                  //options={props.yearQuarterStringList}
+                  //value={props.radarChartCurrentYear}
+                  //onChange={props.radarChartCurrentYearChange} />
+            //</div>
+
+            //<div className='row'>
+            //</div>
+
+          //</div>
+
+
+
 
         //<StartupsOverviewTable sortFieldChange={props.overviewTableSortFieldChange}/>
 

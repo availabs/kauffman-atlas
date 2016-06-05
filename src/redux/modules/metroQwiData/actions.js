@@ -1,16 +1,28 @@
 import { qwiAPIServer as apiConfig } from '../../../AppConfig'
 import { msaToFips } from '../../../support/qwi'
 
+import { industryTitles } from '../../../support/qwi'
+
 const apiServerAddress = `${apiConfig.hostname}${(apiConfig.port) ? (':' + apiConfig.port) : ''}`
 
+const allQwiIndustryCodes = Object.keys(industryTitles).concat(['00']).map(code => _.padStart(code, 5, '0')).sort()
+const allQwiFirmageCodes = _.range(0, 5)
 
-export const QWI_DATA_REQUESTED = 'QWI_DATA_REQUESTED'
-export const QWI_DATA_RECEIVED = 'QWI_DATA_RECEIVED'
+
 export const QWI_MSA_CHANGE = 'QWI_MSA_CHANGE'
 export const QWI_MEASURE_CHANGE = 'QWI_MEASURE_CHANGE'
-export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
+
+export const QWI_RATIOS_BY_FIRMAGE_DATA_REQUESTED = 'QWI_RATIOS_BY_FIRMAGE_DATA_REQUESTED'
+export const QWI_RATIOS_BY_FIRMAGE_DATA_RECEIVED = 'QWI_RATIOS_BY_FIRMAGE_DATA_RECEIVED'
+
+export const QWI_RAW_DATA_REQUESTED = 'QWI_RAW_DATA_REQUESTED'
+export const QWI_RAW_DATA_RECEIVED = 'QWI_RAW_DATA_RECIEVED'
+
 export const QWI_LINEGRAPH_FOCUS_CHANGE = 'QWI_LINEGRAPH_FOCUS_CHANGE'
-export const QWI_QUARTER_CHANGE = 'QWI_QUARTER_CHANGE'
+export const QWI_LINEGRAPH_YEARQUARTER_CHANGE = 'QWI_LINEGRAPH_YEARQUARTER_CHANGE'
+
+export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
+
 export const QWI_ACTION_ERROR = 'QWI_ACTION_ERROR'
 
 
@@ -22,44 +34,41 @@ const qwiActionError = (err) => ({
 
 
 const ratiosByFirmageDataRequested = (msa, measure) => ({
-  type : QWI_DATA_REQUESTED,
+  type : QWI_RATIOS_BY_FIRMAGE_DATA_REQUESTED,
   payload : { 
-    inventory: { ratiosByFirmage: { [msa]: { [measure]: 'REQUESTED'} } },
+    msa,
+    measure,
   },
 })
 
-const ratiosByFirmageDataReceived = (msa, measure, ratiosByFirmageData) => ({
-  type : QWI_DATA_RECEIVED,
+const ratiosByFirmageDataReceived = (msa, measure, data) => ({
+  type : QWI_RATIOS_BY_FIRMAGE_DATA_RECEIVED,
   payload : { 
-    inventory: { ratiosByFirmage: { [msa]: { [measure]: 'RECEIVED'} } },
-    data: { ratiosByFirmage: ratiosByFirmageData },
+    msa,
+    measure,
+    data,
   },
 })
 
 
 const rawDataRequested = (msa, measure) => ({
-  type : QWI_DATA_REQUESTED,
+  type : QWI_RAW_DATA_REQUESTED,
   payload : { 
-    inventory: { raw: { [msa]: { [measure]: 'REQUESTED' } } },
+    msa,
+    measure,
   },
 })
 
 
-const rawDataReceived = (msa, measure, metroRawData) => ({
-  type    : QWI_DATA_RECEIVED,
+const rawDataReceived = (msa, measure, data) => ({
+  type    : QWI_RAW_DATA_RECEIVED,
   payload : { 
-    inventory: { raw: { [msa]: { [measure]: 'RECEIVED' } } },
-    data: { raw: metroRawData },
+    msa,
+    measure,
+    data,
   },
 })
 
-
-export const quarterChange = (dateObj) => ({
-  type : QWI_QUARTER_CHANGE,
-  payload : { 
-    quarter: getQuarterObjFromDateObj(dateObj), 
-  },
-})
 
 
 export const msaChange = (msa) => ({
@@ -72,14 +81,22 @@ export const measureChange = (measure) => ({
   payload : { measure, }
 })
 
-export const lineGraphFocusChange = (focusedLineGraph) => ({
-  type : QWI_LINEGRAPH_FOCUS_CHANGE,
-  payload : { focusedLineGraph, }
+
+export const lineGraphYearQuarterChange = (dateObj) => ({
+  type : QWI_LINEGRAPH_YEARQUARTER_CHANGE,
+  payload : { 
+    yearQuarter: getYearQuarterObjFromDateObj(dateObj), 
+  },
 })
 
-export const overviewTableSortFieldChange = (overviewTableSortField) => ({
+export const lineGraphFocusChange = (focusedGraph) => ({
+  type : QWI_LINEGRAPH_FOCUS_CHANGE,
+  payload : { focusedGraph, }
+})
+
+export const overviewTableSortFieldChange = (sortField) => ({
   type : QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
-  payload : { overviewTableSortField, }
+  payload : { sortField, }
 })
 
 
@@ -127,6 +144,8 @@ function requestRatiosByFirmageData (dispatch, msa, measure) {
 function requestRawDataForMetro (dispatch, msa, measure) {
   dispatch(rawDataRequested(msa, measure))
 
+console.log(buildRawDataRequestURL(msa, measure))
+
   fetch(buildRawDataRequestURL(msa, measure))
     .then(handleFetchErrors)
     .then(response => response.json())
@@ -137,33 +156,35 @@ function requestRawDataForMetro (dispatch, msa, measure) {
 
 
 
-function getQuarterObjFromDateObj (dateObj) {
+function getYearQuarterObjFromDateObj (dateObj) {
   
   let splitDate = d3.time.format("%m-%Y")(dateObj).split('-')
 
   return {
-    qrt : Math.floor((+splitDate[0]/3) + 1).toString(),
-    yr  : splitDate[1],
+    quarter : Math.floor((+splitDate[0]/3) + 1).toString(),
+    year: splitDate[1],
   }
 }
 
 
+const allIndustryAndFirmageCodesReqPath = `industry${allQwiIndustryCodes.join('')}/firmage${allQwiFirmageCodes.join('')}`
+
 function buildRatiosByFirmageRequestURL (msa, measure) {
-  return `http://${apiServerAddress}/derived-data/measure-ratios-by-firmage/firmage1/geography` + 
-            `${(msa === '00') ? '00000' : msaToFips[msa]}${msa}/year20012016/quarter/industry` + 
+  return `http://${apiServerAddress}/derived-data/measure-ratios-by-firmage/geography` + 
+            `${(msa === '00') ? '00000' : msaToFips[msa]}${msa}/year20012016/quarter/` +
+            `${allIndustryAndFirmageCodesReqPath}` +
             `?fields=${measure}&dense=true&flatLeaves=true`
 }
 
 function buildRawDataRequestURL (msa, measure) {
-  return `http://${apiServerAddress}/data/firmage1/geography` +
-            `${msaToFips[msa]}${msa}/year20012016/quarter/industry` + 
+  return `http://${apiServerAddress}/data/geography` +
+            `${msaToFips[msa]}${msa}/year20012016/quarter/` + 
+            `${allIndustryAndFirmageCodesReqPath}` +
             `?fields=${measure}&dense=true&flatLeaves=true`
 }
 
 function transformJSON (json) { 
-  // Since all requests are for firmage == 1,
-  // we take the data starting after the { '1': {... part of the nesting.
-  let data =  _.mapKeys(json.data['1'], (v,k) => (k.length > 2) ? k.substring(2) : k)
+  let data =  _.mapKeys(json.data, (v,k) => (k.length > 2) ? k.substring(2) : k)
   console.log(data)
   return data
 }

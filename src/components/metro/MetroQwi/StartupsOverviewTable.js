@@ -37,7 +37,7 @@ export const StartupsOverviewTable =  (props) => (
     </thead>
 
     <tbody>
-      <h4>TODO: Implement buildTableRows</h4>
+      {buildTableRows(props)}
     </tbody>
   </table>
 )
@@ -46,7 +46,6 @@ export const StartupsOverviewTable =  (props) => (
 export default StartupsOverviewTable
 
 
-        //{buildTableRows(props)}
 
 
 function buildTableRows (props) {

@@ -27,11 +27,11 @@ const getData = (state, ownProps) => {
             return null 
   }
 
-  let focusedLineGraph = state.focusedLineGraph
+  let focusedLineGraph = _.get(state, 'lineGraphs.focused')
   let tooltipData   = []
 
   let rawData = state.data.raw[msa] // { [year]: { [quarter]: [naics]: { ...measures } } }
-  let tooltipQuarter = state.quarter
+  let tooltipYearQuarter = _.get(state, 'lineGraphs.tooltip.yearQuarter')
 
   let rawDataYears = Object.keys(rawData).sort()
 
@@ -50,7 +50,7 @@ const getData = (state, ownProps) => {
     rawDataYears.forEach(year => {
       [1,2,3,4].forEach(quarter => {
 
-        let measureValue = _.get(rawData, [year, quarter, naics, measure], null)
+        let measureValue = _.get(rawData, [year, quarter, naics, /*firmage*/'1', measure], null)
 
         if (measureValue === null) { return }
 
@@ -65,10 +65,9 @@ const getData = (state, ownProps) => {
           }
         }) 
 
-
         if ((focusedLineGraph === 'qwi-rawData-linegraph') && 
-            (+year === +tooltipQuarter.yr) && 
-            (+quarter === +tooltipQuarter.qrt)) {
+            (+year === +tooltipYearQuarter.year) && 
+            (+quarter === +tooltipYearQuarter.quarter)) {
 
               tooltipData.push({
                 color: color,
@@ -104,11 +103,11 @@ const getData = (state, ownProps) => {
     ratiosDataYears.forEach(year => {
       [1,2,3,4].forEach(quarter => {
 
-        let msaRatio = _.get(ratiosData, [year, quarter, naics, `${measure}_ratio`], null)
+        let msaRatio = _.get(ratiosData, [year, quarter, naics, /*firmage*/'1', `${measure}_ratio`], null)
 
         if (msaRatio === null) { return }
 
-        let nationalRatio = _.get(nationalRatiosData, [year, quarter, naics, `${measure}_ratio`], null)
+        let nationalRatio = _.get(nationalRatiosData, [year, quarter, naics, /*firmage*/'1', `${measure}_ratio`], null)
         let locationQuotient = msaRatio/nationalRatio
 
         let month = 2 + 3*(quarter-1)
@@ -123,8 +122,8 @@ const getData = (state, ownProps) => {
         }) 
 
         if ((focusedLineGraph === 'qwi-lqData-linegraph') &&
-            (+year === +tooltipQuarter.yr) && 
-            (+quarter === +tooltipQuarter.qrt)) {
+            (+year === +tooltipYearQuarter.year) && 
+            (+quarter === +tooltipYearQuarter.quarter)) {
 
               tooltipData.push({
                 color: color,
@@ -138,13 +137,17 @@ const getData = (state, ownProps) => {
     if (naicsRatioData.values.length) { lineGraphLQData.push(naicsRatioData) }
   })
 
-
-
+  let selectorYearQuarterList = _(rawData)
+                               .map((quarterlyData, year) => _.map(quarterlyData, (byNaics, quarter) => ({ label: `${year}-Q${quarter}`, value: { year, quarter }})))
+                               .flatMap()
+                               .sortBy('label')
+                               .value()
 
   return {
     lineGraphRawData : lineGraphRawData.length ? lineGraphRawData : null,
     lineGraphLQData : lineGraphLQData.length ? lineGraphLQData : null,
     tooltipData      : tooltipData.length ? tooltipData : null,
+    selectorYearQuarterList : selectorYearQuarterList.length ? selectorYearQuarterList : null,
   }
 }
 
