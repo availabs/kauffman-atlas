@@ -200,7 +200,8 @@ module.exports = function () {
       .attr({
         opacity: 0.8,
         fill: 'none',
-        'stroke-linejoin': 'round'
+        'stroke-linejoin': 'round',
+        'stroke-dasharray': (d) => d.filledNull ? "1,1" : "",
       })
     lines.attr(attr)
     lines.attr('stroke-width', (d) => {

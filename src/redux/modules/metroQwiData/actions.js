@@ -144,8 +144,6 @@ function requestRatiosByFirmageData (dispatch, msa, measure) {
 function requestRawDataForMetro (dispatch, msa, measure) {
   dispatch(rawDataRequested(msa, measure))
 
-console.log(buildRawDataRequestURL(msa, measure))
-
   fetch(buildRawDataRequestURL(msa, measure))
     .then(handleFetchErrors)
     .then(response => response.json())

@@ -19,7 +19,7 @@ export class MetroHome extends React.Component<void, Props, void> {
     constructor () {
 	super()
 	    this.state = {
-		display: 'Establishment'
+		display: 'combined'
 	    }
 
 	this.renderDisplay = this.renderDisplay.bind(this)

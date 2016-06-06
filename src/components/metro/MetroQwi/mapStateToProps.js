@@ -52,13 +52,7 @@ const getData = (state, ownProps) => {
 
     let color = colors(i % 20)
 
-    let naicsData = {
-      color  : color,
-      key    : naics,
-      values : [],
-    }
-
-    let previousValue = 0
+    let previousRawValue = 0
 
     rawDataYears.forEach(year => {
       Object.keys(rawData[year]).forEach(quarter => {
@@ -69,20 +63,27 @@ const getData = (state, ownProps) => {
         let filledNull = false
 
         if (measureValue === null) {
-          measureValue = previousValue
+          measureValue = previousRawValue
 
           filledNull = true
         }
-        previousValue = measureValue
+        previousRawValue = measureValue
 
 
         let month = 2 + 3*(quarter-1)
         let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
 
+        let elem = {
+          key: quarterCentralMonth,
+          values: {
+            x: quarterCentralMonth,
+            y: measureValue,
+          },
+        }
 
-        let lastLineGraphLQDataElem = _.last(lineGraphRawData)
-        if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
-            (_.get(lastLineGraphLQDataElem, 'filledNull') !== filledNull)) {
+        let lastLineGraphRawDataElem = _.last(lineGraphRawData)
+        if ((_.get(lastLineGraphRawDataElem, 'key') !== naics) ||
+            (_.get(lastLineGraphRawDataElem, 'filledNull') !== filledNull)) {
 
               lineGraphRawData.push({
                 color: color,
@@ -90,15 +91,20 @@ const getData = (state, ownProps) => {
                 values: [],
                 filledNull,
               })
+
+              // Connect the fill segment with the new non-filled segment.
+              if (lastLineGraphRawDataElem && (lastLineGraphRawDataElem.key === naics)) {
+              
+                if (filledNull) {
+                  _.last(lineGraphRawData).values.push(_.last(lastLineGraphRawDataElem.values)) 
+                } else {
+                  lastLineGraphRawDataElem.values.push(elem)
+                }
+              }
         }
 
-        _.last(lineGraphRawData).values.push({
-          key: quarterCentralMonth,
-          values: {
-            x: quarterCentralMonth,
-            y: measureValue,
-          },
-        }) 
+        _.last(lineGraphRawData).values.push(elem) 
+
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
 
@@ -143,7 +149,7 @@ const getData = (state, ownProps) => {
 
     let color = colors(i % 20)
 
-    let previousValue = 0
+    let previousRatioValue = 0
 
     ratiosDataYears.forEach(year => {
       Object.keys(ratiosData[year]).forEach(quarter => {
@@ -152,11 +158,11 @@ const getData = (state, ownProps) => {
 
         let filledNull = false
         if (msaRatio === null) {
-          msaRatio = previousValue
+          msaRatio = previousRatioValue
 
           filledNull = true
         }
-        previousValue = msaRatio
+        previousRatioValue = msaRatio
 
         let nationalRatio = _.get(nationalRatiosData, 
                                   [year, quarter, naics, /*firmage*/'1', 
@@ -166,6 +172,14 @@ const getData = (state, ownProps) => {
 
         let month = 2 + 3*(quarter-1)
         let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
+
+        let elem = {
+          key: quarterCentralMonth,
+          values: {
+            x: quarterCentralMonth,
+            y: locationQuotient,
+          },
+        }
 
         let lastLineGraphLQDataElem = _.last(lineGraphLQData)
         if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
@@ -177,15 +191,19 @@ const getData = (state, ownProps) => {
                 values: [],
                 filledNull,
               })
+
+              // Connect the fill segment with the new non-filled segment.
+              if (lastLineGraphLQDataElem && (lastLineGraphLQDataElem.key === naics)) {
+              
+                if (filledNull) {
+                  _.last(lineGraphLQData).values.push(_.last(lastLineGraphLQDataElem.values)) 
+                } else {
+                  lastLineGraphLQDataElem.values.push(elem)
+                }
+              }
         }
 
-        _.last(lineGraphLQData).values.push({
-          key: quarterCentralMonth,
-          values: {
-            x: quarterCentralMonth,
-            y: locationQuotient,
-          },
-        }) 
+        _.last(lineGraphLQData).values.push(elem) 
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
 
@@ -218,6 +236,8 @@ const getData = (state, ownProps) => {
 
   let selectorYearQuarterList = _(rawData).map(mapper).flatMap().sortBy('label').value()
 
+console.log(lineGraphLQData)
+
   return {
     lineGraphRawData : lineGraphRawData.length ? lineGraphRawData : null,
     lineGraphLQData : lineGraphLQData.length ? lineGraphLQData : null,
@@ -226,6 +246,7 @@ const getData = (state, ownProps) => {
     shareByIndustryRadarGraphData: [shareByIndustryRadarGraphData, shareByIndustryRadarGraphData],
     shareOfMetroTotalRadarGraphData: [shareOfMetroTotalRadarGraphData, shareOfMetroTotalRadarGraphData],
     overviewTableData,
+    yearQuarter: tooltipYearQuarter,
   }
 }
 
