@@ -22,10 +22,12 @@ export class BarChart extends React.Component<void, Props, void> {
         console.log("barchartmount");
         this._renderGraph();
     }
-  _msaClick (d) {
+
+    _msaClick (d) {
     console.log(d.key);
     this.context.router.push('/metro/'+d.key);   
-  }
+    }
+
     _renderGraph () {
         var percFormat = d3.format(".3%");
         var scope = this;
@@ -203,12 +205,7 @@ export class BarChart extends React.Component<void, Props, void> {
 		      .attr("dy", "-3.5em")
 		      .style("text-anchor", "end")
 		      .text(function(){
-                if(scope.props.graph != "opportunity"){
-                    return "Score"
-                }
-                else{
-                    return "Percent Income Gain/loss"
-                }
+                return "Percent Income Gain/loss"
               });
 
         var metroArea = svg.selectAll(".metroArea")
@@ -344,12 +341,8 @@ export class BarChart extends React.Component<void, Props, void> {
         }
     }
     _labelFunction () {
-        if(this.props.graph != "opportunity"){
-            return "Composite " + this.props.title.split("composite")[0] + " score " + "(" + this.props.data[0].values[this.props.data[0].values.length-1].x + ")"
-        }
-        else{
-            return "Income gain/loss relative to parental income by metro area"
-        }
+        return "Income gain/loss relative to parental income by metro area"
+
     }
     render () {
     	var scope = this;

@@ -309,8 +309,8 @@ export class LineGraph extends React.Component<void, Props, void> {
       .style("text-decoration","underline")
       .text(function(){
         if(props.plot == 'value'){
-          if(props.graph.substr(-9) !== 'composite'){
-            return scope._labelFunction().split("by")[0]  
+          if(props.title.substr(-9) !== 'composite'){
+            return scope._labelFunction(props).split("by")[0]               
           }
           else{
             return "Composite Score"
@@ -371,11 +371,10 @@ export class LineGraph extends React.Component<void, Props, void> {
     }
   }
 
-  _labelFunction () {
-
-    if(this.props.graph == "share"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+  _labelFunction (props) {
+    if(props.title == "densityshareofemploymentinnewfirms"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Number employed in new and young firms by year"
         }
         else{
@@ -383,7 +382,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for number employed in new and young firms by year"
         }
         else{
@@ -391,9 +390,9 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     }
-    else if(this.props.graph == "newValues"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "densitynewfirms"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Number of new and young firms by year"
         }
         else{
@@ -401,7 +400,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for number of new and young firms by year"
         }
         else{
@@ -409,17 +408,17 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     }
-    else if (this.props.graph == "densitycomposite"){
-      if(this.props.plot == "value"){
+    else if (props.title == "densitycomposite"){
+      if(props.plot == "value"){
           return "Composite density score by year"            
       }
       else{
           return "Metro Area Ranking for composite density score by year" 
       }          
     }
-    else if(this.props.graph == "irsNet"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "fluiditynetmigration"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Net migration by year"
         }
         else{
@@ -427,7 +426,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for net migration by year"
         }
         else{
@@ -435,9 +434,9 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     }    
-    else if(this.props.graph == "irsTotalMigration"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "fluiditytotalmigration"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Total Migration (inflow/outflow sum) by year"
         }
         else{
@@ -445,7 +444,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for total Migration (inflow/outflow sum) by year"
         }
         else{
@@ -453,9 +452,27 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if(this.props.graph == "irsInflowMigration"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "fluidityannualchurn"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return ""
+        }
+        else{
+          return "Employment Turnover Rate as a percentage of total employment by year"
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return ""
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
+    else if(props.title == "irsInflowMigration"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Inflow Migration by year"
         }
         else{
@@ -463,7 +480,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for inflow Migration by year"
         }
         else{
@@ -471,9 +488,9 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if(this.props.graph == "irsOutflowMigration"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "irsOutflowMigration"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Outflow Migration by year"
         }
         else{
@@ -481,7 +498,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for outflow Migration by year"
         }
         else{
@@ -489,9 +506,9 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if(this.props.graph == "inc"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "fluidityhighgrowthfirms"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Number of High Growth Firms by year"
         }
         else{
@@ -499,7 +516,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for number of High Growth Firms by year"
         }
         else{
@@ -507,25 +524,25 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if (this.props.graph == "fluiditycomposite"){
-      if(this.props.plot == "value"){
+    else if (props.title == "fluiditycomposite"){
+      if(props.plot == "value"){
           return "Composite fluidity score by year"            
       }
       else{
           return "Metro Area Ranking for composite fluidity score by year" 
       }          
     }
-    else if(this.props.graph == "foreignBorn"){
-      if(this.props.plot == "value"){
-        if(this.props.dataType == "raw"){
+    else if(props.title == "diversitypercentageofforiegnbornpopulation"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
           return "Number of foreign born current residents by year"
         }
         else{
-          return "Number of foreign born current residents as a percentage of total population by year"
+          return "Percentage of foriegn-born residents by year"
         }             
       }
       else{
-        if(this.props.dataType == "raw"){
+        if(props.dataType == "raw"){
           return "Metro Area Ranking for number of foreign born current residents by year"
         }
         else{
@@ -533,16 +550,16 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if (this.props.graph == "diversitycomposite"){
-      if(this.props.plot == "value"){
+    else if (props.title == "diversitycomposite"){
+      if(props.plot == "value"){
           return "Composite diversity score by year"            
       }
       else{
           return "Metro Area Ranking for composite diversity score by year" 
       }          
     }
-    else if (this.props.graph == "combinedcomposite"){
-      if(this.props.plot == "value"){
+    else if (props.title == "combinedcomposite"){
+      if(props.plot == "value"){
           return "Composite combined score by year"            
       }
       else{
@@ -559,7 +576,7 @@ export class LineGraph extends React.Component<void, Props, void> {
     return (
         <div className={classes['graphContainer']}>
             <div className={classes['title']}>
-              <h4>{scope._labelFunction()}</h4>
+              <h4>{scope._labelFunction(this.props)}</h4>
             </div>
             <div id="lineGraph" className={classes['svg-container']}>
               <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
