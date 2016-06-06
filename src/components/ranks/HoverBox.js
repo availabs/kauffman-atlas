@@ -14,47 +14,58 @@ let categeoryNames = {
   combinedcomposite: 'Combined',
   densitycomposite: 'Density',
   fluiditycomposite: 'Fluidity',
-  diversitycomposite: 'Diversity'
+  diversitycomposite: 'Diversity',
+  densitynewfirms: 'New Firms per 1k Pop',
+  densityshareofemploymentinnewfirms: '% Emp in New Firms',
+  diversityincomebasedonchildhood: 'Equality of Opportunity',
+  diversitypercentageofforiegnbornpopulation: '% Foreign Born',
+  fluidityhighgrowthfirms: 'High Growth Firms',
+  fluiditynetmigration: 'Net Migration',
+  fluiditytotalmigration: 'Total Migration',
+  fluidityannualchurn: 'Employee Churn'
+}
+
+let categories = {
+  combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
+  density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms'],
+  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforiegnbornpopulation'],
+  fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn']
 }
 
 export class HoverBox extends React.Component<void, Props, void> {
-   constructor () {
+  constructor () {
     super()
     //this.onMouseover = this.onMouseover.bind(this)
   }
-  componentWillMount () {    
-    this._initGraph();    
-  }   
+ 
     
-  _initGraph () {   
-    if(!this.props['densitycomposite']){    
-      this.props['getdensitycomposite']()   
-    }   
-    if(!this.props['fluiditycomposite']){   
-      this.props['getfluiditycomposite']()    
-    }   
-    if(!this.props['diversitycomposite']){    
-      this.props['getdiversitycomposite']()   
-    }   
-    if(!this.props['combinedcomposite']){   
-      this.props['getcombinedcomposite']()            
-    }           
+  _checkData (type) {         
+    let hasdata = true;
+    categories[type].forEach((cat) => {
+      if(!this.props[cat]){
+        this.props['get'+cat]()
+        hasdata = false
+      }
+    })
+    return hasdata
   }
 
   
   renderCombinedScores(type,year){
 
-    let categories = {
-      combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite']
+    if(!this._checkData(type)){
+      return (<tr />)
     }
     return categories[type].map((cat) => {
-      let isData = this.props[cat].filter(metro => { 
+      console.log('props cat', cat, this.props[cat])
+      let fulldata = this.props[cat] && this.props[cat].relative ? this.props[cat].relative : this.props[cat]
+      fulldata = fulldata || []
+      let isData = fulldata.filter(metro => { 
         return metro.key == this.props.metroId
-      })[0] 
-
-      let data = isData ? isData.values : []
-
-
+      })[0]
+      console.log('isData', isData)
+      let data = isData && isData.values ? isData.values : []
+      console.log('test data', data)
       let score = data.filter(d => 
         { return d.x === year })[0] || {}
 
@@ -89,7 +100,7 @@ export class HoverBox extends React.Component<void, Props, void> {
             </tr>
           </thead>
           <tbody>
-            {this.renderCombinedScores('combined', 2012)}
+            {this.renderCombinedScores(this.props.activeComponent, 2012)}
           </tbody>
         </table>
       </div>

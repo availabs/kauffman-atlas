@@ -207,12 +207,10 @@ export class HomeView extends React.Component<void, Props, void> {
               activeComponent={this.state.activeComponent}
             />
             <MapGraphButtons
-              mapGraph={this.state.activeMapGraph}
+               mapGraph={this.state.activeMapGraph}
               onComponentChange={this._setMapGraph} 
               activeComponent={this.state.activeMapGraph}
             />
-            
-           
             {this.renderMapGraph(metrosInBucket)}          
           </div>
         </div>
