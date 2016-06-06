@@ -180,7 +180,6 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let typeShares = [pastQuants.typeShare,curQuants.typeShare]
 	let typeQuots = [pastQuants.typeQuot, curQuants.typeQuot]
 	
-
 	let rOpts = {
 	    w:190, h:190,
 	    ExtraWidthX:130, TranslateX:50,

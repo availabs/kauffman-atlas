@@ -15,8 +15,6 @@ const getData = (state, ownProps) => {
 
   state = state.metroQwiData
 
-  console.log(state)
-
   let msa = state.msa
   let measure = state.measure
 
@@ -27,15 +25,30 @@ const getData = (state, ownProps) => {
             return null 
   }
 
+  let overviewTableData = {}
+
   let focusedLineGraph = _.get(state, 'lineGraphs.focused')
   let tooltipData   = []
 
   let rawData = state.data.raw[msa] // { [year]: { [quarter]: [naics]: { ...measures } } }
   let tooltipYearQuarter = _.get(state, 'lineGraphs.tooltip.yearQuarter')
+  
+  if (!tooltipYearQuarter.year) {
+    let year = _.max(Object.keys(rawData))
+    let quarter = _.max(Object.keys(rawData[year]))
+    
+    tooltipYearQuarter = { 
+      year,
+      quarter,
+    }
+  }
+
+console.log(tooltipYearQuarter)
 
   let rawDataYears = Object.keys(rawData).sort()
 
   let lineGraphRawData = []
+  let shareByIndustryRadarGraphData = []
 
   naicsCodes.forEach((naics, i) => {
 
@@ -65,15 +78,29 @@ const getData = (state, ownProps) => {
           }
         }) 
 
-        if ((focusedLineGraph === 'qwi-rawData-linegraph') && 
-            (+year === +tooltipYearQuarter.year) && 
+        if ((+year === +tooltipYearQuarter.year) && 
             (+quarter === +tooltipYearQuarter.quarter)) {
 
-              tooltipData.push({
-                color: color,
-                key: naics,
-                value: measureValue,
+              let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], null)
+              let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], null)
+
+              _.set(overviewTableData, [naics, 'title'], industryTitles[naics])
+              _.set(overviewTableData, [naics, 'measureValue'], metroTotal)
+              _.set(overviewTableData, [naics, 'metroTotal'], metroTotal)
+              _.set(overviewTableData, [naics, 'allFirmages'], allFirmages)
+
+              shareByIndustryRadarGraphData.push({
+                axis: industryTitles[naics].substring(0,6),
+                value: (allFirmages / metroTotal),
               })
+
+              if (focusedLineGraph === 'qwi-rawData-linegraph') {
+                tooltipData.push({
+                  color: color,
+                  key: naics,
+                  value: measureValue,
+                })
+              }
         }
       })
     })
@@ -88,6 +115,8 @@ const getData = (state, ownProps) => {
   let ratiosDataYears = Object.keys(ratiosData).sort()
 
   let lineGraphLQData = []
+
+  let shareOfMetroTotalRadarGraphData = []
 
 
   naicsCodes.forEach((naics, i) => {
@@ -121,15 +150,24 @@ const getData = (state, ownProps) => {
           }
         }) 
 
-        if ((focusedLineGraph === 'qwi-lqData-linegraph') &&
-            (+year === +tooltipYearQuarter.year) && 
-            (+quarter === +tooltipYearQuarter.quarter)) {
+        if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
 
-              tooltipData.push({
-                color: color,
-                key: naics,
-                value: locationQuotient,
-              })
+          shareOfMetroTotalRadarGraphData.push({
+            axis: industryTitles[naics].substring(0,6),
+            value: msaRatio,
+          })
+          
+          _.set(overviewTableData, [naics, 'msaRatio'], msaRatio)
+          _.set(overviewTableData, [naics, 'nationalRatio'], nationalRatio)
+          _.set(overviewTableData, [naics, 'locationQuotient'], locationQuotient)
+
+          if (focusedLineGraph === 'qwi-lqData-linegraph') {
+            tooltipData.push({
+              color: color,
+              key: naics,
+              value: locationQuotient,
+            })
+          }
         }
       })
     })
@@ -143,11 +181,16 @@ const getData = (state, ownProps) => {
                                .sortBy('label')
                                .value()
 
+  console.log(overviewTableData)
+
   return {
     lineGraphRawData : lineGraphRawData.length ? lineGraphRawData : null,
     lineGraphLQData : lineGraphLQData.length ? lineGraphLQData : null,
     tooltipData      : tooltipData.length ? tooltipData : null,
     selectorYearQuarterList : selectorYearQuarterList.length ? selectorYearQuarterList : null,
+    shareByIndustryRadarGraphData: [shareByIndustryRadarGraphData, shareByIndustryRadarGraphData],
+    shareOfMetroTotalRadarGraphData: [shareOfMetroTotalRadarGraphData, shareOfMetroTotalRadarGraphData],
+    overviewTableData,
   }
 }
 

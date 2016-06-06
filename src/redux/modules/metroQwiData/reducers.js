@@ -28,7 +28,7 @@ const initialState = {
   lineGraphs: {
     focused: 'qwi-rawData-linegraph',
     tooltip: {
-      yearQuarter : {
+      yearQuarter: {
         year:    null,
         quarter: null,
       },
@@ -65,8 +65,6 @@ const handleActionError = (state, action) => {
 const handleLineGraphYearQuarterChange = (state, action) => {
 
   let yearQuarter = action.payload.yearQuarter
-
-console.log(_.get(state, ['data', 'ratiosByFirmage', state.msa, yearQuarter.year, yearQuarter.quarter]))
 
   if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, yearQuarter.year, yearQuarter.quarter]))) {
     return setStateField(state, 'lineGraphs.tooltip.yearQuarter', action.payload.yearQuarter)

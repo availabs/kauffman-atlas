@@ -17,6 +17,13 @@ const graphMargin = {
   bottom : 20,
 }
 
+let radarGraphOptions = {
+    w           : 190,
+    h           : 190,
+    ExtraWidthX : 130,
+    TranslateX  : 50,
+    color       : d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
+}
 
 
 const MetroQwi = props => {
@@ -75,15 +82,29 @@ console.log(props)
           </div>
         </div>
 
+        <div className='row' style={{overflow:'hidden'}} >
+          <div className='col-xs-5'>
+            <strong>{`Share of by ${props.measure} by 0-1 year firms`}</strong>
+            <RadarChart divID='typeShare'
+                        data={props.shareByIndustryRadarGraphData}
+                        options={radarGraphOptions} />
+          </div>
+
+          <div className='col-xs-5'>
+            <strong>{`Share of by ${props.measure} by industry across firmages.`}</strong>
+            <RadarChart divID='typeQout'
+                        data={props.shareOfMetroTotalRadarGraphData}
+                        options={radarGraphOptions} />
+          </div>
+        </div>
+
+        <div className='row'>
+          <StartupsOverviewTable data={props.overviewTableData}
+                                 sortFieldChange={props.overviewTableSortFieldChange}/>
+        </div>
       </div>
     )
 }
-        //<div className='row' style={{overflow:'hidden'}} >
-          //<RadarChart divID='typeQout'
-                      //data={}
-                      //options={} />
-        //</div>
-
           //<div className='col-xs-3'>
 
             //<div className='row'>
@@ -102,7 +123,6 @@ console.log(props)
 
 
 
-        //<StartupsOverviewTable sortFieldChange={props.overviewTableSortFieldChange}/>
 
 function requestData (props) {
     if (props.loadData) { props.loadData(props.msa, props.measure) }
