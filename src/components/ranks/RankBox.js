@@ -58,10 +58,11 @@ export class RankBoxes extends React.Component<void, Props, void> {
     .filter((d,i) => { return i < length })
     .map((metro,i) => {
       return (
-        <div className={classes["msa"]}>
-          <div id={i} className={classes["name"]}>{(i+1) + ". " + metro["name"]}</div>
-          <div id={metro.id} className={classes["score"]}>{roundFormat(metro.values[metro.values.length-1].y)}</div>
-        </div> 
+        <tr>
+          <td>{(i+1)}</td>
+          <td><small>{metro["name"]}</small></td>
+          <td>{roundFormat(metro.values[metro.values.length-1].y)}</td>
+        </tr> 
       )
     })
   }
@@ -72,10 +73,21 @@ export class RankBoxes extends React.Component<void, Props, void> {
     let topFive = this._topFiveList(this.props.activeComponent)
 
     return (
-      <div className='row'>
+      <div className='row' style={{margin:0, marginTop:10, backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5', borderRadius: 3}}>
         <div className='col-xs-12' >
-          Top 5 Metro Areas
-          <div className={classes["topFive"]}>{topFive}</div>
+          <h4 style={{textAlign: 'center'}}><small style={{color:'#f5f5f5'}}>Top 5 Metro Areas</small></h4>
+           <table className='table'>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Metro</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topFive}
+          </tbody>
+        </table>
         </div>
       </div>  
     )

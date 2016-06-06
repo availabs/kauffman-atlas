@@ -1,7 +1,8 @@
-/* @flow */
+//* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
+import { browserHistory } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
 import NationalMap from 'components/maps/NationalMap'
@@ -10,13 +11,14 @@ import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import MapGraphButtons from 'components/ranks/MapGraphButtons'
 import SubGraphButtons from 'components/ranks/SubGraphButtons'
-import LineGraph from '../../components/graphs/LineGraph.js'
-import BarChart from '../../components/graphs/BarChart.js'
+import LineGraph from 'components/graphs/LineGraph.js'
+import BarChart from 'components/graphs/BarChart.js'
+import HoverBox from 'components/ranks/HoverBox'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-import { browserHistory } from 'react-router'
+import CategoryText from 'components/misc/categoryText'
 let roundFormat = d3.format(".2f")
 
 export class HomeView extends React.Component<void, Props, void> {
@@ -26,7 +28,8 @@ export class HomeView extends React.Component<void, Props, void> {
       activeComponent:'combined',
       bucket:'all',
       activeMapGraph:'map',
-      metric:'composite'
+      metric:'composite',
+      hoverMetro: null
     }
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
@@ -39,7 +42,9 @@ export class HomeView extends React.Component<void, Props, void> {
   componentWillMount () {    
     this._initGraph();    
   }   
-    
+  
+
+
   _initGraph () {   
     if(!this.props['densitycomposite']){    
       this.props['getdensitycomposite']()   
@@ -60,19 +65,10 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   _setMapGraph (type) {
-    if(type == 'graph'){
-      d3.select('#mapComponent')[0][0].className = 'hidden'
-      d3.select('#graphComponent')[0][0].className = ''
-    }
-    else{
-      d3.select('#mapComponent')[0][0].className = ''
-      d3.select('#graphComponent')[0][0].className = 'hidden'      
-    }
     this.setState({activeMapGraph:type})
   }
 
   _setMetric (type) {
-
     this.setState({metric:type})
   }
 
@@ -89,42 +85,47 @@ export class HomeView extends React.Component<void, Props, void> {
     return type === this.state.activeComponent ? classes['active-link'] : ''
   }
 
-  onMouseover(hoverBox,feature){
-    let year = 2012;
+  onMouseover(feature){
+    let curFeature = feature.city ? feature.city.key : feature.id  
+    this.setState({
+      hoverMetro: curFeature
+    })
+  }
 
-    if(feature.city){
-      var curFeature = feature.city
-      curFeature.id = curFeature.key
+  renderMapGraph (metrosInBucket) {
+    if(!this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
+      this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
+      return <span />
     }
-    else{
-      var curFeature = feature      
+    if(this.state.activeMapGraph === 'map'){
+      return (
+        <NationalMap 
+          metros={metrosInBucket} 
+          activeComponent={this.state.activeComponent + (this.state.metric).replace(/ /g,'')}
+          onMouseover={this.onMouseover}
+        />
+      )
+    }else if((this.state.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
+      return (
+       <BarChart    
+          metros={metrosInBucket} 
+          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+          plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+          graph="opportunitycomposite"
+          onMouseover={this.onMouseover}
+        />
+      )
+    }else {
+      return (
+        <LineGraph    
+          metros={metrosInBucket} 
+          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+          plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+          graph={this.state.activeComponent + "composite"}
+          onMouseover={this.onMouseover}
+        />
+      )
     }
-
-    let combinedScore = this.props.combinedcomposite.filter(metro => { 
-      return metro.key == curFeature.id})[0].values.filter(d => 
-        { return d.x === year })[0] || {}
-
-    let densityScore = this.props.densitycomposite.filter(metro => { 
-      return metro.key == curFeature.id})[0].values.filter(d => 
-        { return d.x === year })[0] || {}
-
-    let fluidityScore = this.props.fluiditycomposite.filter(metro => { 
-      return metro.key == curFeature.id})[0].values.filter(d => 
-        { return d.x === year })[0] || {}
-
-    let diversityScore = this.props.diversitycomposite.filter(metro => { 
-      return metro.key == curFeature.id})[0].values.filter(d => 
-        { return d.x === year })[0] || {}      
-
-    var combinedText = "Combined " + combinedScore.rank + " " + roundFormat(combinedScore.y)
-    var densityText = "Density " + densityScore.rank + " " + roundFormat(densityScore.y)
-    var fluidityText = "Fluidity " + fluidityScore.rank + " " + roundFormat(fluidityScore.y)
-    var diversityText = "Diversity " + diversityScore.rank + " " + roundFormat(diversityScore.y)
-
-    d3.select("#combinedScore").text(combinedText)
-    d3.select("#densityScore").text(densityText)
-    d3.select("#fluidityScore").text(fluidityText)
-    d3.select("#diversityScore").text(diversityText)
   }
 
   render () {
@@ -154,73 +155,22 @@ export class HomeView extends React.Component<void, Props, void> {
       )
     })
 
-    if(this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
-      if((this.state.metric).replace(/ /g,'') != 'incomebasedonchildhood'){
-        var graph = (       
-            <div className='col-xs-10' style={{ padding: 0}}>
-              <LineGraph    
-              metros={metrosInBucket} 
-              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-              plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph={this.state.activeComponent + "composite"}
-              onMouseover={this.onMouseover.bind(null,hoverBox)}
-              />
-            </div>
-              )
-      }
-      else{
-         var graph = (       
-            <div className='col-xs-10' style={{ padding: 0}}>
-              <BarChart    
-              metros={metrosInBucket} 
-              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-              plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph="opportunitycomposite"
-              onMouseover={this.onMouseover.bind(null,hoverBox)}
-              />
-            </div>
-              )       
-      }
-
-    }
-    else{
-        this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
-    }    
-  
-    var map=
-      (<NationalMap 
-        metros={metrosInBucket} 
-        activeComponent={this.state.activeComponent + (this.state.metric).replace(/ /g,'')}
-        onMouseover={this.onMouseover.bind(null,hoverBox)}
-      />)
-  
-
-
-  var hoverBox = (
-    <div style={{marginTop: 15,marginLeft: 15}}>
-      <div className = 'row'>
-      Metro Area Scores
-      </div> 
-      <div className={"row "+classes['hoverScoreHeader']}>
-        <strong >Index</strong><strong >Rank</strong><strong >Score</strong>      
-      </div>
-      <div className={classes['hoverScoreContainer']}>
-        <div id="combinedScore" className={"row " +classes['hoverScore']}></div>
-        <div id="densityScore" className={"row " +classes['hoverScore']}></div>
-        <div id="fluidityScore" className={"row " +classes['hoverScore']}></div>
-        <div id="diversityScore" className={"row " +classes['hoverScore']}></div>
-      </div>
-    </div>
-    )
-
     return (
-      <div>
-      <div className='container'>
-        <div className='row'>
-          <div className={'col-xs-12 ' + classes['text-div']}>
-            The <strong> Atlas of Entreprenurial Activity </strong> is a set of interactive tools and indices designed to provide a visual understanding of the economic indicators of entreprenurial ecosystems in the United States. Take a broad view of the United States with AEA Inddex which combines a dozen different indicators to rank metropolitan areas on their entreprenurial ecosystems or get a detailed overview of entreprenurial and economic activity of individual metropolitan areas. 
+      <div> 
+        <div className='container-fluid' style={{backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5'}}>
+          <div className='container'>
+            <div className='row'>
+              <div className={'col-xs-12 ' + classes['text-div']}>
+                <p>The <strong>  Entrepreneurial Ecosystem Atlas </strong>  is a set of interactive tools designed to provide a visual understanding of the economic indicators of entrepreneurial ecosystems in the United States.  The Entrepreneurial Ecosystems Index combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The index is broken down into three major categories: Density, Diversity and Fluidity. </p>
+                <p>In defining Density, Diversity and Fluidity we’ve taken guidance from a report by Dane Stangler and Jordan Bell-Masterson, and published by the Kauffman Foundation, entitled “Measuring an Entrepreneurial Ecosystem.”</p>
+                <p>This page begins with a view of the overall index, the Entrepreneurial Ecosystem Index (EEI). You can toggle between the EEI, Density, Diversity and Fluidity. Additionally you can toggle between viewing the data in the form of a map or a graph and you can filter the visualizations by population.</p>
+                <p>Clicking on a metropolitan area will take you to a page full of additional analytics and visualizations for that metropolitan area.</p>
+              </div>
+            </div>
           </div>
         </div>
+      <div className='container'>
+  
         
         <div className='row' style={{padding:15, marginTop: 15}} >
           <ComponentButtons
@@ -235,22 +185,22 @@ export class HomeView extends React.Component<void, Props, void> {
         </div>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
-            <strong>{this.state.activeComponent.toUpperCase()}</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
+            <strong>{this.state.activeComponent.toUpperCase()}</strong> {CategoryText[this.state.activeComponent].map(d => { return (<p>{d} </p>)})}
           </div>
         </div>
         
       </div>
       <div className='container'>
         <div className='row'>
-          <div className='col-xs-2' style={{padding:15}}>
+          <div className='col-md-3' style={{padding:15}}>
             <RankBox 
               activeComponent={this.state.activeComponent} 
               popScale={popScale}
               bucket={this.state.bucket}
             />
-            {hoverBox}
+            <HoverBox metroId={this.state.hoverMetro} activeComponent={this.state.activeComponent} />
           </div>
-          <div id="mapDiv" className='col-xs-10' style={{padding:15}}>
+          <div id="mapDiv" className='col-md-9' style={{padding:15}}>
             <SubGraphButtons
               metric={this.state.metric}
               onComponentChange={this._setMetric} 
@@ -261,12 +211,9 @@ export class HomeView extends React.Component<void, Props, void> {
               onComponentChange={this._setMapGraph} 
               activeComponent={this.state.activeMapGraph}
             />
-            <div id='mapComponent'>
-            {map}
-            </div>
-            <div id='graphComponent'  className='hidden'>
-            {graph} 
-            </div>         
+            
+           
+            {this.renderMapGraph(metrosInBucket)}          
           </div>
         </div>
       </div>

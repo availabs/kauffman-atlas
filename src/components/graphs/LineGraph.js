@@ -16,24 +16,31 @@ export class LineGraph extends React.Component<void, Props, void> {
     this._msaClick = this._msaClick.bind(this)
   }
   componentDidMount () {
-      this._renderGraph();
+      this._renderGraph(this.props);
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph){
+      this._renderGraph(nextProps);
+    }
   }
 
   _msaClick (d) {
     console.log(d.key);
     this.context.router.push('/metro/'+d.key);   
   }
-  _renderGraph () {
+
+  _renderGraph (props) {
     var percFormat = d3.format(".3%"),
         axisPercFormat = d3.format("%"),
         commaFormat = d3.format(","),
         scope = this;
 
-    if(Array.isArray(scope.props.data)){
-        var data = scope.props.data;
+    if(Array.isArray(props.data)){
+        var data = props.data;
     }
     else{
-        var data = scope.props.data[scope.props.dataType];
+        var data = props.data[props.dataType];
     }
 
     if(this.props.metros){
@@ -107,7 +114,7 @@ export class LineGraph extends React.Component<void, Props, void> {
     let paddedWidth = width-100;
     let paddedHeight = height-100;
 
-    if(scope.props.plot == "rank"){
+    if(props.plot == "rank"){
         var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(d.x); })
             .y(function(d) { return y(d.rank); })
@@ -190,11 +197,11 @@ export class LineGraph extends React.Component<void, Props, void> {
         .outerTickSize([3])
         .orient("left");
 
-    if(scope.props.plot != 'rank'){
-      if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite" && scope.props.graph != "inc"){
+    if(props.plot != 'rank'){
+      if(props.dataType != "raw" && props.graph != "newValues" && (props.graph.substr(-9)) != "composite" && props.graph != "inc"){
           yAxis.tickFormat(axisPercFormat);
       }
-      else if(scope.props.dataType != "raw" && scope.props.graph == "inc"){
+      else if(props.dataType != "raw" && props.graph == "inc"){
           yAxis.tickFormat(percFormat);         
       }    
       else{
@@ -287,8 +294,8 @@ export class LineGraph extends React.Component<void, Props, void> {
       .style("font-weight","bold")
       .style("text-decoration","underline")
       .text(function(){
-        if(scope.props.plot == 'value'){
-          if(scope.props.graph.substr(-9) !== 'composite'){
+        if(props.plot == 'value'){
+          if(props.graph.substr(-9) !== 'composite'){
             return scope._labelFunction().split("by")[0]  
           }
           else{
@@ -305,30 +312,36 @@ export class LineGraph extends React.Component<void, Props, void> {
         d3.select(d.city.line).style("stroke","#000000")
         d3.select(d.city.line).style("opacity","2")
 
-        scope.props.onMouseover.bind(d);
-        scope.props.onMouseover(d)
-
-
+        //props.onMouseover.bind(d);
+        //props.onMouseover(d)
+        
         var popText = "",
             name;
 
             name = d.city.name;
        
-        if(scope.props.plot == "rank"){
+        if(props.plot == "rank"){
             popText += name + ' | ' + d.x +':  '+ d.rank;                    
         }
         else{
-            if(scope.props.dataType != "raw" && scope.props.graph != "newValues" && (scope.props.graph.substr(-9)) != "composite"){
+            if(props.dataType != "raw" && props.graph != "newValues" && (props.graph.substr(-9)) != "composite"){
                 popText += name + ' | ' + d.x +':  '+ percFormat(d.y);
             }
             else{
                 popText += name + ' | ' + d.x +':  '+ commaFormat(d.y);                        
             }
         }
-
+       
         d.city.line.parentNode.appendChild(d.city.line);
         focus.attr("transform", "translate(10,-20)");
         focus.select("text").text(popText);
+       
+        let id = {id: d.city.key}
+        if(props.onMouseover) {
+          props.onMouseover(id)
+        }
+
+
     }
 
     function click(d){ 
@@ -528,9 +541,7 @@ export class LineGraph extends React.Component<void, Props, void> {
   render () {
     var scope = this;
 
-    console.log("linegraph render state",scope);
 
-    scope._renderGraph();
     return (
         <div className={classes['graphContainer']}>
             <div className={classes['title']}>
