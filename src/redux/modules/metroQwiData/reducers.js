@@ -2,51 +2,58 @@ import _ from 'lodash'
 
 
 import { 
-  QWI_DATA_REQUESTED,
-  QWI_DATA_RECEIVED,
   QWI_MSA_CHANGE,
   QWI_MEASURE_CHANGE,
+  QWI_RATIOS_BY_FIRMAGE_DATA_REQUESTED,
+  QWI_RATIOS_BY_FIRMAGE_DATA_RECEIVED,
+  QWI_RAW_DATA_REQUESTED,
+  QWI_RAW_DATA_RECEIVED,
   QWI_LINEGRAPH_FOCUS_CHANGE,
+  QWI_LINEGRAPH_YEARQUARTER_CHANGE,
   QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
-  QWI_QUARTER_CHANGE,
-  QWI_ACTION_ERROR
+  QWI_ACTION_ERROR,
 } from './actions'
 
 
 const initialState = {
-  data : {
+
+  msa: '',
+  measure: '',
+  
+  data: {
     raw: {},
     ratiosByFirmage: {},
   },
-  msa  : '',
-  quarter : {
-    yr  : null,
-    qtr : null,
+  
+  lineGraphs: {
+    focused: 'qwi-rawData-linegraph',
+    tooltip: {
+      yearQuarter: {
+        year:    null,
+        quarter: null,
+      },
+    }
   },
-  measure : '',
-  inventory : {
+
+  overviewTable: {
+    yearQuarter: {
+      year:    null,
+      quarter: null,
+    },
+    sortField: 'measures',
+  },
+  
+  inventory: {
     raw: {},
     ratiosByFirmage: {},
   },
-  focusedLineGraph: 'qwi-rawData-linegraph',
-  overviewTableSortField: 'measure',
 }
 
 
 
-// CONSIDER: cloneDeep may be more costly than it's worth.
-const insertNewData = (state, action) => {
-  //let newState = _.merge(_.cloneDeep(state), action.payload)
-  let newState = _.merge(_.clone(state), action.payload)
-  console.log(newState)
-  return newState
-}
-
-
-// CONSIDER: cloneDeep may be more costly than it's worth.
-const setStateField = (field, state, action) => 
-  //_.isEqual(state[field], action.payload[field]) ? state : _.merge(_.cloneDeep(state), action.payload)
-  _.isEqual(state[field], action.payload[field]) ? state : _.merge(_.clone(state), action.payload)
+// CONSIDER: Mutates state, but cloneDeep may be more costly than it's worth.
+const setStateField = (state, fieldPath, fieldValue) => 
+  _.isEqual(_.get(state, fieldPath), fieldValue) ? state : _.set(_.clone(state), fieldPath, fieldValue)
 
    
 const handleActionError = (state, action) => {
@@ -54,34 +61,61 @@ const handleActionError = (state, action) => {
   return state
 }
 
-const handleQuarterChange = (state, action) => {
-  let quarter = action.payload.quarter
 
-console.log(quarter)
+const handleLineGraphYearQuarterChange = (state, action) => {
 
-  if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, quarter.yr, quarter.qrt]))) {
-    return setStateField('quarter', state, action)
+  let yearQuarter = action.payload.yearQuarter
+
+  if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, yearQuarter.year, yearQuarter.quarter]))) {
+    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', action.payload.yearQuarter)
   }
 
   return state
 }
 
 
+const updateInventory = (dataType, value, state, action) => {
+  let path = ['inventory', dataType, action.payload.msa, action.payload.measure]
+
+  return (_.get(state, path) === value) ? state : _.set(_.clone(state), path, value)
+}
+
+
+const receiveData = (dataType, state, action) => {
+  let updatedState = updateInventory(dataType, 'RECEIVED', state, action)
+
+  return (state === updatedState) ? state : _.merge(updatedState, { data: { [dataType]: action.payload.data } })
+}
+
+
+const setMSA = (state, action) => setStateField(state, 'msa', action.payload.msa)
+
+const setMeasure = (state, action) => setStateField(state, 'measure', action.payload.measure)
+
+const setFocusedLineGraph = (state, action) => 
+        setStateField(state, 'lineGraphs.focused', action.payload.focusedGraph)
+
+const setOverviewTableSortField = (state, action) => 
+        setStateField(state, 'overviewTable.sortField', action.payload.sortField)
+
+
+
 export const ACTION_HANDLERS = {
+  [QWI_MSA_CHANGE]: setMSA,
 
-  [QWI_DATA_REQUESTED]: setStateField.bind(null, 'inventory'),
+  [QWI_MEASURE_CHANGE]: setMeasure,
 
-  [QWI_DATA_RECEIVED]: insertNewData,
+  [QWI_RATIOS_BY_FIRMAGE_DATA_REQUESTED]: updateInventory.bind(null, 'ratiosByFirmage', 'REQUESTED'),
+  [QWI_RATIOS_BY_FIRMAGE_DATA_RECEIVED]: receiveData.bind(null, 'ratiosByFirmage'),
 
-  [QWI_MSA_CHANGE]: setStateField.bind(null, 'msa'),
+  [QWI_RAW_DATA_REQUESTED]: updateInventory.bind(null, 'raw', 'REQUESTED'),
+  [QWI_RAW_DATA_RECEIVED]: receiveData.bind(null, 'raw'),
 
-  [QWI_LINEGRAPH_FOCUS_CHANGE]: setStateField.bind(null, 'focusedLineGraph'),
+  [QWI_LINEGRAPH_FOCUS_CHANGE]: setFocusedLineGraph,
 
-  [QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE]: setStateField.bind(null, 'overviewTableSortField'),
+  [QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE]: setOverviewTableSortField,
 
-  [QWI_QUARTER_CHANGE]: handleQuarterChange,
-
-  [QWI_MEASURE_CHANGE]: setStateField.bind(null, 'measure'),
+  [QWI_LINEGRAPH_YEARQUARTER_CHANGE]: handleLineGraphYearQuarterChange,
 
   [QWI_ACTION_ERROR]: handleActionError,
 }

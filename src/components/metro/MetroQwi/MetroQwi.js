@@ -2,11 +2,12 @@
 
 import React from 'react'
 import { Link } from 'react-router'
+import Select from 'react-select'
 
 
 import LineGraph from '../../../components/graphs/SimpleLineGraph'
 import StartupsNaicsTooltip from './StartupsNaicsTooltip'
-import StartupsRadarChart from './StartupsRadarChart'
+import RadarChart from '../../../components/vis/RadarChart/RadarChart'
 import StartupsOverviewTable from './StartupsOverviewTable'
 
 const graphMargin = {
@@ -16,6 +17,13 @@ const graphMargin = {
   bottom : 20,
 }
 
+let radarGraphOptions = {
+    w           : 190,
+    h           : 190,
+    ExtraWidthX : 130,
+    TranslateX  : 50,
+    color       : d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
+}
 
 
 const MetroQwi = props => {
@@ -49,7 +57,7 @@ console.log(props)
                              yAxis={true}
                              margin={graphMargin}
                              tooltip={true}
-                             quarterChangeListener={props.quarterChange} />
+                             quarterChangeListener={props.lineGraphYearQuarterChange} />
             </div>
 
             <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
@@ -57,12 +65,14 @@ console.log(props)
                     <LineGraph data={props.lineGraphLQData}
                                key='qwi-lqData-linegraph'
                                uniq='qwi-lqData-linegraph'
-                               yFormat={y=>y}
                                xScaleType={'time'}
+                               xAxis={true}
+                               xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
                                yAxis={true}
+                               yFormat={y=>y}
                                margin={graphMargin}
                                tooltip={true}
-                               quarterChangeListener={props.quarterChange} />
+                               quarterChangeListener={props.lineGraphYearQuarterChange} />
             </div>
           </div>
 
@@ -72,13 +82,47 @@ console.log(props)
           </div>
         </div>
 
+        <div className='row' style={{overflow:'hidden'}} >
+          <div className='col-xs-5'>
+            <strong>{`Share of by ${props.measure} by 0-1 year firms`}</strong>
+            <RadarChart divID='typeShare'
+                        data={props.shareByIndustryRadarGraphData}
+                        options={radarGraphOptions} />
+          </div>
+
+          <div className='col-xs-5'>
+            <strong>{`Share of by ${props.measure} by industry across firmages.`}</strong>
+            <RadarChart divID='typeQout'
+                        data={props.shareOfMetroTotalRadarGraphData}
+                        options={radarGraphOptions} />
+          </div>
+        </div>
+
+        <div className='row'>
+          <StartupsOverviewTable data={props.overviewTableData}
+                                 sortFieldChange={props.overviewTableSortFieldChange}/>
+        </div>
       </div>
     )
 }
+          //<div className='col-xs-3'>
 
-        //<StartupsRadarChart/>
+            //<div className='row'>
+              //<Select
+                  //clearable={false}
+                  //options={props.yearQuarterStringList}
+                  //value={props.radarChartCurrentYear}
+                  //onChange={props.radarChartCurrentYearChange} />
+            //</div>
 
-        //<StartupsOverviewTable sortFieldChange={props.overviewTableSortFieldChange}/>
+            //<div className='row'>
+            //</div>
+
+          //</div>
+
+
+
+
 
 function requestData (props) {
     if (props.loadData) { props.loadData(props.msa, props.measure) }
