@@ -26,11 +26,13 @@ export const StartupsOverviewTable =  (props) => (
 
     <tbody>
       {
-        _.map(props.data, (d) => (
-            <tr key={`qwi-overviewTable-${d.title}-row`}>
-              { _.map(d, (val) => (<td>{val.toLocaleString()}</td>)) }
-            </tr>
-          ))
+        _.map(props.data, (d) => {
+            if (d.naics === undefined) { console.log('#######\n', d)}
+            return (
+            <tr key={`qwi-overviewTable-${d.naics}-row`}>
+              { _.map(d, (val) => (<td>{(val === null) ? null : val.toLocaleString()}</td>)) }
+            </tr>)
+          })
       }
     </tbody>
   

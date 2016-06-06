@@ -86,14 +86,14 @@ console.log(props)
           <div className='col-xs-5'>
             <strong>{`Share of by ${props.measure} by 0-1 year firms`}</strong>
             <RadarChart divID='typeShare'
-                        data={props.shareByIndustryRadarGraphData}
+                        data={props.shareOfMetroTotalRadarGraphData}
                         options={radarGraphOptions} />
           </div>
 
           <div className='col-xs-5'>
             <strong>{`Share of by ${props.measure} by industry across firmages.`}</strong>
             <RadarChart divID='typeQout'
-                        data={props.shareOfMetroTotalRadarGraphData}
+                        data={props.shareByIndustryRadarGraphData}
                         options={radarGraphOptions} />
           </div>
         </div>
