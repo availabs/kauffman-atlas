@@ -263,7 +263,6 @@ export class NationalMap extends React.Component<void, Props, void> {
       data = props[(props.activeComponent)]
     }
 
-    console.log("drawgraph data",data)
     svg.selectAll(".msa")
       .data(metrosGeo.features)
       .enter().append('path')

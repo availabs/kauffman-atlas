@@ -20,9 +20,23 @@ export class LineGraph extends React.Component<void, Props, void> {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph){
+    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros)){
       this._renderGraph(nextProps);
     }
+  }
+
+  _metroChange (oldMetros,newMetros){
+    if(oldMetros.length == newMetros.length){
+      //Check to see if they are
+      for(var i=0; i<oldMetros.length; i++){
+        if(oldMetros[i] != newMetros[i]){
+          return true;
+        }
+      }
+      //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
+      return false; 
+    }
+      return true;
   }
 
   _msaClick (d) {
@@ -43,10 +57,10 @@ export class LineGraph extends React.Component<void, Props, void> {
         var data = props.data[props.dataType];
     }
 
-    if(this.props.metros){
+    if(props.metros){
       data = data.filter(d => {
         var inBucket = false;
-        this.props.metros.forEach(msaId => {
+        props.metros.forEach(msaId => {
           if(d.key == msaId){
             inBucket = true;
           } 
