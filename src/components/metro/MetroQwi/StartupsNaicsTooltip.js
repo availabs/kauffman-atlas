@@ -27,7 +27,7 @@ const getRows = (data) =>
            </td>
 
            <td style={innerStyle}>
-             {indData.value.toLocaleString()}
+             {(indData.value) ? indData.value.toLocaleString() : indData.value}
            </td>
          </tr>)
      )

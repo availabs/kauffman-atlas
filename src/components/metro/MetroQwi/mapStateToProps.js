@@ -43,8 +43,6 @@ const getData = (state, ownProps) => {
     }
   }
 
-console.log(tooltipYearQuarter)
-
   let rawDataYears = Object.keys(rawData).sort()
 
   let lineGraphRawData = []
@@ -60,32 +58,56 @@ console.log(tooltipYearQuarter)
       values : [],
     }
 
+    let previousValue = 0
+
     rawDataYears.forEach(year => {
-      [1,2,3,4].forEach(quarter => {
+      Object.keys(rawData[year]).forEach(quarter => {
 
         let measureValue = _.get(rawData, [year, quarter, naics, /*firmage*/'1', measure], null)
 
-        if (measureValue === null) { return }
+
+        let filledNull = false
+
+        if (measureValue === null) {
+          measureValue = previousValue
+
+          filledNull = true
+        }
+        previousValue = measureValue
+
 
         let month = 2 + 3*(quarter-1)
         let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
 
-        naicsData.values.push({
-          key    : quarterCentralMonth,
-          values : {
+
+        let lastLineGraphLQDataElem = _.last(lineGraphRawData)
+        if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
+            (_.get(lastLineGraphLQDataElem, 'filledNull') !== filledNull)) {
+
+              lineGraphRawData.push({
+                color: color,
+                key: naics,
+                values: [],
+                filledNull,
+              })
+        }
+
+        _.last(lineGraphRawData).values.push({
+          key: quarterCentralMonth,
+          values: {
             x: quarterCentralMonth,
             y: measureValue,
-          }
+          },
         }) 
 
-        if ((+year === +tooltipYearQuarter.year) && 
-            (+quarter === +tooltipYearQuarter.quarter)) {
+        if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
 
-              let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], null)
-              let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], null)
+              let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
+              let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], Number.POSITIVE_INFINITY)
 
+              _.set(overviewTableData, [naics, 'naics'], naics)
               _.set(overviewTableData, [naics, 'title'], industryTitles[naics])
-              _.set(overviewTableData, [naics, 'measureValue'], metroTotal)
+              _.set(overviewTableData, [naics, 'measureValue'], measureValue)
               _.set(overviewTableData, [naics, 'metroTotal'], metroTotal)
               _.set(overviewTableData, [naics, 'allFirmages'], allFirmages)
 
@@ -104,8 +126,6 @@ console.log(tooltipYearQuarter)
         }
       })
     })
-
-    if (naicsData.values.length) { lineGraphRawData.push(naicsData) }
   })
 
 
@@ -123,31 +143,48 @@ console.log(tooltipYearQuarter)
 
     let color = colors(i % 20)
 
-    let naicsRatioData = {
-      color  : color,
-      key    : naics,
-      values : [],
-    }
+    let previousValue = 0
 
     ratiosDataYears.forEach(year => {
-      [1,2,3,4].forEach(quarter => {
+      Object.keys(ratiosData[year]).forEach(quarter => {
 
         let msaRatio = _.get(ratiosData, [year, quarter, naics, /*firmage*/'1', `${measure}_ratio`], null)
 
-        if (msaRatio === null) { return }
+        let filledNull = false
+        if (msaRatio === null) {
+          msaRatio = previousValue
 
-        let nationalRatio = _.get(nationalRatiosData, [year, quarter, naics, /*firmage*/'1', `${measure}_ratio`], null)
-        let locationQuotient = msaRatio/nationalRatio
+          filledNull = true
+        }
+        previousValue = msaRatio
+
+        let nationalRatio = _.get(nationalRatiosData, 
+                                  [year, quarter, naics, /*firmage*/'1', 
+                                  `${measure}_ratio`], Number.POSITIVE_INFINITY)
+
+        let locationQuotient = msaRatio/nationalRatio || 0
 
         let month = 2 + 3*(quarter-1)
         let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
 
-        naicsRatioData.values.push({
-          key    : quarterCentralMonth,
-          values : {
+        let lastLineGraphLQDataElem = _.last(lineGraphLQData)
+        if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
+            (_.get(lastLineGraphLQDataElem, 'filledNull') !== filledNull)) {
+
+              lineGraphLQData.push({
+                color: color,
+                key: naics,
+                values: [],
+                filledNull,
+              })
+        }
+
+        _.last(lineGraphLQData).values.push({
+          key: quarterCentralMonth,
+          values: {
             x: quarterCentralMonth,
             y: locationQuotient,
-          }
+          },
         }) 
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
@@ -157,31 +194,29 @@ console.log(tooltipYearQuarter)
             value: msaRatio,
           })
           
+          _.set(overviewTableData, [naics, 'filledNull'], filledNull)
           _.set(overviewTableData, [naics, 'msaRatio'], msaRatio)
           _.set(overviewTableData, [naics, 'nationalRatio'], nationalRatio)
           _.set(overviewTableData, [naics, 'locationQuotient'], locationQuotient)
+
 
           if (focusedLineGraph === 'qwi-lqData-linegraph') {
             tooltipData.push({
               color: color,
               key: naics,
               value: locationQuotient,
+              filledNull,
             })
           }
         }
       })
     })
-
-    if (naicsRatioData.values.length) { lineGraphLQData.push(naicsRatioData) }
   })
 
-  let selectorYearQuarterList = _(rawData)
-                               .map((quarterlyData, year) => _.map(quarterlyData, (byNaics, quarter) => ({ label: `${year}-Q${quarter}`, value: { year, quarter }})))
-                               .flatMap()
-                               .sortBy('label')
-                               .value()
+  let mapper = (quarterlyData, year) => 
+                  _.map(quarterlyData, (byNaics, quarter) => ({label: `${year}-Q${quarter}`, value: {year, quarter}}))
 
-  console.log(overviewTableData)
+  let selectorYearQuarterList = _(rawData).map(mapper).flatMap().sortBy('label').value()
 
   return {
     lineGraphRawData : lineGraphRawData.length ? lineGraphRawData : null,
