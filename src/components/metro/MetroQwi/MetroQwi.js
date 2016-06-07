@@ -83,9 +83,13 @@ console.log(props)
         </div>
 
         <div className='row' style={{overflow:'hidden'}} >
-          <div className='col-xs-5'>
+          <div className='col-xs-5' 
+               onWheel={(e) => { 
+                          props.radarGraphFirmageChange((e.deltaY) < 0 ? 1 : -1)
+                          e.preventDefault() 
+                        }}>
             <strong>{`Q${props.yearQuarter.quarter}-${props.yearQuarter.year} ` +
-                     `Share of by ${props.measure} by 0-1 year firms`}</strong>
+                     `Share of ${props.measure} by industry for ${props.radarGraphFirmageLabel} firms`}</strong>
             <RadarChart divID='typeShare'
                         data={props.shareOfMetroTotalRadarGraphData}
                         options={radarGraphOptions} />
@@ -132,5 +136,3 @@ function requestData (props) {
 
     return (<span>loading</span>)
 }
-
-        
