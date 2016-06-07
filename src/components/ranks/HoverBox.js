@@ -66,12 +66,14 @@ export class HoverBox extends React.Component<void, Props, void> {
       console.log('isData', isData)
       let data = isData && isData.values ? isData.values : []
       console.log('test data', data)
+
+      let score = {};
       if(cat == 'diversityincomebasedonchildhood'){
-        var score = data.filter(d => 
+        score = data.filter(d => 
           { return d.x === 'lowIncome' })[0] || {}
       }
       else{
-        var score = data.filter(d => 
+        score = data.filter(d => 
           { return d.x === year })[0] || {}        
       }
 
