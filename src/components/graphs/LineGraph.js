@@ -326,9 +326,6 @@ export class LineGraph extends React.Component<void, Props, void> {
         d3.select(d.city.line).style("stroke","#000000")
         d3.select(d.city.line).style("opacity","2")
 
-        //props.onMouseover.bind(d);
-        //props.onMouseover(d)
-        
         var popText = "",
             name;
 

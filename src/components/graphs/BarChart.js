@@ -24,8 +24,8 @@ export class BarChart extends React.Component<void, Props, void> {
     }
 
     _msaClick (d) {
-    console.log(d.key);
-    this.context.router.push('/metro/'+d.key);   
+        console.log(d.key);
+        this.context.router.push('/metro/'+d.key);   
     }
 
     _renderGraph () {
@@ -289,6 +289,11 @@ export class BarChart extends React.Component<void, Props, void> {
         .style("font-size",".75em");
 
         function mouseover(d) {
+            let id = {id: d.city.key}
+            if(scope.props.onMouseover) {
+              scope.props.onMouseover(id)
+            }
+            
             var popText = "",
                 name;
 
@@ -302,19 +307,12 @@ export class BarChart extends React.Component<void, Props, void> {
                 rect.attr("width",(x0.rangeBand()*2));
                 popText += " | " + d.y;
             }
-            else{
-                rect.style("fill","#000000");
-                rect.attr("width",(x1.rangeBand()*5));
-                if(scope.props.dataType == "composite" || scope.props.dataType == "highIncome"){
-                    popText += " High Income: " + percFormat(d.city.values[1].y)
-                }
-                if(scope.props.dataType == "composite" || scope.props.dataType == "lowIncome"){
-                    popText += " Low Income: " + percFormat(d.city.values[0].y);
-                }                
-            }
 
-          focus.attr("transform", "translate(10,-5)");
-          focus.select("text").text(popText);
+            focus.attr("transform", "translate(10,-5)");
+            focus.select("text").text(popText);
+
+
+
         }
 
         function click(d){ 
