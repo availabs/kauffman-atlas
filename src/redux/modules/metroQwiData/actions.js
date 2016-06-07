@@ -6,7 +6,7 @@ import { industryTitles } from '../../../support/qwi'
 const apiServerAddress = `${apiConfig.hostname}${(apiConfig.port) ? (':' + apiConfig.port) : ''}`
 
 const allQwiIndustryCodes = Object.keys(industryTitles).concat(['00']).map(code => _.padStart(code, 5, '0')).sort()
-const allQwiFirmageCodes = _.range(0, 5)
+const allQwiFirmageCodes = _.range(0, 6)
 
 
 export const QWI_MSA_CHANGE = 'QWI_MSA_CHANGE'
@@ -22,7 +22,7 @@ export const QWI_LINEGRAPH_FOCUS_CHANGE = 'QWI_LINEGRAPH_FOCUS_CHANGE'
 export const QWI_LINEGRAPH_YEARQUARTER_CHANGE = 'QWI_LINEGRAPH_YEARQUARTER_CHANGE'
 
 export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
-
+export const QWI_RADAR_GRAPH_FIRMAGE_CHANGE = 'QWI_RADAR_GRAPH_FIRMAGE_CHANGE'
 export const QWI_ACTION_ERROR = 'QWI_ACTION_ERROR'
 
 
@@ -99,6 +99,10 @@ export const overviewTableSortFieldChange = (sortField) => ({
   payload : { sortField, }
 })
 
+export const radarGraphFirmageChange = (delta) => ({
+  type: QWI_RADAR_GRAPH_FIRMAGE_CHANGE,
+  payload: { delta },
+})
 
 
 export const loadData = (msa, measure) => (dispatch, getState) => {

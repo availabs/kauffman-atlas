@@ -1,2 +1,3 @@
-export msaToFips from './msaToFips.js'
-export industryTitles from './industryTitles.js'
+export msaToFips from './msaToFips'
+export industryTitles from './industryTitles'
+export firmageLabels from './firmageLabels'

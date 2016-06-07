@@ -2,7 +2,7 @@
 
 import d3 from 'd3'
 
-import { industryTitles } from '../../../support/qwi'
+import { industryTitles, firmageLabels } from '../../../support/qwi'
 
 
 const colors = d3.scale.category20()
@@ -24,6 +24,9 @@ const getData = (state, ownProps) => {
     
             return null 
   }
+
+  let radarGraphFirmage = state.radarGraphs.firmage
+  let radarGraphFirmageLabel = firmageLabels[radarGraphFirmage]
 
   let overviewTableData = {}
 
@@ -206,10 +209,16 @@ const getData = (state, ownProps) => {
         _.last(lineGraphLQData).values.push(elem) 
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
+          let radarGraphFirmageRatio = 
+                _.get(ratiosData, [year, quarter, naics, radarGraphFirmage, `${measure}_ratio`], null)
+
+          console.log('ratiosData:', ratiosData)
+          console.log('radarGraphFirmage:', radarGraphFirmage)
+          console.log('radarGraphFirmageRatio:', radarGraphFirmageRatio)
 
           shareOfMetroTotalRadarGraphData.push({
             axis: industryTitles[naics].substring(0,6),
-            value: msaRatio,
+            value: radarGraphFirmageRatio,
           })
           
           _.set(overviewTableData, [naics, 'filledNull'], filledNull)
@@ -247,6 +256,7 @@ console.log(lineGraphLQData)
     shareOfMetroTotalRadarGraphData: [shareOfMetroTotalRadarGraphData, shareOfMetroTotalRadarGraphData],
     overviewTableData,
     yearQuarter: tooltipYearQuarter,
+    radarGraphFirmageLabel,
   }
 }
 
