@@ -66,8 +66,15 @@ export class HoverBox extends React.Component<void, Props, void> {
       console.log('isData', isData)
       let data = isData && isData.values ? isData.values : []
       console.log('test data', data)
-      let score = data.filter(d => 
-        { return d.x === year })[0] || {}
+      if(cat == 'diversityincomebasedonchildhood'){
+        var score = data.filter(d => 
+          { return d.x === 'lowIncome' })[0] || {}
+      }
+      else{
+        var score = data.filter(d => 
+          { return d.x === year })[0] || {}        
+      }
+
 
         return (
           <tr>
@@ -82,6 +89,9 @@ export class HoverBox extends React.Component<void, Props, void> {
   render () {
     //console.log('the metro',)
     if(!this.props.metroId) return (<span />)
+
+    let year = 2012;
+
     return (
       <div style={{margin:0, marginTop:10, backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5', borderRadius: 3}}>
         <div className = 'row'>
@@ -100,7 +110,7 @@ export class HoverBox extends React.Component<void, Props, void> {
             </tr>
           </thead>
           <tbody>
-            {this.renderCombinedScores(this.props.activeComponent, 2012)}
+            {this.renderCombinedScores(this.props.activeComponent, year)}
           </tbody>
         </table>
       </div>

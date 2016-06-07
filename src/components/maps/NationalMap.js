@@ -116,6 +116,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     else{
       var data = props[(props.activeComponent)]
     }
+
     d3.selectAll("."+classes['msa'])
       .style("fill",function(d){   
         var color = "chartreuse"  
