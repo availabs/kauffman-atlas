@@ -70,7 +70,7 @@ export class HoverBox extends React.Component<void, Props, void> {
       let score = {};
       if(cat == 'diversityincomebasedonchildhood'){
         score = data.filter(d => 
-          { return d.x === 'lowIncome' })[0] || {}
+          { return d.x === 'combined' })[0] || {}    
       }
       else{
         score = data.filter(d => 

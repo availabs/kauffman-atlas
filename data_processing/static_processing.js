@@ -362,7 +362,7 @@ function _processData(props) {
 }
 function _rankCities(cities,dataset){
   if(dataset == "opportunity"){
-    var years = ['lowIncome','highIncome'];
+    var years = ['lowIncome','highIncome','combined'];
   }
   else{
     var years = d3.range(
@@ -573,6 +573,7 @@ function _processequalOpp(data){
       if(data[msaId]["highIncome"] !== null && data[msaId]["lowIncome"] !== null){
           msaGains[msaId] = {};
           msaGains[msaId] = data[msaId];
+          msaGains[msaId]['combined'] = (msaGains[msaId]['lowIncome'] + msaGains[msaId]['highIncome'])/2 
       }
 
   })
@@ -722,40 +723,34 @@ function _processDiversityComposite(opportunity,foreignbornObj){
 
   var foreignborn = foreignbornObj['relative'];
 
-  var lowOpp = opportunity.map((city) => {
+  var opp = opportunity.map((city) => {
+    let newCity = {
+      name:city.name,
+      key:city.key,
+      color:city.color,
+      values:[]
+    }
     var newValues = city.values.filter((value) => {
-      return value.x == "lowIncome"
+      return value.x == "combined"
     })
-
-    return {color:city.color,key:city.key,name:city.name,values:newValues}
-
-  })
-  var highOpp = opportunity.map((city) => {
-    var newValues = city.values.filter((value) => {
-      return value.x == "highIncome"
-    })
-
-    return {color:city.color,key:city.key,name:city.name,values:newValues}
-
+    newCity.values = newValues;
+    return newCity;
   })
 
-  var cityFilteredLowOpp = [],
-      cityFilteredHighOpp = [],
+  var cityFilteredOpp = [],
       cityFilteredForeignborn = [];
   var compositeCityRanks = [];
 
-  for(var i=0; i<lowOpp.length; i++){
+  for(var i=0; i<opp.length; i++){
     for(var j=0; j<foreignborn.length; j++){
-      if(lowOpp[i].key == foreignborn[j].key){
-        cityFilteredLowOpp.push(lowOpp[i]); 
-        cityFilteredHighOpp.push(highOpp[i]);
+      if(opp[i].key == foreignborn[j].key){
+        cityFilteredOpp.push(opp[i]); 
         cityFilteredForeignborn.push(foreignborn[j])
       }      
     }
   }
 
-  cityFilteredLowOpp.sort(_sortMsaCities());
-  cityFilteredHighOpp.sort(_sortMsaCities());
+  cityFilteredOpp.sort(_sortMsaCities());
   cityFilteredForeignborn.sort(_sortMsaCities());
 
   cityFilteredForeignborn.forEach(metroArea => {
@@ -764,16 +759,11 @@ function _processDiversityComposite(opportunity,foreignbornObj){
     })
   })
 
-  var lowOppScale = d3.scale.linear()
+  var oppScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(cityFilteredLowOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(cityFilteredLowOpp, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+    .domain(      [d3.min(cityFilteredOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                  d3.max(cityFilteredOpp, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                   )
-  var highOppScale = d3.scale.linear()
-    .range([0,100])
-    .domain(      [d3.min(cityFilteredHighOpp, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(cityFilteredHighOpp, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
-                  )  
   var foreignBornScale = d3.scale.linear()
   .range([0,100])
   .domain(      [d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
@@ -785,11 +775,10 @@ function _processDiversityComposite(opportunity,foreignbornObj){
 
   for(var i=0; i<cityFilteredForeignborn.length;i++){
     var resultValues = [];
-    if(cityFilteredForeignborn[i].key == cityFilteredLowOpp[i].key){
-      if(cityFilteredHighOpp[i].values.length > 0 && cityFilteredLowOpp[i].values.length > 0){
+    if(cityFilteredForeignborn[i].key == cityFilteredOpp[i].key){
+      if(cityFilteredOpp[i].values.length > 0){
         for(var j=0; j<cityFilteredForeignborn[i]['values'].length; j++){
-          //console.log( foreignBornScale(cityFilteredForeignborn[i].values[j].y), highOppScale(cityFilteredHighOpp[i].values[0].y), lowOppScale(cityFilteredLowOpp[i].values[0].y))
-          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + ((highOppScale(cityFilteredHighOpp[i].values[0].y) + lowOppScale(cityFilteredLowOpp[i].values[0].y))/2) )/2)})      
+          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + oppScale(cityFilteredOpp[i].values[0].y))/2)})      
         }         
       }
 
@@ -1079,8 +1068,6 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
   yearCityFilteredRawInc.sort(_sortMsaCities());
   yearCityFilteredRelInc.sort(_sortMsaCities());
   yearCityFilteredAnnualChurn.sort(_sortMsaCities());
-
-console.log(yearCityFilteredIrsNet.length,yearCityFilteredAnnualChurn.length)
 
   for(var i=0; i<yearCityFilteredIrsNet.length;i++){
     var resultValues = [];
