@@ -19,6 +19,7 @@ export const QWI_RAW_DATA_REQUESTED = 'QWI_RAW_DATA_REQUESTED'
 export const QWI_RAW_DATA_RECEIVED = 'QWI_RAW_DATA_RECIEVED'
 
 export const QWI_LINEGRAPH_FOCUS_CHANGE = 'QWI_LINEGRAPH_FOCUS_CHANGE'
+export const QWI_YEARQUARTER_WHEEL_CHANGE = 'QWI_YEARQUARTER_WHEEL_CHANGE'
 export const QWI_LINEGRAPH_YEARQUARTER_CHANGE = 'QWI_LINEGRAPH_YEARQUARTER_CHANGE'
 
 export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
@@ -81,6 +82,14 @@ export const measureChange = (measure) => ({
   payload : { measure, }
 })
 
+
+
+export const yearQuarterWheelChange = (delta) => ({
+  type : QWI_YEARQUARTER_WHEEL_CHANGE,
+  payload : { 
+    delta, 
+  },
+})
 
 export const lineGraphYearQuarterChange = (dateObj) => ({
   type : QWI_LINEGRAPH_YEARQUARTER_CHANGE,
