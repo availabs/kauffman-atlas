@@ -42,8 +42,8 @@ const renderVisualizations = (props) => (
   <div className='container'>
     <StickyContainer>    
       <Sticky className="foo" 
-              style={{backgroundColor:'white', opacity: 1, zIndex:100}} 
-              stickyStyle={{backgroundColor:'white', opacity: 1, zIndex:100}}>
+              style={{color:'white', backgroundColor:'#7D8FAF', opacity: 1, zIndex:100}} 
+              stickyStyle={{color:'white', backgroundColor:'#7D8FAF', opacity: 1, zIndex:100}}>
 
         <div className='row'>
           <div className='col-xs-3'>
