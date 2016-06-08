@@ -3,12 +3,14 @@
 import React from 'react'
 import { Link } from 'react-router'
 import Select from 'react-select'
+import {StickyContainer,Sticky} from 'react-sticky'
 
 
 import LineGraph from '../../../components/graphs/SimpleLineGraph'
 import StartupsNaicsTooltip from './StartupsNaicsTooltip'
 import RadarChart from '../../../components/vis/RadarChart/RadarChart'
 import StartupsOverviewTable from './StartupsOverviewTable'
+
 import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
 
 const numFormatter = kmgtFormatter.bind(null, 0)
@@ -37,77 +39,96 @@ const radarGraphOptions = {
 
 const renderVisualizations = (props) => (
   <div className='container'>
-    
-    <div className='row' style={{overflow:'hidden'}} >
+    <StickyContainer>    
+      <Sticky className="foo" 
+              style={{backgroundColor:'white', opacity: 1, zIndex:100}} 
+              stickyStyle={{backgroundColor:'white', opacity: 1, zIndex:100}}>
 
-      <div className='col-xs-8'>
-        <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-rawData-linegraph')}>
+        <div className='row'>
+          <div className='col-xs-3'>
+            <strong onWheel={(e) => { 
+                             props.yearQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
+                             e.preventDefault()}}>
 
-          <LineGraph data={props.lineGraphRawData}
-                     key='qwi-rawData-linegraph'
-                     uniq='qwi-rawData-linegraph'
-                     yFormat={(props.measureIsCurrency) ? dollarFormatter : numFormatter}
-                     xScaleType={'time'}
-                     yAxis={true}
-                     margin={graphMargin}
-                     tooltip={true}
-                     quarterChangeListener={props.lineGraphYearQuarterChange} />
+                {`Q${props.yearQuarter.quarter}-${props.yearQuarter.year}`}</strong>
+          </div>
+          <div className='col-xs-3'>
+            <strong onWheel={(e) => { 
+                             props.radarGraphFirmageChange((e.deltaY) < 0 ? 1 : -1)
+                             e.preventDefault()}}>
+
+                {`Firmage: ${props.radarGraphFirmageLabel}`}
+            </strong>
+          </div>
+        </div>
+      </Sticky>
+      <div className='row' style={{overflow:'hidden'}} >
+
+        <div className='col-xs-8'>
+          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-rawData-linegraph')}>
+
+            <LineGraph data={props.lineGraphRawData}
+                       key='qwi-rawData-linegraph'
+                       uniq='qwi-rawData-linegraph'
+                       yFormat={(props.measureIsCurrency) ? dollarFormatter : numFormatter}
+                       xScaleType={'time'}
+                       yAxis={true}
+                       margin={graphMargin}
+                       tooltip={true}
+                       quarterChangeListener={props.lineGraphYearQuarterChange} />
+          </div>
+
+          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
+
+            <LineGraph data={props.lineGraphLQData}
+                       key='qwi-lqData-linegraph'
+                       uniq='qwi-lqData-linegraph'
+                       xScaleType={'time'}
+                       xAxis={true}
+                       xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                       yAxis={true}
+                       yFormat={numFormatter}
+                       margin={graphMargin}
+                       tooltip={true}
+                       quarterChangeListener={props.lineGraphYearQuarterChange} />
+          </div>
         </div>
 
-        <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
-
-          <LineGraph data={props.lineGraphLQData}
-                     key='qwi-lqData-linegraph'
-                     uniq='qwi-lqData-linegraph'
-                     xScaleType={'time'}
-                     xAxis={true}
-                     xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
-                     yAxis={true}
-                     yFormat={numFormatter}
-                     margin={graphMargin}
-                     tooltip={true}
-                     quarterChangeListener={props.lineGraphYearQuarterChange} />
+        <div className='col-xs-4'>
+            <StartupsNaicsTooltip data={props.tooltipData}
+                                  measureIsCurrency={
+                                    (props.focusedLineGraph === 'qwi-rawData-linegraph') && props.measureIsCurrency
+                                  }
+                                  uniq={props.field} />
         </div>
       </div>
 
-      <div className='col-xs-4'>
-          <StartupsNaicsTooltip data={props.tooltipData}
-                                measureIsCurrency={
-                                  (props.focusedLineGraph === 'qwi-rawData-linegraph') && props.measureIsCurrency
-                                }
-                                uniq={props.field} />
-      </div>
-    </div>
+      <div className='row' style={{overflow:'hidden', 'z-index': 10}} >
+        <div className='col-xs-5'>
+          <strong>
+          
+              {`Share of ${props.measure} by industry for ${props.radarGraphFirmageLabel} firms`}
+          </strong>
+          <RadarChart divID='typeShare'
+                      data={props.shareOfMetroTotalRadarGraphData}
+                      options={radarGraphOptions} />
+        </div>
 
-    <div className='row' style={{overflow:'hidden'}} >
-      <div className='col-xs-5'>
-        <strong onWheel={(e) => { 
-                           props.radarGraphFirmageChange((e.deltaY) < 0 ? 1 : -1)
-                           e.preventDefault() 
-                         }}>
-        
-            {`Q${props.yearQuarter.quarter}-${props.yearQuarter.year} ` +
-                 `Share of ${props.measure} by industry for ${props.radarGraphFirmageLabel} firms`}
-        </strong>
-        <RadarChart divID='typeShare'
-                    data={props.shareOfMetroTotalRadarGraphData}
-                    options={radarGraphOptions} />
+        <div className='col-xs-5'>
+          <strong>
+            {`Share of by ${props.measure} by industry across firmages.`}
+          </strong>
+          <RadarChart divID='typeQout'
+                      data={props.shareByIndustryRadarGraphData}
+                      options={radarGraphOptions} />
+        </div>
       </div>
 
-      <div className='col-xs-5'>
-        <strong>
-          {`Share of by ${props.measure} by industry across firmages.`}
-        </strong>
-        <RadarChart divID='typeQout'
-                    data={props.shareByIndustryRadarGraphData}
-                    options={radarGraphOptions} />
+      <div className='row'>
+        <StartupsOverviewTable data={props.overviewTableData}
+                               sortFieldChange={props.overviewTableSortFieldChange} />
       </div>
-    </div>
-
-    <div className='row'>
-      <StartupsOverviewTable data={props.overviewTableData}
-                             sortFieldChange={props.overviewTableSortFieldChange} />
-    </div>
+    </StickyContainer>
   </div>
 )
 

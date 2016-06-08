@@ -10,6 +10,7 @@ import {
   QWI_RAW_DATA_RECEIVED,
   QWI_LINEGRAPH_FOCUS_CHANGE,
   QWI_LINEGRAPH_YEARQUARTER_CHANGE,
+  QWI_YEARQUARTER_WHEEL_CHANGE,
   QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
   QWI_RADAR_GRAPH_FIRMAGE_CHANGE,
   QWI_ACTION_ERROR,
@@ -78,6 +79,82 @@ const handleLineGraphYearQuarterChange = (state, action) => {
   return state
 }
 
+const handleYearQuarterWheelChange = (state, action) => {
+
+  let msa = state.msa
+  let measure = state.measure
+
+  let rawData = _.get(state, ['data', 'raw', msa])
+
+  let lastYearQuarterInData = (() => {
+    let year = _.max(Object.keys(rawData).map(y => +y))
+    let quarter = _.max(Object.keys(rawData[year]).map(q => +q))
+   
+    return { 
+      year,
+      quarter,
+    }
+  })()
+
+  let oldYearQuarter = state.lineGraphs.tooltip.yearQuarter
+
+  if (oldYearQuarter.year === null) {
+    oldYearQuarter = lastYearQuarterInData
+  }
+
+  let delta = action.payload.delta
+
+  if (delta < 0) {
+    let firstYearQuarterInData = (() => {
+      let year = _.min(Object.keys(rawData).map(y => +y))
+      let quarter = _.min(Object.keys(rawData[year]).map(q => +q))
+     
+      return { 
+        year,
+        quarter,
+      }
+    })()
+
+  
+    if (_.isEqual(oldYearQuarter, firstYearQuarterInData)) {
+      return state
+    }
+
+    let newYearQuarter = _.clone(oldYearQuarter)
+    
+
+    if (newYearQuarter.quarter > 1) {
+      newYearQuarter.quarter -= 1
+    }  else {
+      newYearQuarter.quarter = 4
+      newYearQuarter.year -= 1
+    }
+    
+    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', newYearQuarter)
+
+  }
+
+  if (delta > 0) {
+  
+    if (_.isEqual(oldYearQuarter, lastYearQuarterInData)) {
+      return state
+    }
+
+    let newYearQuarter = _.clone(oldYearQuarter)
+
+    if (newYearQuarter.quarter < 4) {
+      newYearQuarter.quarter += 1
+    }  else {
+      newYearQuarter.quarter = 1
+      newYearQuarter.year += 1
+    }
+    
+    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', newYearQuarter)
+
+  }
+
+
+}
 const handleRadarsChartFirmageChange = (state, action) => {
   let oldFirmage = parseInt(state.radarGraphs.firmage)
   let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
@@ -124,6 +201,8 @@ export const ACTION_HANDLERS = {
   [QWI_LINEGRAPH_FOCUS_CHANGE]: setFocusedLineGraph,
 
   [QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE]: setOverviewTableSortField,
+
+  [QWI_YEARQUARTER_WHEEL_CHANGE]: handleYearQuarterWheelChange,
 
   [QWI_LINEGRAPH_YEARQUARTER_CHANGE]: handleLineGraphYearQuarterChange,
 

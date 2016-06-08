@@ -65,7 +65,7 @@ const getData = (state, ownProps) => {
     rawDataYears.forEach(year => {
       Object.keys(rawData[year]).forEach(quarter => {
 
-        let measureValue = parseFloat(_.get(rawData, [year, quarter, naics, /*firmage*/'1', measure]))
+        let measureValue = parseFloat(_.get(rawData, [year, quarter, naics, radarGraphFirmage, measure]))
 
         measureValue = (!isNaN(measureValue)) ? measureValue : null
 
@@ -170,7 +170,7 @@ const getData = (state, ownProps) => {
     ratiosDataYears.forEach(year => {
       Object.keys(ratiosData[year]).forEach(quarter => {
 
-        let msaRatio = _.get(ratiosData, [year, quarter, naics, /*firmage*/'1', `${measure}_ratio`], null)
+        let msaRatio = _.get(ratiosData, [year, quarter, naics, radarGraphFirmage, `${measure}_ratio`], null)
 
         let filledNull = false
         if (msaRatio === null) {
@@ -181,7 +181,8 @@ const getData = (state, ownProps) => {
         previousRatioValue = msaRatio
 
         let nationalRatio = _.get(nationalRatiosData, 
-                                  [year, quarter, naics, /*firmage*/'1', 
+                                  [year, quarter, naics, radarGraphFirmage, 
+                                  //[year, quarter, naics, [>firmage<]'1', 
                                   `${measure}_ratio`], Number.POSITIVE_INFINITY)
 
         let locationQuotient = msaRatio/nationalRatio || 0
