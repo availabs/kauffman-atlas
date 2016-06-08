@@ -161,7 +161,8 @@ const handleYearQuarterWheelChange = (state, action) => {
 }
 const handleRadarsChartFirmageChange = (state, action) => {
   let oldFirmage = parseInt(state.radarGraphs.firmage)
-  let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
+  //let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
+  let newFirmage = (((((oldFirmage + action.payload.delta)%6)+6)%6)).toString()
   return setStateField(state, 'radarGraphs.firmage', newFirmage)
 }
 

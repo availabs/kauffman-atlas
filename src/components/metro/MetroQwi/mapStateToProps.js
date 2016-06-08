@@ -25,7 +25,7 @@ const getData = (state, ownProps) => {
             return null 
   }
 
-  let radarGraphFirmage = state.radarGraphs.firmage
+  let radarGraphFirmage = state.radarGraphs.firmage.toString()
   let radarGraphFirmageLabel = firmageLabels[radarGraphFirmage]
 
   let overviewTableData = {}
@@ -33,7 +33,7 @@ const getData = (state, ownProps) => {
   let focusedLineGraph = _.get(state, 'lineGraphs.focused')
   let tooltipData   = []
 
-  let rawData = state.data.raw[msa] // { [year]: { [quarter]: [naics]: { ...measures } } }
+  let rawData = state.data.raw[msa]
   
   let lastYearQuarterInData = (() => {
     let year = _.max(Object.keys(rawData).map(y => +y))
@@ -161,6 +161,7 @@ const getData = (state, ownProps) => {
   let shareOfMetroTotalRadarGraphData = []
 
 
+
   naicsCodes.forEach((naics, i) => {
 
     let color = colors(i % 20)
@@ -185,7 +186,15 @@ const getData = (state, ownProps) => {
                                   //[year, quarter, naics, [>firmage<]'1', 
                                   `${measure}_ratio`], Number.POSITIVE_INFINITY)
 
-        let locationQuotient = msaRatio/nationalRatio || 0
+        let locationQuotient = msaRatio/nationalRatio
+
+        if (radarGraphFirmage === '0') {
+          locationQuotient = 0
+        }
+
+        if (!Number.isFinite(locationQuotient)) {
+          locationQuotient = 0
+        }
 
         let month = 2 + 3*(quarter-1)
         let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
@@ -226,9 +235,11 @@ const getData = (state, ownProps) => {
           let radarGraphFirmageRatio = 
                 _.get(ratiosData, [year, quarter, naics, radarGraphFirmage, `${measure}_ratio`], null)
 
-          //console.log('ratiosData:', ratiosData)
-          //console.log('radarGraphFirmage:', radarGraphFirmage)
-          //console.log('radarGraphFirmageRatio:', radarGraphFirmageRatio)
+
+          if (radarGraphFirmage === '0') {
+console.log('((((((((((((((((((()))))))))))))))))))')
+            radarGraphFirmageRatio = 1
+          }
 
           shareOfMetroTotalRadarGraphData.push({
             axis: industryTitles[naics].substring(0,6),

@@ -79,20 +79,23 @@ const renderVisualizations = (props) => (
                        quarterChangeListener={props.lineGraphYearQuarterChange} />
           </div>
 
-          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
+          {
+            (props.radarGraphFirmageLabel === 'All Firm Ages') ? <div/> : (
+              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
 
-            <LineGraph data={props.lineGraphLQData}
-                       key='qwi-lqData-linegraph'
-                       uniq='qwi-lqData-linegraph'
-                       xScaleType={'time'}
-                       xAxis={true}
-                       xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
-                       yAxis={true}
-                       yFormat={floatFormatter}
-                       margin={graphMargin}
-                       tooltip={true}
-                       quarterChangeListener={props.lineGraphYearQuarterChange} />
-          </div>
+                <LineGraph data={props.lineGraphLQData}
+                           key='qwi-lqData-linegraph'
+                           uniq='qwi-lqData-linegraph'
+                           xScaleType={'time'}
+                           xAxis={true}
+                           xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                           yAxis={true}
+                           yFormat={floatFormatter}
+                           margin={graphMargin}
+                           tooltip={true}
+                           quarterChangeListener={props.lineGraphYearQuarterChange} />
+              </div>)
+          }
         </div>
 
         <div className='col-xs-4'>
@@ -104,7 +107,7 @@ const renderVisualizations = (props) => (
         </div>
       </div>
 
-      <div className='row' style={{overflow:'hidden', 'z-index': 10}} >
+      <div className='row' style={{overflow:'hidden', zIndex: 10}} >
         <div className='col-xs-5'>
           <strong>
           
