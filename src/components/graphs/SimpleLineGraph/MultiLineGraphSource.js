@@ -25,6 +25,7 @@ module.exports = function () {
     .scale(xScale)
   let yAxis = d3.svg.axis()
     .tickFormat(d3.format('d'))
+    .ticks(6)
     .tickSize(0, 0)
     .orient('left')
     .scale(yScale)
@@ -201,7 +202,7 @@ module.exports = function () {
         opacity: 0.8,
         fill: 'none',
         'stroke-linejoin': 'round',
-        'stroke-dasharray': (d) => d.filledNull ? "1,1" : "",
+        'stroke-dasharray': (d) => d.filledNull ? "2,2" : "",
       })
     lines.attr(attr)
     lines.attr('stroke-width', (d) => {

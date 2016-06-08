@@ -5,6 +5,11 @@ import _ from 'lodash'
 
 import { industryTitles } from '../../../support/qwi'
 
+import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
+
+const numFormatter = kmgtFormatter.bind(null, 3)
+const dollarFormatter = kmgtDollarFormatter.bind(null, 2)
+
 
 
 const innerStyle = {
@@ -12,22 +17,25 @@ const innerStyle = {
   paddingTop    : 1,
 }
 
-const getRows = (data) => 
+const getRows = (data, isCurrency) => 
   data.sort((b,a) => a.value-b.value)
-      .map(indData => (
-         <tr key={indData.key}>
-           <td style={Object.assign({}, innerStyle, {backgroundColor: indData.color})}>
-             <span title={industryTitles[indData.key]}>
+      .map(d => (
+         <tr key={d.key}>
+           <td style={Object.assign({}, innerStyle, {backgroundColor: d.color})}>
+             <span title={industryTitles[d.key]}>
 
              <div style={{color:'#eee'}}>
-               {industryTitles[indData.key].substr(0,6)}
+               {industryTitles[d.key].substr(0,6)}
              </div>
 
              </span>
            </td>
 
            <td style={innerStyle}>
-             {(indData.value) ? indData.value.toLocaleString() : indData.value}
+             {
+               (Number.isFinite(_.get(d, 'value'))) ? 
+                 ((isCurrency) ? dollarFormatter(d.value) : numFormatter(d.value)) : 'No data' 
+             }
            </td>
          </tr>)
      )
@@ -51,7 +59,7 @@ export const StartupsNaicsTooltip = (props) =>
             </thead>
 
             <tbody>
-              { getRows(props.data) }
+              { getRows(props.data, props.measureIsCurrency) }
             </tbody>
 
           </table>

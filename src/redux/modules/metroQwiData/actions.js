@@ -187,7 +187,6 @@ function buildRawDataRequestURL (msa, measure) {
 
 function transformJSON (json) { 
   let data =  _.mapKeys(json.data, (v,k) => (k.length > 2) ? k.substring(2) : k)
-  console.log(data)
   return data
 }
 

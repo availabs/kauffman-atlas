@@ -7,8 +7,24 @@ import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import { typemap } from 'support/qcew/typemap'
+
+import { kmgtFormatter, kmgtDollarFormatter } from '../misc/numberFormatters'
+
+const lineGraphNumberFormatter = kmgtFormatter.bind(null, 0)
+const lineGraphDollarFormatter = kmgtDollarFormatter.bind(null, 0)
+
+const tooltipNumberFormatter = kmgtFormatter.bind(null, 3)
+const tooltipDollarFormatter = kmgtDollarFormatter.bind(null, 2)
+
+
 type Props = {
 };
+
+let focusedLineGraph = 'rawLinegraph'
+
+const lineGraphFocusChanger = (lineGraph) => {
+  focusedLineGraph = lineGraph
+}
 
 let yearConst = 2001
 export class NaicsGraph extends React.Component<void, Props, void> {
@@ -45,6 +61,9 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	let naics = this.props.naicsKeys
 	let data = this.props.qtrData
 	let innerStyle = {paddingBottom:1,paddingTop:1}
+  let valueFormatter = ((this.props.type === 'totalwages') && (focusedLineGraph === 'rawLinegraph')) ?
+                        tooltipDollarFormatter : tooltipNumberFormatter
+
 	let rows = data.sort((b,a) => a.value-b.value)
 		       .map( x => {
 			   let nameStyle = Object.assign({},innerStyle)
@@ -60,7 +79,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 				   </td>
 				   
 				   <td style={innerStyle}>
-				       {x.value.toLocaleString()}
+				       {valueFormatter(x.value)}
 				   </td>
 			       </tr>)
 		       })
@@ -89,7 +108,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    if(!isNaN(val) || val >=0)
 	    return val
 	else{
-	    console.log('NaN',year,qtr)
+			//console.log('NaN',year,qtr)
 		return 0
 	}
     }
@@ -144,13 +163,12 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			 y: y
 		}
 	    }
-	if(isNaN(val.values.x+val.values.y))
-	    console.log(rec,val)
+	//if(isNaN(val.values.x+val.values.y)) { console.log(rec,val) }
 	    return val
     }
 
     _onMouse (data) {
-	console.log(data)
+	//console.log(data)
 	    this.props.setQtr(data)
     }
 
@@ -172,8 +190,8 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     }
     
     render () {
-	console.log(this.props.naicsKeys)
-	    console.log('naics state', this.props)
+	//console.log(this.props.naicsKeys)
+			//console.log('naics state', this.props)
 	    if(!this.props.data || !this.props.data.length)
 	    return <span></span>
 
@@ -194,19 +212,20 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
 	    let mData = this._process(data,agg,noagg)
 	    
-	    let graphMargin = {top: 0, left: 60, right: 20, bottom: 20}
+	    let graphMargin = {top: 10, left: 60, right: 20, bottom: 20}
 
 	    
 	    return (
 	    <StickyContainer>
 		<div className='row' style={{overflow:'hidden'}} >
 		    <div className='col-xs-8'>
+      <div onMouseEnter={lineGraphFocusChanger.bind(null, 'rawLinegraph')}>
 			<LineGraph 
 			    key={this.props.field}
 			    data={mData.data} 
 			    uniq={this.props.field}
 			    title={'Quarterly ' + this.props.title}
-			    yFormat={(x)=>x}
+			    yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : lineGraphNumberFormatter}
 			    xScaleType={'linear'}
 			    yAxis={true}
 			    margin={graphMargin}
@@ -214,8 +233,10 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			    onMouse={this._onMouse}
 			    graphSlice={this.props.qtrData}
 			/>
+      </div>
 
-	      		
+      
+			<div onMouseEnter={lineGraphFocusChanger.bind(null, 'lqLineGraph')}>
 			<LineGraph 
 			    key={'lq_'+this.props.field}
 			    data={mData.lqdata} 
@@ -230,6 +251,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			    onMouse={this._onMouse}
 			    graphSlice={this.props.qtrData}
 			/>
+      </div>
 		    </div>
 		    
 		    <div className='col-xs-4'>

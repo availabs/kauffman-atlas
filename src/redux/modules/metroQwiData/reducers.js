@@ -81,7 +81,6 @@ const handleLineGraphYearQuarterChange = (state, action) => {
 const handleRadarsChartFirmageChange = (state, action) => {
   let oldFirmage = parseInt(state.radarGraphs.firmage)
   let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
-  //console.log('-------****', newFirmage)
   return setStateField(state, 'radarGraphs.firmage', newFirmage)
 }
 
