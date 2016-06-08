@@ -57,15 +57,15 @@ export class HoverBox extends React.Component<void, Props, void> {
       return (<tr />)
     }
     return categories[type].map((cat) => {
-      console.log('props cat', cat, this.props[cat])
+      //console.log('props cat', cat, this.props[cat])
       let fulldata = this.props[cat] && this.props[cat].relative ? this.props[cat].relative : this.props[cat]
       fulldata = fulldata || []
       let isData = fulldata.filter(metro => { 
         return metro.key == this.props.metroId
       })[0]
-      console.log('isData', isData)
+      //console.log('isData', isData)
       let data = isData && isData.values ? isData.values : []
-      console.log('test data', data)
+      //console.log('test data', data)
 
       let score = {};
       if(cat == 'diversityincomebasedonchildhood'){

@@ -14,6 +14,7 @@ import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
 import BarChart from 'components/graphs/BarChart.js'
 import HoverBox from 'components/ranks/HoverBox'
+import MapGraphLegend from 'components/ranks/MapGraphLegend'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
@@ -211,7 +212,11 @@ export class HomeView extends React.Component<void, Props, void> {
               onComponentChange={this._setMapGraph} 
               activeComponent={this.state.activeMapGraph}
             />
-            {this.renderMapGraph(metrosInBucket)}          
+            <MapGraphLegend 
+              mapGraph={this.state.activeMapGraph}
+              activeComponent={(this.state.activeComponent + "" + this.state.metric).replace(/ /g,'')}            
+            />   
+            {this.renderMapGraph(metrosInBucket)}       
           </div>
         </div>
       </div>

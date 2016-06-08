@@ -224,10 +224,10 @@ export class LineGraph extends React.Component<void, Props, void> {
     }
 
     //Get rid of everything already in the svg
-    d3.select("#lineGraph svg").selectAll("*").remove();
+    d3.select("#line svg").selectAll("*").remove();
 
     //Create new svg
-    var svg = d3.select("#lineGraph svg")
+    var svg = d3.select("#line svg")
     .attr('viewBox','-90 -20 ' + (width) + ' ' + (height))
 
     filteredData.sort(function(a,b){
@@ -568,17 +568,12 @@ export class LineGraph extends React.Component<void, Props, void> {
 
   render () {
     var scope = this;
-
+    console.log('linegraph render')
 
     return (
-        <div className={classes['graphContainer']}>
-            <div className={classes['title']}>
-              <h4>{scope._labelFunction(this.props)}</h4>
-            </div>
-            <div id="lineGraph" className={classes['svg-container']}>
-              <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
-            </div>
-        </div>
+      <div id="line" className={classes['svg-container']}>
+        <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
+      </div>
     );          
   }
   
