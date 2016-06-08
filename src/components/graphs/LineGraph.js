@@ -344,7 +344,7 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
        
         d.city.line.parentNode.appendChild(d.city.line);
-        focus.attr("transform", "translate(10,-20)");
+        focus.attr("transform", "translate(-40,-20)");
         focus.select("text").text(popText);
        
         let id = {id: d.city.key}
@@ -571,9 +571,14 @@ export class LineGraph extends React.Component<void, Props, void> {
     console.log('linegraph render')
 
     return (
-      <div id="line" className={classes['svg-container']}>
-        <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
-      </div>
+        <div className={classes['graphContainer']}>
+            <div className={classes['title']}>
+              <h4>{scope._labelFunction(this.props)}</h4>
+            </div>
+            <div id="line" className={classes['svg-container']}>
+              <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
+            </div>
+        </div>
     );          
   }
   

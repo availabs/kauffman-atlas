@@ -62,7 +62,6 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
   }
 
   _drawLegend (props) {
-      console.log('legend drawlegend');
     d3.selectAll(".legend").remove()
     var svg = d3.select("#legend svg")
       .attr('viewBox','-90 -20 ' + (this.state.width) + ' ' + (this.state.height))
@@ -124,7 +123,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
 
   render () {
-    console.log(d3.selectAll("svg"))
+    console.log("mapgraphlegend render");
 
     if(!this.props[(this.props.activeComponent)]){
       return <span/>
