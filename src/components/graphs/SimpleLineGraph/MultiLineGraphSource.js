@@ -202,7 +202,6 @@ module.exports = function () {
         opacity: 0.8,
         fill: 'none',
         'stroke-linejoin': 'round',
-        'stroke-dasharray': (d) => d.filledNull ? "2,2" : "",
       })
     lines.attr(attr)
     lines.attr('stroke-width', (d) => {
@@ -211,6 +210,7 @@ module.exports = function () {
     lines.attr('stroke', (d) => {
       return d.color || '#000'
     })
+    lines.attr('stroke-dasharray', (d) => d.filledNull ? "2,2" : "")
 
     if (transitionTime) {
       lines.transition().delay(transitionTime)

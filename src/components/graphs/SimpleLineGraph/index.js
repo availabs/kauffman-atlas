@@ -99,6 +99,9 @@ class LineGraph extends React.Component {
 
     componentWillReceiveProps (nProps) {
 	if(!_.isEqual(this.state.graph.data(),nProps.data)){
+            if(nProps.yFormat) {
+              this.state.graph.yFormat(nProps.yFormat)
+            }
 	    this.state.graph.data(nProps.data)
 	    this.state.graph
 		.size({
