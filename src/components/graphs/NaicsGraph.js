@@ -10,6 +10,8 @@ import { typemap } from 'support/qcew/typemap'
 
 import { kmgtFormatter, kmgtDollarFormatter } from '../misc/numberFormatters'
 
+const integerFormatter = kmgtFormatter.bind(null, 0)
+const floatFormatter = kmgtFormatter.bind(null, 1)
 const lineGraphNumberFormatter = kmgtFormatter.bind(null, 0)
 const lineGraphDollarFormatter = kmgtDollarFormatter.bind(null, 0)
 
@@ -225,7 +227,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			    data={mData.data} 
 			    uniq={this.props.field}
 			    title={'Quarterly ' + this.props.title}
-			    yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : lineGraphNumberFormatter}
+			    yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : integerFormatter}
 			    xScaleType={'linear'}
 			    yAxis={true}
 			    margin={graphMargin}
@@ -242,6 +244,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 			    data={mData.lqdata} 
 			    uniq={'lq_'+this.props.field} 
 			    xFormat={(x)=>this.revMap(x)} 
+          yFormat={floatFormatter}
 			    title={'Quarterly LQ '+ this.props.title}
 			    xAxis={true}
 			    xScaleType={'linear'}

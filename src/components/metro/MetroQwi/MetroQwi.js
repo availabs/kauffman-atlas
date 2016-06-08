@@ -13,7 +13,8 @@ import StartupsOverviewTable from './StartupsOverviewTable'
 
 import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
 
-const numFormatter = kmgtFormatter.bind(null, 0)
+const integerFormatter = kmgtFormatter.bind(null, 0)
+const floatFormatter = kmgtFormatter.bind(null, 1)
 const dollarFormatter = kmgtDollarFormatter.bind(null, 0)
 
 
@@ -70,7 +71,7 @@ const renderVisualizations = (props) => (
             <LineGraph data={props.lineGraphRawData}
                        key='qwi-rawData-linegraph'
                        uniq='qwi-rawData-linegraph'
-                       yFormat={(props.measureIsCurrency) ? dollarFormatter : numFormatter}
+                       yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
                        xScaleType={'time'}
                        yAxis={true}
                        margin={graphMargin}
@@ -87,7 +88,7 @@ const renderVisualizations = (props) => (
                        xAxis={true}
                        xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
                        yAxis={true}
-                       yFormat={numFormatter}
+                       yFormat={floatFormatter}
                        margin={graphMargin}
                        tooltip={true}
                        quarterChangeListener={props.lineGraphYearQuarterChange} />

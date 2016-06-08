@@ -121,6 +121,8 @@ const handleYearQuarterWheelChange = (state, action) => {
     }
 
     let newYearQuarter = _.clone(oldYearQuarter)
+    newYearQuarter.year = +newYearQuarter.year
+    newYearQuarter.quarter = +newYearQuarter.quarter
     
 
     if (newYearQuarter.quarter > 1) {
@@ -141,6 +143,8 @@ const handleYearQuarterWheelChange = (state, action) => {
     }
 
     let newYearQuarter = _.clone(oldYearQuarter)
+    newYearQuarter.year = +newYearQuarter.year
+    newYearQuarter.quarter = +newYearQuarter.quarter
 
     if (newYearQuarter.quarter < 4) {
       newYearQuarter.quarter += 1
