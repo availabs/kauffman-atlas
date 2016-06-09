@@ -12,7 +12,8 @@ import {
   QWI_LINEGRAPH_YEARQUARTER_CHANGE,
   QWI_YEARQUARTER_WHEEL_CHANGE,
   QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
-  QWI_RADAR_GRAPH_FIRMAGE_CHANGE,
+  QWI_FIRMAGE_SELECTED,
+  QWI_FIRMAGE_WHEEL_CHANGE,
   QWI_ACTION_ERROR,
 } from './actions'
 
@@ -37,9 +38,7 @@ const initialState = {
     }
   },
 
-  radarGraphs: {
-    firmage: '1',
-  },
+  firmage: '1',
 
   overviewTable: {
     yearQuarter: {
@@ -156,14 +155,16 @@ const handleYearQuarterWheelChange = (state, action) => {
     return setStateField(state, 'lineGraphs.tooltip.yearQuarter', newYearQuarter)
 
   }
-
-
 }
-const handleRadarsChartFirmageChange = (state, action) => {
-  let oldFirmage = parseInt(state.radarGraphs.firmage)
+
+
+const handleFirmageChange = (state, action) => setStateField(state, 'firmage', action.payload.firmage)
+
+const handleFirmageWheelChange = (state, action) => {
+  let oldFirmage = parseInt(state.firmage)
   //let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
   let newFirmage = (((((oldFirmage + action.payload.delta)%6)+6)%6)).toString()
-  return setStateField(state, 'radarGraphs.firmage', newFirmage)
+  return setStateField(state, 'firmage', newFirmage)
 }
 
 const updateInventory = (dataType, value, state, action) => {
@@ -211,7 +212,9 @@ export const ACTION_HANDLERS = {
 
   [QWI_LINEGRAPH_YEARQUARTER_CHANGE]: handleLineGraphYearQuarterChange,
 
-  [QWI_RADAR_GRAPH_FIRMAGE_CHANGE]: handleRadarsChartFirmageChange,
+  [QWI_FIRMAGE_SELECTED]: handleFirmageChange,
+
+  [QWI_FIRMAGE_WHEEL_CHANGE]: handleFirmageWheelChange,
 
   [QWI_ACTION_ERROR]: handleActionError,
 }

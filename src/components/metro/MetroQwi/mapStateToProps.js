@@ -25,8 +25,8 @@ const getData = (state, ownProps) => {
             return null 
   }
 
-  let radarGraphFirmage = state.radarGraphs.firmage.toString()
-  let radarGraphFirmageLabel = firmageLabels[radarGraphFirmage]
+  let selectedFirmage = state.firmage.toString()
+  let radarGraphFirmageLabel = firmageLabels[selectedFirmage]
 
   let overviewTableData = {}
 
@@ -65,7 +65,7 @@ const getData = (state, ownProps) => {
     rawDataYears.forEach(year => {
       Object.keys(rawData[year]).forEach(quarter => {
 
-        let measureValue = parseFloat(_.get(rawData, [year, quarter, naics, radarGraphFirmage, measure]))
+        let measureValue = parseFloat(_.get(rawData, [year, quarter, naics, selectedFirmage, measure]))
 
         measureValue = (!isNaN(measureValue)) ? measureValue : null
 
@@ -171,7 +171,7 @@ const getData = (state, ownProps) => {
     ratiosDataYears.forEach(year => {
       Object.keys(ratiosData[year]).forEach(quarter => {
 
-        let msaRatio = _.get(ratiosData, [year, quarter, naics, radarGraphFirmage, `${measure}_ratio`], null)
+        let msaRatio = _.get(ratiosData, [year, quarter, naics, selectedFirmage, `${measure}_ratio`], null)
 
         let filledNull = false
         if (msaRatio === null) {
@@ -182,13 +182,13 @@ const getData = (state, ownProps) => {
         previousRatioValue = msaRatio
 
         let nationalRatio = _.get(nationalRatiosData, 
-                                  [year, quarter, naics, radarGraphFirmage, 
+                                  [year, quarter, naics, selectedFirmage, 
                                   //[year, quarter, naics, [>firmage<]'1', 
                                   `${measure}_ratio`], Number.POSITIVE_INFINITY)
 
         let locationQuotient = msaRatio/nationalRatio
 
-        if (radarGraphFirmage === '0') {
+        if (selectedFirmage === '0') {
           locationQuotient = 0
         }
 
@@ -233,11 +233,10 @@ const getData = (state, ownProps) => {
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
           let radarGraphFirmageRatio = 
-                _.get(ratiosData, [year, quarter, naics, radarGraphFirmage, `${measure}_ratio`], null)
+                _.get(ratiosData, [year, quarter, naics, selectedFirmage, `${measure}_ratio`], null)
 
 
-          if (radarGraphFirmage === '0') {
-console.log('((((((((((((((((((()))))))))))))))))))')
+          if (selectedFirmage === '0') {
             radarGraphFirmageRatio = 1
           }
 
@@ -286,6 +285,8 @@ console.log('((((((((((((((((((()))))))))))))))))))')
     radarGraphFirmageLabel,
     measureIsCurrency,
     focusedLineGraph,
+    firmageLabels,
+    selectedFirmage,
   }
 }
 

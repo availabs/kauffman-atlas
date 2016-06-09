@@ -23,7 +23,8 @@ export const QWI_YEARQUARTER_WHEEL_CHANGE = 'QWI_YEARQUARTER_WHEEL_CHANGE'
 export const QWI_LINEGRAPH_YEARQUARTER_CHANGE = 'QWI_LINEGRAPH_YEARQUARTER_CHANGE'
 
 export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
-export const QWI_RADAR_GRAPH_FIRMAGE_CHANGE = 'QWI_RADAR_GRAPH_FIRMAGE_CHANGE'
+export const QWI_FIRMAGE_SELECTED = 'QWI_FIRMAGE_SELECTED'
+export const QWI_FIRMAGE_WHEEL_CHANGE = 'QWI_FIRMAGE_WHEEL_CHANGE'
 export const QWI_ACTION_ERROR = 'QWI_ACTION_ERROR'
 
 
@@ -108,9 +109,14 @@ export const overviewTableSortFieldChange = (sortField) => ({
   payload : { sortField, }
 })
 
-export const radarGraphFirmageChange = (delta) => ({
-  type: QWI_RADAR_GRAPH_FIRMAGE_CHANGE,
+export const firmageWheelChange = (delta) => ({
+  type: QWI_FIRMAGE_WHEEL_CHANGE,
   payload: { delta },
+})
+
+export const firmageSelected = (firmage) => ({
+  type: QWI_FIRMAGE_SELECTED,
+  payload: { firmage }
 })
 
 

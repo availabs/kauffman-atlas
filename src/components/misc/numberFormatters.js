@@ -1,5 +1,7 @@
 export const kmgtFormatter = (fixedN, y) => {
 
+  if (!Number.isFinite(y)) { return y }
+
   fixedN = Number.isFinite(fixedN) ? fixedN : 1
   
   if (y < 1000) {

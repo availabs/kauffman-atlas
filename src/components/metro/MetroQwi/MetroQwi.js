@@ -36,33 +36,92 @@ const radarGraphOptions = {
     color       : d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
 }
 
+const stickyToolbarStyle = {
+  color: '#f7f7f7', 
+  backgroundColor: '#7D8FAF', 
+  paddingTop: 7,
+  paddingRight: 17,
+  paddingBottom: 7,
+  paddingLeft: 17,
+  borderStyle: 'solid',
+  borderTopWidth: 0,
+  borderBottomWidth: 2,
+  borderColor: '#f7f7f7',
+  zIndex:100,
+}
 
+const buttonStyle = {
+  color: '#f7f7f7', 
+  backgroundColor: '#7D8FAF', 
+  //boxShadow: '0 1px 1px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.19)',
+  boxShadow: '0 1px 2px 0 rgba(247,247,247,0.2), 0 1px 2px 0 rgba(247,247,247,0.19)',
+  border: '0px solid transparent',
+  marginLeft: '1px',
+  marginRight: '1px',
+}
+
+const selectedFirmageButtonStyle = {
+  color: '#7D8FAF', 
+  backgroundColor: '#f7f7f7', 
+  boxShadow: '0 2px 3px 0 rgba(247,247,247,0.4), 0 2px 3px 0 rgba(247,247,247,0.4)',
+}
 
 const renderVisualizations = (props) => (
   <div className='container'>
     <StickyContainer>    
       <Sticky className="foo" 
-              style={{color:'white', backgroundColor:'#7D8FAF', opacity: 1, zIndex:100}} 
-              stickyStyle={{color:'white', backgroundColor:'#7D8FAF', opacity: 1, zIndex:100}}>
+              style={stickyToolbarStyle} 
+              stickyStyle={stickyToolbarStyle}>
 
         <div className='row'>
-          <div className='col-xs-3'>
-            <strong onWheel={(e) => { 
+          <div className='col-xs-4 button-group' role="group">
+            <strong style={_.merge({ paddingTop: '3px', paddingBottom: '2px', paddingLeft: '2px', paddingRight: '4px', marginTop: '5px'}, buttonStyle)}
+                    onWheel={(e) => { 
                              props.yearQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
                              e.preventDefault()}}>
 
-                {`Q${props.yearQuarter.quarter}-${props.yearQuarter.year}`}</strong>
-          </div>
-          <div className='col-xs-3'>
-            <strong onWheel={(e) => { 
-                             props.radarGraphFirmageChange((e.deltaY) < 0 ? 1 : -1)
-                             e.preventDefault()}}>
-
-                {`Firmage: ${props.radarGraphFirmageLabel}`}
+                {`Quarter:  Q${props.yearQuarter.quarter}-${props.yearQuarter.year}`}
             </strong>
+            <button id='qwi-quarter-decrement' 
+                    type="button" 
+                    className="btn btn-secondary btn-sm" 
+                    style={buttonStyle}
+                    onClick={(e) => { 
+                             props.yearQuarterWheelChange(-1)
+                             e.preventDefault()}}> -
+            </button>
+            <button id='qwi-quarter-increment' 
+                    type="button" 
+                    className="btn btn-secondary btn-sm" 
+                    style={buttonStyle}
+                    onClick={(e) => { 
+                             props.yearQuarterWheelChange(1)
+                             e.preventDefault()}}> +
+            </button>
+          </div>
+          <div className='col-xs-8 button-group' 
+               role="group"
+               onWheel={(e) => { props.firmageWheelChange((e.deltaY) < 0 ? 1 : -1)
+                                 e.preventDefault()}}>
+
+                  {
+                    _.map(props.firmageLabels, (firmageLabel, firmageCode) => (
+                        <button id={`qwi-firmage-${firmageCode}-button`}
+                                type="button" 
+                                className="btn btn-secondary btn-sm" 
+                                style={(props.selectedFirmage === firmageCode) ? _.merge({}, buttonStyle, selectedFirmageButtonStyle) : buttonStyle}
+                                onClick={props.firmageSelected.bind(null, firmageCode)}>
+
+                            <strong>{firmageLabel}</strong>
+                        </button>
+                      ))
+                  }                 
           </div>
         </div>
       </Sticky>
+
+
+
       <div className='row' style={{overflow:'hidden'}} >
 
         <div className='col-xs-8'>
