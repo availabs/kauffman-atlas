@@ -56,6 +56,10 @@ export const StartupsNaicsTooltip = (props) =>
               { getRows(props.data, props.measureIsCurrency) }
             </tbody>
 
+            <tfoot>
+              { _.some(props.data, (d) => d.filledNull) ? '* filled in' : (<span/>)}
+            </tfoot>
+
           </table>
 
         </div>

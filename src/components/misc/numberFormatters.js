@@ -1,27 +1,27 @@
-export const kmgtFormatter = (fixedN, y) => {
+export const kmgtFormatter = (fixedN, n) => {
 
-  if (!Number.isFinite(y)) { return y }
+  if (!Number.isFinite(n)) { return n }
 
   fixedN = Number.isFinite(fixedN) ? fixedN : 1
   
-  if (y < 1000) {
-    return y.toFixed((y % 1) && fixedN).toString()
+  if (n < 1000) {
+    return n.toFixed((n % 1) && fixedN).toString()
   } 
   
-  if (y < 1000000) {
-    return (y/1000).toFixed(fixedN) + 'k'
+  if (n < 1000000) {
+    return (n/1000).toFixed(fixedN) + 'k'
   } 
 
-  if (y < 1000000000) {
-    return (y/1000000).toFixed(fixedN) + 'm   '
+  if (n < 1000000000) {
+    return (n/1000000).toFixed(fixedN) + 'm   '
   }
 
-  if (y < 1000000000000) {
-    return (y/1000000000).toFixed(fixedN) + 'g'
+  if (n < 1000000000000) {
+    return (n/1000000000).toFixed(fixedN) + 'g'
   }
   
-  return (y/1000000000000).toFixed(fixedN) + 't'
+  return (n/1000000000000).toFixed(fixedN) + 't'
 }
 
 
-export const kmgtDollarFormatter = (fixedN, y) => `\$${kmgtFormatter(fixedN, y)}`
+export const kmgtDollarFormatter = (fixedN, n) => ((Number.isFinite(n)) ? `\$${kmgtFormatter(fixedN, n)}` : n)
