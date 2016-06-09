@@ -12,26 +12,25 @@ export const StartupsOverviewTable = (props) => (
     <thead>
       <tr>
         {
-          _.map(_.sample(props.data), (val, measureName) => (
-            <td key={`qwi-overviewTableHeader-${measureName}`}>
+          props.data.__columnNames.map( (columnName) => (
+            <td key={`qwi-overviewTableHeader-${columnName}`}>
               <a className={classes['bluelink']}
-                 onClick={props.sortFieldChange.bind(this, measureName)}>
-                    {measureName}
+                 onClick={props.sortFieldChange.bind(this, columnName)}>
+                    {columnName}
               </a>
-            </td>)
-          )
+            </td>))
         }
       </tr>
     </thead>
 
     <tbody>
       {
-        _.map(props.data, (d, measureName) => (
-            <tr key={`qwi-overviewTable-${measureName}Row`}>
+        props.data.__naicsRowOrder.map((naicsCode) => (
+            <tr key={`qwi-overviewTable-${naicsCode}Row`}>
               { 
-                _.map(d, (val, i) => (
-                    <td key={`qwi-overviewTableRow-${i}`}>
-                      {(val === null) ? null : val.toLocaleString()}
+                props.data.__columnNames.map((columnName) => (
+                    <td key={`qwi-overviewTable-${naicsCode}Row-${columnName}`}>
+                      {_.get(props.data, [naicsCode, columnName])}
                     </td>)
                   ) 
               }

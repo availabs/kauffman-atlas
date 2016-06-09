@@ -1,5 +1,6 @@
 import _ from 'lodash'
 
+import { firmageLabels } from '../../../support/qwi'
 
 import { 
   QWI_MSA_CHANGE,
@@ -41,11 +42,7 @@ const initialState = {
   firmage: '1',
 
   overviewTable: {
-    yearQuarter: {
-      year:    null,
-      quarter: null,
-    },
-    sortField: 'measures',
+    sortField: 'Location Quotient',
   },
   
   inventory: {
@@ -158,13 +155,34 @@ const handleYearQuarterWheelChange = (state, action) => {
 }
 
 
-const handleFirmageChange = (state, action) => setStateField(state, 'firmage', action.payload.firmage)
+const updateFirmage = (state, newFirmage) => {
+
+  let newState = setStateField(state, 'firmage', newFirmage)
+
+  let oldFirmage = state.firmage
+  let oldFirmageLabel = firmageLabels[oldFirmage].trim()
+  let newFirmageLabel = firmageLabels[newFirmage]
+
+  if (state === newState) {
+    return state
+  }
+
+  let oldOverviewTableSortField = state.overviewTable.sortField
+
+  let newOverviewTableSortField = oldOverviewTableSortField.replace(oldFirmageLabel, newFirmageLabel)
+
+  newState = setStateField(newState, 'overviewTable.sortField', newOverviewTableSortField)
+
+  return newState
+}
+
+const handleFirmageChange = (state, action) => updateFirmage(state, action.payload.firmage)
 
 const handleFirmageWheelChange = (state, action) => {
   let oldFirmage = parseInt(state.firmage)
   //let newFirmage = (((((oldFirmage - 1 + action.payload.delta)%5)+5)%5) + 1).toString()
   let newFirmage = (((((oldFirmage + action.payload.delta)%6)+6)%6)).toString()
-  return setStateField(state, 'firmage', newFirmage)
+  return updateFirmage(state, newFirmage)
 }
 
 const updateInventory = (dataType, value, state, action) => {
