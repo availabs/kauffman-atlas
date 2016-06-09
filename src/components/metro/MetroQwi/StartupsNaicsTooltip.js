@@ -13,29 +13,23 @@ const dollarFormatter = kmgtDollarFormatter.bind(null, 2)
 
 
 const innerStyle = {
-  paddingBottom : 1,
-  paddingTop    : 1,
+  paddingBottom: 1,
+  paddingTop   : 1,
 }
 
 const getRows = (data, isCurrency) => 
-  data.sort((b,a) => a.value-b.value)
-      .map(d => (
+  data.map(d => (
          <tr key={d.key}>
            <td style={Object.assign({}, innerStyle, {backgroundColor: d.color})}>
              <span title={industryTitles[d.key]}>
-
-             <div style={{color:'#eee'}}>
-               {industryTitles[d.key].substr(0,6)}
-             </div>
-
+               <div style={{color:'#eee'}}>
+                 {industryTitles[d.key].substr(0,6)}
+               </div>
              </span>
            </td>
 
            <td style={innerStyle}>
-             {
-               (Number.isFinite(_.get(d, 'value'))) ? 
-                 ((isCurrency) ? dollarFormatter(d.value) : numFormatter(d.value)) : 'No data' 
-             }
+             { `${(isCurrency) ? dollarFormatter(d.value) : numFormatter(d.value)}${(d.filledNull) ? '*' : ''}` }
            </td>
          </tr>)
      )

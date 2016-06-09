@@ -60,7 +60,7 @@ const getData = (state, ownProps) => {
 
     let color = colors(i % 20)
 
-    let previousRawValue = 0
+    let previousRawValue = null
 
     rawDataYears.forEach(year => {
       Object.keys(rawData[year]).forEach(quarter => {
@@ -71,11 +71,11 @@ const getData = (state, ownProps) => {
 
         let filledNull = false
 
-        if (measureValue === null) {
+        if ((previousRawValue !== null) && (measureValue === null)) {
           measureValue = previousRawValue
 
           filledNull = true
-        }
+        } 
         previousRawValue = measureValue
 
 
@@ -90,29 +90,31 @@ const getData = (state, ownProps) => {
           },
         }
 
-        let lastLineGraphRawDataElem = _.last(lineGraphRawData)
-        if ((_.get(lastLineGraphRawDataElem, 'key') !== naics) ||
-            (_.get(lastLineGraphRawDataElem, 'filledNull') !== filledNull)) {
+        if (previousRawValue !== null) {
+          let lastLineGraphRawDataElem = _.last(lineGraphRawData)
+          if ((_.get(lastLineGraphRawDataElem, 'key') !== naics) ||
+              (_.get(lastLineGraphRawDataElem, 'filledNull') !== filledNull)) {
 
-              lineGraphRawData.push({
-                color: color,
-                key: naics,
-                values: [],
-                filledNull,
-              })
+                lineGraphRawData.push({
+                  color: color,
+                  key: naics,
+                  values: [],
+                  filledNull,
+                })
 
-              // Connect the fill segment with the new non-filled segment.
-              if (lastLineGraphRawDataElem && (lastLineGraphRawDataElem.key === naics)) {
-              
-                if (filledNull) {
-                  _.last(lineGraphRawData).values.push(_.last(lastLineGraphRawDataElem.values)) 
-                } else {
-                  lastLineGraphRawDataElem.values.push(elem)
+                // Connect the fill segment with the new non-filled segment.
+                if (lastLineGraphRawDataElem && (lastLineGraphRawDataElem.key === naics)) {
+                
+                  if (filledNull) {
+                    _.last(lineGraphRawData).values.push(_.last(lastLineGraphRawDataElem.values)) 
+                  } else {
+                    lastLineGraphRawDataElem.values.push(elem)
+                  }
                 }
-              }
-        }
+          }
 
-        _.last(lineGraphRawData).values.push(elem) 
+          _.last(lineGraphRawData).values.push(elem) 
+        }
 
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
@@ -120,16 +122,19 @@ const getData = (state, ownProps) => {
           let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
           let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], Number.POSITIVE_INFINITY)
 
+          let share = (allFirmages / metroTotal)
           shareByIndustryRadarGraphData.push({
             axis: industryTitles[naics].substring(0,6),
-            value: (allFirmages / metroTotal),
+            value: (Number.isFinite(share)) ? share : 0,
+            filledNull: Number.isFinite(share), 
           })
 
           if (focusedLineGraph === 'qwi-rawData-linegraph') {
             tooltipData.push({
               color: color,
               key: naics,
-              value: measureValue,
+              value: (Number.isFinite(measureValue)) ? measureValue : 'No data.',
+              filledNull,
             })
           }
         }
@@ -166,7 +171,7 @@ const getData = (state, ownProps) => {
 
     let color = colors(i % 20)
 
-    let previousRatioValue = 0
+    let previousRatioValue = null
 
     ratiosDataYears.forEach(year => {
       Object.keys(ratiosData[year]).forEach(quarter => {
@@ -174,7 +179,7 @@ const getData = (state, ownProps) => {
         let msaRatio = _.get(ratiosData, [year, quarter, naics, selectedFirmage, `${measure}_ratio`], null)
 
         let filledNull = false
-        if (msaRatio === null) {
+        if ((previousRatioValue !== null) && (msaRatio === null)) {
           msaRatio = previousRatioValue
 
           filledNull = true
@@ -189,10 +194,10 @@ const getData = (state, ownProps) => {
         let locationQuotient = msaRatio/nationalRatio
 
         if (selectedFirmage === '0') {
-          locationQuotient = 0
+          locationQuotient = 1
         }
 
-        if (!Number.isFinite(locationQuotient)) {
+        if ((previousRatioValue !== null) && (!Number.isFinite(locationQuotient))) {
           locationQuotient = 0
         }
 
@@ -207,33 +212,36 @@ const getData = (state, ownProps) => {
           },
         }
 
-        let lastLineGraphLQDataElem = _.last(lineGraphLQData)
-        if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
-            (_.get(lastLineGraphLQDataElem, 'filledNull') !== filledNull)) {
+        if (previousRatioValue !== null) {
+          let lastLineGraphLQDataElem = _.last(lineGraphLQData)
 
-              lineGraphLQData.push({
-                color: color,
-                key: naics,
-                values: [],
-                filledNull,
-              })
+          if ((_.get(lastLineGraphLQDataElem, 'key') !== naics) ||
+              (_.get(lastLineGraphLQDataElem, 'filledNull') !== filledNull)) {
 
-              // Connect the fill segment with the new non-filled segment.
-              if (lastLineGraphLQDataElem && (lastLineGraphLQDataElem.key === naics)) {
-              
-                if (filledNull) {
-                  _.last(lineGraphLQData).values.push(_.last(lastLineGraphLQDataElem.values)) 
-                } else {
-                  lastLineGraphLQDataElem.values.push(elem)
+                lineGraphLQData.push({
+                  color: color,
+                  key: naics,
+                  values: [],
+                  filledNull,
+                })
+
+                // Connect the fill segment with the new non-filled segment.
+                if (lastLineGraphLQDataElem && (lastLineGraphLQDataElem.key === naics)) {
+                
+                  if (filledNull) {
+                    _.last(lineGraphLQData).values.push(_.last(lastLineGraphLQDataElem.values)) 
+                  } else {
+                    lastLineGraphLQDataElem.values.push(elem)
+                  }
                 }
-              }
-        }
+          }
 
-        _.last(lineGraphLQData).values.push(elem) 
+          _.last(lineGraphLQData).values.push(elem) 
+        }
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
           let radarGraphFirmageRatio = 
-                _.get(ratiosData, [year, quarter, naics, selectedFirmage, `${measure}_ratio`], null)
+                _.get(ratiosData, [year, quarter, naics, selectedFirmage, `${measure}_ratio`], 0)
 
 
           if (selectedFirmage === '0') {
@@ -249,7 +257,7 @@ const getData = (state, ownProps) => {
             tooltipData.push({
               color: color,
               key: naics,
-              value: locationQuotient,
+              value: (previousRatioValue !== null) ? locationQuotient : 'No data',
               filledNull,
             })
           }
@@ -272,6 +280,10 @@ const getData = (state, ownProps) => {
   let selectorYearQuarterList = _(rawData).map(mapper).flatMap().sortBy('label').value()
 
   let measureIsCurrency = currencyMeasures[measure]
+
+  let comparatorGetter = (x) => ((Number.isFinite(x.value)) ? x.value : Number.NEGATIVE_INFINITY)
+  let tooltipComparator = (a,b) => (comparatorGetter(b) - comparatorGetter(a))
+  tooltipData.sort(tooltipComparator)
 
   return {
     lineGraphRawData: lineGraphRawData.length ? lineGraphRawData : null,
