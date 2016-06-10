@@ -2,8 +2,7 @@
 
 import d3 from 'd3'
 
-import { industryTitles, firmageLabels, currencyMeasures } from '../../../support/qwi'
-
+import { industryTitles, firmageLabels, measureLabels, currencyMeasures } from '../../../support/qwi'
 
 const colors = d3.scale.category20()
 
@@ -18,15 +17,17 @@ const getData = (state, ownProps) => {
   let msa = state.msa
   let measure = state.measure
 
+
   if (! ( (_.get(state.inventory, ['ratiosByFirmage', '00', `${measure}_ratio`]) === 'RECEIVED') &&
           (_.get(state.inventory, ['ratiosByFirmage', msa, `${measure}_ratio`]) === 'RECEIVED') &&
           (_.get(state.inventory, ['raw', msa, measure]) === 'RECEIVED'))) { 
     
             return null 
   }
+  let measureIsCurrency = currencyMeasures[measure]
 
   let selectedFirmage = state.firmage.toString()
-  let radarGraphFirmageLabel = firmageLabels[selectedFirmage]
+  let firmageLabel = firmageLabels[selectedFirmage]
 
   let overviewTableData = {}
 
@@ -47,6 +48,20 @@ const getData = (state, ownProps) => {
 
   let tooltipYearQuarter = _.get(state, 'lineGraphs.tooltip.yearQuarter')
     
+  let overviewTableColumnNames = {
+    naicsCode             : 'NAICS Code',
+    sectorTitle           : 'Sector Title',
+    measureForFirmage     : `${measure} for ${firmageLabel} firms`,
+    measureForAllFirmages : `${measure} for all firmages`,
+    locationQuotient      : 'Location Quotient',
+  }
+
+  let overviewTableSortField = state.overviewTable.sortField
+  if (!_.includes(overviewTableColumnNames, overviewTableSortField)) {
+    overviewTableSortField = overviewTableColumnNames.locationQuotient
+  }
+
+
   if (tooltipYearQuarter.year === null) {
     tooltipYearQuarter = lastYearQuarterInData
   }
@@ -119,10 +134,10 @@ const getData = (state, ownProps) => {
 
         if ((+year === +tooltipYearQuarter.year) && (+quarter === +tooltipYearQuarter.quarter)) {
 
-          let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
+          let allFirmagesValue = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
           let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], Number.POSITIVE_INFINITY)
 
-          let share = (allFirmages / metroTotal)
+          let share = (allFirmagesValue / metroTotal)
           shareByIndustryRadarGraphData.push({
             axis: industryTitles[naics].substring(0,6),
             value: (Number.isFinite(share)) ? share : 0,
@@ -141,14 +156,19 @@ const getData = (state, ownProps) => {
 
         if ((+year === +lastYearQuarterInData.year) && (+quarter === +lastYearQuarterInData.quarter)) {
 
-          let allFirmages = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
+          let allFirmagesValue = _.get(rawData, [year, quarter, naics, /*firmage*/'0', measure], 0)
           let metroTotal = _.get(rawData, [year, quarter, '00', /*firmage*/'0', measure], Number.POSITIVE_INFINITY)
 
-          _.set(overviewTableData, [naics, 'naics'], naics)
-          _.set(overviewTableData, [naics, 'title'], industryTitles[naics])
-          _.set(overviewTableData, [naics, 'measureValue'], measureValue)
-          _.set(overviewTableData, [naics, 'metroTotal'], metroTotal)
-          _.set(overviewTableData, [naics, 'allFirmages'], allFirmages)
+
+          let stringifier = (val) => (Number.isFinite(val)) ? 
+                `${(measureIsCurrency) ? '$' : ''}${val.toLocaleString()}${filledNull ? '*' : ''}` : 'No data'
+
+          _.set(overviewTableData, [naics, overviewTableColumnNames.naicsCode], naics)
+          _.set(overviewTableData, [naics, overviewTableColumnNames.sectorTitle], industryTitles[naics])
+          _.set(overviewTableData, [naics, overviewTableColumnNames.measureForFirmage], stringifier(+measureValue))
+          _.set(overviewTableData, 
+                [naics, overviewTableColumnNames.measureForAllFirmages], 
+                stringifier(+allFirmagesValue))
         }
 
       })
@@ -188,7 +208,6 @@ const getData = (state, ownProps) => {
 
         let nationalRatio = _.get(nationalRatiosData, 
                                   [year, quarter, naics, selectedFirmage, 
-                                  //[year, quarter, naics, [>firmage<]'1', 
                                   `${measure}_ratio`], Number.POSITIVE_INFINITY)
 
         let locationQuotient = msaRatio/nationalRatio
@@ -265,25 +284,62 @@ const getData = (state, ownProps) => {
 
 
         if ((+year === +lastYearQuarterInData.year) && (+quarter === +lastYearQuarterInData.quarter)) {
-          _.set(overviewTableData, [naics, 'filledNull'], filledNull)
-          _.set(overviewTableData, [naics, 'msaRatio'], msaRatio)
-          _.set(overviewTableData, [naics, 'nationalRatio'], nationalRatio)
-          _.set(overviewTableData, [naics, 'locationQuotient'], locationQuotient)
+          let val = Number.isFinite(locationQuotient) ? `${locationQuotient.toFixed(3)}${filledNull?'*':''}`:'No data'
+          _.set(overviewTableData, [naics, overviewTableColumnNames.locationQuotient], val)
+
         }
       })
     })
   })
+
 
   let mapper = (quarterlyData, year) => 
                   _.map(quarterlyData, (byNaics, quarter) => ({label: `${year}-Q${quarter}`, value: {year, quarter}}))
 
   let selectorYearQuarterList = _(rawData).map(mapper).flatMap().sortBy('label').value()
 
-  let measureIsCurrency = currencyMeasures[measure]
-
-  let comparatorGetter = (x) => ((Number.isFinite(x.value)) ? x.value : Number.NEGATIVE_INFINITY)
-  let tooltipComparator = (a,b) => (comparatorGetter(b) - comparatorGetter(a))
+  let tooltipValGetter = (x) => ((Number.isFinite(x.value)) ? x.value : Number.NEGATIVE_INFINITY)
+  let tooltipComparator = (a,b) => (tooltipValGetter(b) - tooltipValGetter(a))
   tooltipData.sort(tooltipComparator)
+
+
+  let overviewDataComparator = (naicsCodeA, naicsCodeB) => {
+
+    let order = ((overviewTableSortField === overviewTableColumnNames.naicsCode) || 
+                 (overviewTableSortField === overviewTableColumnNames.sectorTitle)) ? 1 : -1
+
+    let aVal = _.get(overviewTableData, [naicsCodeA, overviewTableSortField], '').replace(/\$|,|\*/g, '')
+    let bVal = _.get(overviewTableData, [naicsCodeB, overviewTableSortField], '').replace(/\$|,|\*/g, '')
+
+    let aNum = parseFloat(aVal)
+    let bNum = parseFloat(bVal)
+
+    if (!(Number.isFinite(aNum) || Number.isFinite(bNum))) {
+      return (aVal.localeCompare(bVal) * order)
+    }
+
+    if (Number.isFinite(aNum) && !Number.isFinite(bNum)) {
+      return (1 * order)
+    }
+
+    if (!Number.isFinite(aNum) && Number.isFinite(bNum)) {
+      return (-1 * order)
+    }
+
+    return ((aNum - bNum) * order)
+  }
+  // Provided the requested sorted order for the table rows.
+  overviewTableData.__naicsRowOrder = Object.keys(overviewTableData).sort(overviewDataComparator)
+  
+  // Consistent ordering of the column names.
+  overviewTableData.__columnNames = [
+    overviewTableColumnNames.naicsCode,
+    overviewTableColumnNames.sectorTitle,
+    overviewTableColumnNames.measureForFirmage,
+    overviewTableColumnNames.measureForAllFirmages,
+    overviewTableColumnNames.locationQuotient,
+  ]
+ 
 
   return {
     lineGraphRawData: lineGraphRawData.length ? lineGraphRawData : null,
@@ -294,7 +350,8 @@ const getData = (state, ownProps) => {
     shareOfMetroTotalRadarGraphData: [shareOfMetroTotalRadarGraphData],
     overviewTableData,
     yearQuarter: tooltipYearQuarter,
-    radarGraphFirmageLabel,
+    firmageLabel,
+    measureLabel: measureLabels[measure],
     measureIsCurrency,
     focusedLineGraph,
     firmageLabels,

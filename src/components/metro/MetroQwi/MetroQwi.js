@@ -39,9 +39,9 @@ const radarGraphOptions = {
 const stickyToolbarStyle = {
   color: '#f7f7f7', 
   backgroundColor: '#7D8FAF', 
-  paddingTop: 7,
+  paddingTop: 2,
   paddingRight: 17,
-  paddingBottom: 7,
+  paddingBottom: 2,
   paddingLeft: 17,
   borderStyle: 'solid',
   borderTopWidth: 0,
@@ -74,8 +74,38 @@ const renderVisualizations = (props) => (
               stickyStyle={stickyToolbarStyle}>
 
         <div className='row'>
-          <div className='col-xs-4 button-group' role="group">
-            <strong style={_.merge({ paddingTop: '3px', paddingBottom: '2px', paddingLeft: '2px', paddingRight: '4px', marginTop: '5px'}, buttonStyle)}
+          <div className='col-xs-12 text-center' style={{backgroundColor: '#5d5d5d'}}>
+            <b>{`${props.measureLabel.replace(/:.*/, '')} (${props.measure})`}</b>
+          </div>
+        </div>
+
+        <div className='row'>
+          <div className='col-xs-8 button-group text-left' 
+               role="group"
+               onWheel={(e) => { props.firmageWheelChange((e.deltaY) < 0 ? 1 : -1)
+                                 e.preventDefault()}}>
+
+                  {
+                    _.map(props.firmageLabels, (firmageLabel, firmageCode) => (
+                        <button id={`qwi-firmage-${firmageCode}-button`}
+                                type="button" 
+                                className="btn btn-secondary btn-sm" 
+                                style={(props.selectedFirmage === firmageCode) ? 
+                                          _.merge({}, buttonStyle, selectedFirmageButtonStyle) : buttonStyle}
+                                onClick={props.firmageSelected.bind(null, firmageCode)}>
+
+                            <strong>{firmageLabel}</strong>
+                        </button>
+                      ))
+                  }                 
+          </div>
+          <div className='col-xs-4 button-group text-right' role="group">
+            <strong style={_.merge({ paddingTop: '1px', 
+                                     paddingBottom: '1px', 
+                                     paddingLeft: '2px', 
+                                     paddingRight: '4px', 
+                                     marginTop: '5px'}, 
+                                   buttonStyle)}
                     onWheel={(e) => { 
                              props.yearQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
                              e.preventDefault()}}>
@@ -99,24 +129,6 @@ const renderVisualizations = (props) => (
                              e.preventDefault()}}> +
             </button>
           </div>
-          <div className='col-xs-8 button-group' 
-               role="group"
-               onWheel={(e) => { props.firmageWheelChange((e.deltaY) < 0 ? 1 : -1)
-                                 e.preventDefault()}}>
-
-                  {
-                    _.map(props.firmageLabels, (firmageLabel, firmageCode) => (
-                        <button id={`qwi-firmage-${firmageCode}-button`}
-                                type="button" 
-                                className="btn btn-secondary btn-sm" 
-                                style={(props.selectedFirmage === firmageCode) ? _.merge({}, buttonStyle, selectedFirmageButtonStyle) : buttonStyle}
-                                onClick={props.firmageSelected.bind(null, firmageCode)}>
-
-                            <strong>{firmageLabel}</strong>
-                        </button>
-                      ))
-                  }                 
-          </div>
         </div>
       </Sticky>
 
@@ -139,7 +151,7 @@ const renderVisualizations = (props) => (
           </div>
 
           {
-            (props.radarGraphFirmageLabel === 'All Firm Ages') ? <div/> : (
+            (props.firmageLabel === 'All Firm Ages') ? <div/> : (
               <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
 
                 <LineGraph data={props.lineGraphLQData}
@@ -169,8 +181,7 @@ const renderVisualizations = (props) => (
       <div className='row' style={{overflow:'hidden', zIndex: 10}} >
         <div className='col-xs-5'>
           <strong>
-          
-              {`Share of ${props.measure} by industry for ${props.radarGraphFirmageLabel} firms`}
+            {`Share of ${props.measure} by industry for ${props.firmageLabel} firms`}
           </strong>
           <RadarChart divID='typeShare'
                       data={props.shareOfMetroTotalRadarGraphData}
