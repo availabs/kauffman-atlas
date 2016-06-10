@@ -583,7 +583,7 @@ LineGraph.contextTypes = {
   router: React.PropTypes.object.isRequired
 }
 const mapStateToProps = (state) => ({
-
+    metrosFull : state.metros
 })
 
 export default connect((mapStateToProps), {

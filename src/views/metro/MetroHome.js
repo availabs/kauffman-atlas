@@ -29,12 +29,12 @@ export class MetroHome extends React.Component<void, Props, void> {
 
 
     _linkIsActive(type){
-	let pageid = this.props.params.pageid
-	return type === (pageid || (!pageid && this.state.display)) ? {backgroundColor:'#db9a36'} : {}
+		let pageid = this.props.params.pageid
+		return type === (pageid || (!pageid && this.state.display)) ? {backgroundColor:'#db9a36'} : {}
     }
 
     _selectDisplay (display) {
-	this.setState({display})
+		this.setState({display})
     }
 
     renderDisplay(){
@@ -181,7 +181,7 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     render () {
 	let metroId = this.props.params.geoid
-	if(!this.props.metros[metroId]){
+	if(!this.props.metros[metroId] || !this.props.metros[metroId].pop){
 	    return (
 		<div>
 		    <div className='container text-center'>

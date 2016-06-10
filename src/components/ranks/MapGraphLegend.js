@@ -24,7 +24,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
  
 
   //We would only want to change the colors after a props change
-  //Changing the color does NOT trigger a render(_initGraph)
+  //Changing the color does NOT trigger a render(_drawLegend)
   componentWillReceiveProps (nextProps){
     //Load data about the active componsent if it is not present
     if(!nextProps[(nextProps.activeComponent)]){
@@ -38,11 +38,11 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.075
 
-    //Triggers render(_initGraph)
+    //Triggers render(_drawLegend)
     this.setState({width:width,height:height})          
   }
 
-  //Returning true triggers render(_initGraph)
+  //Returning true triggers render(_drawLegend)
   shouldComponentUpdate(nextProps,nextState){
     //If there are no drawn metro areas, we need to update the map
 
@@ -79,7 +79,6 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
        valueArray.push(metro.values[metro.values.length-1].y)       
      }
     })
-
 
     var color = d3.scale.quantile()
       .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
