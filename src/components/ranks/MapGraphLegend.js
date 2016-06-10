@@ -44,7 +44,6 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
   //Returning true triggers render(_initGraph)
   shouldComponentUpdate(nextProps,nextState){
-    console.log("mapgraphlegend should comp update")
     //If there are no drawn metro areas, we need to update the map
 
     if(d3.selectAll(".legend")[0].length == 0){
@@ -118,7 +117,6 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .text(function(d) {
         return roundFormat(d);
       })
-    //console.log(d3.selectAll(".legend")[0])
   }
 
 

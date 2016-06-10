@@ -64,7 +64,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       let last = output[0].values[output[0].values.length-1].values.y
       let graphcolor = first > last ? '#db9a36' : '#7d8faf'
       output[0].color = graphcolor
-      console.log('test', output, first, last, first > last)
     }
     
     
@@ -72,14 +71,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
   }
 
   hover(d){
-    console.log(d);
     this.setState({displayYear:d.point.x});
   }
 
   render () {
     if (!this.hasData()) return <span />
     console.log('got data', this.props.metroScores[this.props.metroId])
-    console.log(this.state);
+
     let year = 2012
     let scores = this.props.metroScores[this.props.metroId];
     let combined = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === year })[0] || {} : {}
