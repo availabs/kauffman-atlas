@@ -24,14 +24,14 @@ export class HomeView extends React.Component<void, Props, void> {
 
     components.forEach((v,i) => {
         bucketDisplay.push (
-          <button 
+          <a 
             id={v}
             onClick={this._bucketClick} 
             type="button" 
             className={"btn btn-default " + (v == this.props.activeComponent ? classes["active"] : '')}
           >
             { v }
-          </button>
+          </a>
         )   
     })
     

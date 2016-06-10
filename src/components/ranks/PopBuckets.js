@@ -27,7 +27,7 @@ export class HomeView extends React.Component<void, Props, void> {
     var bucketDisplay = [];
     this.props.popScale.range().forEach((v,i) => {
         bucketDisplay.push (
-          <button 
+          <a 
             id={i}
             onClick={this._bucketClick} 
             type="button" 
@@ -35,18 +35,18 @@ export class HomeView extends React.Component<void, Props, void> {
           >
             { ((100 / this.props.popScale.range().length) * (v) ).toLocaleString() }
             <sup>th</sup>
-          </button>
+          </a>
         )   
     })
     bucketDisplay.push( 
-      <button 
+      <a 
         id="all" 
         onClick={this._bucketClick} 
         type="button" 
         className={"btn btn-default " + ('all' == this.props.bucket ? classes["active"] : '')}
       >
         All Metros
-      </button>
+      </a>
     )
 
     return (

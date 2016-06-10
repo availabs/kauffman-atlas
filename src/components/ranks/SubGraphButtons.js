@@ -37,14 +37,14 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
 
     components.forEach((v,i) => {
         bucketDisplay.push (
-          <button 
+          <a 
             id={v}
             onClick={this._bucketClick} 
             type="button" 
             className={"btn btn-default " + (v == this.props.metric ? classes["active"] : '')}
           >
             { v }
-          </button>
+          </a>
         )   
     })
     

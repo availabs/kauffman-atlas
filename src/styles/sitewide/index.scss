@@ -67,6 +67,12 @@
    color: white;
 }
 
+.active:hover{
+   //border: 2px solid white;
+   background-color: darken(#5d5d5d,5%);
+   color: white;  
+}
+
 .bucket{
   background-color:#f7f7f7;
   cursor: pointer;
