@@ -322,6 +322,8 @@ export class LineGraph extends React.Component<void, Props, void> {
       });
 
     function mouseover(d) {
+        props.onMouseover({id: d.city.key})
+
         d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+2))
         d3.select(d.city.line).style("stroke","#000000")
         d3.select(d.city.line).style("opacity","2")
@@ -346,13 +348,6 @@ export class LineGraph extends React.Component<void, Props, void> {
         d.city.line.parentNode.appendChild(d.city.line);
         focus.attr("transform", "translate(-40,-20)");
         focus.select("text").text(popText);
-       
-        let id = {id: d.city.key}
-        if(props.onMouseover) {
-          props.onMouseover(id)
-        }
-
-
     }
 
     function click(d){ 

@@ -15,33 +15,44 @@ export class BarChart extends React.Component<void, Props, void> {
         this._msaClick = this._msaClick.bind(this)
     }
 
-    componentWillMount () {
-        console.log("comp will mount barchart")
-    }
-    componentDidMount () {
-        console.log("barchartmount");
-        this._renderGraph();
-    }
+      componentDidMount () {
+          this._renderGraph(this.props);
+      }
+
+      componentWillReceiveProps (nextProps) {
+        if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros)){
+          this._renderGraph(nextProps);
+        }
+      }
+
+      _metroChange (oldMetros,newMetros){
+        if(oldMetros.length == newMetros.length){
+          //Check to see if they are
+          for(var i=0; i<oldMetros.length; i++){
+            if(oldMetros[i] != newMetros[i]){
+              return true;
+            }
+          }
+          //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
+          return false; 
+        }
+          return true;
+      }
 
     _msaClick (d) {
-        console.log(d.key);
         this.context.router.push('/metro/'+d.key);   
     }
 
-    _renderGraph () {
-        var percFormat = d3.format(".3%");
+    _renderGraph (props) {
+        var percFormat = d3.format("%");
         var scope = this;
-        
-        var compColor = d3.scale.ordinal()
-            .domain(["lowIncome","highIncome"])
-            .range(['red','green']);
 
-    	var data = scope.props.data;
+    	var data = props.data;
 
-        if(this.props.metros){
+        if(props.metros){
           data = data.filter(d => {
             var inBucket = false;
-            this.props.metros.forEach(msaId => {
+            props.metros.forEach(msaId => {
               if(d.key == msaId){
                 inBucket = true;
               } 
@@ -60,7 +71,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
         })
 
-        if(scope.props.graph != "opportunity"){
+        if(props.graph != "opportunity"){
             //Sort data so bar chart descends
             data.sort(function(a,b){
               return b.values[(b.values.length-1)].y - a.values[(a.values.length-1)].y
@@ -69,18 +80,18 @@ export class BarChart extends React.Component<void, Props, void> {
         }
         else{
             //Sort data so bar chart descends
-            if(scope.props.dataType != "composite"){
+            if(props.dataType != "composite"){
                 data.sort(function(a,b){
                     var aVal,
                         bVal;
 
                     a.values.forEach(function(val){
-                        if(val.x == scope.props.dataType){
+                        if(val.x == props.dataType){
                             aVal = val.y;
                         }
                     })
                     b.values.forEach(function(val){
-                        if(val.x == scope.props.dataType){
+                        if(val.x == props.dataType){
                             bVal = val.y;
                         }
                     })
@@ -107,11 +118,11 @@ export class BarChart extends React.Component<void, Props, void> {
                 };
 
                 filteredMetro.values = metroArea.values.filter(function(value){
-                    if(scope.props.dataType == "composite"){
+                    if(props.dataType == "composite"){
                         return value;
                     }
                     else{
-                        if(value.x == scope.props.dataType){
+                        if(value.x == props.dataType){
                             return value;
                         }
                     }
@@ -121,7 +132,7 @@ export class BarChart extends React.Component<void, Props, void> {
 
             //Make sure the cities we are using have the selected dataset
             var filteredData = trimmedData.filter(metroArea => {
-                if(scope.props.dataType == "composite"){
+                if(props.dataType == "composite"){
                     if(metroArea.values[0].y == null || metroArea.values[1].y == null){
                         return false;
                     }
@@ -144,30 +155,25 @@ export class BarChart extends React.Component<void, Props, void> {
             width = document.getElementById("mapDiv").offsetWidth,
             height = width*.5;
 
-		var x0 = d3.scale.ordinal()
+		var x = d3.scale.ordinal()
 		    .rangeBands([0, width], .5,1);
-
-        var x1 = d3.scale.ordinal();
 
 		var y = d3.scale.linear()
 		    .range([height, 0]);
 
 		var xAxis = d3.svg.axis()
-		    .scale(x0)
+		    .scale(x)
 		    .orient("bottom")
             .tickValues([]);
 
 		var yAxis = d3.svg.axis()
 		    .scale(y)
-		    .orient("left");
-
-        if(scope.props.graph != "opportunity"){}
-        else{
-            yAxis.ticks(20, "%");
-        }
+		    .orient("left")
+            .ticks(20)
+            .tickFormat(percFormat);
 		    
         var voronoi = d3.geom.voronoi()
-            .x(function(d) { return x0(d.city.key); })
+            .x(function(d) { return x(d.city.key); })
             .y(function(d) { return y(d.y); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]])
 
@@ -178,16 +184,9 @@ export class BarChart extends React.Component<void, Props, void> {
         var svg = d3.select("#barChart svg")
             .attr('viewBox','-90 -10 ' + (width+110) + ' ' + (height+60))
 
-		x0.domain(filteredData.map(function(d) { return +d.key; }));
-
-        //Opportunity data uses 
-        if(scope.props.graph == "opportunity"){
-            x1.domain(['lowIncome','highIncome']).rangeBands([0,x0.rangeBand()]);
-            y.domain([d3.min(filteredData, function(d) { return d['values'][0]['y']; }), d3.max(filteredData, function(d) { return d['values'][0]['y'] })]);
-        } 
-        else{
-            y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
-        }
+		x.domain(filteredData.map(function(d) { return +d.key; }));
+        y.domain([d3.min(filteredData, function(d) { return d['values'][(d.values.length-1)]['y']; }), d3.max(filteredData, function(d) { return d['values'][(d.values.length-1)]['y'] })]);
+    
 
 		svg.append("g")
 		    .attr("class", "x axis")
@@ -208,76 +207,29 @@ export class BarChart extends React.Component<void, Props, void> {
                 return "Percent Income Gain/loss"
               });
 
-        var metroArea = svg.selectAll(".metroArea")
-              .data(filteredData)
-            .enter().append("g")
-              .attr("class",function(d){return "metroArea" + d.key})
-              .attr("transform",function(d){ return "translate(" + x0(d.key) + ",0)";});
+        data.sort(function(a,b){
+            return b.values[2].rank - a.values[2].rank
+        })
 
-        var voronoiGroup = svg.append("g")
-              .attr("class", "voronoi")
-              .style("fill","#FFFFFF")
-              .style("stroke","#000000")
-              .style("opacity","0")
 
-        if(scope.props.graph != "opportunity"){
-            metroArea.selectAll("rect")
-                  .data(function(d){var val = [d.values[d.values.length-1]]; return val;})
-                .enter().append("rect")
-                  .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
-                  .attr("width",x0.rangeBand())
-                  .attr("x",function(d){ return x0(d.x);})
-                  .attr("y",function(d){ if(y(d.y) == height){return height-15} else{return y(d.y);}})
-                  .attr("height",function(d){if(y(d.y) == height){return 15} else{return height- y(d.y);}})
-                  .style("fill",function(d){
-                    return d.city.color;
-                  })  
+        data.forEach(function(b,i){
+            svg.append("g")
+                .append("rect")
+                    .on("mouseover", mouseover.bind(null,b))
+                    .on("mouseout", mouseout.bind(null,b))
+                    .on("click",click.bind(null,b))
+                    .attr("class",function(){return "metroArea" + b.key})
+                    .attr("transform",function(){ return "translate(" + x(b.key) + ",0)";})
+                    .attr("id",function(){b.rect = this; return "metroArea"+ b.key + "combined";})
+                    .attr("width",x.rangeBand())
+                    .attr("x",function(){return x.rangeBand(b.key)})
+                    .attr("y",function(){ if(y(b.values[2].y) == height){return height-5} else{return y(b.values[2].y);}})
+                    .attr("height",function(){if(y(b.values[2].y) == height){return 5} else{return height- y(b.values[2].y);}})
+                    .style("fill",function(){
+                        return b.color;
+                    })                     
+        })
 
-            voronoiGroup.selectAll("path")
-                .data(voronoi(d3.nest()
-                    .key(function(d) {return x0(d.city.key) + "," + y(d.y); })
-                    .rollup(function(v) { return v[0]; })
-                    .entries(d3.merge(filteredData.map(function(d) {var val = [d.values[d.values.length-1]]; return val; })) )
-                    .map(function(d) { return d.values; })))
-            .enter().append("path")
-                .attr("d", function(d) { if(d!=undefined){return "M" + d.join("L") + "Z"}; })
-                .datum(function(d) { if(d!=undefined){return d.point}; })
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
-                .on("click",click);
-        }
-        else{
-            metroArea.selectAll("rect")
-                  .data(function(d){ return d.values;})
-                .enter().append("rect")
-                  .attr("id",function(d){return "metroArea"+ d.city.key + d.x;})
-                  .attr("width",x1.rangeBand())
-                  .attr("x",function(d){ return x1(d.x);})
-                  .attr("y",function(d){ return y(d.y);})
-                  .attr("height",function(d){return height- +y(d.y);})
-                  .style("fill",function(d){
-                    if(scope.props.dataType == "composite"){ 
-                        return compColor(d.x);
-                    }
-                    else{
-                        return d.color;
-                    }
-                  })    
-
-            voronoiGroup.selectAll("path")
-                .data(voronoi(d3.nest()
-                    .key(function(d) {return (x0(d.city.key) + x1(d.x)) + "," + y(d.y); })
-                    .rollup(function(v) { return v[0]; })
-                    .entries(d3.merge(filteredData.map(function(d) { return d.values; })) )
-                    .map(function(d) { return d.values; })))
-            .enter().append("path")
-                .attr("d", function(d) { if(d!=undefined){return "M" + d.join("L") + "Z"}; })
-                .datum(function(d) { if(d!=undefined){return d.point}; })
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
-                .on("click",click);
-
-        }
 
         //Focus is the hover popup text
         var focus = svg.append("g")
@@ -289,53 +241,28 @@ export class BarChart extends React.Component<void, Props, void> {
         .style("font-size",".75em");
 
         function mouseover(d) {
-            let id = {id: d.city.key}
-            if(scope.props.onMouseover) {
-              scope.props.onMouseover(id)
-            }
-            
-            var popText = "",
-                name;
+            props.onMouseover({id: d.key})               
 
-            name = d.city.name;
-       
-            var rect = d3.select("#metroArea"+d.city.key+d.x);
-
-            popText = "Name: " + name
-
-            if(scope.props.graph != "opportunity"){
-                rect.attr("width",(x0.rangeBand()*2));
-                popText += " | " + d.y;
-            }
+            var name = d.name;
+            var popText = "Name: " + name
+            popText += " | " + d.values[2].y;
 
             focus.attr("transform", "translate(10,-5)");
-            focus.select("text").text(popText);
-
-
-
+            focus.select("text").text(popText);            
+       
+            var rect = d3.select(d.rect);
+            rect.attr("width",(x.rangeBand()*2));
         }
 
         function click(d){ 
-            console.log("d.city",d.city);
-            scope._msaClick(d.city)
+            scope._msaClick(d) 
         }
 
-        function mouseout(d) {                          
-            var rect = d3.select("#metroArea"+d.city.key+d.x);
+        function mouseout(d) {                         
+            var rect = d3.select(d.rect);
 
-            if(scope.props.graph != "opportunity"){
-                rect.attr("width",(x0.rangeBand()));     
-                rect.style("fill",function(){return d.city.color})     
-            }
-            else{
-                if(scope.props.dataType == "composite"){
-                    rect.style("fill",function(){return compColor(d.x);})
-                }
-                else{
-                    rect.style("fill",function(){return d.color})                        
-                }
-                rect.attr("width",(x1.rangeBand()));                        
-            }
+            rect.attr("width",(x.rangeBand()));     
+            rect.style("fill",function(){return d.color})    
         }
     }
     _labelFunction () {
@@ -345,18 +272,16 @@ export class BarChart extends React.Component<void, Props, void> {
     render () {
     	var scope = this;
 
-    	console.log("bargraph",scope);
-        this._renderGraph();
         return (
-            <div className={classes['graphContainer']}>
-                <div className={classes['title']}>
-                    <h4>{scope._labelFunction()}</h4>
-                </div>
-                <div id="barChart" className={classes['svg-container']}>
-                  <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
-                </div>
+        <div className={classes['graphContainer']}>
+            <div className={classes['title']}>
+              <h4>{this._labelFunction(this.props)}</h4>
             </div>
-        );            
+            <div id="barChart" className={classes['svg-container']}>
+              <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
+            </div>
+        </div>
+    );           
     }
 }
 BarChart.contextTypes = {
