@@ -4,6 +4,11 @@ import { loadMetroGdp, loadMetroGdpPerCapita } from 'redux/modules/metroGdpData'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
 import MetroMap from 'components/maps/MetroMap'
 import LineGraph from 'components/graphs/SimpleLineGraph'
+import Select from 'react-select'
+import classes from 'styles/sitewide/index.scss'
+import d3 from 'd3'
+import { withRouter } from 'react-router'
+
 
 export class MetroHeader extends React.Component<void, Props, void> {
   _fetchData () {
@@ -19,6 +24,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
   }
 
    componentDidMount() {
+    this.setState({selectDestination:{value:this.props.metroId,label:this.props.metros[this.props.metroId].name}})
     this._fetchData ()
   }
   
@@ -34,6 +40,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
   }
 
   render () {
+    var scope = this;
     if (!this.hasData()) return <span />
     let popData = [{
       key:'Population',
@@ -91,9 +98,35 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let first_per_capita = gdpDataPerCapita[0].values.filter(d => { return +d.key === 2001 })[0].values.y
     let perCapitaGrowth = (last_per_capita - first_per_capita) / first_per_capita * 100
 
+
+    var selectOptions = Object.keys(this.props.metros).map(metroId => {
+      return {value:metroId,label:this.props.metros[metroId].name}
+    })
+
+
+    function selectChange (value){
+      console.log("Select Change",value);
+
+      if(scope.props.metros[value.value]){
+        scope.context.router.push('/metro/'+value.value);   
+      }
+
+    }
+
+
+
     return (
       <div className='container'>
-        <h4>{this.props.metroData.name}</h4>
+      <div id="metroSearch">
+        <Select 
+        className={classes['Select']}
+        name="metroSelect"
+        value={this.state.selectDestination}
+        options={selectOptions}
+        onChange={selectChange}
+        placeholder="Travel to a different Metro Area"
+        />   
+      </div>   
         <div className='row'>
           <div className='col-xs-3'>
               <MetroMap currentMetro={this.props.metroId} />
@@ -144,10 +177,15 @@ export class MetroHeader extends React.Component<void, Props, void> {
   }
 }
 
+MetroHeader.contextTypes = {
+  router: React.PropTypes.object.isRequired
+}
+
 const mapStateToProps = (state) => {
   return ({
     metroScores : state.metroScoresData,
-    gdpData : state.metroGdpData
+    gdpData : state.metroGdpData,
+    metros : state.metros
   })
 }
 

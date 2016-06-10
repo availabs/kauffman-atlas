@@ -1,0 +1,61 @@
+#metroSearch{
+  margin-bottom:10px;
+}
+
+
+
+#metroSearch .Select{
+  max-width:33%;
+}
+
+#metroSearch .Select-placeholder{
+  color:#f7f7f7;
+}
+
+#metroSearch .Select-value span{
+  max-width:33%;
+  color:#f7f7f7;
+}
+
+#metroSearch .Select-control {
+  background-color:#7D8FAF;
+  border-color: #5d5d5d;
+}
+
+#metroSearch .Select-control:hover {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+#metroSearch .Select-menu {
+  background-color:#f7f7f7;
+}
+
+#metroSearch .Select-option.is-focused {
+  background-color:#7D8FAF;
+  color:#f7f7f7;
+}
+
+#metroSearch .Select-menu-outer{
+  border: 1px solid #f7f7f7;
+}
+
+#metroSearch .Select-clear-zone{
+  color:#f7f7f7;
+}
+
+#metroSearch .Select-clear-zone:hover > .Select-clear {
+  color: #DEDEDE;
+}
+
+#metroSearch .Select-arrow {
+  border-color: #f7f7f7 transparent transparent;
+  border-style: solid;
+  border-width: 5px 5px 2.5px;
+  display: inline-block;
+  height: 0;
+  width: 0;
+}
+
+#metroSearch .Select-arrow-zone:hover > .Select-arrow {
+  border-top-color: #DEDEDE;
+}
