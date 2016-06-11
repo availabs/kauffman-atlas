@@ -14,14 +14,15 @@ const getData = (state, ownProps) => {
 
   state = state.metroQwiData
 
+
   let msa = state.msa
   let measure = state.measure
 
 
-  if (! ( (_.get(state.inventory, ['ratiosByFirmage', '00', `${measure}_ratio`]) === 'RECEIVED') &&
+  if (! ( (_.get(state.inventory, ['ratiosByFirmage', '00000', `${measure}_ratio`]) === 'RECEIVED') &&
           (_.get(state.inventory, ['ratiosByFirmage', msa, `${measure}_ratio`]) === 'RECEIVED') &&
           (_.get(state.inventory, ['raw', msa, measure]) === 'RECEIVED'))) { 
-    
+
             return null 
   }
   let measureIsCurrency = currencyMeasures[measure]
@@ -176,7 +177,7 @@ const getData = (state, ownProps) => {
   })
 
 
-  let nationalRatiosData = state.data.ratiosByFirmage['00']
+  let nationalRatiosData = state.data.ratiosByFirmage['00000']
   let ratiosData = state.data.ratiosByFirmage[msa]
 
   let ratiosDataYears = Object.keys(ratiosData).sort()
@@ -340,7 +341,6 @@ const getData = (state, ownProps) => {
     overviewTableColumnNames.locationQuotient,
   ]
  
-
   return {
     lineGraphRawData: lineGraphRawData.length ? lineGraphRawData : null,
     lineGraphLQData: lineGraphLQData.length ? lineGraphLQData : null,
