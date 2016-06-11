@@ -5,7 +5,7 @@ import { industryTitles } from '../../../support/qwi'
 
 const apiServerAddress = `${apiConfig.hostname}${(apiConfig.port) ? (':' + apiConfig.port) : ''}`
 
-const allQwiIndustryCodes = Object.keys(industryTitles).concat(['00']).map(code => _.padStart(code, 5, '0')).sort()
+const allQwiIndustryCodes = Object.keys(industryTitles).concat(['00000']).map(code => _.padStart(code, 5, '0')).sort()
 const allQwiFirmageCodes = _.range(0, 6)
 
 
@@ -133,8 +133,8 @@ export const loadData = (msa, measure) => (dispatch, getState) => {
   }
 
   // If we don't already have it, get the national level ratiosByFirmage data.
-  if (!_.has(state.inventory, ['ratiosByFirmage', '00', `${measure}_ratio`])) {
-    requestRatiosByFirmageData(dispatch, '00', `${measure}_ratio`)
+  if (!_.has(state.inventory, ['ratiosByFirmage', '00000', `${measure}_ratio`])) {
+    requestRatiosByFirmageData(dispatch, '00000', `${measure}_ratio`)
   }
 
   // If we don't already have it, get the metro's ratiosByFirmage data.
@@ -184,24 +184,23 @@ function getYearQuarterObjFromDateObj (dateObj) {
 }
 
 
-const allIndustryAndFirmageCodesReqPath = `industry${allQwiIndustryCodes.join('')}/firmage${allQwiFirmageCodes.join('')}`
-
 function buildRatiosByFirmageRequestURL (msa, measure) {
-  return `http://${apiServerAddress}/derived-data/measure-ratios-by-firmage/geography` + 
-            `${(msa === '00') ? '00000' : msaToFips[msa]}${msa}/year20012016/quarter/` +
-            `${allIndustryAndFirmageCodesReqPath}` +
-            `?fields=${measure}&dense=true&flatLeaves=true`
+  return `http://${apiServerAddress}/derived-data/measure-ratios-by-firmage/geography${msa}/` + 
+             `year20012016/quarter/industry${allQwiIndustryCodes.join('')}/firmage12345` +
+             `?fields=${measure}&dense=true&flatLeaves=true`
 }
 
+
 function buildRawDataRequestURL (msa, measure) {
-  return `http://${apiServerAddress}/data/geography` +
-            `${msaToFips[msa]}${msa}/year20012016/quarter/` + 
-            `${allIndustryAndFirmageCodesReqPath}` +
-            `?fields=${measure}&dense=true&flatLeaves=true`
+  let fipsArr = msaToFips[msa]
+  
+  return `http://${apiServerAddress}/` +
+             ((fipsArr.length === 1) ? `data/geography${fipsArr[0]}${msa}` : `derived-data/interstate-msa/geography${msa}`) +
+             `/year20012016/quarter/industry${allQwiIndustryCodes.join('')}/firmage012345?fields=${measure}&dense=true&flatLeaves=true`
 }
 
 function transformJSON (json) { 
-  let data =  _.mapKeys(json.data, (v,k) => (k.length > 2) ? k.substring(2) : k)
+  let data =  _.mapKeys(json.data, (v,k) => (k.length > 5) ? k.substring(2) : k)
   return data
 }
 

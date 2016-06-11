@@ -59,7 +59,6 @@ const setStateField = (state, fieldPath, fieldValue) =>
 
    
 const handleActionError = (state, action) => {
-  console.error(action.payload.err.stack)
   return state
 }
 
@@ -194,7 +193,6 @@ const updateInventory = (dataType, value, state, action) => {
 
 const receiveData = (dataType, state, action) => {
   let updatedState = updateInventory(dataType, 'RECEIVED', state, action)
-
   return (state === updatedState) ? state : _.merge(updatedState, { data: { [dataType]: action.payload.data } })
 }
 

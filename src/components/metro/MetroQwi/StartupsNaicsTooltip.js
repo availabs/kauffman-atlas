@@ -57,7 +57,7 @@ export const StartupsNaicsTooltip = (props) =>
             </tbody>
 
             <tfoot>
-              { _.some(props.data, (d) => d.filledNull) ? '* filled in' : (<span/>)}
+              { _.some(props.data, (d) => d.filledNull) ? '* filled in' : ''}
             </tfoot>
 
           </table>
