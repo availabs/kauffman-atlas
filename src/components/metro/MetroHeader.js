@@ -117,11 +117,10 @@ export class MetroHeader extends React.Component<void, Props, void> {
         <Select 
         className={classes['Select']}
         name="metroSelect"
-        value={{value:this.props.metroId,label:this.props.metros[this.props.metroId].name}}
+        value={selectOptions.filter(d => { return d.value === this.props.metroId })[0]}
         options={selectOptions}
         onChange={selectChange}
         placeholder={this.props.metros[this.props.metroId].name}   
-        resetValue="Travel to a different Metro Area"
         clearable={false}
         />   
       </div>   
