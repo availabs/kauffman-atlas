@@ -25,7 +25,10 @@ export class MetroMap extends React.Component<void, Props, void> {
 
   componentWillReceiveProps (nextProps){
     if(this.props.mapLoaded !== nextProps.mapLoaded && this.props.zbpLoaded !== nextProps.zbpLoaded || this.props.currentMetro !== nextProps.currentMetro){
-      this._drawGraph(nextProps);
+      return this._drawGraph(nextProps);
+    }
+    if(d3.selectAll("."+classes['state'])[0].length == 0 && nextProps.mapLoaded){
+      return this._drawGraph(nextProps);
     }
   }
 
