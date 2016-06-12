@@ -33,7 +33,6 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   _drawGraph (props) {
-    console.log("_drawGraph",props)
     let metrosGeo = Object.assign({},props.metrosGeo);
     let statesGeo = Object.assign({},props.statesGeo);
 
@@ -50,8 +49,6 @@ export class MetroMap extends React.Component<void, Props, void> {
       }) 
       return match;
     })
-
-    console.log(metrosGeo.features)
 
     d3.selectAll("."+classes['state']).remove()
     d3.selectAll("."+classes['singleMsa']).remove()
@@ -113,7 +110,6 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   render () {
-    console.log("metro map render")
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
