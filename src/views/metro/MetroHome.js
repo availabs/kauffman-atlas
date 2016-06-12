@@ -10,6 +10,7 @@ import MetroQwi from 'components/metro/MetroQwi'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroQcewCluster from 'components/metro/MetroQcewCluster'
 import classes from 'styles/sitewide/index.scss'
+import { withRouter } from 'react-router'
 
 
 type Props = {
@@ -26,7 +27,6 @@ export class MetroHome extends React.Component<void, Props, void> {
 	    this._selectDisplay = this._selectDisplay.bind(this)
 	    this._linkIsActive = this._linkIsActive.bind(this)
     }
-
 
     _linkIsActive(type){
 		let pageid = this.props.params.pageid
@@ -75,24 +75,23 @@ export class MetroHome extends React.Component<void, Props, void> {
 				   title='Wages'
 				   params={this.props.params}
 			/>
-		    )
-      case 'StartupEmployment':
-        return (
-          <MetroQwi msa={metroId}
-               measure='emp'
-               title='Startup Employment'
-               params={this.props.params}
-          />
-        )
-      case 'StartupPayroll':
-        return (
-          <MetroQwi msa={metroId}
-               measure='payroll'
-               title='Startup Payroll'
-               params={this.props.params}
-          />
-        )
-
+			    )
+			case 'StartupEmployment':
+			return (
+			  <MetroQwi msa={metroId}
+			       measure='emp'
+			       title='Startup Employment'
+			       params={this.props.params}
+			  />
+			)
+			case 'StartupPayroll':
+			return (
+			  <MetroQwi msa={metroId}
+			       measure='payroll'
+			       title='Startup Payroll'
+			       params={this.props.params}
+			  />
+			)
 		    case 'cluster':
 		    return (
 			<MetroQcewCluster currentMetro={metroId} year={year}
@@ -181,6 +180,13 @@ export class MetroHome extends React.Component<void, Props, void> {
     }
     render () {
 	let metroId = this.props.params.geoid
+	var scope = this;
+
+
+	function selectChange(msaId){
+		scope.context.router.push('/metro/'+msaId+'/'+scope.props.params.pageid)
+	}
+
 	if(!this.props.metros[metroId] || !this.props.metros[metroId].pop){
 	    return (
 		<div>
@@ -199,7 +205,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	    return (
 		<div>
 		    <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-			<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} />
+			<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} selectChange={selectChange}/>
 			<div className='container'>
 			    <div className='row'>
 				<div className={'col-xs-12 ' + classes['text-div']}>
@@ -217,6 +223,10 @@ export class MetroHome extends React.Component<void, Props, void> {
 	}
 
     }
+}
+
+MetroHome.contextTypes = {
+  router: React.PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({

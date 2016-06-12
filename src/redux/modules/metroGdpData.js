@@ -31,7 +31,7 @@ export const loadMetroGdp = (msaId) => {
   return (dispatch) => {
     return fetch('http://bea.gov/api/data/?UserID=DF1D6670-E35A-40F3-B4CA-A5F68A8EE147&method=GetData&datasetname=RegionalProduct&Component=RGDP_MAN&IndustryId=1&Year=ALL&GeoFips=' + msaId + '&ResultFormat=json')
       .then(response => {
-        console.log('test', response)
+        //console.log('test', response)
         return response.json()
       })
       .then(json => dispatch(recieveData(RECIEVE_METRO_GDP_DATA,json,msaId)))
@@ -42,7 +42,7 @@ export const loadMetroGdpPerCapita = (msaId) => {
   return (dispatch) => {
     return fetch('http://bea.gov/api/data/?UserID=DF1D6670-E35A-40F3-B4CA-A5F68A8EE147&method=GetData&datasetname=RegionalProduct&Component=PCRGDP_MAN&IndustryId=1&Year=ALL&GeoFips=' + msaId + '&ResultFormat=json')
       .then(response => {
-        console.log('test', response)
+        //console.log('test', response)
         return response.json()
       })
       .then(json => dispatch(recieveData(RECIEVE_METRO_GDP_PER_CAPITA_DATA,json,msaId)))

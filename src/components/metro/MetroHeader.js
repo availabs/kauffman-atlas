@@ -7,29 +7,28 @@ import LineGraph from 'components/graphs/SimpleLineGraph'
 import Select from 'react-select'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
-import { withRouter } from 'react-router'
+
 
 
 export class MetroHeader extends React.Component<void, Props, void> {
-  _fetchData () {
-    if(!this.props.gdpData[this.props.metroId] || !this.props.gdpData[this.props.metroId].gdp){
-      return this.props.loadGdpData(this.props.metroId)
+  _fetchData (props) {
+    if(!props.gdpData[props.metroId] || !props.gdpData[props.metroId].gdp){
+      return props.loadGdpData(props.metroId)
     }
-    if(!this.props.gdpData[this.props.metroId] || !this.props.gdpData[this.props.metroId].gdp_per_capita){
-      return this.props.loadGdpPerCapita(this.props.metroId)
+    if(!props.gdpData[props.metroId] || !props.gdpData[props.metroId].gdp_per_capita){
+      return props.loadGdpPerCapita(props.metroId)
     }
-    if(!this.props.metroScores[this.props.metroId]){
-      return this.props.loadMetroScores(this.props.metroId)
+    if(!props.metroScores[props.metroId]){
+      return props.loadMetroScores(props.metroId)
     }
   }
 
-   componentDidMount() {
-    this.setState({selectDestination:{value:this.props.metroId,label:this.props.metros[this.props.metroId].name}})
-    this._fetchData ()
+  componentDidMount() {
+    this._fetchData (this.props)
   }
   
   componentWillReceiveProps (nextProps){
-    this._fetchData ()
+    this._fetchData (nextProps)
   }
 
   hasData () {
@@ -98,22 +97,19 @@ export class MetroHeader extends React.Component<void, Props, void> {
     let first_per_capita = gdpDataPerCapita[0].values.filter(d => { return +d.key === 2001 })[0].values.y
     let perCapitaGrowth = (last_per_capita - first_per_capita) / first_per_capita * 100
 
-
-    var selectOptions = Object.keys(this.props.metros).map(metroId => {
+    var selectOptions = Object.keys(this.props.metros).filter(metro => {
+      return this.props.metros[metro].pop
+    }).map(metroId => {
       return {value:metroId,label:this.props.metros[metroId].name}
     })
-
 
     function selectChange (value){
       console.log("Select Change",value);
 
-      if(scope.props.metros[value.value]){
-        scope.context.router.push('/metro/'+value.value);   
+      if(value && scope.props.metros[value.value] && scope.props.metros[value.value].pop){
+        scope.props.selectChange(value.value) 
       }
-
     }
-
-
 
     return (
       <div className='container'>
@@ -121,10 +117,11 @@ export class MetroHeader extends React.Component<void, Props, void> {
         <Select 
         className={classes['Select']}
         name="metroSelect"
-        value={this.state.selectDestination}
+
         options={selectOptions}
         onChange={selectChange}
-        placeholder="Travel to a different Metro Area"
+        placeholder={this.props.metros[this.props.metroId].name}   
+        resetValue="Travel to a different Metro Area"
         />   
       </div>   
         <div className='row'>
@@ -175,10 +172,6 @@ export class MetroHeader extends React.Component<void, Props, void> {
       </div>
     )      
   }
-}
-
-MetroHeader.contextTypes = {
-  router: React.PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {
