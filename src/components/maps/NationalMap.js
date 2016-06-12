@@ -285,7 +285,7 @@ export class NationalMap extends React.Component<void, Props, void> {
 
   _msaClick (d) {
     console.log(d.id);
-    this.context.router.push('/metro/'+d.id);   
+    this.context.router.push('/metro/'+d.id+'/combined');   
   }
 
   _mouseout (d){

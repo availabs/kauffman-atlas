@@ -24,12 +24,13 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   componentWillReceiveProps (nextProps){
-    if(this.props.mapLoaded !== nextProps.mapLoaded && this.props.zbpLoaded !== nextProps.zbpLoaded){
+    if(this.props.mapLoaded !== nextProps.mapLoaded && this.props.zbpLoaded !== nextProps.zbpLoaded || this.props.currentMetro !== nextProps.currentMetro){
       this._drawGraph(nextProps);
     }
   }
 
   _drawGraph (props) {
+    console.log("_drawGraph",props)
     let metrosGeo = Object.assign({},props.metrosGeo);
     let statesGeo = Object.assign({},props.statesGeo);
 
@@ -47,6 +48,10 @@ export class MetroMap extends React.Component<void, Props, void> {
       return match;
     })
 
+    console.log(metrosGeo.features)
+
+    d3.selectAll("."+classes['state']).remove()
+    d3.selectAll("."+classes['singleMsa']).remove()
 
     let width = document.getElementById("mapDiv").offsetWidth //? document.getElementById("mapDiv").offsetWidth : 200
     let height = width  * 0.6
@@ -105,6 +110,7 @@ export class MetroMap extends React.Component<void, Props, void> {
   }
 
   render () {
+    console.log("metro map render")
     return (
       <div id="mapDiv" className={classes['svg-container']}>
         <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>

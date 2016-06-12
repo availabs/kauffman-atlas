@@ -41,7 +41,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
   _msaClick (d) {
     console.log(d.key);
-    this.context.router.push('/metro/'+d.key);   
+    this.context.router.push('/metro/'+d.key+'/combined');   
   }
 
   _renderGraph (props) {
