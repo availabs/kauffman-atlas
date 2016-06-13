@@ -24,6 +24,7 @@ const errorHandler = (msa, err) => {
 
 const computeYearlyByEmpVariance = (data) => {
 
+
   let msa = data[0].key
   let byYear = data[0].values
 
@@ -41,31 +42,31 @@ const computeYearlyByEmpVariance = (data) => {
 
       let bySubsector = quarterData.values
 
-      let emp_1_Arr = []
-      let emp_2_Arr = []
-      let emp_3_Arr = []
+      let lq_month1_emplvl_Arr = []
+      let lq_month2_emplvl_Arr = []
+      let lq_month3_emplvl_Arr = []
 
       bySubsector.forEach(subsectorData => {
         let subsector = subsectorData.key
 
-        let empData = subsectorData.values[0]         
+        let lqEmpData = subsectorData.values[0]         
 
-        emp_1_Arr.push(+empData.month1_emplvl)
-        emp_2_Arr.push(+empData.month2_emplvl)
-        emp_3_Arr.push(+empData.month3_emplvl)
+        lq_month1_emplvl_Arr.push(+lqEmpData.lq_month1_emplvl)
+        lq_month2_emplvl_Arr.push(+lqEmpData.lq_month2_emplvl)
+        lq_month3_emplvl_Arr.push(+lqEmpData.lq_month3_emplvl)
       })
 
-      emp_1_Arr = emp_1_Arr.filter(Number.isFinite)
-      emp_2_Arr = emp_2_Arr.filter(Number.isFinite)
-      emp_3_Arr = emp_3_Arr.filter(Number.isFinite)
+      lq_month1_emplvl_Arr = lq_month1_emplvl_Arr.filter(Number.isFinite)
+      lq_month2_emplvl_Arr = lq_month2_emplvl_Arr.filter(Number.isFinite)
+      lq_month3_emplvl_Arr = lq_month3_emplvl_Arr.filter(Number.isFinite)
 
-      let avg_1 = _.mean(emp_1_Arr)
-      let avg_2 = _.mean(emp_2_Arr)
-      let avg_3 = _.mean(emp_3_Arr)
+      let avg_1 = _.mean(lq_month1_emplvl_Arr)
+      let avg_2 = _.mean(lq_month2_emplvl_Arr)
+      let avg_3 = _.mean(lq_month3_emplvl_Arr)
 
-      let variance_1 = _.meanBy(emp_1_Arr, (emp) => ((emp - avg_1)*(emp - avg_1)))
-      let variance_2 = _.meanBy(emp_2_Arr, (emp) => ((emp - avg_2)*(emp - avg_2)))
-      let variance_3 = _.meanBy(emp_3_Arr, (emp) => ((emp - avg_3)*(emp - avg_3)))
+      let variance_1 = _.meanBy(lq_month1_emplvl_Arr, (lqEmp) => ((lqEmp - avg_1)*(lqEmp - avg_1)))
+      let variance_2 = _.meanBy(lq_month2_emplvl_Arr, (lqEmp) => ((lqEmp - avg_2)*(lqEmp - avg_2)))
+      let variance_3 = _.meanBy(lq_month3_emplvl_Arr, (lqEmp) => ((lqEmp - avg_3)*(lqEmp - avg_3)))
 
       monthlyVariances.push(variance_1)
       monthlyVariances.push(variance_2)
@@ -86,7 +87,7 @@ const getYearlyEmpVarianceForMSA = (msa, cb) => {
                     `fips${`C${msa.slice(0,4)}`}/` +
                     `yr${years.join('')}/qtr1234/` + 
                     `/ind${sixDigitNAICsCodes.join('')}/` + 
-                    `?fields[]=month1_emplvl&fields[]=month2_emplvl&fields[]=month3_emplvl`
+                    `?fields[]=lq_month1_emplvl&fields[]=lq_month2_emplvl&fields[]=lq_month3_emplvl`
 
   fetch(reqURL)
     .then()
@@ -100,7 +101,7 @@ const getYearlyEmpVarianceForMSA = (msa, cb) => {
 const worker = (i, variancesByMSAs) => {
   
   if (i === msaIds.length) {
-    let outputFilePath = path.join(__dirname, '../../src/static/data/employmentVarianceAcrossSubsectors.json') 
+    let outputFilePath = path.join(__dirname, '../../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json') 
 
     return fs.writeFileSync(outputFilePath, JSON.stringify(variancesByMSAs))
   }

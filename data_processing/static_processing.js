@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 
 require('es6-promise').polyfill();
@@ -24,8 +25,10 @@ var processedDensityComposite = _processComposite(processedNewFirms['relative'],
 //Diversity Data
 var opportunityData = JSON.parse(fs.readFileSync('../src/static/data/opportunity.json')); 
 var foreignbornData = JSON.parse(fs.readFileSync('../src/static/data/foreignborn.json')); 
+var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/employmentVarianceAcrossSubsectors.json'));
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
+var processedEmpVariance = processGeneral2(empVarianceData, true);
 var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn);
 
 //Fluidity Data
@@ -37,7 +40,7 @@ var processedNetMigration = _processdetailMigration(fluidityIrsData,"irsNet");
 var processedTotalMigration = _processdetailMigration(fluidityIrsData,"totalMigrationFlow");
 var processedInflowMigration = _processdetailMigration(fluidityIrsData,"inflowMigration");
 var processedOutflowMigration = _processdetailMigration(fluidityIrsData,"outflowMigration");
-var processedAnnualChurn = _processAnnualTurnOvrS(annualChurnData);
+var processedAnnualChurn = processGeneral2(annualChurnData);
 var coloredAnnualChurn = _polishData(processedAnnualChurn['raw'],"annualChurn")
 var processedFluidityComposite = _processFluidityComposite(processedInc5000,processedNetMigration,processedTotalMigration,coloredAnnualChurn);
 
@@ -1115,24 +1118,29 @@ function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
 /**
  * Parameter: data { msa: { year: <turnovrs> } }
  */
-function _processAnnualTurnOvrS (data) {
+function processGeneral2 (data, sortNondescending) {
 
   //Begin: Helpers -----------------------------------------------------------
   const getRankingsByYear = data => {
 
-    const byYearRankings = _.reduce(data, (acc, annualChurnForMSA, msaCode) => {
-      _.forEach(annualChurnForMSA, (churnValue, year) => {
-        (acc[year] || (acc[year] = [])).push({ msa: msaCode, value: churnValue })
+    const byYearRankings = _.reduce(data, (acc, annualMeasureForMSA, msaCode) => {
+      _.forEach(annualMeasureForMSA, (measureValue, year) => {
+        (acc[year] || (acc[year] = [])).push({ msa: msaCode, value: measureValue })
       })
 
       return acc
     }, {})
 
-    const comparator = (a,b) => 
-      (((b.value !== null) ? b.value : Number.NEGATIVE_INFINITY) - ((a.value !== null) ? a.value : Number.NEGATIVE_INFINITY))
+    const comparator = (a,b) => {
+      let aVal = (Number.isFinite(a.value)) ? a.value : Number.NEGATIVE_INFINITY
+      let bVal = (Number.isFinite(b.value)) ? b.value : Number.NEGATIVE_INFINITY
+
+      return ((sortNondescending ? -1 : 1) * (bVal - aVal))
+    }
+
 
     // Sort (in-place) each year's list of {msa, value} objects.
-    _.forEach(byYearRankings, msaChurnArrForYear => msaChurnArrForYear.sort(comparator))
+    _.forEach(byYearRankings, msaMeasureArrForYear => msaMeasureArrForYear.sort(comparator))
 
     return byYearRankings
   }
@@ -1140,21 +1148,21 @@ function _processAnnualTurnOvrS (data) {
 
   // For each year, create a table of MSA -> rank.
   const getMSAByYearRankingTables = byYearRankings => 
-    _.mapValues(byYearRankings, (sortedChurnForYear, year) => {
+    _.mapValues(byYearRankings, (sortedMeasureForYear, year) => {
 
-      let h = _.head(sortedChurnForYear)
-      let previousChurnValue = h.value
+      let h = _.head(sortedMeasureForYear)
+      let previousMeasureValue = h.value
       let rank = 1
 
-      return _.reduce(_.tail(sortedChurnForYear), (acc, d, i) => {
-        // All MSAs with same churn value should be tied in rank.
-        if (previousChurnValue !== d.value) {
+      return _.reduce(_.tail(sortedMeasureForYear), (acc, d, i) => {
+        // All MSAs with same measure value should be tied in rank.
+        if (previousMeasureValue !== d.value) {
           // As we are using tail on a zero-indexed array, the ordinal # of an element is the index + 2.
           rank = (i + 2)
         }
 
         acc[d.msa] = rank
-        previousChurnValue = d.value
+        previousMeasureValue = d.value
 
         return acc
       }, { [h.msa]: rank })
