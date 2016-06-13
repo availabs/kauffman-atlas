@@ -113,7 +113,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
       return (
         <div id={'tooltip' + this.props.uniq}
-             style={{overflow:'scroll'}}>
+             style={{ overflow : 'scroll' }}>
 
               <table className='table'>
 
