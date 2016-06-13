@@ -65,48 +65,58 @@ export class NaicsGraph extends React.Component<void, Props, void> {
       }
     }
 
-    renderToolTip() {
-      if(!this.props.qtrData) {
-        return (<span></span>)
+   
+    renderToolTip (mData) {
+
+      let data;
+
+      if (!this.props.qtrData) {
+        data = mData
+      } else { 
+        data = this.props.qtrData
       }
 
-      //otherwise
       let naics = this.props.naicsKeys
-      let data = this.props.qtrData
-      let innerStyle = { paddingBottom: 1, paddingTop: 1 }
+
+      let innerStyle = {
+        paddingBottom : 1,
+        paddingTop    : 1
+      }
+
       let valueFormatter = ((this.props.type === 'totalwages') && (focusedLineGraph === 'rawLinegraph')) ?
                             tooltipDollarFormatter : tooltipNumberFormatter
 
-      let rows = data.sort((b,a) => a.value - b.value)
-                     .map(x => {
-                              let nameStyle = Object.assign({},innerStyle)
+      let rows = data.sort((b,a) => a.value-b.value)
+                     .map( x => {
 
-                              nameStyle.backgroundColor = x.color
+                       let nameStyle = Object.assign({},innerStyle)
 
-                              return (
-                                <tr key={x.key}>
+                       nameStyle.backgroundColor = x.color
 
-                                  <td style={nameStyle}>
-                                    <span title={naics[x.key].title}>
-                                      <div style={{color:'#eee'}}>
-                                        {naics[x.key].title.substr(0,16)}
-                                      </div>
-                                    </span>
-                                  </td>
+                       return (
+                           <tr key={x.key}>
 
-                                  <td style={innerStyle}>
-                                    {valueFormatter(x.value)}
-                                  </td>
-                                </tr>
-                              )
-                    })
+                             <td style={nameStyle}>
+                               <span title={naics[x.key].title}>
+                                 <div style={{color:'#eee'}}>
+                                   {naics[x.key].title.substr(0,16)}
+                                 </div>
+                               </span>
+                             </td>
+                           
+                             <td style={innerStyle}>
+                               {valueFormatter(x.value)}
+                             </td>
+                           </tr>
+                        )
+                     })
 
       return (
         <div id={'tooltip' + this.props.uniq}
              style={{overflow:'scroll'}}>
 
               <table className='table'>
-                
+
                 <thead>
                   <tr>
                     <td>Naics</td>
@@ -114,14 +124,16 @@ export class NaicsGraph extends React.Component<void, Props, void> {
                   </tr>
                 </thead>
 
-                <tbody>{rows}</tbody>
+                <tbody>
+                  {rows}
+                </tbody>
+
               </table>
-            
         </div>
       )
     }
     
-    
+     
     xmap (year, qtr) {
 
       var val = (4 * (parseInt(year) - yearConst)) + parseInt(qtr)
@@ -298,7 +310,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
         </div>
 
         <div className='col-xs-4'>
-          {this.renderToolTip()}
+          {this.renderToolTip(mData.data)}
         </div>  
       </div>
     )
