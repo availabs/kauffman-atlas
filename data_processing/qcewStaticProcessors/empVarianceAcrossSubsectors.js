@@ -107,7 +107,9 @@ const worker = (i, variancesByMSAs) => {
 
   let msa = msaIds[i]
 
+  console.time(msa)
   getYearlyEmpVarianceForMSA(msa, (err, yearlyVariances) => {
+    console.timeEnd(msa)
     if (err) {
       console.error(`Error processing data for ${msa}.`)
       console.error(err.stack || err)
