@@ -1,0 +1,4 @@
+http://www.bls.gov/cew/home.htm
+
+// Descriptions of columns
+http://data.bls.gov/cew/doc/layouts/csv_quarterly_layout.htm
