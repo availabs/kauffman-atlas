@@ -25,7 +25,7 @@ var processedDensityComposite = _processComposite(processedNewFirms['relative'],
 //Diversity Data
 var opportunityData = JSON.parse(fs.readFileSync('../src/static/data/opportunity.json')); 
 var foreignbornData = JSON.parse(fs.readFileSync('../src/static/data/foreignborn.json')); 
-var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/employmentVarianceAcrossSubsectors.json'));
+var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json'));
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
 var processedEmpVariance = processGeneral2(empVarianceData, true);
@@ -132,6 +132,7 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['diversity'] = {};
   curMsaObj['diversity']['opportunity'];
   curMsaObj['diversity']['foreignborn'] = {};
+  curMsaObj['diversity']['empLQVariance'] = {};
   curMsaObj['diversity']['composite'];
 
   processedOpportunity.forEach(metro => {
@@ -147,6 +148,11 @@ Object.keys(msaPop).forEach(msaId => {
   processedForeignborn['relative'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['diversity']['foreignborn']['relative'] = metro;        
+    }
+  })
+  processedEmpVariance['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['empLQVariance']['raw'] = metro;        
     }
   })
   processedDiversityComposite.forEach(metro => {
