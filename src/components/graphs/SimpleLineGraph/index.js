@@ -70,6 +70,7 @@ class LineGraph extends React.Component {
     _mouseListener (d,data) {
 
 	if(this.props.onMouse){
+		console.log(data);
 	    let tableData = data.map(x => {
 		let offset = x.values[0].key
 		try{

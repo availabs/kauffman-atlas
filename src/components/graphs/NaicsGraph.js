@@ -56,14 +56,19 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    this._init(nextProps.currentMetro)
     }
 
-    renderToolTip() {
-	if(!this.props.qtrData)
-	    return (<span></span>)
-	    //otherwise
+    renderToolTip(mData) {
+    let data;
+	if(!this.props.qtrData){
+		data = mData
+	}
+	else{
+		data = this.props.qtrData
+	}
+
+
 	let naics = this.props.naicsKeys
-	let data = this.props.qtrData
 	let innerStyle = {paddingBottom:1,paddingTop:1}
-  let valueFormatter = ((this.props.type === 'totalwages') && (focusedLineGraph === 'rawLinegraph')) ?
+  	let valueFormatter = ((this.props.type === 'totalwages') && (focusedLineGraph === 'rawLinegraph')) ?
                         tooltipDollarFormatter : tooltipNumberFormatter
 
 	let rows = data.sort((b,a) => a.value-b.value)
@@ -212,11 +217,9 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    
 	    let agg = this.aggfunc.bind(this,x => (x/empfields.length))
 
-	    let mData = this._process(data,agg,noagg)
-	    
+	    let mData = this._process(data,agg,noagg)   
 	    let graphMargin = {top: 10, left: 60, right: 20, bottom: 20}
 
-	    
 	    return (
 	    <StickyContainer>
 			<div className='row' style={{overflow:'hidden'}} >
@@ -256,7 +259,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 		    	</div>
 		    	<div className='col-xs-4'>
 					<Sticky>
-					    {this.renderToolTip()}
+					    {this.renderToolTip(mData.data)}
 					</Sticky>
 		    	</div>  
 	        </div>
