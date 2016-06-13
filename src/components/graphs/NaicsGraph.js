@@ -65,7 +65,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
       }
     }
 
-   
+
     renderToolTip (mData) {
 
       let data;

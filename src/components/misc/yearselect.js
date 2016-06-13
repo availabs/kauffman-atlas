@@ -37,7 +37,6 @@ class YearSelect extends React.Component{
           <div className='col-sm-12'>
             <Select
                 ref='selectYear'
-                autofocus
                 name={'year'+this.state.year}
                 options={elements}
                 value={(this.state.year || parseInt(this.props.year))}
