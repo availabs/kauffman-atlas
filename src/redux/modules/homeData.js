@@ -46,7 +46,6 @@ const ACTION_HANDLERS = {
     var newState = Object.assign({},state);
 
     var pageState = action.payload;
-    console.log('recieved state in reducer',action.payload)
 
     if(pageState.activeComponent){
       newState.activeComponent = pageState.activeComponent
@@ -64,7 +63,6 @@ const ACTION_HANDLERS = {
       newState.hoverMetro = pageState.hoverMetro
     }      
     
-    console.log(newState)
     return newState;
   }
 }

@@ -183,7 +183,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let rOpts = {
 	    w:190, h:190,
 	    ExtraWidthX:130, TranslateX:50,
-	    color: d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
+	    color: d3.scale.ordinal().range(['#c58a30','#7D8FAF'])
 	}
 	return (
 	    <div className='row'>
@@ -226,30 +226,30 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	let naicsLib = this.props.naicsKeys
 	let naicsRows = Object.keys(naicsCodes)
 	    .map(d => {
-		naicsCodes[d].type_quot = naicsCodes[d].typeQuot
-		return d
+			naicsCodes[d].type_quot = naicsCodes[d].typeQuot
+			return d
 	    })
 	    .sort((a,b) => {
-		return naicsCodes[b][this.state.sort] - naicsCodes[a][this.state.sort]
+			return naicsCodes[b][this.state.sort] - naicsCodes[a][this.state.sort]
 	    })
 	    .map((d) =>{
-		return (
-		    <tr key={d}>
-			<td>
-			    <Link to ={'/metro/'+metro+'/'+page+'/'+d}
-				  className={classes['bluelink']}
-				  onClick={this._setFilter
-					       .bind(this, d,
-						     this.state.depth+1)}
-				  alt={naicsLib[d].description}>
-				{d} | {naicsLib[d].title}
-			    </Link>
-			</td>
-			<td>{naicsCodes[d].type.toLocaleString()}</td>
-			<td>{+(naicsCodes[d].typeShare*100).toLocaleString()}%</td>
-			<td>{+(naicsCodes[d].type_quot).toLocaleString()}</td>
-		    </tr>
-		)
+			return (
+			    <tr key={d}>
+				<td>
+				    <Link to ={'/metro/'+metro+'/'+page+'/'+d}
+					  className={classes['bluelink']}
+					  onClick={this._setFilter
+						       .bind(this, d,
+							     this.state.depth+1)}
+					  alt={naicsLib[d].description}>
+					{d} | {naicsLib[d].title}
+				    </Link>
+				</td>
+				<td>{naicsCodes[d].type.toLocaleString()}</td>
+				<td>{+(naicsCodes[d].typeShare*100).toLocaleString()}%</td>
+				<td>{+(naicsCodes[d].type_quot).toLocaleString()}</td>
+			    </tr>
+			)
 	    })
 
 	return (
@@ -313,27 +313,26 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    </Link>)
 	    return (
 	    <div className='container'>
-		<div className='row' style={{'textAlign': 'center'}}>
-		    <h4>{this.state.filter || '--'} |
-			{naicsLib[this.state.filter] ?
-			 naicsLib[this.state.filter].title : 'All Sectors'}
-			{this.state.depth > 2 ? reset : ''}</h4>
-		</div>
-		<div key='leftpad' style={{textAlign: 'left', padding: 15}}>
-		    {naicsLib[this.state.filter] && naicsLib[this.state.filter].description ? naicsLib[this.state.filter].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map((d,i) => { return <p key={'desc'+i}>{d}</p> }) : ''}
-		</div>
-		<NaicsGraph filter={fkeys}
-			    currentMetro={this.props.currentMetro}
-			    type={this.props.type}
-			    title={this.props.title}
-		/>
-		<div>
-	    	    {this.renderRadar(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
-	    	</div>
-		<div>
-
-		    {this.renderNaicsOverview(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
-		</div>
+			<div className='row' style={{'textAlign': 'center'}}>
+			    <h4>{this.state.filter || '--'} |
+				{naicsLib[this.state.filter] ?
+				 naicsLib[this.state.filter].title : 'All Sectors'}
+				{this.state.depth > 2 ? reset : ''}</h4>
+			</div>
+			<div key='leftpad' style={{textAlign: 'left', padding: 15}}>
+			    {naicsLib[this.state.filter] && naicsLib[this.state.filter].description ? naicsLib[this.state.filter].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map((d,i) => { return <p key={'desc'+i}>{d}</p> }) : ''}
+			</div>
+			<NaicsGraph filter={fkeys}
+				    currentMetro={this.props.currentMetro}
+				    type={this.props.type}
+				    title={this.props.title}
+			/>
+			<div>
+		    	{this.renderRadar(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
+		    </div>
+			<div>
+			    {this.renderNaicsOverview(this.props.year,this.state.depth, this.state.filter,this.props.syear)}
+			</div>
 	    </div>
 	    )
     }

@@ -39,6 +39,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
   }
 
   render () {
+
     var scope = this;
     if (!this.hasData()) return <span />
     let popData = [{
@@ -119,8 +120,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
         name="metroSelect"
         value={selectOptions.filter(d => { return d.value === this.props.metroId })[0]}
         options={selectOptions}
-        onChange={selectChange}
-        placeholder={this.props.metros[this.props.metroId].name}   
+        onChange={selectChange} 
         clearable={false}
         />   
       </div>   

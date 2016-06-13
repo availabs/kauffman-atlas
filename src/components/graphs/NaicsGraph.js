@@ -123,7 +123,7 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     }
 
     dataMap (data,fields,recfunc) {
-	let colors = d3.scale.category20()
+	let colors = d3.scale.category20c()
 	    let filterfun = (x) => {
 		if(this.props.filter && this.props.filter.length)
 		    return this.props.filter.indexOf(x.key) >= 0
@@ -219,51 +219,46 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 	    
 	    return (
 	    <StickyContainer>
-		<div className='row' style={{overflow:'hidden'}} >
-		    <div className='col-xs-8'>
-      <div onMouseEnter={lineGraphFocusChanger.bind(null, 'rawLinegraph')}>
-			<LineGraph 
-			    key={this.props.field}
-			    data={mData.data} 
-			    uniq={this.props.field}
-			    title={'Quarterly ' + this.props.title}
-			    yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : integerFormatter}
-			    xScaleType={'linear'}
-			    yAxis={true}
-			    margin={graphMargin}
-			    tooltip={true}
-			    onMouse={this._onMouse}
-			    graphSlice={this.props.qtrData}
-			/>
-      </div>
-
-      
-			<div onMouseEnter={lineGraphFocusChanger.bind(null, 'lqLineGraph')}>
-			<LineGraph 
-			    key={'lq_'+this.props.field}
-			    data={mData.lqdata} 
-			    uniq={'lq_'+this.props.field} 
-			    xFormat={(x)=>this.revMap(x)} 
-          yFormat={floatFormatter}
-			    title={'Quarterly LQ '+ this.props.title}
-			    xAxis={true}
-			    xScaleType={'linear'}
-			    yAxis={true}
-			    margin={graphMargin}
-			    tooltip={true}
-			    onMouse={this._onMouse}
-			    graphSlice={this.props.qtrData}
-			/>
-      </div>
-		    </div>
-		    
-		    <div className='col-xs-4'>
-
-			<Sticky>
-			    {this.renderToolTip()}
-			</Sticky>
-		    </div>
-		    
+			<div className='row' style={{overflow:'hidden'}} >
+		    	<div className='col-xs-8'>
+			    	<div onMouseEnter={lineGraphFocusChanger.bind(null, 'rawLinegraph')}>
+						<LineGraph 
+						    key={this.props.field}
+						    data={mData.data} 
+						    uniq={this.props.field}
+						    title={'Quarterly ' + this.props.title}
+						    yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : integerFormatter}
+						    xScaleType={'linear'}
+						    yAxis={true}
+						    margin={graphMargin}
+						    tooltip={true}
+						    onMouse={this._onMouse}
+						    graphSlice={this.props.qtrData}
+						/>
+      				</div>
+					<div onMouseEnter={lineGraphFocusChanger.bind(null, 'lqLineGraph')}>
+						<LineGraph 
+						    key={'lq_'+this.props.field}
+						    data={mData.lqdata} 
+						    uniq={'lq_'+this.props.field} 
+						    xFormat={(x)=>this.revMap(x)} 
+			          yFormat={floatFormatter}
+						    title={'Quarterly LQ '+ this.props.title}
+						    xAxis={true}
+						    xScaleType={'linear'}
+						    yAxis={true}
+						    margin={graphMargin}
+						    tooltip={true}
+						    onMouse={this._onMouse}
+						    graphSlice={this.props.qtrData}
+						/>
+			      	</div>
+		    	</div>
+		    	<div className='col-xs-4'>
+					<Sticky>
+					    {this.renderToolTip()}
+					</Sticky>
+		    	</div>  
 	        </div>
 	    </StickyContainer>)
     }

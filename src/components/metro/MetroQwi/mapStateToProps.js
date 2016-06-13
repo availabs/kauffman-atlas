@@ -4,7 +4,7 @@ import d3 from 'd3'
 
 import { industryTitles, firmageLabels, measureLabels, currencyMeasures } from '../../../support/qwi'
 
-const colors = d3.scale.category20()
+const colors = d3.scale.category20c()
 
 const naicsCodes = Object.keys(industryTitles).sort()
 

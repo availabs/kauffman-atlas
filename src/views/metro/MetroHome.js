@@ -42,7 +42,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	let year = this.props.year || '2012'
 	let syear = this.props.syear || '2001'
 	let page = this.props.params.pageid || this.state.display
-	console.log('render Display', year, metroId)
+
 
 	    switch(page){
 		case 'combined':
@@ -129,47 +129,41 @@ export class MetroHome extends React.Component<void, Props, void> {
 			<ul className="nav navbar-nav">
 			    <li style={this._linkIsActive('combined')}
 				onClick={this._selectDisplay.bind(null,'combined')}>
-				<Link to={'/metro/'+metroId+'/combined'}
-				      className={classes['whitelink']}>Combined</Link>
+					<Link to={'/metro/'+metroId+'/combined'}
+				    className={classes['whitelink']}>Combined</Link>
 			    </li>
 			    <li style={this._linkIsActive('Employment')}
 				onClick={this._selectDisplay.bind(null,'Employment')} >
-				<Link to={'/metro/'+metroId+'/Employment'+extension}
-				      className={classes['whitelink']}>Employment</Link>
+					<Link to={'/metro/'+metroId+'/Employment'+extension}
+				    className={classes['whitelink']}>Employment</Link>
 			    </li>
 			    <li style={this._linkIsActive('Establishment')}
 				onClick={this._selectDisplay.bind(null,'Establishment')}>
-				<Link to={'/metro/'+metroId+'/Establishment'+extension}
-				      className={classes['whitelink']}>Establishment</Link>
+					<Link to={'/metro/'+metroId+'/Establishment'+extension}
+				    className={classes['whitelink']}>Establishment</Link>
 			    </li>
 			    <li style={this._linkIsActive('Wages')}
 				onClick={this._selectDisplay.bind(null,'Wages')}>
-				<Link to={'/metro/'+metroId+'/Wages'+extension}
-				      className={classes['whitelink']}>Wages</Link>
+					<Link to={'/metro/'+metroId+'/Wages'+extension}
+				    className={classes['whitelink']}>Wages</Link>
 			    </li>
 			    <li style={this._linkIsActive('StartupEmployment')}
-                    onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
-
+                onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
                     <Link to={`/metro/${metroId}/StartupEmployment`}
-                          className={classes['whitelink']}>
-                            Startups Employment
-                    </Link>
+                    className={classes['whitelink']}>Startups Employment</Link>
 			    </li>
 			    <li style={this._linkIsActive('StartupPayroll')}
-                    onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
-
+                onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
                     <Link to={`/metro/${metroId}/StartupPayroll`}
-                          className={classes['whitelink']}>
-                            Startups Payroll
-                    </Link>
+                    className={classes['whitelink']}>Startups Payroll</Link>
 			    </li>
 			    <li style={this._linkIsActive('cluster')}
 				onClick={this._selectDisplay.bind(null,'cluster')}> 
-				<Link to={'/metro/'+metroId + '/cluster'}
-				      className={classes['whitelink']}>Cluster Analysis</Link>
+					<Link to={'/metro/'+metroId + '/cluster'}
+				    className={classes['whitelink']}>Cluster Analysis</Link>
 			    </li>
 			    <li onClick={this._selectDisplay.bind(null,'combined')}>
-				<Link to={'/metro/'+metroId+'/workforce'}
+					<Link to={'/metro/'+metroId+'/workforce'}
 				    className={classes['whitelink']}>Workforce Analysis</Link>
 			    </li>
 			</ul>
@@ -182,7 +176,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	let metroId = this.props.params.geoid
 	var scope = this;
 
-
+	
 	function selectChange(msaId){
 		scope.context.router.push('/metro/'+msaId+'/'+scope.props.params.pageid)
 	}

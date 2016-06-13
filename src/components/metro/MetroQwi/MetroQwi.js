@@ -33,7 +33,7 @@ const radarGraphOptions = {
     h           : 190,
     ExtraWidthX : 130,
     TranslateX  : 50,
-    color       : d3.scale.ordinal().range(['#4CAF50','#7D8FAF'])
+    color       : d3.scale.ordinal().range(['#c58a30','#7D8FAF'])
 }
 
 const stickyToolbarStyle = {
