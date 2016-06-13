@@ -9,6 +9,7 @@ import MetroQcew from 'components/metro/MetroQcew'
 import MetroQwi from 'components/metro/MetroQwi'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroQcewCluster from 'components/metro/MetroQcewCluster'
+import MetroParagraph from 'components/metro/MetroParagraph'
 import classes from 'styles/sitewide/index.scss'
 import { withRouter } from 'react-router'
 
@@ -200,13 +201,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 		<div>
 		    <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
 			<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} selectChange={selectChange}/>
-			<div className='container'>
-			    <div className='row'>
-				<div className={'col-xs-12 ' + classes['text-div']}>
-				    <strong>Lorem</strong> ipsum dolor sit amet, mel nibh soluta molestiae in, ut vis illud utamur disputando, sed id eius bonorum. Mei vivendum adversarium ex, libris assentior eu per. In summo invenire interpretaris quo, ex vix partem facilisis signiferumque, ridens splendide conclusionemque an vis. Dico aliquip scriptorem vix et. Te eum omnes possit omittantur. Ei volutpat dignissim sit, erat option pri in.
-				</div>
-			    </div>
-			</div>
+			<MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/>
 		    </div>
 		    {this.renderNav()}
 		    <div>
