@@ -22,7 +22,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	    sort: 'type_quot'
 	}
 
-	this._fecthData = this._fecthData.bind(this)
+	this._fetchData = this._fetchData.bind(this)
 	this._processData = this._processData.bind(this)
 	this._setFilter = this._setFilter.bind(this)
 	this._quarterReduce = this._quarterReduce.bind(this)
@@ -30,7 +30,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	this.renderRadar = this.renderRadar.bind(this)
     }
     
-    _fecthData () {
+    _fetchData () {
 	//console.log(this.props.zbpData[this.props.year])
 	let qcew = this.props.qcewData
 	let msa = this.props.currentMetro
@@ -277,11 +277,11 @@ export class MetroQcew extends React.Component<void, Props, void> {
 
     componentDidMount() {
 	console.info('fetching initial data')
-	this._fecthData ()
+	this._fetchData ()
     }
     
     componentWillReceiveProps (nextProps) {
-	this._fecthData();
+	this._fetchData();
 	let naics_code = nextProps.params.naics_code
 	if(naics_code && (naics_code !== this.state.filter)){
 	    this.setState({filter:naics_code,depth:naics_code.length+1})
@@ -293,7 +293,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 
     componentDidUpdate (p,prevState){
 	if(this.state.filter !== prevState.filter)
-	    this._fecthData()
+	    this._fetchData()
     }
     
     hasData () {
