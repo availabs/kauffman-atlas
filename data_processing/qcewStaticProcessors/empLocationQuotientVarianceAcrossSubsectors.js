@@ -24,6 +24,7 @@ const errorHandler = (msa, err) => {
 
 const computeYearlyByEmpVariance = (data) => {
 
+
   let msa = data[0].key
   let byYear = data[0].values
 
