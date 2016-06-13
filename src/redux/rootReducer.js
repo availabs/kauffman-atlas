@@ -13,8 +13,10 @@ import diversityData from './modules/diversityData'
 import combinedData from './modules/combinedData'
 import metroScoresData from './modules/metroScoresData'
 import metroTime from './modules/metroTime'
+import homeData from './modules/homeData'
 
 export default combineReducers({
+  homeData,
   metroTime,
   metroScoresData,
   combinedData,

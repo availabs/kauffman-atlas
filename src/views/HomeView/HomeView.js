@@ -19,19 +19,14 @@ import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/dens
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
+import { changeHomeState } from 'redux/modules/homeData'
 import CategoryText from 'components/misc/categoryText'
 let roundFormat = d3.format(".2f")
 
 export class HomeView extends React.Component<void, Props, void> {
    constructor () {
     super()
-    this.state = {
-      activeComponent:'combined',
-      bucket:'all',
-      activeMapGraph:'map',
-      metric:'composite',
-      hoverMetro: null
-    }
+
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
@@ -44,7 +39,6 @@ export class HomeView extends React.Component<void, Props, void> {
     this._initGraph();    
   }   
   
-
 
   _initGraph () {   
     if(!this.props['densitycomposite']){    
@@ -62,56 +56,56 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   _setActiveComponent (type) {
-    this.setState({activeComponent:type,metric:"composite"})
+    this.props.changeHomeState({activeComponent:type,metric:"composite"})
   }
 
   _setMapGraph (type) {
-    this.setState({activeMapGraph:type})
+    this.props.changeHomeState({activeMapGraph:type})
   }
 
   _setMetric (type) {
-    this.setState({metric:type})
+    this.props.changeHomeState({metric:type})
   }
 
 
   _setActiveBucket (bucket) {
-    this.setState({'bucket':bucket});
+    this.props.changeHomeState({'bucket':bucket});
   }   
 
   _isActive(type){
-    return type === this.state.activeComponent ? classes['active'] : ''
+    return type === this.props.homeState.activeComponent ? classes['active'] : ''
   }
 
   _linkIsActive(type){
-    return type === this.state.activeComponent ? classes['active-link'] : ''
+    return type === this.props.homeState.activeComponent ? classes['active-link'] : ''
   }
 
   onMouseover(feature){
     let curFeature = feature.city ? feature.city.key : feature.id  
-    this.setState({
+    this.props.changeHomeState({
       hoverMetro: curFeature
     })
   }
 
   renderMapGraph (metrosInBucket) {
-    if(!this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
-      this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
+    if(!this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]){
+      this.props["get" + this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]()
       return <span />
     }
-    if(this.state.activeMapGraph === 'map'){
+    if(this.props.homeState.activeMapGraph === 'map'){
       return (
         <NationalMap 
           metros={metrosInBucket} 
-          activeComponent={this.state.activeComponent + (this.state.metric).replace(/ /g,'')}
+          activeComponent={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')}
           onMouseover={this.onMouseover}
         />
       )
-    }else if((this.state.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
+    }else if((this.props.homeState.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
       return (
        <BarChart    
           metros={metrosInBucket} 
-          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-          plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+          data={this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]} 
+          plot="value" dataType="composite" title={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')} 
           graph="opportunitycomposite"
           onMouseover={this.onMouseover}
         />
@@ -120,9 +114,9 @@ export class HomeView extends React.Component<void, Props, void> {
       return (
         <LineGraph    
           metros={metrosInBucket} 
-          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-          plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-          graph={this.state.activeComponent + "composite"}
+          data={this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]} 
+          plot="value" dataType="relative" title={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')} 
+          graph={this.props.homeState.activeComponent + "composite"}
           onMouseover={this.onMouseover}
         />
       )
@@ -130,7 +124,7 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   render () {
-    
+
     var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
       if(this.props.metros[msaId].pop){
         if(this.props.metros[msaId].pop[2014]){
@@ -146,12 +140,12 @@ export class HomeView extends React.Component<void, Props, void> {
 
     var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
       return (
-          this.state.bucket === 'all' ||
+          this.props.homeState.bucket === 'all' ||
         (
           this.props.metros[msaId] && 
           this.props.metros[msaId].pop && 
           this.props.metros[msaId].pop[2014] && 
-          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
+          popScale(this.props.metros[msaId].pop[2014]) == this.props.homeState.bucket
         )
       )
     })
@@ -176,17 +170,17 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row' style={{padding:15, marginTop: 15}} >
           <ComponentButtons
             onComponentChange={this._setActiveComponent} 
-            activeComponent={this.state.activeComponent}
+            activeComponent={this.props.homeState.activeComponent}
           />
           <PopBuckets 
             popScale={popScale} 
             onBucketChange={this._setActiveBucket} 
-            bucket={this.state.bucket}
+            bucket={this.props.homeState.bucket}
           />
         </div>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
-            <strong>{this.state.activeComponent.toUpperCase()}</strong> {CategoryText[this.state.activeComponent].map(d => { return (<p>{d} </p>)})}
+            <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
           </div>
         </div>
         
@@ -195,26 +189,26 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='row'>
           <div className='col-md-3' style={{padding:15}}>
             <RankBox 
-              activeComponent={this.state.activeComponent} 
+              activeComponent={this.props.homeState.activeComponent} 
               popScale={popScale}
-              bucket={this.state.bucket}
+              bucket={this.props.homeState.bucket}
             />
-            <HoverBox metroId={this.state.hoverMetro} activeComponent={this.state.activeComponent} />
+            <HoverBox metroId={this.props.homeState.hoverMetro} activeComponent={this.props.homeState.activeComponent} />
           </div>
           <div id="mapDiv" className='col-md-9' style={{padding:15}}>
             <SubGraphButtons
-              metric={this.state.metric}
+              metric={this.props.homeState.metric}
               onComponentChange={this._setMetric} 
-              activeComponent={this.state.activeComponent}
+              activeComponent={this.props.homeState.activeComponent}
             />
             <MapGraphButtons
-               mapGraph={this.state.activeMapGraph}
+               mapGraph={this.props.homeState.activeMapGraph}
               onComponentChange={this._setMapGraph} 
-              activeComponent={this.state.activeMapGraph}
+              activeComponent={this.props.homeState.activeMapGraph}
             />
             <MapGraphLegend 
-              mapGraph={this.state.activeMapGraph}
-              activeComponent={(this.state.activeComponent + "" + this.state.metric).replace(/ /g,'')}            
+              mapGraph={this.props.homeState.activeMapGraph}
+              activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
             />   
             {this.renderMapGraph(metrosInBucket)}       
           </div>
@@ -238,7 +232,8 @@ const mapStateToProps = (state) => ({
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
   combinedcomposite : state.combinedData.combinedcomposite,
-  metros : state.metros
+  metros : state.metros,
+  homeState : state.homeData
 })
 
 export default connect((mapStateToProps), {
@@ -254,4 +249,5 @@ export default connect((mapStateToProps), {
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
   getcombinedcomposite: () => loadCombinedComposite(),
+  changeHomeState: (state) => changeHomeState(state)
 })(HomeView)
