@@ -1,4 +1,4 @@
-export firmLabels = {
+export const firmLabels = {
   '0': 'All Firm Ages',
   '1': '0-1 Years',
   '2': '2-3 Years',

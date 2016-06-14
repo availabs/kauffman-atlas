@@ -1,4 +1,4 @@
-export currencyMeasures = {
+export const currencyMeasures = {
   'earns'      : true,
   'earnbeg'    : true,
   'earnhiras'  : true,
