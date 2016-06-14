@@ -37,7 +37,7 @@ const getTurnoverStatisticsForMSA = (msa, cb) => {
 
   let url = `http://${qwiAPIServer.hostname}${qwiAPIServer.port ? ':'+qwiAPIServer.port : ''}/` + 
             `${isInterstate ? 'derived-data/interstate-msa/' : 'data/'}geography${msaCode}/` +
-            `year/quarter?fields=EmpTotal&dense=true&flatLeaves=true`
+            `year19902016/quarter?fields=TurnOvrS&dense=true&flatLeaves=true`
 
   console.time(msa)
 
