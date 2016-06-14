@@ -1,4 +1,4 @@
-export measureLabels = {
+export const measureLabels = {
   'emp'          : 'Beginning-of-Quarter Employment: Counts',
   'empend'       : 'End-of-Quarter Employment: Counts',
   'emps'         : 'Full-Quarter Employment (Stable): Counts',

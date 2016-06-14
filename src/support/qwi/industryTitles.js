@@ -1,4 +1,4 @@
-export industryTitles = {
+export const industryTitles = {
   "11"    : "Agriculture, Forestry, Fishing and Hunting",
   "21"    : "Mining, Quarrying, and Oil and Gas Extraction",
   "22"    : "Utilities",
