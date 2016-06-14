@@ -16,10 +16,28 @@ var msaName = JSON.parse(fs.readFileSync('../src/static/data/msaName.json'));
 var fipsToName = {"10": "Delaware","11": "District Of Columbia","12": "Florida","13": "Georgia","15": "Hawaii","16": "Idaho","17": "Illinois","18": "Indiana","19": "Iowa","20": "Kansas","21": "Kentucky","22": "Louisiana","23": "Maine","24": "Maryland","25": "Massachusetts","26": "Michigan","27": "Minnesota","28": "Mississippi","29": "Missouri","30": "Montana","31": "Nebraska","32": "Nevada","33": "New Hampshire","34": "New Jersey","35": "New Mexico","36": "New York","37": "North Carolina","38": "North Dakota","39": "Ohio","40": "Oklahoma","41": "Oregon","42": "Pennsylvania","44": "Rhode Island","45": "South Carolina","46": "South Dakota","47": "Tennessee","48": "Texas","49": "Utah","50": "Vermont","51": "Virginia","53": "Washington","54": "West Virginia","55": "Wisconsin","56": "Wyoming","60": "American Samoa","66": "Guam","69": "Northern Mariana Islands","72": "Puerto Rico","74": "Minor Outlying Islands","78": "Virgin Islands","02": "Alaska","01": "Alabama","06": "California","04": "Arizona","05": "Arkansas","08": "Colorado","09": "Connecticut"}
 var abbrToFips = {"AL":"01","NE":"31","AK":"02","NV":"32","AZ":"04","NH":"33","AR":"05","NJ":"34","CA":"06","NM":"35","CO":"08","NY":"36","CT":"09","NC":"37","DE":"10","ND":"38","DC":"11","OH":"39","FL":"12","OK":"40","GA":"13","OR":"41","HI":"15","PA":"42","ID":"16","PR":"72","IL":"17","RI":"44","IN":"18","SC":"45","IA":"19","SD":"46","KS":"20","TN":"47","KY":"21","TX":"48","LA":"22","UT":"49","ME":"23","VT":"50","MD":"24","VA":"51","MA":"25","VI":"78","MI":"26","WA":"53","MN":"27","WV":"54","MS":"28","WI":"55","MO":"29","WY":"56","MT":"30"}
 
+var qwiShareEmpFileNameBase = '../src/static/data/shareOfEmploymentInNewFirms-QWI_'
+
 //Density Data
 var densityData = JSON.parse(fs.readFileSync('../src/static/data/density_data.json')); 
+var shareEmpNewFirmsQWI_All = 
+      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'AllSectors.json'))
+var shareEmpNewFirmsQWI_Information = 
+      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'InformationSector.json'))
+var shareEmpNewFirmsQWI_Professional = 
+      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'ProfessionalSector.json'))
+var shareEmpNewFirmsQWI_HighTech = 
+      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'HighTech.json'))
+var shareEmpNewFirmsQWI_ExceptAccomAndRetail = 
+      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'AllExceptAccommodationAndRetailSectors.json'))
+
 var processedNewFirms = _processData({data:densityData,selectedMetric:"newValues"});
 var processedShareEmp = _processData({data:densityData,selectedMetric:"share"});
+var processedShareEmpNewFirmsQWI_All = processGeneral2(shareEmpNewFirmsQWI_All);
+var processedShareEmpNewFirmsQWI_Information = processGeneral2(shareEmpNewFirmsQWI_Information);
+var processedShareEmpNewFirmsQWI_Professional = processGeneral2(shareEmpNewFirmsQWI_Professional);
+var processedShareEmpNewFirmsQWI_HighTech = processGeneral2(shareEmpNewFirmsQWI_HighTech);
+var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = processGeneral2(shareEmpNewFirmsQWI_ExceptAccomAndRetail);
 var processedDensityComposite = _processComposite(processedNewFirms['relative'],processedShareEmp['relative']);
 
 //Diversity Data
@@ -100,6 +118,11 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['density'] = {};
   curMsaObj['density']['newFirms'] = {};
   curMsaObj['density']['shareEmp'] = {};
+  curMsaObj['density']['shareEmpQWI_All'] = {};
+  curMsaObj['density']['shareEmpQWI_Information'] = {};
+  curMsaObj['density']['shareEmpQWI_Professional'] = {};
+  curMsaObj['density']['shareEmpQWI_HighTech'] = {};
+  curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail'] = {};
   curMsaObj['density']['composite'];
 
   processedNewFirms['raw'].forEach(metro => {
@@ -120,6 +143,31 @@ Object.keys(msaPop).forEach(msaId => {
   processedShareEmp['relative'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['shareEmp']['relative'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_All['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_All']['raw'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_Information['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_Information']['raw'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_Professional['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_Professional']['raw'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_HighTech['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_HighTech']['raw'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = metro;        
     }
   })
   processedDensityComposite.forEach(metro => {
