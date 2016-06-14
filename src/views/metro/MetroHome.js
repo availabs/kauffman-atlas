@@ -80,8 +80,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 			case 'StartupEmployment':
 			return (
 			  <MetroQwi msa={metroId}
-			       measure='emp'
-			       title='Startup Employment'
+			       measure='emptotal'
+			       title='Employment by Firm Age'
 			       params={this.props.params}
 			  />
 			)
@@ -89,7 +89,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 			return (
 			  <MetroQwi msa={metroId}
 			       measure='payroll'
-			       title='Startup Payroll'
+			       title='Payroll by Firm Age'
 			       params={this.props.params}
 			  />
 			)

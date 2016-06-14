@@ -1,8 +1,10 @@
-export default {
+export currencyMeasures = {
   'earns'      : true,
   'earnbeg'    : true,
   'earnhiras'  : true,
   'earnhirens' : true,
   'earnseps'   : true,
-  'payroll'   : true,
+  'payroll'    : true,
 }
+
+export default currencyMeasures

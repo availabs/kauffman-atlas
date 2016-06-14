@@ -1,4 +1,4 @@
-export default {
+export industryTitles = {
   "11"    : "Agriculture, Forestry, Fishing and Hunting",
   "21"    : "Mining, Quarrying, and Oil and Gas Extraction",
   "22"    : "Utilities",
@@ -20,3 +20,5 @@ export default {
   "81"    : "Other Services (except Public Administration)",
   "92"    : "Public Administration",
 }
+
+export default industryTitles
