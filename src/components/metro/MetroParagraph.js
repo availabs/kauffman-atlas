@@ -97,7 +97,12 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         return {value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:metricName}                        
       }
     }).reduce((lowest, current) => {
-      return lowest.value.rank > current.value.rank ? lowest : current
+      if(current.value.y == -1){
+        return lowest
+      }else{
+        return lowest.value.rank > current.value.rank ? lowest : current        
+      }
+
     },{value:{rank:0}})
 
     var bottomScore = {metric:bottomMetric,sub:topSub}
@@ -120,7 +125,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     var topScore = this._highScore(data)
     var bottomScore = this._lowScore(data)
-
+    console.log(data)
     return (
     <div>
       <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
