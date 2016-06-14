@@ -1,4 +1,4 @@
-export default {
+export const msaToFips = {
   "10180": [
     "48"
   ],
@@ -1208,3 +1208,5 @@ export default {
     "04"
   ]
 }
+
+export default msaToFips

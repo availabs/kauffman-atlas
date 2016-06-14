@@ -90,7 +90,6 @@ const getYearlyEmpVarianceForMSA = (msa, cb) => {
                     `?fields[]=lq_month1_emplvl&fields[]=lq_month2_emplvl&fields[]=lq_month3_emplvl`
 
   fetch(reqURL)
-    .then()
     .then(response => response.json())
     .then(computeYearlyByEmpVariance)
     .then(cb.bind(null, null))

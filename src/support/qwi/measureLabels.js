@@ -1,4 +1,4 @@
-export default {
+export measureLabels = {
   'emp'          : 'Beginning-of-Quarter Employment: Counts',
   'empend'       : 'End-of-Quarter Employment: Counts',
   'emps'         : 'Full-Quarter Employment (Stable): Counts',
@@ -32,3 +32,5 @@ export default {
   'earnseps'     : 'Separations (Stable): Average Monthly Earnings',
   'payroll'      : 'Total Quarterly Payroll: Sum',
 }
+
+export default measureLabels
