@@ -56,7 +56,7 @@ export class LineGraph extends React.Component<void, Props, void> {
     else{
         var data = props.data[props.dataType];
     }
-
+    console.log(data);
     if(props.metros){
       data = data.filter(d => {
         var inBucket = false;
@@ -539,6 +539,24 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
         else{
           return "Metro Area Ranking for number of foreign born current residents as a percentage of total population by year"
+        }                  
+      }          
+    } 
+    else if(props.title == "diversityemploymentlocationquotientvariance"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "Location Quotient Variance by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for Location Quotient Variance by year"
+        }
+        else{
+          return ""
         }                  
       }          
     } 

@@ -17,7 +17,7 @@ import HoverBox from 'components/ranks/HoverBox'
 import MapGraphLegend from 'components/ranks/MapGraphLegend'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
-import { loadDiversityComposite,loadOpportunityData,loadForeignBornData } from 'redux/modules/diversityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { changeHomeState } from 'redux/modules/homeData'
 import CategoryText from 'components/misc/categoryText'
@@ -231,6 +231,7 @@ const mapStateToProps = (state) => ({
   diversitycomposite : state.diversityData.diversitycomposite,    
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
+  diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros,
   homeState : state.homeData
@@ -248,6 +249,7 @@ export default connect((mapStateToProps), {
   getdiversitycomposite: () => loadDiversityComposite(),    
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
+  getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getcombinedcomposite: () => loadCombinedComposite(),
   changeHomeState: (state) => changeHomeState(state)
 })(HomeView)

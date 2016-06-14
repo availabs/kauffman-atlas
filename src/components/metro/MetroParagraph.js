@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
+import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".3f")
 
 type Props = {
@@ -20,6 +21,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   _fetchData () {
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
+    }
+    if(!this.props.combinedcomposite){
+      return this.props.getcombinedcomposite();
     }
   }
 
@@ -112,7 +116,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var name = this.props.metros[metroId].name;
 
     var compScore = data.combined.composite.values[data.combined.composite.values.length-1];
-    var compPercentile = (1 - (compScore.rank/Object.keys(this.props.metros).length)) * 100
+    var compPercentile = (1 - (compScore.rank/this.props.combinedcomposite.length)) * 100
 
     var topScore = this._highScore(data)
     var bottomScore = this._lowScore(data)
@@ -124,8 +128,8 @@ export class MetroParagraph extends React.Component<void, Props, void> {
           <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <p>{name} is in the {Math.floor(compPercentile)} percentile for composite with a score of {roundFormat(compScore.y)} and a rank of {compScore.rank}</p>
-              <p>It scores best in {topScore.metric.metric} with a rank of {topScore.metric.value.rank}, driven by a rank of {topScore.sub.value.rank} and score of {roundFormat(topScore.sub.value.y)} in {topScore.sub.metric}</p>
-              <p>It scores worst in {bottomScore.metric.metric} with a rank of {bottomScore.metric.value.rank}, driven by a rank of {bottomScore.sub.value.rank} and score of {roundFormat(bottomScore.sub.value.y)} in {bottomScore.sub.metric}</p>
+              <p>It scores best in {topScore.metric.metric} with a rank of {topScore.metric.value.rank} and a score of {roundFormat(topScore.metric.value.y)}, driven by a rank of {topScore.sub.value.rank} and score of {roundFormat(topScore.sub.value.y)} in {topScore.sub.metric}</p>
+              <p>It scores worst in {bottomScore.metric.metric} with a rank of {bottomScore.metric.value.rank} and a score of {roundFormat(bottomScore.metric.value.y)}, driven by a rank of {bottomScore.sub.value.rank} and score of {roundFormat(bottomScore.sub.value.y)} in {bottomScore.sub.metric}</p>
               <p>Two digit sector with highest emp is BLANK Driven by two SIX DIGIT WITHIN 2 DIGIT by num employed </p>
               <p>Two digit nacsi with highest LQ driven by two six digiti wthin 2 digit with highest LQ</p>
             </div>
@@ -141,8 +145,10 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
   metroScores : state.metroScoresData,
   metros : state.metros,
+  combinedcomposite : state.combinedData.combinedcomposite
 })
 
 export default connect((mapStateToProps), {  
-  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro),
+  getcombinedcomposite: () => loadCombinedComposite()  
 })(MetroParagraph)

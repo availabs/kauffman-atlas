@@ -29,7 +29,8 @@ var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/empLocation
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
 var processedEmpVariance = processGeneral2(empVarianceData, true);
-var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn);
+var coloredEmpVariance = _polishData(processedEmpVariance['raw'],"empVariance");
+var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn,coloredEmpVariance);
 
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
@@ -53,6 +54,7 @@ fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.string
 
 fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
 fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
+fs.writeFileSync("../src/static/data/processedEmpVariance.json",JSON.stringify(coloredEmpVariance));
 fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
 
 fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
@@ -60,10 +62,9 @@ fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(
 fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
 fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
 fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-
 fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(coloredAnnualChurn));
-
 fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
+
 
 fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
 
@@ -728,7 +729,7 @@ function _trimYears(years,cities){
   return filteredCities;
 }
 
-function _processDiversityComposite(opportunity,foreignbornObj){
+function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
 
   var foreignborn = foreignbornObj['relative'];
 
@@ -747,26 +748,52 @@ function _processDiversityComposite(opportunity,foreignbornObj){
   })
 
   var cityFilteredOpp = [],
-      cityFilteredForeignborn = [];
+      cityFilteredForeignborn = [],
+      cityFilteredEmpVariance = [];
   var compositeCityRanks = [];
 
   for(var i=0; i<opp.length; i++){
     for(var j=0; j<foreignborn.length; j++){
       if(opp[i].key == foreignborn[j].key){
-        cityFilteredOpp.push(opp[i]); 
-        cityFilteredForeignborn.push(foreignborn[j])
+        for(var k=0; k< empVariance.length; k++){
+          if(empVariance[k].key == opp[i].key){
+            cityFilteredOpp.push(opp[i]); 
+            cityFilteredForeignborn.push(foreignborn[j])
+            cityFilteredEmpVariance.push(empVariance[k])
+          }
+        }
       }      
     }
   }
 
   cityFilteredOpp.sort(_sortMsaCities());
   cityFilteredForeignborn.sort(_sortMsaCities());
+  cityFilteredEmpVariance.sort(_sortMsaCities());
 
   cityFilteredForeignborn.forEach(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return yearValue.y >= 0;
     })
   })
+
+
+  var foriegnBornyearRange = ([d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredForeignborn, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var empVarianceyearRange = ([d3.min(cityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+
+
+
+
+
+  var minYear = d3.max([foriegnBornyearRange[0],empVarianceyearRange[0]])
+  var maxYear = d3.min([foriegnBornyearRange[1],empVarianceyearRange[1]])
+
+  var yearCityFilteredForiegnBorn = _trimYears(([minYear,maxYear]),cityFilteredForeignborn);
+  var yearCityFilteredEmpVariance = _trimYears(([minYear,maxYear]),cityFilteredEmpVariance);
+
+
+
 
   var oppScale = d3.scale.linear()
     .range([0,100])
@@ -775,23 +802,28 @@ function _processDiversityComposite(opportunity,foreignbornObj){
                   )
   var foreignBornScale = d3.scale.linear()
   .range([0,100])
-  .domain(      [d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                d3.max(cityFilteredForeignborn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+  .domain(      [d3.min(yearCityFilteredForiegnBorn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredForiegnBorn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
 
+  var empVarianceScale = d3.scale.linear()
+  .range([100,0])
+  .domain(      [d3.min(yearCityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
 
-
-
-  for(var i=0; i<cityFilteredForeignborn.length;i++){
+  for(var i=0; i<yearCityFilteredForiegnBorn.length;i++){
     var resultValues = [];
-    if(cityFilteredForeignborn[i].key == cityFilteredOpp[i].key){
+    if(yearCityFilteredForiegnBorn[i].key == cityFilteredOpp[i].key && yearCityFilteredEmpVariance[i].key == yearCityFilteredForiegnBorn[i].key){
       if(cityFilteredOpp[i].values.length > 0){
-        for(var j=0; j<cityFilteredForeignborn[i]['values'].length; j++){
-          resultValues.push({x:cityFilteredForeignborn[i].values[j].x,y:((foreignBornScale(cityFilteredForeignborn[i].values[j].y) + oppScale(cityFilteredOpp[i].values[0].y))/2)})      
+        for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
+          if(yearCityFilteredForiegnBorn[i]['values'].length == yearCityFilteredEmpVariance[i]['values'].length){
+            resultValues.push({x:yearCityFilteredForiegnBorn[i].values[j].x,y:((foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) + oppScale(cityFilteredOpp[i].values[0].y) + empVarianceScale(yearCityFilteredEmpVariance[i].values[j].y))/3)})      
+          }
         }         
       }
 
-      compositeCityRanks.push({key:cityFilteredForeignborn[i]['key'],values:resultValues})          
+      compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
     }
   }
 
@@ -894,7 +926,7 @@ function _processdetailMigration(data,dataset){
       Object.keys(data[msaId]).forEach(year => {
           if(typeof +data[msaId][year] == "number"){
               if(data[msaId][year]['outflow']){
-                  if(year > 12){
+                  if(year > 13){
                       var curYear = "19" + year;
                   }
                   else{

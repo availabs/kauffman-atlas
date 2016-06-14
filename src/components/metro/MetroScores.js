@@ -78,7 +78,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     if (!this.hasData()) return <span />
     //console.log('got data', this.props.metroScores[this.props.metroId])
 
-    let year = 2012
+    let year = 2013
     let scores = this.props.metroScores[this.props.metroId];
     let combined = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let combinedSelected = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
@@ -130,7 +130,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let graphBox = {
       borderRight: '1px solid #ccc'
     }
-
     return (
       <div className='container'> 
         <div className='row' >
@@ -140,7 +139,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{combined.y.toLocaleString()}</h4>
                 Rank {combined.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{combinedSelected ? combinedSelected.y.toLocaleString() : ""}</h4>
@@ -165,7 +164,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{densityComposite.y.toLocaleString()}</h4>
                 Rank {densityComposite.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{densityCompositeSelected ? densityCompositeSelected.y.toLocaleString() : ""}</h4>
@@ -185,7 +184,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{densityNewFirms.y.toLocaleString()}</h4>
                 Rank {densityNewFirms.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{densityNewFirmsSelected ? densityNewFirmsSelected.y.toLocaleString() : ""}</h4>
@@ -205,7 +204,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{(100*densityShareEmp.y).toLocaleString()}%</h4>
                 Rank {densityShareEmp.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{densityShareEmpSelected ? (100*densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
@@ -229,7 +228,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{fluidityComposite.y.toLocaleString()}</h4>
                 Rank {fluidityComposite.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{fluidityCompositeSelected ? fluidityCompositeSelected.y.toLocaleString() : ""}</h4>
@@ -249,7 +248,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{fluidityHighGrowth.y.toLocaleString()}</h4>
                 Rank {fluidityHighGrowth.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{fluidityHighGrowthSelected ? fluidityHighGrowthSelected.y.toLocaleString() : ""}</h4>
@@ -269,7 +268,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{fluidityHighRaw.y.toLocaleString()}</h4>
                 Rank {fluidityHighRaw.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{fluidityHighRawSelected ? fluidityHighRawSelected.y ? fluidityHighRawSelected.y.toLocaleString() : "" : ""}</h4>
@@ -290,7 +289,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{(100*fluidityNetMigration.y).toLocaleString()}%</h4>
                 Rank {fluidityNetMigration.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{fluidityNetMigrationSelected ? (100*fluidityNetMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
@@ -311,7 +310,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{(100*fluidityTotalMigration.y).toLocaleString()}%</h4>
                 Rank {fluidityTotalMigration.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{fluidityTotalMigrationSelected ? (100*fluidityTotalMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
@@ -334,7 +333,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{diversityComposite.y.toLocaleString()}</h4>
                 Rank {diversityComposite.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{diversityCompositeSelected ? diversityCompositeSelected.y.toLocaleString() : ""}</h4>
@@ -354,7 +353,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <div className='pull-left'>
                 <h4>{(100*diversityForeignBorn.y).toLocaleString()}%</h4>
                 Rank {diversityForeignBorn.rank}
-                <div>2012</div>
+                <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{diversityForeignBornSelected ? (100*diversityForeignBornSelected.y).toLocaleString() + "%" : ""}</h4>
