@@ -14,7 +14,6 @@ const getData = (state, ownProps) => {
 
   state = state.metroQwiData
 
-
   let msa = state.msa
   let measure = state.measure
 
@@ -95,8 +94,8 @@ const getData = (state, ownProps) => {
         previousRawValue = measureValue
 
 
-        let month = 2 + 3*(quarter-1)
-        let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
+        let month = 1 + 3*(quarter-1)
+        let quarterCentralMonth = new Date(year, month)
 
         let elem = {
           key: quarterCentralMonth,
@@ -221,8 +220,8 @@ const getData = (state, ownProps) => {
           locationQuotient = 0
         }
 
-        let month = 2 + 3*(quarter-1)
-        let quarterCentralMonth = d3.time.format("%m-%Y").parse(`${month}-${year}`)
+        let month = 1 + 3*(quarter-1)
+        let quarterCentralMonth = new Date(year, month)
 
         let elem = {
           key: quarterCentralMonth,
@@ -356,6 +355,7 @@ const getData = (state, ownProps) => {
     focusedLineGraph,
     firmageLabels,
     selectedFirmage,
+    tooltipHoveredNaicsLabel : _.get(state,'lineGraphs.tooltip.hoveredNaicsLabel',null),
   }
 }
 
