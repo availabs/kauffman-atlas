@@ -9,8 +9,9 @@ let categoryText =  {
 				 'A vibrant entrepreneurial ecosystem requires diversity of economy and population. It is important that all parts of the population are engaged in the economy and social mobility is one of the drivers of multi-level engagement.  As such one measure of a diverse entrepreneurial ecosystem is the equality of opportunity which is measured here as cross generational income growth based on parent’s income.',
 				 'Healthy ecosystems also attract and assimilate immigrants. Immigrants are historically highly entrepreneurial, starting businesses at a high rate.',
 				 'The diversity metric is comprised of two measures: immigration, and income mobility.  An ecosystem that is diverse in these ways tends to be robust and multi-leveled.'
-				]
+				],
 
+	'qwiDensity':['Some qwiDensity data, ty Paul c:']
 }
 
 export default categoryText

@@ -20,7 +20,7 @@ export class HomeView extends React.Component<void, Props, void> {
   render () {
     
     var bucketDisplay = [];
-    var components = ['combined', 'density', 'diversity', 'fluidity']
+    var components = ['combined', 'density', 'diversity', 'fluidity','qwiDensity']
 
     components.forEach((v,i) => {
         bucketDisplay.push (

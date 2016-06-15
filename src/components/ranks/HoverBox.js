@@ -8,6 +8,7 @@ import d3 from 'd3'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".2f")
 let categeoryNames = {
@@ -17,6 +18,11 @@ let categeoryNames = {
   diversitycomposite: 'Diversity',
   densitynewfirms: 'New Firms per 1k Pop',
   densityshareofemploymentinnewfirms: '% Emp in New Firms',
+  qwiDensityshareEmpAll: "% emp in all sectors",
+  qwiDensityshareEmpNoAccRet: "% emp in non retail and accomodation sectors",
+  qwiDensityshareEmpHighTech: "% emp in high tech sector",
+  qwiDensityshareEmpInfo: "% emp in information sector",
+  qwiDensityshareEmpPro: "% emp in professional sector",
   diversityincomebasedonchildhood: 'Equality of Opportunity',
   diversitypercentageofforiegnbornpopulation: '% Foreign Born',
   diversityemploymentlocationquotientvariance: 'Variance of Emp Location Quotient',
@@ -30,7 +36,8 @@ let categories = {
   combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
   density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms'],
   diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforiegnbornpopulation','diversityemploymentlocationquotientvariance'],
-  fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn']
+  fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn'],
+  qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpNoAccRet','qwiDensityshareEmpHighTech','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
 }
 
 export class HoverBox extends React.Component<void, Props, void> {
@@ -60,6 +67,7 @@ export class HoverBox extends React.Component<void, Props, void> {
     return categories[type].map((cat) => {
       //console.log('props cat', cat, this.props[cat])
       let fulldata = this.props[cat] && this.props[cat].relative ? this.props[cat].relative : this.props[cat]
+//      console.log(fulldata,(cat))
       fulldata = fulldata || []
       let isData = fulldata.filter(metro => { 
         return metro.key == this.props.metroId
@@ -82,8 +90,8 @@ export class HoverBox extends React.Component<void, Props, void> {
         return (
           <tr>
             <td>{categeoryNames[cat]}</td>
-            <td>{score.rank}</td>
-            <td>{ roundFormat(score.y)}</td>
+            <td>{score.rank ? score.rank : "N/A"}</td>
+            <td>{score.y ? roundFormat(score.y) : "N/A"}</td>
           </tr>
         )
     }) 
@@ -93,15 +101,20 @@ export class HoverBox extends React.Component<void, Props, void> {
     //console.log('the metro',)
     if(!this.props.metroId) return (<span />)
 
-    let year = 2013;
+    let year = this.props.year ? this.props.year : 2013;
 
     return (
       <div style={{margin:0, marginTop:10, backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5', borderRadius: 3}}>
         <div className = 'row'>
-        <h4 style={{textAlign: 'center'}}>
+          <h4 style={{textAlign: 'center'}}>
           <small style={{color:'#f5f5f5'}}>
             {this.props.metros[this.props.metroId] ? this.props.metros[this.props.metroId].name : ''}
           </small>
+          </h4>
+          <h4 style={{textAlign: 'center'}}>
+            <small style={{color:'#f5f5f5'}}>
+              {year}
+            </small>
           </h4>
         </div> 
         <table className='table'>
@@ -125,6 +138,11 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
+  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
+  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
+  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
+  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
+  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -141,7 +159,12 @@ const mapStateToProps = (state) => ({
 export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
-  getdensityshareofemploymentinnewfirms: () => loadShare(),    
+  getdensityshareofemploymentinnewfirms: () => loadShare(),
+  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
+  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
+  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
+  getqwiDensityshareEmpPro: () => loadShareEmpPro(),     
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),

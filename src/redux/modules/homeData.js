@@ -61,6 +61,9 @@ const ACTION_HANDLERS = {
     }  
     if(pageState.hoverMetro){
       newState.hoverMetro = pageState.hoverMetro
+    }   
+    if(pageState.hoverYear){
+      newState.hoverYear = pageState.hoverYear
     }      
     
     return newState;
@@ -75,7 +78,8 @@ const initialState = {
       bucket:'all',
       activeMapGraph:'map',
       metric:'composite',
-      hoverMetro: null
+      hoverMetro: null,
+      hoverYear:2013
 }
 export default function homeDataReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
