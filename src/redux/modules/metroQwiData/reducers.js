@@ -15,6 +15,8 @@ import {
   QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
   QWI_FIRMAGE_SELECTED,
   QWI_FIRMAGE_WHEEL_CHANGE,
+  QWI_MOUSE_ENTERED_TOOLTIP_CELL,
+  QWI_MOUSE_LEFT_TOOLTIP_CELL,
   QWI_ACTION_ERROR,
 } from './actions'
 
@@ -36,6 +38,7 @@ const initialState = {
         year:    null,
         quarter: null,
       },
+      hoveredNaicsLabel: null,
     }
   },
 
@@ -44,7 +47,7 @@ const initialState = {
   overviewTable: {
     sortField: 'Location Quotient',
   },
-  
+
   inventory: {
     raw: {},
     ratiosByFirmage: {},
@@ -54,8 +57,15 @@ const initialState = {
 
 
 // CONSIDER: Mutates state, but cloneDeep may be more costly than it's worth.
-const setStateField = (state, fieldPath, fieldValue) => 
-  _.isEqual(_.get(state, fieldPath), fieldValue) ? state : _.set(_.clone(state), fieldPath, fieldValue)
+const setStateField = (state, fieldPath, fieldValue) => {
+  //_.isEqual(_.get(state, fieldPath), fieldValue) ? state : _.set(_.clone(state), fieldPath, fieldValue)
+  let newState = _.isEqual(_.get(state, fieldPath), fieldValue) ? 
+                      state : _.set(_.clone(_.omit(state, 'data')), fieldPath, fieldValue)
+
+  newState.data = state.data
+
+  return newState
+}
 
    
 const handleActionError = (state, action) => {
@@ -207,6 +217,12 @@ const setFocusedLineGraph = (state, action) =>
 const setOverviewTableSortField = (state, action) => 
         setStateField(state, 'overviewTable.sortField', action.payload.sortField)
 
+const handleMouseEnteredTooltipNaicsLabel = (state, action) =>
+        setStateField(state, 'lineGraphs.tooltip.hoveredNaicsLabel', action.payload.naics)
+
+const handleMouseLeftTooltipNaicsLabel = (state) =>
+        setStateField(state, 'lineGraphs.tooltip.hoveredNaicsLabel', null)
+
 
 
 export const ACTION_HANDLERS = {
@@ -231,6 +247,10 @@ export const ACTION_HANDLERS = {
   [QWI_FIRMAGE_SELECTED]: handleFirmageChange,
 
   [QWI_FIRMAGE_WHEEL_CHANGE]: handleFirmageWheelChange,
+
+  [QWI_MOUSE_ENTERED_TOOLTIP_CELL]: handleMouseEnteredTooltipNaicsLabel,
+
+  [QWI_MOUSE_LEFT_TOOLTIP_CELL]: handleMouseLeftTooltipNaicsLabel,
 
   [QWI_ACTION_ERROR]: handleActionError,
 }

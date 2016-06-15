@@ -1,5 +1,6 @@
 import React from 'react'
 import Radar from './Radar'
+import _ from 'lodash'
 
 export class RadarChart extends React.Component<void, Props, void> {
   
@@ -7,12 +8,22 @@ export class RadarChart extends React.Component<void, Props, void> {
     this._drawGraph(this.props)
   }
 
-  componentWillReceiveProps (nextProps){
-     this._drawGraph (nextProps)
+  shouldComponentUpdate (nextProps) {
+  
+    let props = this.props
+
+    if (_.isEqual(props.divID, nextProps.divID) && 
+        _.isEqual(props.data, nextProps.data) && 
+        _.isEqual(props.options, nextProps.options)) {
+
+      return false
+    }
+
+    this._drawGraph (nextProps)
+    return true
   }
 
   _drawGraph (props) {
-    //console.log('radarDest', props.data, props.options)
     Radar.draw('#'+this.props.divID, props.data, props.options)
   }
 

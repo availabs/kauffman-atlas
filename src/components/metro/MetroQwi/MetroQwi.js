@@ -174,6 +174,9 @@ const renderVisualizations = (props) => (
                                   measureIsCurrency={
                                     (props.focusedLineGraph === 'qwi-rawData-linegraph') && props.measureIsCurrency
                                   }
+                                  onMouseEnter={props.mouseEnteredTooltipCell}
+                                  onMouseLeave={props.mouseLeftTooltipCell}
+                                  hoveredRowKey={props.tooltipHoveredNaicsLabel}
                                   uniq={props.field} />
         </div>
       </div>

@@ -25,6 +25,8 @@ export const QWI_LINEGRAPH_YEARQUARTER_CHANGE = 'QWI_LINEGRAPH_YEARQUARTER_CHANG
 export const QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE = 'QWI_OVERVIEW_TABLE_SORT_FIELD_CHANGE'
 export const QWI_FIRMAGE_SELECTED = 'QWI_FIRMAGE_SELECTED'
 export const QWI_FIRMAGE_WHEEL_CHANGE = 'QWI_FIRMAGE_WHEEL_CHANGE'
+export const QWI_MOUSE_ENTERED_TOOLTIP_CELL = 'QWI_MOUSE_ENTERED_TOOLTIP_CELL'
+export const QWI_MOUSE_LEFT_TOOLTIP_CELL = 'QWI_MOUSE_LEFT_TOOLTIP_CELL'
 export const QWI_ACTION_ERROR = 'QWI_ACTION_ERROR'
 
 
@@ -117,6 +119,16 @@ export const firmageWheelChange = (delta) => ({
 export const firmageSelected = (firmage) => ({
   type: QWI_FIRMAGE_SELECTED,
   payload: { firmage }
+})
+
+export const mouseEnteredTooltipCell = (naics) => ({
+  type: QWI_MOUSE_ENTERED_TOOLTIP_CELL,
+  payload: { naics, }
+})
+
+
+export const mouseLeftTooltipCell = () => ({
+  type: QWI_MOUSE_LEFT_TOOLTIP_CELL,
 })
 
 
