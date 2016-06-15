@@ -42,7 +42,8 @@ export class RankBoxes extends React.Component<void, Props, void> {
     return (
       this.props.densitycomposite &&
       this.props.fluiditycomposite &&
-      this.props.diversitycomposite
+      this.props.diversitycomposite && 
+      this.props.qwiDensityshareEmpAll
     )
   }
 
@@ -93,7 +94,7 @@ export class RankBoxes extends React.Component<void, Props, void> {
     })
     .filter((d,i) => { return i < length })
     .map((metro,i) => {
-      var topValue = year ? metro.values.filter(d => { return d.x === year })[0].y : metro.values[metro.values.length-1].y
+      var topValue = metro.values.filter(d => { return d.x === year })[0] ? metro.values.filter(d => { return d.x === year })[0].y : metro.values[metro.values.length-1].y
       return (
         <tr>
           <td>{(i+1)}</td>
@@ -108,8 +109,8 @@ export class RankBoxes extends React.Component<void, Props, void> {
     if(!this.hasData()) return <div> Loading... </div>
   
     //Current hack for displaying qwi data
-    if(this.props.activecomponent == "qwiDensity"){
-      var currentData = this.props[this.props.activeComponent + 'shareEmpAll']      
+    if(this.props.activeComponent == "qwiDensity"){
+      var currentData = this.props.qwiDensityshareEmpAll
     }
     else{
       var currentData = this.props[this.props.activeComponent + 'composite']      

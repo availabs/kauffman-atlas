@@ -60,21 +60,19 @@ export class HoverBox extends React.Component<void, Props, void> {
 
   
   renderCombinedScores(type,year){
-
     if(!this._checkData(type)){
       return (<tr />)
     }
     return categories[type].map((cat) => {
-      //console.log('props cat', cat, this.props[cat])
       let fulldata = this.props[cat] && this.props[cat].relative ? this.props[cat].relative : this.props[cat]
-//      console.log(fulldata,(cat))
-      fulldata = fulldata || []
+
+      fulldata = fulldata || [];
+
       let isData = fulldata.filter(metro => { 
         return metro.key == this.props.metroId
       })[0]
-      //console.log('isData', isData)
+
       let data = isData && isData.values ? isData.values : []
-      //console.log('test data', data)
 
       let score = {};
       if(cat == 'diversityincomebasedonchildhood'){
@@ -86,19 +84,17 @@ export class HoverBox extends React.Component<void, Props, void> {
           { return d.x === year })[0] || {}        
       }
 
-
-        return (
-          <tr>
-            <td>{categeoryNames[cat]}</td>
-            <td>{score.rank ? score.rank : "N/A"}</td>
-            <td>{score.y ? roundFormat(score.y) : "N/A"}</td>
-          </tr>
-        )
+      return (
+        <tr>
+          <td>{categeoryNames[cat]}</td>
+          <td>{score.rank ? score.rank : "N/A"}</td>
+          <td>{score.y ? roundFormat(score.y) : "N/A"}</td>
+        </tr>
+      )
     }) 
   }
       
   render () {
-    //console.log('the metro',)
     if(!this.props.metroId) return (<span />)
 
     let year = this.props.year ? this.props.year : 2013;
