@@ -10,27 +10,9 @@ import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMi
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
 import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
+import CategoryNames from 'components/misc/categoryNames'
+
 let roundFormat = d3.format(".2f")
-let categeoryNames = {
-  combinedcomposite: 'Combined',
-  densitycomposite: 'Density',
-  fluiditycomposite: 'Fluidity',
-  diversitycomposite: 'Diversity',
-  densitynewfirms: 'New Firms per 1k Pop',
-  densityshareofemploymentinnewfirms: '% Emp in New Firms',
-  qwiDensityshareEmpAll: "% emp in all sectors",
-  qwiDensityshareEmpNoAccRet: "% emp in non retail and accomodation sectors",
-  qwiDensityshareEmpHighTech: "% emp in high tech sector",
-  qwiDensityshareEmpInfo: "% emp in information sector",
-  qwiDensityshareEmpPro: "% emp in professional sector",
-  diversityincomebasedonchildhood: 'Equality of Opportunity',
-  diversitypercentageofforiegnbornpopulation: '% Foreign Born',
-  diversityemploymentlocationquotientvariance: 'Variance of Emp Location Quotient',
-  fluidityhighgrowthfirms: 'High Growth Firms',
-  fluiditynetmigration: 'Net Migration',
-  fluiditytotalmigration: 'Total Migration',
-  fluidityannualchurn: 'Employee Churn'
-}
 
 let categories = {
   combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
@@ -86,7 +68,7 @@ export class HoverBox extends React.Component<void, Props, void> {
 
       return (
         <tr>
-          <td>{categeoryNames[cat]}</td>
+          <td>{CategoryNames[cat]}</td>
           <td>{score.rank ? score.rank : "N/A"}</td>
           <td>{score.y ? roundFormat(score.y) : "N/A"}</td>
         </tr>
