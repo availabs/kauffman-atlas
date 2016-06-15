@@ -85,8 +85,6 @@ export class RankBoxes extends React.Component<void, Props, void> {
   }
 
   _topFiveList(currentData,length,year){
-
-
     currentData.sort(this._sortCities(year));      
 
     return currentData.filter((msa) => {

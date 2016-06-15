@@ -52,16 +52,11 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
-      if(data[topMetric.metric][metricName]['relative']){
-        return {value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:metricName}        
-      }
-      else if(data[topMetric.metric][metricName]['raw']){
-        return {value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:metricName}                
-      }
-      else{
-        return {value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:metricName}                        
-      }
-      
+      return (
+        data[topMetric.metric][metricName]['relative'] ? {value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:metricName} :
+        data[topMetric.metric][metricName]['raw'] ? {value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:metricName} :               
+        {value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:metricName}                          
+        )
     }).reduce((highest, current) => {
       return highest.value.rank < current.value.rank ? highest : current
     },{value:{rank:400}})
@@ -87,15 +82,11 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
-      if(data[bottomMetric.metric][metricName]['relative']){
-        return {value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:metricName}        
-      }
-      else if(data[bottomMetric.metric][metricName]['raw']){
-        return {value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:metricName}                
-      }
-      else{
-        return {value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:metricName}                        
-      }
+      return (
+        data[bottomMetric.metric][metricName]['relative'] ? {value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:metricName} :
+        data[bottomMetric.metric][metricName]['raw'] ? {value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:metricName} :               
+        {value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:metricName}                          
+        )
     }).reduce((lowest, current) => {
       if(current.value.y == -1){
         return lowest
