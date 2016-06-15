@@ -322,7 +322,7 @@ export class LineGraph extends React.Component<void, Props, void> {
       });
 
     function mouseover(d) {
-        props.onMouseover({id: d.city.key})
+        props.onMouseover({id: d.city.key,year:d.x})
 
         d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+2))
         d3.select(d.city.line).style("stroke","#000000")
@@ -554,6 +554,96 @@ export class LineGraph extends React.Component<void, Props, void> {
       else{
         if(props.dataType == "raw"){
           return "Metro Area Ranking for Location Quotient Variance by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
+    else if(props.title == "qwiDensityshareEmpAll"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "% emp in all sectors by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for % emp in all sectors by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    }
+    else if(props.title == "qwiDensityshareEmpNoAccRet"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "% emp in non retail and accomodation sectors by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for % emp in non retail and accomodation sectors by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
+    else if(props.title == "qwiDensityshareEmpHighTech"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "% emp in high tech sector by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for % emp in high tech sector by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
+    else if(props.title == "qwiDensityshareEmpInfo"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "% emp in information sector by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for % emp in information sector by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
+    else if(props.title == "qwiDensityshareEmpPro"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return "% emp in professional sector by year"
+        }
+        else{
+          return ""
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for % emp in professional sector by year"
         }
         else{
           return ""

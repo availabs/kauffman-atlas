@@ -6,7 +6,7 @@ import classes from 'styles/sitewide/index.scss'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".3f")
-
+import CategoryNames from 'components/misc/categoryNames'
 type Props = {
 };
 
@@ -52,16 +52,11 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
-      if(data[topMetric.metric][metricName]['relative']){
-        return {value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:metricName}        
-      }
-      else if(data[topMetric.metric][metricName]['raw']){
-        return {value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:metricName}                
-      }
-      else{
-        return {value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:metricName}                        
-      }
-      
+      return (
+        data[topMetric.metric][metricName]['relative'] ? { value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :
+        data[topMetric.metric][metricName]['raw'] ? { value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :               
+        { value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] }                          
+        )
     }).reduce((highest, current) => {
       return highest.value.rank < current.value.rank ? highest : current
     },{value:{rank:400}})
@@ -81,21 +76,17 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       return lowest.value.rank > current.value.rank ? lowest : current
     },{value:{rank:0}})
 
-    let topSub = Object.keys(data[bottomMetric.metric]).reduce((metricScores,current) => {
+    let botSub = Object.keys(data[bottomMetric.metric]).reduce((metricScores,current) => {
       if(current != 'composite'){
         metricScores.push(current)
       }
       return metricScores;
     },[]).map(metricName => {
-      if(data[bottomMetric.metric][metricName]['relative']){
-        return {value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:metricName}        
-      }
-      else if(data[bottomMetric.metric][metricName]['raw']){
-        return {value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:metricName}                
-      }
-      else{
-        return {value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:metricName}                        
-      }
+      return (
+        data[bottomMetric.metric][metricName]['relative'] ? { value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :
+        data[bottomMetric.metric][metricName]['raw'] ? { value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :               
+        { value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] }                          
+        )
     }).reduce((lowest, current) => {
       if(current.value.y == -1){
         return lowest
@@ -105,7 +96,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     },{value:{rank:0}})
 
-    var bottomScore = {metric:bottomMetric,sub:topSub}
+    var bottomScore = {metric:bottomMetric,sub:botSub}
     return bottomScore
   }
 

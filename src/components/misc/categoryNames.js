@@ -1,0 +1,30 @@
+let categoryNames = {
+  combinedcomposite: 'Combined',
+  densitycomposite: 'Density',
+  fluiditycomposite: 'Fluidity',
+  diversitycomposite: 'Diversity',
+  densitynewfirms: 'New Firms per 1k Pop',
+  densityshareofemploymentinnewfirms: '% Emp in New Firms',
+  densityshareemp: '% Emp in New Firms',
+  qwiDensityshareEmpAll: "% emp in all sectors",
+  qwiDensityshareEmpNoAccRet: "% emp in non retail and accomodation sectors",
+  qwiDensityshareEmpHighTech: "% emp in high tech sector",
+  qwiDensityshareEmpInfo: "% emp in information sector",
+  qwiDensityshareEmpPro: "% emp in professional sector",
+  diversityincomebasedonchildhood: 'Equality of Opportunity',
+  diversityopportunity: 'Equality of Opportunity',
+  diversitypercentageofforiegnbornpopulation: '% Foreign Born',
+  diversityforeignborn: '% Foreign Born',
+  diversityemploymentlocationquotientvariance: 'Variance of Emp Location Quotient',
+  diversityemplqvariance: 'Variance of Emp Location Quotient',
+  fluidityhighgrowthfirms: 'High Growth Firms',
+  fluidityhighgrowth: 'High Growth Firms',
+  fluiditynetmigration: 'Net Migration',
+  fluiditytotalmigration: 'Total Migration',
+  fluidityinflowmigration: 'Inflow Migration',
+  fluidityoutflowmigration: 'Outflow Migration',
+  fluidityannualchurn: 'Employee Churn',
+  fluiditychurn: 'Employee Churn'
+}
+
+export default categoryNames

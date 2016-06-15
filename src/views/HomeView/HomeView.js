@@ -18,6 +18,7 @@ import MapGraphLegend from 'components/ranks/MapGraphLegend'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { changeHomeState } from 'redux/modules/homeData'
 import CategoryText from 'components/misc/categoryText'
@@ -56,11 +57,22 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   _setActiveComponent (type) {
-    this.props.changeHomeState({activeComponent:type,metric:"composite"})
+    if(type == "qwiDensity"){
+      this.props.changeHomeState({activeComponent:type,metric:"shareEmpAll"})      
+    }else{
+      this.props.changeHomeState({activeComponent:type,metric:"composite"})      
+    }
+
   }
 
   _setMapGraph (type) {
-    this.props.changeHomeState({activeMapGraph:type})
+    if(type == 'map'){
+      this.props.changeHomeState({activeMapGraph:type,hoverYear:2013})
+    }
+    else{
+      this.props.changeHomeState({activeMapGraph:type})      
+    }
+
   }
 
   _setMetric (type) {
@@ -82,8 +94,10 @@ export class HomeView extends React.Component<void, Props, void> {
 
   onMouseover(feature){
     let curFeature = feature.city ? feature.city.key : feature.id  
+
     this.props.changeHomeState({
-      hoverMetro: curFeature
+      hoverMetro: curFeature,
+      hoverYear: feature.year
     })
   }
 
@@ -124,7 +138,6 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   render () {
-
     var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
       if(this.props.metros[msaId].pop){
         if(this.props.metros[msaId].pop[2014]){
@@ -164,56 +177,54 @@ export class HomeView extends React.Component<void, Props, void> {
             </div>
           </div>
         </div>
-      <div className='container'>
-  
-        
-        <div className='row' style={{padding:15, marginTop: 15}} >
-          <ComponentButtons
-            onComponentChange={this._setActiveComponent} 
-            activeComponent={this.props.homeState.activeComponent}
-          />
-          <PopBuckets 
-            popScale={popScale} 
-            onBucketChange={this._setActiveBucket} 
-            bucket={this.props.homeState.bucket}
-          />
-        </div>
-        <div className='row'>
-          <div className={'col-xs-12 ' + classes['text-div']}>
-            <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
-          </div>
-        </div>
-        
-      </div>
-      <div className='container'>
-        <div className='row'>
-          <div className='col-md-3' style={{padding:15}}>
-            <RankBox 
-              activeComponent={this.props.homeState.activeComponent} 
-              popScale={popScale}
-              bucket={this.props.homeState.bucket}
-            />
-            <HoverBox metroId={this.props.homeState.hoverMetro} activeComponent={this.props.homeState.activeComponent} />
-          </div>
-          <div id="mapDiv" className='col-md-9' style={{padding:15}}>
-            <SubGraphButtons
-              metric={this.props.homeState.metric}
-              onComponentChange={this._setMetric} 
+        <div className='container'>
+          <div className='row' style={{padding:15, marginTop: 15}} >
+            <ComponentButtons
+              onComponentChange={this._setActiveComponent} 
               activeComponent={this.props.homeState.activeComponent}
             />
-            <MapGraphButtons
-               mapGraph={this.props.homeState.activeMapGraph}
-              onComponentChange={this._setMapGraph} 
-              activeComponent={this.props.homeState.activeMapGraph}
+            <PopBuckets 
+              popScale={popScale} 
+              onBucketChange={this._setActiveBucket} 
+              bucket={this.props.homeState.bucket}
             />
-            <MapGraphLegend 
-              mapGraph={this.props.homeState.activeMapGraph}
-              activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
-            />   
-            {this.renderMapGraph(metrosInBucket)}       
+          </div>
+          <div className='row'>
+            <div className={'col-xs-12 ' + classes['text-div']}>
+              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
+            </div>
           </div>
         </div>
-      </div>
+        <div className='container'>
+          <div className='row'>
+            <div className='col-md-3' style={{padding:15}}>
+              <RankBox 
+                activeComponent={this.props.homeState.activeComponent} 
+                popScale={popScale}
+                bucket={this.props.homeState.bucket}
+                year={this.props.homeState.hoverYear}
+              />
+              <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
+            </div>
+            <div id="mapDiv" className='col-md-9' style={{padding:15}}>
+              <SubGraphButtons
+                metric={this.props.homeState.metric}
+                onComponentChange={this._setMetric} 
+                activeComponent={this.props.homeState.activeComponent}
+              />
+              <MapGraphButtons
+                 mapGraph={this.props.homeState.activeMapGraph}
+                onComponentChange={this._setMapGraph} 
+                activeComponent={this.props.homeState.activeMapGraph}
+              />
+              <MapGraphLegend 
+                mapGraph={this.props.homeState.activeMapGraph}
+                activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
+              />   
+              {this.renderMapGraph(metrosInBucket)}       
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -223,6 +234,11 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
+  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
+  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
+  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
+  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
+  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -240,7 +256,12 @@ const mapStateToProps = (state) => ({
 export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
-  getdensityshareofemploymentinnewfirms: () => loadShare(),    
+  getdensityshareofemploymentinnewfirms: () => loadShare(),  
+  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
+  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
+  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
+  getqwiDensityshareEmpPro: () => loadShareEmpPro(),      
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),

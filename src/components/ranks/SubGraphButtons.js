@@ -33,7 +33,9 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
     if(this.props.activeComponent == "fluidity"){
       var components = ['composite','high growth firms','net migration','total migration','annual churn']      
     }
-
+    if(this.props.activeComponent == "qwiDensity"){
+      var components = ['shareEmpAll','shareEmpNoAccRet','shareEmpHighTech','shareEmpInfo','shareEmpPro']      
+    }
 
     components.forEach((v,i) => {
         bucketDisplay.push (

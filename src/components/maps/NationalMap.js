@@ -6,6 +6,7 @@ import { loadNationalData } from 'redux/modules/geoData'
 import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import topojson from 'topojson'
 import classes from './NationalMap.scss'
@@ -354,6 +355,11 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
+  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
+  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
+  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
+  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
+  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -370,7 +376,12 @@ export default connect((mapStateToProps), {
   loadData: () => loadNationalData(),
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
-  getdensityshareofemploymentinnewfirms: () => loadShare(),    
+  getdensityshareofemploymentinnewfirms: () => loadShare(), 
+  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
+  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
+  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
+  getqwiDensityshareEmpPro: () => loadShareEmpPro(),         
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),
