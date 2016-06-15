@@ -3,7 +3,11 @@ import { connect } from 'react-redux'
 import { loadMetroGdp, loadMetroGdpPerCapita } from 'redux/modules/metroGdpData'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
 import MetroMap from 'components/maps/MetroMap'
+import classes from 'styles/sitewide/index.scss'
 import LineGraph from 'components/graphs/SimpleLineGraph'
+import ReactTooltip from 'react-tooltip'
+import CategoryText from 'components/misc/categoryText'
+
 
 export class MetroScoresOverview extends React.Component<void, Props, void> {
   constructor (props) {
@@ -134,7 +138,21 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       <div className='container'> 
         <div className='row' >
           <div className='col-xs-3'>
-            <h4>AEA Composite Index</h4>
+            <h4 data-tip data-for="composite">AEA Composite Index</h4>
+            <ReactTooltip 
+              id="composite" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{right:170}}
+              class={classes['tooltip']}
+              delayShow={100}
+              delayHide={300}
+              event="click"
+              eventOff="mouseout"
+              >
+              <span>{CategoryText.combined}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{combined.y.toLocaleString()}</h4>
@@ -159,7 +177,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         <div className='row' style={rowStyle}>
           <h4>Density</h4>
           <div className='col-xs-4' style={graphBox}>
-            <h4>Density Composite Index</h4>
+            <h4 data-tip data-for="density">Density Composite Index</h4>
+            <ReactTooltip 
+              id="density" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{right:170}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.density}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{densityComposite.y.toLocaleString()}</h4>
@@ -221,9 +251,20 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         </div>
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
-          
           <div className='col-xs-4' style={graphBox}>
-            <h4>Fluidity Composite Index</h4>
+            <h4 data-tip data-for="fluidity">Fluidity Composite Index</h4>
+            <ReactTooltip 
+              id="fluidity" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{right:170}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.fluidity}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{fluidityComposite.y.toLocaleString()}</h4>
@@ -328,7 +369,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         <div className='row' style={rowStyle}>
           <h4>Diversity</h4>
           <div className='col-xs-4' style={graphBox}>
-            <h4>Diversity Composite Index</h4>
+            <h4 data-tip data-for="diversity">Diversity Composite Index</h4>
+            <ReactTooltip 
+              id="diversity" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{right:170}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.diversity}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{diversityComposite.y.toLocaleString()}</h4>

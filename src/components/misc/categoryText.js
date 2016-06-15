@@ -11,7 +11,7 @@ let categoryText =  {
 				 'The diversity metric is comprised of two measures: immigration, and income mobility.  An ecosystem that is diverse in these ways tends to be robust and multi-leveled.'
 				],
 
-	'qwiDensity':['Some qwiDensity data, ty Paul c:']
+	'qwiDensity':['QWI Density Data']
 }
 
 export default categoryText
