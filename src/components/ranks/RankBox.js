@@ -92,9 +92,10 @@ export class RankBoxes extends React.Component<void, Props, void> {
     return currentData.filter((msa) => {
       return this._inBucket(msa.key)
     })
-    .filter((d,i) => { return i < length })
+    .filter((d,i) => { return d.values.filter(e => { return e.x === year })[0] })
+    .filter((d,i) => { return i < length  })
     .map((metro,i) => {
-      var topValue = metro.values.filter(d => { return d.x === year })[0] ? metro.values.filter(d => { return d.x === year })[0].y : metro.values[metro.values.length-1].y
+      var topValue = metro.values.filter(d => { return d.x === year })[0].y
       return (
         <tr>
           <td>{(i+1)}</td>
