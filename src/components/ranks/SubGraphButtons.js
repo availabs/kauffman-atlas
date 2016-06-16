@@ -25,16 +25,13 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       var components = []      
     }
     if(this.props.activeComponent == "density"){
-      var components = ['composite','new firms','share of employment in new firms']      
+      var components = ['composite','new firms','share of employment in new firms','shareEmpNoAccRet','shareEmpHighTech' ]      
     }
     if(this.props.activeComponent == "diversity"){
       var components = ['composite','income based on childhood','percentage of foriegn born population','employment location quotient variance']      
     }
     if(this.props.activeComponent == "fluidity"){
       var components = ['composite','high growth firms','net migration','total migration','annual churn']      
-    }
-    if(this.props.activeComponent == "qwiDensity"){
-      var components = ['shareEmpAll','shareEmpNoAccRet','shareEmpHighTech','shareEmpInfo','shareEmpPro']      
     }
 
     components.forEach((v,i) => {

@@ -5,7 +5,6 @@ import { loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityComposite } from 'redux/modules/diversityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-import { loadShareEmpAll } from 'redux/modules/qwiDensityData'
 import classes from 'styles/sitewide/index.scss'
 let roundFormat = d3.format(".2f")
 
@@ -32,18 +31,14 @@ export class RankBoxes extends React.Component<void, Props, void> {
     }
     if(!this.props['combinedcomposite']){
       this.props['getcombinedcomposite']()        
-    }    
-    if(!this.props['qwiDensityshareEmpAll']){
-      this.props['getqwiDensityshareEmpAll']()          
-    }    
+    }     
   }
 
   hasData () {
     return (
       this.props.densitycomposite &&
       this.props.fluiditycomposite &&
-      this.props.diversitycomposite && 
-      this.props.qwiDensityshareEmpAll
+      this.props.diversitycomposite
     )
   }
 
@@ -106,14 +101,8 @@ export class RankBoxes extends React.Component<void, Props, void> {
 
   render () {
     if(!this.hasData()) return <div> Loading... </div>
-  
-    //Current hack for displaying qwi data
-    if(this.props.activeComponent == "qwiDensity"){
-      var currentData = this.props.qwiDensityshareEmpAll
-    }
-    else{
-      var currentData = this.props[this.props.activeComponent + 'composite']      
-    }
+
+    var currentData = this.props[this.props.activeComponent + 'composite']      
 
     //Checking to see if passed year property is within bounds of composite data
     //If it isn't, choose the closest existing value
@@ -157,7 +146,6 @@ const mapStateToProps = (state) => ({
   fluiditycomposite:state.fluidityData.compositeData,
   diversitycomposite : state.diversityData.diversitycomposite,
   combinedcomposite : state.combinedData.combinedcomposite,
-  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
   metros : state.metros
 })
 
@@ -166,5 +154,4 @@ export default connect((mapStateToProps), {
   getfluiditycomposite: () => loadFluidityComposite(),
   getdiversitycomposite: () => loadDiversityComposite(),
   getcombinedcomposite: () => loadCombinedComposite(),
-  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
 })(RankBoxes)

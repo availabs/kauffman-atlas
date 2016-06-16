@@ -14,10 +14,8 @@ import combinedData from './modules/combinedData'
 import metroScoresData from './modules/metroScoresData'
 import metroTime from './modules/metroTime'
 import homeData from './modules/homeData'
-import qwiDensityData from './modules/qwiDensityData'
 
 export default combineReducers({
-  qwiDensityData,
   homeData,
   metroTime,
   metroScoresData,

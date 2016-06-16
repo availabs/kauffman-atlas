@@ -15,10 +15,9 @@ import LineGraph from 'components/graphs/LineGraph.js'
 import BarChart from 'components/graphs/BarChart.js'
 import HoverBox from 'components/ranks/HoverBox'
 import MapGraphLegend from 'components/ranks/MapGraphLegend'
-import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
-import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { changeHomeState } from 'redux/modules/homeData'
 import CategoryText from 'components/misc/categoryText'
@@ -234,11 +233,8 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
-  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
-  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
-  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
-  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
-  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
+  densityshareEmpNoAccRet:state.densityData.shareEmpNoAccRet,
+  densityshareEmpHighTech:state.densityData.shareEmpHighTech,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -257,11 +253,8 @@ export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
   getdensityshareofemploymentinnewfirms: () => loadShare(),  
-  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
-  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
-  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
-  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
-  getqwiDensityshareEmpPro: () => loadShareEmpPro(),      
+  getdensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getdensityshareEmpHighTech: () => loadShareEmpHighTech(),     
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),
