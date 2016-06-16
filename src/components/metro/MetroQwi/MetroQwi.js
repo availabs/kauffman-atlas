@@ -3,7 +3,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import Select from 'react-select'
-import {StickyContainer,Sticky} from 'react-sticky'
+import {StickyContainer, Sticky} from 'react-sticky'
 
 
 import LineGraph from '../../../components/graphs/SimpleLineGraph'

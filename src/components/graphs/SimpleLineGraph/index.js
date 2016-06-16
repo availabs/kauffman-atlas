@@ -69,25 +69,13 @@ class LineGraph extends React.Component {
 
     _mouseListener (d,data) {
 
-	if(this.props.onMouse){
-
-	    let tableData = data.map(x => {
-		let offset = x.values[0].key
-		try{
-		    return {
-			key:x.key,
-			value:x.values[d.point.x-offset].values.y || 0,
-			color:x.color,
-		    }
-		}catch(e){
-		    console.info('Mouse Error',d.point.x,offset)
-		    return {key:x.key,
-			    value:0,
-			    color:x.color}
-		}
-	    })
-	    this.props.onMouse(tableData)
-	}
+      //if (this.props.onMouse) {
+        //this.props.onMouse(data.map(x => ({
+          //key   : x.key,
+          //value : onMouseSearcher(new Date(d.point.x).getTime(), x.values, 0, x.values.length),
+          //color : x.color,
+        //})))
+      //}
 
       if (this.props.quarterChangeListener) {
         this.props.quarterChangeListener(d.point.x) 
@@ -131,6 +119,27 @@ class LineGraph extends React.Component {
 	)
     }
 }
+
+
+//function onMouseSearcher (xDateTime, lineDataArr, i, j) {
+  //if (i === j) { return 0 }
+
+  //let x = (i === j) ? i : (i + Math.floor((j-i)/2))
+
+  //let point = lineDataArr[x]
+
+  //let yDateTime = new Date(point.key).getTime()
+
+  //if (xDateTime < yDateTime) {
+    //return onMouseSearcher(xDateTime, lineDataArr, i, x)
+  //} else if (xDateTime > yDateTime){
+    //return onMouseSearcher(xDateTime, lineDataArr, x, j)
+  //} else {
+    //return point.values.y
+  //}
+//}
+
+
 
 LineGraph.propTypes = {
     data: React.PropTypes.array,

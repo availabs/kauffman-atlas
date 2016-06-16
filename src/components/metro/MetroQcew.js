@@ -3,9 +3,12 @@
 
 import React from 'react'
 import d3 from 'd3'
+import _ from 'lodash'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
+import { StickyContainer, Sticky } from 'react-sticky'
+
+import { msaChange, loadMetroData, loadMetroDataYear, yearQuarterWheelChange } from 'redux/modules/metroQcewData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import { setYear } from 'redux/modules/metroTime'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
@@ -16,6 +19,30 @@ import YearSelect from 'components/misc/yearselect'
 
 
 let startingYear = '2001'
+
+const stickyToolbarStyle = {
+  color: '#f7f7f7', 
+  backgroundColor: '#7D8FAF', 
+  paddingTop: 2,
+  paddingRight: 17,
+  paddingBottom: 2,
+  paddingLeft: 17,
+  borderStyle: 'solid',
+  borderTopWidth: 0,
+  borderBottomWidth: 2,
+  borderColor: '#f7f7f7',
+  zIndex:100,
+}
+
+const buttonStyle = {
+  color: '#f7f7f7', 
+  backgroundColor: '#7D8FAF', 
+  boxShadow: '0 1px 2px 0 rgba(247,247,247,0.2), 0 1px 2px 0 rgba(247,247,247,0.19)',
+  border: '0px solid transparent',
+  marginLeft: '1px',
+  marginRight: '1px',
+}
+
 
 
 export class MetroQcew extends React.Component<void, Props, void> {
@@ -35,7 +62,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
     this.renderNaicsOverview = this.renderNaicsOverview.bind(this)
     this.renderRadar         = this.renderRadar.bind(this)
   }
-  
+
+
+ 
   _fetchData () {
 
     let qcew = this.props.qcewData
@@ -57,16 +86,16 @@ export class MetroQcew extends React.Component<void, Props, void> {
     }
   }
 
-  _processData (msa, year, depth, filter) {
+  _processData (msa, year, quarter, depth, filter) {
     if (!this.props.qcewData || !this.props.qcewData[msa] || !this.props.qcewData[msa][year]) {
       return
     }
 
-console.log(this.props.qcewData[msa][year])
+    let entries = this.props.qcewData[msa][year].filter((d) => ((quarter === null) || (d.qtr === quarter)))
 
     let currentData = d3.nest()
                         .key(x => x.industry_code)
-                        .entries(this.props.qcewData[msa][year])
+                        .entries(entries)
 
     let naicsLib = this.props.naicsKeys
 
@@ -165,25 +194,21 @@ console.log(this.props.qcewData[msa][year])
     }
   }
 
-  renderRadar (year, depth, filter, year2) {
+  renderRadar (year, quarter, depth, filter, year2) {
 
-    let msa            = this.props.currentMetro
-    let naicsCodes     = this._processData(msa, year, depth, filter)
-    let naicsCodesPast = this._processData(msa, year2 ||'2001', depth, filter)
-    let naicsLib       = this.props.naicsKeys
+    let msa        = this.props.currentMetro
+    let naicsCodes = this._processData(msa, year, quarter, depth, filter)
+    let naicsLib   = this.props.naicsKeys
 
     if(!naicsCodes || !Object.keys(naicsCodes).length) {
       return (<span></span>)
     }
 
     let curQuants  = this.summarizeData(naicsCodes, naicsLib)
-    let pastQuants = this.summarizeData(naicsCodesPast, naicsLib)
     let typeShares = [
-      pastQuants.typeShare, 
       curQuants.typeShare
     ]
     let typeQuots  = [
-      pastQuants.typeQuot, 
       curQuants.typeQuot
     ]
 
@@ -195,20 +220,9 @@ console.log(this.props.qcewData[msa][year])
       color       : d3.scale.ordinal().range(['#c58a30','#7D8FAF'])
     }
 
+
     return (
       <div className='row'>
-
-        <div className='col-sm-2'>
-          <strong>Year Select</strong>
-
-          <div className='row'>
-            <YearSelect id='current' type='current' year={this.props.year}/>
-          </div>
-
-          <div className='row'>
-            <YearSelect id='secondary' type='syear' year={this.props.syear}/>
-          </div>
-        </div>
 
         <div className='col-sm-5'
              style={{'textAlign': 'center',padding:0}}>
@@ -245,7 +259,7 @@ console.log(this.props.qcewData[msa][year])
 
     let metro      = this.props.currentMetro
     let page       = this.props.title
-    let naicsCodes = this._processData(msa, year, depth, filter)
+    let naicsCodes = this._processData(msa, year, '1', depth, filter)
     let naicsLib   = this.props.naicsKeys
 
     let naicsRows = Object.keys(naicsCodes)
@@ -321,7 +335,8 @@ console.log(this.props.qcewData[msa][year])
   }
 
   componentDidMount() {
-    console.info('fetching initial data')
+    this.props.msaChange(this.props.currentMetro)
+
     this._fetchData()
   }
   
@@ -329,6 +344,10 @@ console.log(this.props.qcewData[msa][year])
     this._fetchData()
 
     let naics_code = nextProps.params.naics_code
+
+    if (this.props.msa !== nextProps.currentMetro) {
+      this.props.msaChange(nextProps.currentMetro)
+    }
 
     if (naics_code && (naics_code !== this.state.filter)) {
       this.setState({
@@ -355,72 +374,119 @@ console.log(this.props.qcewData[msa][year])
 
     if (!this.props.naicsKeys) { return <span/> }
 
-    let naicsLib = this.props.naicsKeys
+    let props = this.props
+
+    let naicsLib = props.naicsKeys
     let filter   = this.state.filter
-    let fkeys    = (filter) ? this.props.naicsTable.Query(filter,1,true) : null
+    let fkeys    = (filter) ? props.naicsTable.Query(filter,1,true) : null
 
     let reset = (
-        <Link to={`/metro/${this.props.currentMetro}/${this.props.title}`}
+        <Link to={`/metro/${props.currentMetro}/${props.title}`}
               onClick={this._setFilter.bind(this, null, 2)}>
 
           {' reset'}
         </Link>)
 
+    let selectedYear = _.get(props, 'selectedQtr.year', props.year)
+    let selectedQuarter = _.get(props, 'selectedQtr.quarter', null)
 
     return (
       <div className='container'>
 
-        <div className='row' 
-             style={{'textAlign': 'center'}}>
+        <StickyContainer>    
+          <Sticky className="foo" 
+                  style={stickyToolbarStyle} 
+                  stickyStyle={stickyToolbarStyle}>
 
-          <h4>
-            {this.state.filter || '--'} | 
-            {(naicsLib[this.state.filter]) ? naicsLib[this.state.filter].title : 'All Sectors'} 
-            {this.state.depth > 2 ? reset : ''}
-          </h4>
-        </div>
+            <div className='row'>
+              <div className='col-xs-12 text-center' style={{backgroundColor: '#5d5d5d'}}>
+                {this.state.filter || '--'} | 
+                {(naicsLib[this.state.filter]) ? naicsLib[this.state.filter].title : 'All Sectors'} 
+                {this.state.depth > 2 ? reset : ''}
+              </div>
+            </div>
 
-        <div key='leftpad' 
-             style={{ textAlign: 'left', padding: 15 }}>
+            <div className='row'>
+              <div className='col-xs-offset-8 col-xs-4 button-group text-right' role="group">
+                <strong style={_.merge({ paddingTop: '1px', 
+                                         paddingBottom: '1px', 
+                                         paddingLeft: '2px', 
+                                         paddingRight: '4px', 
+                                         marginTop: '5px'}, 
+                                       buttonStyle)}
+                        onWheel={(e) => { 
+                                 props.yearQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
+                                 e.preventDefault()}}>
 
-          {
-            (naicsLib[this.state.filter] && naicsLib[this.state.filter].description) ? 
-              naicsLib[this.state.filter].description.filter((d,i) => (i < 4 && d !== "The Sector as a Whole"))
-                                                     .map((d,i) => (<p key={'desc'+i}>{d}</p>)) : 
-              ''
-          }
-        </div>
+                    {(props.selectedQtr) ? `Quarter:  Q${props.selectedQtr.quarter}-${props.selectedQtr.year}` : ''}
+                </strong>
+                <button id='qwi-quarter-decrement' 
+                        type="button" 
+                        className="btn btn-secondary btn-sm" 
+                        style={buttonStyle}
+                        onClick={(e) => { 
+                                 props.yearQuarterWheelChange(-1)
+                                 e.preventDefault()}}> -
+                </button>
+                <button id='qwi-quarter-increment' 
+                        type="button" 
+                        className="btn btn-secondary btn-sm" 
+                        style={buttonStyle}
+                        onClick={(e) => { 
+                                 props.yearQuarterWheelChange(1)
+                                 e.preventDefault()}}> +
+                </button>
+              </div>
+            </div>
+          </Sticky>
 
-        <NaicsGraph filter={fkeys}
-                    currentMetro={this.props.currentMetro}
-                    type={this.props.type}
-                    title={this.props.title} />
+          <div className='row'>
+            <div key='leftpad' 
+                 style={{ textAlign: 'left', padding: 15 }}>
 
-        <div>
-          {this.renderRadar(this.props.year, this.state.depth, this.state.filter, this.props.syear)}
-        </div>
-        <div>
-          {this.renderNaicsOverview(this.props.year, this.state.depth, this.state.filter, this.props.syear)}
-        </div>
+              {
+                (naicsLib[this.state.filter] && naicsLib[this.state.filter].description) ? 
+                  naicsLib[this.state.filter].description.filter((d,i) => (i < 4 && d !== "The Sector as a Whole"))
+                                                         .map((d,i) => (<p key={'desc'+i}>{d}</p>)) : 
+                  ''
+              }
+            </div>
+          </div>
+
+          <NaicsGraph filter={fkeys}
+                      currentMetro={props.currentMetro}
+                      type={props.type}
+                      title={props.title} />
+
+          <div>
+            {this.renderRadar(selectedYear, selectedQuarter, this.state.depth, this.state.filter, props.syear)}
+          </div>
+          <div>
+            {this.renderNaicsOverview(props.year, this.state.depth, this.state.filter, props.syear)}
+          </div>
+        </StickyContainer>    
       </div>
     )
   }
 }
 
 const mapStateToProps = (state) => ({
-  mapLoaded  : state.geoData.loaded,
-  metrosGeo  : state.geoData.metrosGeo,
-  qcewData   : state.metroQcewData.yeardata,
-  naicsKeys  : state.metros.naicsKeys,
-  naicsTable : state.metros.naicsLookup,
-  loadState  : state.metroQcewData.year_requests,
+  mapLoaded   : state.geoData.loaded,
+  metrosGeo   : state.geoData.metrosGeo,
+  qcewData    : state.metroQcewData.yeardata,
+  naicsKeys   : state.metros.naicsKeys,
+  naicsTable  : state.metros.naicsLookup,
+  loadState   : state.metroQcewData.year_requests,
+  selectedQtr : state.metroQcewData.selectedQuarter,
 })
 
 const mapDispatchToProps = {
+  msaChange,
   loadQcewData     : loadMetroData,
   loadQcewDataYear : loadMetroDataYear,
   loadYear         : setYear,
   loadNaicsKeys,
+  yearQuarterWheelChange,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetroQcew)

@@ -1,9 +1,9 @@
 "use strict"
 
 import React from 'react'
-import {StickyContainer,Sticky} from 'react-sticky'
+import { StickyContainer, Sticky } from 'react-sticky'
 import { connect } from 'react-redux'
-import { loadMetroData, setMetroQuarter } from 'redux/modules/metroQcewData.js'
+import { loadMetroData, setMetroQuarter, quarterSelected } from 'redux/modules/metroQcewData.js'
 import d3 from 'd3'
 import LineGraph from 'components/graphs/SimpleLineGraph/index'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
@@ -66,15 +66,23 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     }
 
 
-    renderToolTip (mData) {
+    renderToolTip (mData, selectedQuarter) {
 
-      let data;
-
-      if (!this.props.qtrData) {
-        data = mData
-      } else { 
-        data = this.props.qtrData
+      if (!selectedQuarter) {
+        return (<div/>)
       }
+
+      let year = selectedQuarter.year
+      let quarter = selectedQuarter.quarter
+      let month = 1 + ((quarter - 1) * 3)
+      
+      let selectedQuarterDateTime = new Date(year, month)
+
+      let data = mData.map((d) => ({
+        color: d.color,
+        key: d.key,
+        value: quarterBSearcher(selectedQuarterDateTime, d.values, 0, d.values.length)
+      }))
 
       let naics = this.props.naicsKeys
 
@@ -132,28 +140,6 @@ export class NaicsGraph extends React.Component<void, Props, void> {
         </div>
       )
     }
-    
-     
-    xmap (year, qtr) {
-
-      var val = (4 * (parseInt(year) - yearConst)) + parseInt(qtr)
-
-      if(!isNaN(val) || val >= 0) {
-          return val
-      } else {
-        return 0
-      }
-    }
-
-    revMap (encQ) {
-      let chk = encQ % 4
-
-      let qtr = (chk) ? 4 : (chk)
-
-      let year = Math.floor(encQ / 4) - ((chk) ? 0 : 1)
-
-      return year + yearConst
-    }
 
     dataMap (data, fields, recfunc) {
 
@@ -170,16 +156,17 @@ export class NaicsGraph extends React.Component<void, Props, void> {
       }
 
       return data.filter(filterfun)
+                 .sort((a,b) => a.key.localeCompare(b.key))
                  .map((industry, i) => {
-
                    var obj = {}
 
                    obj.key = industry.key
                    obj.color = colors(i%20)
                    obj.values = industry.values
-                                        .map( recfunc.bind(this,fields) )
+                                        .map(recfunc.bind(this,fields))
                                         .sort((a,b) => (a.values.x - b.values.x))
 
+                   // Forward
                    obj.values.reduce((a, b) => {
                      if (!b.values.y) {
                        b.values.y = a.values.y
@@ -193,24 +180,25 @@ export class NaicsGraph extends React.Component<void, Props, void> {
 
     aggfunc (finish, fields, rec) {
 
-      let x = this.xmap(rec.year, rec.qtr)
+      let month = 1 + ((rec.qtr - 1) * 3)
+      let x = new Date(rec.year, month)
+
       let y = 0;
 
       if( !Array.isArray(fields) ) {
         y = parseFloat(rec[fields])
       } else {
-        y = fields.map(x => parseFloat(rec[x]))
-                  .reduce((sum, b) => sum + b, 0)
+        for (let i = 0; i < fields.length; ++i) {
+          y += parseFloat(rec[fields[i]])
+        } 
       }
 
       y = finish(y)
 
-      let val = {
+      return {
         key: x,
         values: { x, y, }
       }
-
-      return val
   }
 
   _onMouse (data) {
@@ -234,23 +222,27 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     return pdata
   }
   
+
+
   render () {
 
-    if (!this.props.data || !this.props.data.length) {
+    let props = this.props
+
+    if (!props.data || !props.data.length) {
       return <span></span>
     }
 
     let metrodata = d3.nest()
                       .key(x => x.area_fips)
                       .rollup(values => values)
-                      .map(this.props.data)['C'+this.props.currentMetro.substr(0,4)]
+                      .map(props.data)['C'+props.currentMetro.substr(0,4)]
 
     let data = d3.nest()
                  .key(x => x.industry_code)
                  .rollup(values => values)
                  .entries(metrodata || [])
 
-    let empfields = typemap[this.props.type]
+    let empfields = typemap[props.type]
     let noagg = this.aggfunc.bind(this, x => x)
     
     let agg = this.aggfunc.bind(this, x => (x / empfields.length))
@@ -264,65 +256,98 @@ export class NaicsGraph extends React.Component<void, Props, void> {
       bottom : 20,
     }
     
+
     return (
-      <div className='row' style={{overflow:'hidden'}} >
+      <StickyContainer>    
+        <div className='row' style={{overflow:'hidden'}} >
 
-        <div className='col-xs-8'>
+          <div className='col-xs-8'>
 
-          <div onMouseEnter={lineGraphFocusChanger.bind(null, 'rawLinegraph')}>
+            <div onMouseEnter={lineGraphFocusChanger.bind(null, 'rawLinegraph')}>
 
-            <LineGraph 
-                key={this.props.field}
-                data={mData.data} 
-                uniq={this.props.field}
-                title={'Quarterly ' + this.props.title}
-                yFormat={(this.props.type === 'totalwages') ? lineGraphDollarFormatter : integerFormatter}
-                xScaleType={'linear'}
-                yAxis={true}
-                margin={graphMargin}
-                tooltip={true}
-                onMouse={this._onMouse}
-                graphSlice={this.props.qtrData} />
+              <LineGraph 
+                  key={props.field}
+                  data={mData.data} 
+                  uniq={props.field}
+                  title={'Quarterly ' + props.title}
+                  yFormat={(props.type === 'totalwages') ? lineGraphDollarFormatter : integerFormatter}
+                  xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                  xScaleType={'time'}
+                  yAxis={true}
+                  margin={graphMargin}
+                  tooltip={true}
+                  onMouse={this._onMouse}
+                  quarterChangeListener={props.quarterChangeListener} />
+
+            </div>
+
+            <div onMouseEnter={lineGraphFocusChanger.bind(null, 'lqLineGraph')}>
+
+              <LineGraph 
+                  key={'lq_'+props.field}
+                  data={mData.lqdata} 
+                  uniq={'lq_'+props.field} 
+                  xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                  yFormat={floatFormatter}
+                  title={'Quarterly LQ '+ props.title}
+                  xAxis={true}
+                  xScaleType={'time'}
+                  yAxis={true}
+                  margin={graphMargin}
+                  tooltip={true}
+                  onMouse={this._onMouse}
+                  quarterChangeListener={props.quarterChangeListener} />
+
+            </div>
 
           </div>
 
-          <div onMouseEnter={lineGraphFocusChanger.bind(null, 'lqLineGraph')}>
-
-            <LineGraph 
-                key={'lq_'+this.props.field}
-                data={mData.lqdata} 
-                uniq={'lq_'+this.props.field} 
-                xFormat={(x)=>this.revMap(x)} 
-                yFormat={floatFormatter}
-                title={'Quarterly LQ '+ this.props.title}
-                xAxis={true}
-                xScaleType={'linear'}
-                yAxis={true}
-                margin={graphMargin}
-                tooltip={true}
-                onMouse={this._onMouse}
-                graphSlice={this.props.qtrData} />
-
-          </div>
-
+          <div className='col-xs-4'>
+            <Sticky>
+              {this.renderToolTip(mData.data, props.selectedQuarter)}
+            </Sticky>
+          </div>  
         </div>
-
-        <div className='col-xs-4'>
-          {this.renderToolTip(mData.data)}
-        </div>  
-      </div>
+      </StickyContainer>
     )
   }
 }
 
+
+
+function quarterBSearcher (selectedQuarterDateTime, dataArr, i, j) {
+  // Possible optimization: Use a while loop.
+  if (i === j) { return 0 }
+
+  let x = i + Math.floor((j-i)/2)
+
+  let d = dataArr[x]
+
+  let yDateTime = new Date(d.key).getTime()
+
+  if (selectedQuarterDateTime < yDateTime) {
+    return quarterBSearcher(selectedQuarterDateTime, dataArr, i, x)
+  } else if (selectedQuarterDateTime > yDateTime){
+    return quarterBSearcher(selectedQuarterDateTime, dataArr, x, j)
+  } else {
+    return d.values.y
+  }
+}
+
+
+
 const mapStateToProps = (state) => ({
-  data      : state.metroQcewData.data,
-  naicsKeys : state.metros.naicsKeys,
-  qtrData   : state.metroQcewData.qtrData
+  data            : state.metroQcewData.data,
+  naicsKeys       : state.metros.naicsKeys,
+  qtrData         : state.metroQcewData.qtrData,
+  selectedQuarter : state.metroQcewData.selectedQuarter,
 })
 
-export default connect((mapStateToProps), {
-  loadData      : (msaId, year) => loadMetroData(msaId),
-  loadNaicsKeys : () => loadNaicsKeys(),
-  setQtr        : (d) => setMetroQuarter(d),
-})(NaicsGraph)
+const mapDispatchToProps = {
+  loadData              : (msaId, year) => loadMetroData(msaId),
+  loadNaicsKeys         : () => loadNaicsKeys(),
+  setQtr                : (d) => setMetroQuarter(d),
+  quarterChangeListener : quarterSelected,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NaicsGraph)

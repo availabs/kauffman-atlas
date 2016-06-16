@@ -116,7 +116,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     var topScore = this._highScore(data)
     var bottomScore = this._lowScore(data)
-    console.log(data)
+    //console.log(data)
     return (
     <div>
       <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
