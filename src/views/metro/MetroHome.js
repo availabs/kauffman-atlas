@@ -29,9 +29,12 @@ export class MetroHome extends React.Component<void, Props, void> {
 	    this._linkIsActive = this._linkIsActive.bind(this)
     }
 
-    _linkIsActive(type){
+    _linkIsActive(type, sub){
 		let pageid = this.props.params.pageid
-		return type === (pageid || (!pageid && this.state.display)) ? {backgroundColor:'#db9a36'} : {}
+		if(typeof type === 'object'){
+			return type.indexOf(pageid) >= 0 ? {backgroundColor:'#db9a36'} : {}
+		}
+		return type === (pageid || (!pageid && this.state.display)) ? {backgroundColor: sub ?  '#e7bb77' : '#db9a36'} : {}
     }
 
     _selectDisplay (display) {
@@ -51,128 +54,181 @@ export class MetroHome extends React.Component<void, Props, void> {
 			<MetroScores metroId={metroId} metroData={this.props.metros[metroId]} />
 		    )
 		    case 'Employment':
-		    return (
-			<MetroQcew currentMetro={metroId} year={year}
-				   syear={syear}
-				   type={'employment'}
-				   title={'Employment'}
-				   params={this.props.params}
-			/>
-		    )
+			    return (
+					<MetroQcew currentMetro={metroId} year={year}
+						   syear={syear}
+						   type={'employment'}
+						   title={'Employment'}
+						   params={this.props.params}
+					/>
+			    )
 		    case 'Establishment':
-		    return (
-			<MetroQcew currentMetro={metroId} year={year}
-				   syear={syear}
-				   type='establishment'
-				   title='Establishment'
-				   params={this.props.params}
-			/>
-		    )
+			    return (
+					<MetroQcew currentMetro={metroId} year={year}
+						   syear={syear}
+						   type='establishment'
+						   title='Establishment'
+						   params={this.props.params}
+					/>
+			    )
 		    case 'Wages' :
-		    return (
-			<MetroQcew currentMetro={metroId} year={year}
-				   syear={syear}
-				   type='totalwages'
-				   title='Wages'
-				   params={this.props.params}
-			/>
+			    return (
+					<MetroQcew currentMetro={metroId} year={year}
+						   syear={syear}
+						   type='totalwages'
+						   title='Wages'
+						   params={this.props.params}
+					/>
 			    )
 			case 'StartupEmployment':
-			return (
-			  <MetroQwi msa={metroId}
-			       measure='emptotal'
-			       title='Employment by Firm Age'
-			       params={this.props.params}
-			  />
-			)
+				return (
+					<MetroQwi msa={metroId}
+					       measure='emptotal'
+					       title='Employment by Firm Age'
+					       params={this.props.params}
+					/>
+				)
 			case 'StartupPayroll':
-			return (
-			  <MetroQwi msa={metroId}
-			       measure='payroll'
-			       title='Payroll by Firm Age'
-			       params={this.props.params}
-			  />
-			)
+				return (
+				  	<MetroQwi msa={metroId}
+				       measure='payroll'
+				       title='Payroll by Firm Age'
+				       params={this.props.params}
+				  	/>
+				)
 		    case 'cluster':
-		    return (
-			<MetroQcewCluster currentMetro={metroId} year={year}
-					  type='cluster'/>
-		    )
+			    return (
+					<MetroZbpCluster currentMetro={metroId} year={2012} />
+			    )
 		    case 'workforce':
-		    return (
-			<span></span>
-		    )
+			    return (
+					<span></span>
+			    )
 		    default: 
-		    return (
-			<MetroZbp currentMetro={metroId} year={year}/>
-		    )
+			    return (
+					<MetroZbp currentMetro={metroId} year={year}/>
+			    )
 	    }
     }
 
     renderNav () {
-	let navStyle = {
-	    backgroundColor: '#5d5d5d',//'#5d5d5d',//'#7d8faf'//'#db9a36',
-	    borderRadius: 0,
-	    border: 'none',
-	    //borderTop: '1px solid #efefef'
-	}
-	let linkStyle = {
-	    color: '#efefef'
-	}
-	let metroId = this.props.params.geoid
-	let year = this.props.params.year
-	let naics_code = this.props.params.naics_code
-	let extension =[naics_code,year].reduce((acc,str)=>(str)?acc+'/'+str :acc,'')
-	return (
-	    <nav className="navbar navbar-default" style={navStyle}> 
-		<div className="container">
-		    <div className="collapse navbar-collapse">
-			<ul className="nav navbar-nav">
-			    <li style={this._linkIsActive('combined')}
-				onClick={this._selectDisplay.bind(null,'combined')}>
-					<Link to={'/metro/'+metroId+'/combined'}
-				    className={classes['whitelink']}>Combined</Link>
-			    </li>
-			    <li style={this._linkIsActive('Employment')}
-				onClick={this._selectDisplay.bind(null,'Employment')} >
-					<Link to={'/metro/'+metroId+'/Employment'+extension}
-				    className={classes['whitelink']}>Employment</Link>
-			    </li>
-			    <li style={this._linkIsActive('Establishment')}
-				onClick={this._selectDisplay.bind(null,'Establishment')}>
-					<Link to={'/metro/'+metroId+'/Establishment'+extension}
-				    className={classes['whitelink']}>Establishment</Link>
-			    </li>
-			    <li style={this._linkIsActive('Wages')}
-				onClick={this._selectDisplay.bind(null,'Wages')}>
-					<Link to={'/metro/'+metroId+'/Wages'+extension}
-				    className={classes['whitelink']}>Wages</Link>
-			    </li>
-			    <li style={this._linkIsActive('StartupEmployment')}
-                onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
-                    <Link to={`/metro/${metroId}/StartupEmployment`}
-                    className={classes['whitelink']}>Startups Employment</Link>
-			    </li>
-			    <li style={this._linkIsActive('StartupPayroll')}
-                onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
-                    <Link to={`/metro/${metroId}/StartupPayroll`}
-                    className={classes['whitelink']}>Startups Payroll</Link>
-			    </li>
-			    <li style={this._linkIsActive('cluster')}
-				onClick={this._selectDisplay.bind(null,'cluster')}> 
-					<Link to={'/metro/'+metroId + '/cluster'}
-				    className={classes['whitelink']}>Cluster Analysis</Link>
-			    </li>
-			    <li onClick={this._selectDisplay.bind(null,'combined')}>
-					<Link to={'/metro/'+metroId+'/workforce'}
-				    className={classes['whitelink']}>Workforce Analysis</Link>
-			    </li>
-			</ul>
-		    </div>
-		</div>
-	    </nav>
-	)
+		let navStyle = {
+		    backgroundColor: '#5d5d5d',//'#5d5d5d',//'#7d8faf'//'#db9a36',
+		    borderRadius: 0,
+		    border: 'none',
+		    marginBottom: 0
+		    //borderTop: '1px solid #efefef'
+		}
+		let linkStyle = {
+		    color: '#efefef'
+		}
+		let metroId = this.props.params.geoid
+		let year = this.props.params.year
+		let naics_code = this.props.params.naics_code
+		let extension =[naics_code,year].reduce((acc,str)=>(str)?acc+'/'+str :acc,'')
+		
+		return (
+		    <nav className="navbar navbar-default" style={navStyle}> 
+			<div className="container">
+			    <div className="collapse navbar-collapse">
+				<ul className="nav navbar-nav">
+				    <li style={this._linkIsActive('combined')}
+					onClick={this._selectDisplay.bind(null,'combined')}>
+						<Link to={'/metro/'+metroId+'/combined'}
+					    className={classes['whitelink']}>Overview</Link>
+				    </li>
+				    <li style={this._linkIsActive(['Employment','Establishment','Wages'])}
+					onClick={this._selectDisplay.bind(null,'Employment')} >
+						<Link to={'/metro/'+metroId+'/Employment'+extension}
+					    className={classes['whitelink']}>Industry Explorer</Link>
+				    </li>
+				    <li style={this._linkIsActive(['StartupEmployment','StartupPayroll'])}
+	                onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
+	                    <Link to={`/metro/${metroId}/StartupEmployment`}
+	                    className={classes['whitelink']}>Startup Explorer</Link>
+				    </li>
+				    <li style={this._linkIsActive('cluster')}
+					onClick={this._selectDisplay.bind(null,'cluster')}> 
+						<Link to={'/metro/'+metroId + '/cluster'}
+					    className={classes['whitelink']}>Cluster Analysis</Link>
+				    </li>
+				    <li onClick={this._selectDisplay.bind(null,'combined')}>
+						<Link to={'/metro/'+metroId+'/workforce'}
+					    className={classes['whitelink']}>Firm Mapping</Link>
+				    </li>
+				</ul>
+			    </div>
+			</div>
+		    </nav>
+		)
     }
+
+    subNav () {
+    	let navStyle = {
+		    backgroundColor: '#db9a36',//'#5d5d5d',//'#7d8faf'//'#db9a36',
+		    color: '#5d5d5d',
+		    borderRadius: 0,
+		    border: 'none',
+		    marginBottom: 0
+		    //borderTop: '1px solid #efefef'
+		}
+    	let metroId = this.props.params.geoid
+		let year = this.props.params.year
+		let naics_code = this.props.params.naics_code
+		let extension =[naics_code,year].reduce((acc,str)=>(str)?acc+'/'+str :acc,'')
+		let page = this.props.params.pageid || this.state.display
+		let section = ['StartupPayroll', 'StartupEmployment'].indexOf(page) >= 0 ? 'startup' : null
+ 		section = ['Employment', 'Establishment', 'Wages'].indexOf(page) >= 0 ? 'industry' : section
+
+ 		if(!section) return <span />
+    	let content = {
+    		industry: 
+    		(
+	    		<ul className="nav navbar-nav">
+	    			<li style={this._linkIsActive('Employment', true)}
+						onClick={this._selectDisplay.bind(null,'Employment')} >
+						<Link to={'/metro/'+metroId+'/Employment'+extension}
+					    className={classes['whitelink']}>Employment</Link>
+				    </li>
+	    		 	<li style={this._linkIsActive('Establishment', true)}
+					onClick={this._selectDisplay.bind(null,'Establishment')}>
+						<Link to={'/metro/'+metroId+'/Establishment'+extension}
+					    className={classes['whitelink']}>Establishment</Link>
+				    </li>
+				    <li style={this._linkIsActive('Wages', true)}
+					onClick={this._selectDisplay.bind(null,'Wages')}>
+						<Link to={'/metro/'+metroId+'/Wages'+extension}
+					    className={classes['whitelink']}>Wages</Link>
+				    </li>
+				</ul>
+    		),
+    		startup: (
+    			<ul className="nav navbar-nav">	
+    				<li style={this._linkIsActive('StartupEmployment', true)}
+	                onClick={this._selectDisplay.bind(null, 'StartupEmployment')} >
+	                    <Link to={`/metro/${metroId}/StartupEmployment`}
+	                    className={classes['whitelink']}>Employment</Link>
+				    </li>
+				    <li style={this._linkIsActive('StartupPayroll', true)}
+	                onClick={this._selectDisplay.bind(null, 'StartupPayroll')}>
+	                    <Link to={`/metro/${metroId}/StartupPayroll`}
+	                    className={classes['whitelink']}>Wages</Link>
+	                </li>
+	            </ul>
+    		)
+    	}
+    	return (
+    		<nav className="navbar navbar-default" style={navStyle}> 
+				<div className="container">
+				    <div className="collapse navbar-collapse">
+					{content[section]}
+					</div>
+				</div>
+			</nav>
+    	)	
+    }
+
+
     render () {
 	let metroId = this.props.params.geoid
 	var scope = this;
@@ -204,7 +260,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 			<MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/>
 		    </div>
 		    {this.renderNav()}
-		    <div>
+		    {this.subNav()}
+		    <div style={{marginTop: 15, minHeight: 500}}>
 			{this.renderDisplay()}
 		    </div>   
 		</div>

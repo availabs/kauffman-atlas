@@ -134,8 +134,10 @@ export class MetroHeader extends React.Component<void, Props, void> {
                 <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                   {this.props.metroData.pop['2014'].toLocaleString()}
                 </span> 
-                <div style={{display:'inline-block'}}><strong>Population</strong><br />
-                  {growth.toLocaleString()}% 
+                <br />
+                <div style={{display:'inline-block'}}>
+                <strong>Population</strong><br />
+                {growth.toLocaleString()}% <small>(Growth)</small>
                 </div>
               </div>
               <LineGraph data={popData} uniq='popGraph' options={{height: 50}} />
@@ -147,8 +149,9 @@ export class MetroHeader extends React.Component<void, Props, void> {
               <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                 {this.props.gdpData[this.props.metroId].gdp.filter(d => { return +d.key === 2014 })[0].value.toLocaleString()}
               </span> 
+              <br />
               <div style={{display:'inline-block'}}><strong>GDP</strong> (in millions)<br />
-                {gdpGrowth.toLocaleString()}% 
+                {gdpGrowth.toLocaleString()}% <small>(Growth)</small>
               </div>
             </div>
             <LineGraph data={gdpData} uniq='gdpGraph' options={{height: 50}} />
@@ -160,8 +163,9 @@ export class MetroHeader extends React.Component<void, Props, void> {
               <span style={{fontSize:36, fontWeight:0,paddingRight: 10}}> 
                 {last_per_capita.toLocaleString()}
               </span> 
+              <br />
               <div style={{display:'inline-block'}}><strong>GDP Per Capita</strong><br />
-                {perCapitaGrowth.toLocaleString()}% 
+                {perCapitaGrowth.toLocaleString()}%  <small>(Growth)</small>
               </div>
             </div>
             <LineGraph data={gdpDataPerCapita} uniq='perCapitaGraph' options={{height: 50}} />

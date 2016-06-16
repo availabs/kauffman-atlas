@@ -236,7 +236,7 @@ class MetroQwi extends React.Component<void, Props, void> {
   }
 
   render () {
-    return (this.props.lineGraphRawData) ? renderVisualizations(this.props) : (<span>Loading...</span>)
+    return (this.props.lineGraphRawData) ? renderVisualizations(this.props) : (<div className='container'>Loading...</div>)
   }
 }
 

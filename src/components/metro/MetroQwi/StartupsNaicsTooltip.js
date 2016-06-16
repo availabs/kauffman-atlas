@@ -24,6 +24,7 @@ const labelHover = {
   zIndex       : '2',
   display      : 'inline-block',
   paddingRight : '5px',
+  color        : '#efefef'
 }
 
 const getRows = (data, isCurrency, hoveredRowKey, onMouseEnter, onMouseLeave) => 
@@ -39,7 +40,7 @@ const getRows = (data, isCurrency, hoveredRowKey, onMouseEnter, onMouseLeave) =>
                onMouseLeave={onMouseLeave.bind(null, d.key)}>
 
              <span title={industryTitles[d.key]} 
-                   style={(d.key === hoveredRowKey) ? Object.assign({backgroundColor: d.color}, labelHover) : {}}>
+                   style={(d.key === hoveredRowKey) ? Object.assign({backgroundColor: d.color}, labelHover) : {color: '#efefef'}}>
 
                      {(d.key === hoveredRowKey) ? 
                         industryTitles[d.key] : 
