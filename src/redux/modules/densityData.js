@@ -74,7 +74,7 @@ export const loadNewValues = () => {
 
 export const loadShare = () => {
   return (dispatch) => {
-    return fetch('/data/processedShareEmpNewFirmsQWI_All.json')
+    return fetch('/data/processedShareEmp.json')
       .then(response => response.json())
       .then(json => dispatch(receiveShareData(json)))
   }
