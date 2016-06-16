@@ -8,6 +8,8 @@ import d3 from 'd3'
 // ------------------------------------
 export const RECEIVE_NEWVALUES_DATA = 'RECEIVE_NEWVALUES_DATA'
 export const RECEIVE_SHARE_DATA = 'RECEIVE_SHARE_DATA'
+export const RECEIVE_SHAREEMPNOACCRET_DATA = 'RECEIVE_SHAREEMPNOACCRET_DATA'
+export const RECEIVE_SHAREEMPHIGHTECH_DATA = 'RECEIVE_SHAREEMPHIGHTECH_DATA'
 export const RECEIVE_DENSITYCOMPOSITE_DATA = 'RECEIVE_DENSITYCOMPOSITE_DATA'
 
 // ------------------------------------
@@ -33,12 +35,28 @@ export function receiveShareData (value) {
   }
 }
 
+export function receiveShareEmpNoAccRetData (value) {
+  return {
+    type: RECEIVE_SHAREEMPNOACCRET_DATA,
+    payload: value
+  }
+}
+
+export function receiveShareEmpHighTechData (value) {
+  return {
+    type: RECEIVE_SHAREEMPHIGHTECH_DATA,
+    payload: value
+  }
+}
+
 export function receiveCompositeData (value) {
   return {
     type: RECEIVE_DENSITYCOMPOSITE_DATA,
     payload: value
   }
 }
+
+
 
 // This is a thunk, meaning it is a function that immediately
 // returns a function for lazy evaluation. It is incredibly useful for
@@ -62,6 +80,22 @@ export const loadShare = () => {
   }
 }
 
+export const loadShareEmpNoAccRet = () => {
+  return (dispatch) => {
+    return fetch('/data/processedShareEmpNewFirmsQWI_ExceptAccomAndRetail.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveShareEmpNoAccRetData(json)))
+  }
+}
+
+export const loadShareEmpHighTech = () => {
+  return (dispatch) => {
+    return fetch('/data/processedShareEmpNewFirmsQWI_HighTech.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveShareEmpHighTechData(json)))
+  }
+}
+
 export const loadDensityComposite = () => {
   return (dispatch) => {
     return fetch('/data/processedDensityComposite.json')
@@ -74,9 +108,13 @@ export const loadDensityComposite = () => {
 export const actions = {
   loadNewValues,
   loadShare,
+  loadShareEmpNoAccRet,
+  loadShareEmpHighTech,
   loadDensityComposite,
   receiveNewValuesData,
   receiveShareData,
+  receiveShareEmpNoAccRetData,
+  receiveShareEmpHighTechData,
   receiveCompositeData
 }
 
@@ -95,6 +133,20 @@ const ACTION_HANDLERS = {
     var newState = Object.assign({},state);
 
     newState.shareData = action.payload;
+
+    return newState;
+  },
+  [RECEIVE_SHAREEMPNOACCRET_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.shareEmpNoAccRet = action.payload;
+
+    return newState;
+  },
+  [RECEIVE_SHAREEMPHIGHTECH_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.shareEmpHighTech = action.payload;
 
     return newState;
   },

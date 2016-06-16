@@ -545,10 +545,10 @@ export class LineGraph extends React.Component<void, Props, void> {
     else if(props.title == "diversityemploymentlocationquotientvariance"){
       if(props.plot == "value"){
         if(props.dataType == "raw"){
-          return "Location Quotient Variance by year"
+          return ""
         }
         else{
-          return ""
+          return "Location Quotient Variance by year"
         }             
       }
       else{
@@ -560,90 +560,36 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
-    else if(props.title == "qwiDensityshareEmpAll"){
+    else if(props.title == "densityshareEmpNoAccRet"){
       if(props.plot == "value"){
         if(props.dataType == "raw"){
-          return "% emp in all sectors by year"
+          return ""
         }
         else{
-          return ""
-        }             
-      }
-      else{
-        if(props.dataType == "raw"){
-          return "Metro Area Ranking for % emp in all sectors by year"
-        }
-        else{
-          return ""
-        }                  
-      }          
-    }
-    else if(props.title == "qwiDensityshareEmpNoAccRet"){
-      if(props.plot == "value"){
-        if(props.dataType == "raw"){
           return "% emp in non retail and accomodation sectors by year"
-        }
-        else{
-          return ""
         }             
       }
       else{
         if(props.dataType == "raw"){
-          return "Metro Area Ranking for % emp in non retail and accomodation sectors by year"
+          return ""
         }
         else{
-          return ""
+          return "Metro Area Ranking for % emp in non retail and accomodation sectors by year"
         }                  
       }          
     } 
-    else if(props.title == "qwiDensityshareEmpHighTech"){
+    else if(props.title == "densityshareEmpHighTech"){
       if(props.plot == "value"){
         if(props.dataType == "raw"){
-          return "% emp in high tech sector by year"
+         return "" 
         }
         else{
-          return ""
+          return "% emp in high tech sector by year"
         }             
       }
       else{
         if(props.dataType == "raw"){
           return "Metro Area Ranking for % emp in high tech sector by year"
-        }
-        else{
-          return ""
-        }                  
-      }          
-    } 
-    else if(props.title == "qwiDensityshareEmpInfo"){
-      if(props.plot == "value"){
-        if(props.dataType == "raw"){
-          return "% emp in information sector by year"
-        }
-        else{
-          return ""
-        }             
-      }
-      else{
-        if(props.dataType == "raw"){
-          return "Metro Area Ranking for % emp in information sector by year"
-        }
-        else{
-          return ""
-        }                  
-      }          
-    } 
-    else if(props.title == "qwiDensityshareEmpPro"){
-      if(props.plot == "value"){
-        if(props.dataType == "raw"){
-          return "% emp in professional sector by year"
-        }
-        else{
-          return ""
-        }             
-      }
-      else{
-        if(props.dataType == "raw"){
-          return "Metro Area Ranking for % emp in professional sector by year"
         }
         else{
           return ""

@@ -107,7 +107,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     if(!this.props.metros || !this.props.metroScores[metroId]){
       return <span></span>
     }
-
+    console.log(this.props.metroScores)
     var data = this.props.metroScores[metroId];
     var name = this.props.metros[metroId].name;
 

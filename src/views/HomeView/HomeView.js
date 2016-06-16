@@ -15,10 +15,9 @@ import LineGraph from 'components/graphs/LineGraph.js'
 import BarChart from 'components/graphs/BarChart.js'
 import HoverBox from 'components/ranks/HoverBox'
 import MapGraphLegend from 'components/ranks/MapGraphLegend'
-import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
-import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { changeHomeState } from 'redux/modules/homeData'
 import CategoryText from 'components/misc/categoryText'
@@ -178,7 +177,12 @@ export class HomeView extends React.Component<void, Props, void> {
           </div>
         </div>
         <div className='container'>
-          <div className='row' style={{padding:15, marginTop: 15}} >
+           <div className='row'>
+            <div className={'col-xs-12 ' + classes['text-div']}>
+              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
+            </div>
+          </div>
+          <div className='row' style={{padding:15}} >
             <ComponentButtons
               onComponentChange={this._setActiveComponent} 
               activeComponent={this.props.homeState.activeComponent}
@@ -188,11 +192,6 @@ export class HomeView extends React.Component<void, Props, void> {
               onBucketChange={this._setActiveBucket} 
               bucket={this.props.homeState.bucket}
             />
-          </div>
-          <div className='row'>
-            <div className={'col-xs-12 ' + classes['text-div']}>
-              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
-            </div>
           </div>
         </div>
         <div className='container'>
@@ -234,11 +233,8 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
-  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
-  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
-  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
-  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
-  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
+  densityshareEmpNoAccRet:state.densityData.shareEmpNoAccRet,
+  densityshareEmpHighTech:state.densityData.shareEmpHighTech,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -257,11 +253,8 @@ export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
   getdensityshareofemploymentinnewfirms: () => loadShare(),  
-  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
-  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
-  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
-  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
-  getqwiDensityshareEmpPro: () => loadShareEmpPro(),      
+  getdensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getdensityshareEmpHighTech: () => loadShareEmpHighTech(),     
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),

@@ -4,10 +4,9 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import classes from 'components/maps/NationalMap.scss'
 import d3 from 'd3'
-import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'    
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
-import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".2f")
 
@@ -138,14 +137,13 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 }
 
 const mapStateToProps = (state) => ({
+  statesGeo : state.geoData.statesGeo,
+  metrosGeo : state.geoData.metrosGeo,
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
-  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
-  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
-  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
-  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
-  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
+  densityshareEmpNoAccRet:state.densityData.shareEmpNoAccRet,
+  densityshareEmpHighTech:state.densityData.shareEmpHighTech,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -156,18 +154,15 @@ const mapStateToProps = (state) => ({
   diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
   combinedcomposite : state.combinedData.combinedcomposite,
-  metros : state.metros
+  metros : state.metros,
 })
 
 export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
   getdensityshareofemploymentinnewfirms: () => loadShare(),  
-  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
-  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
-  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
-  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
-  getqwiDensityshareEmpPro: () => loadShareEmpPro(),         
+  getdensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getdensityshareEmpHighTech: () => loadShareEmpHighTech(),     
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),
@@ -178,6 +173,7 @@ export default connect((mapStateToProps), {
   getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getcombinedcomposite: () => loadCombinedComposite(),
+  changeHomeState: (state) => changeHomeState(state)
 })(MapGraphLegend)
   
 

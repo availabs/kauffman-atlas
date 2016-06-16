@@ -138,7 +138,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       <div className='container'> 
         <div className='row' >
           <div className='col-xs-3'>
-            <h4 data-tip data-for="composite">AEA Composite Index</h4>
+            <h4 data-tip data-for="composite">Composite Entrepreneurial Ecosystem Index</h4>
             <ReactTooltip 
               id="composite" 
               place="top" 

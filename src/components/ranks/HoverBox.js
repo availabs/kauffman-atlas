@@ -5,10 +5,9 @@ import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
-import { loadDensityComposite,loadNewValues,loadShare } from 'redux/modules/densityData'   
+import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
-import { loadShareEmpAll,loadShareEmpNoAccRet,loadShareEmpHighTech,loadShareEmpInfo,loadShareEmpPro } from 'redux/modules/qwiDensityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import CategoryNames from 'components/misc/categoryNames'
 
@@ -16,10 +15,10 @@ let roundFormat = d3.format(".2f")
 
 let categories = {
   combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
-  density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms'],
+  density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms','densityshareEmpNoAccRet','densityshareEmpHighTech'],
   diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforiegnbornpopulation','diversityemploymentlocationquotientvariance'],
   fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn'],
-  qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpNoAccRet','qwiDensityshareEmpHighTech','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
+  qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
 }
 
 export class HoverBox extends React.Component<void, Props, void> {
@@ -116,11 +115,8 @@ const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    
   densitynewfirms:state.densityData.newValuesData,
   densityshareofemploymentinnewfirms:state.densityData.shareData,
-  qwiDensityshareEmpAll:state.qwiDensityData.shareEmpAll,
-  qwiDensityshareEmpNoAccRet:state.qwiDensityData.shareEmpNoAccRet,
-  qwiDensityshareEmpHighTech:state.qwiDensityData.shareEmpHighTech,
-  qwiDensityshareEmpInfo:state.qwiDensityData.shareEmpInfo,
-  qwiDensityshareEmpPro:state.qwiDensityData.shareEmpPro,
+  densityshareEmpNoAccRet:state.densityData.shareEmpNoAccRet,
+  densityshareEmpHighTech:state.densityData.shareEmpHighTech,
   fluiditycomposite:state.fluidityData.compositeData,   
   fluidityhighgrowthfirms:state.fluidityData.inc5000,
   fluiditynetmigration:state.fluidityData.irsNet,
@@ -131,18 +127,15 @@ const mapStateToProps = (state) => ({
   diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
   combinedcomposite : state.combinedData.combinedcomposite,
-  metros : state.metros
+  metros : state.metros,
 })
 
 export default connect((mapStateToProps), {
   getdensitycomposite: () => loadDensityComposite(),
   getdensitynewfirms: () => loadNewValues(),
-  getdensityshareofemploymentinnewfirms: () => loadShare(),
-  getqwiDensityshareEmpAll: () => loadShareEmpAll(),
-  getqwiDensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
-  getqwiDensityshareEmpHighTech: () => loadShareEmpHighTech(),
-  getqwiDensityshareEmpInfo: () => loadShareEmpInfo(),
-  getqwiDensityshareEmpPro: () => loadShareEmpPro(),     
+  getdensityshareofemploymentinnewfirms: () => loadShare(),  
+  getdensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getdensityshareEmpHighTech: () => loadShareEmpHighTech(),     
   getfluiditycomposite: () => loadFluidityComposite(),    
   getfluidityhighgrowthfirms: () => loadInc5000Data(),
   getfluiditynetmigration: () => loadNetMigrationIrs(),
@@ -153,4 +146,5 @@ export default connect((mapStateToProps), {
   getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getcombinedcomposite: () => loadCombinedComposite(),
+  changeHomeState: (state) => changeHomeState(state)
 })(HoverBox)

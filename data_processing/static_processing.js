@@ -22,36 +22,20 @@ var qwiShareEmpFileNameBase = '../src/static/data/shareOfEmploymentInNewFirms-QW
 var densityData = JSON.parse(fs.readFileSync('../src/static/data/density_data.json')); 
 var shareEmpNewFirmsQWI_All = 
       JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'AllSectors.json'))
-var shareEmpNewFirmsQWI_Information = 
-      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'InformationSector.json'))
-var shareEmpNewFirmsQWI_Professional = 
-      JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'ProfessionalSector.json'))
 var shareEmpNewFirmsQWI_HighTech = 
       JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'HighTech.json'))
 var shareEmpNewFirmsQWI_ExceptAccomAndRetail = 
       JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'AllExceptAccommodationAndRetailSectors.json'))
 
 var processedNewFirms = _processData({data:densityData,selectedMetric:"newValues"});
-var processedShareEmp = _processData({data:densityData,selectedMetric:"share"});
-var processedShareEmpNewFirmsQWI_All = processGeneral2(shareEmpNewFirmsQWI_All);
-var processedShareEmpNewFirmsQWI_Information = processGeneral2(shareEmpNewFirmsQWI_Information);
-var processedShareEmpNewFirmsQWI_Professional = processGeneral2(shareEmpNewFirmsQWI_Professional);
-var processedShareEmpNewFirmsQWI_HighTech = processGeneral2(shareEmpNewFirmsQWI_HighTech);
-var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = processGeneral2(shareEmpNewFirmsQWI_ExceptAccomAndRetail);
-var processedDensityComposite = _processComposite(processedNewFirms['relative'],processedShareEmp['relative']);
+var processedShareEmpNewFirmsQWI_All = _processGeneral(shareEmpNewFirmsQWI_All,"qwiDensity");
+var coloredShareEmpNewFirmsQWI_All = _polishData(processedShareEmpNewFirmsQWI_All['raw'],"qwiDensity");
+var processedShareEmpNewFirmsQWI_HighTech = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
+var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw'],"qwiDensity");
+var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
+var coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail = _polishData(processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'],"qwiDensity");
+var processedDensityComposite = _processComposite(processedNewFirms['relative'],coloredShareEmpNewFirmsQWI_All,coloredShareEmpNewFirmsQWI_HighTech,coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail);
 
-//QWI Density
-var processedShareEmpNewFirmsQWI_All = processGeneral2(shareEmpNewFirmsQWI_All);
-var processedShareEmpNewFirmsQWI_Information = processGeneral2(shareEmpNewFirmsQWI_Information);
-var processedShareEmpNewFirmsQWI_Professional = processGeneral2(shareEmpNewFirmsQWI_Professional);
-var processedShareEmpNewFirmsQWI_HighTech = processGeneral2(shareEmpNewFirmsQWI_HighTech);
-var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = processGeneral2(shareEmpNewFirmsQWI_ExceptAccomAndRetail);
-
-var coloredShareEmpNewFirmsQWI_All = _polishData(processedShareEmpNewFirmsQWI_All['raw']);
-var coloredShareEmpNewFirmsQWI_Information = _polishData(processedShareEmpNewFirmsQWI_Information['raw']);
-var coloredShareEmpNewFirmsQWI_Professional = _polishData(processedShareEmpNewFirmsQWI_Professional['raw']);
-var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw']);
-var coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail = _polishData(processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw']);
 
 //Diversity Data
 var opportunityData = JSON.parse(fs.readFileSync('../src/static/data/opportunity.json')); 
@@ -81,15 +65,10 @@ var processedCombinedComposite = _processCombinedComposite(processedDensityCompo
 
 //Density
 fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
-fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(processedShareEmp));
-fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
-
-//QWI Density
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_All.json",JSON.stringify(coloredShareEmpNewFirmsQWI_All));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_Information.json",JSON.stringify(coloredShareEmpNewFirmsQWI_Information));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_Professional.json",JSON.stringify(coloredShareEmpNewFirmsQWI_Professional));
+fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(coloredShareEmpNewFirmsQWI_All));
 fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_HighTech.json",JSON.stringify(coloredShareEmpNewFirmsQWI_HighTech));
 fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_ExceptAccomAndRetail.json",JSON.stringify(coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail));
+fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
 
 //Diversity
 fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
@@ -141,6 +120,8 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['density'] = {};
   curMsaObj['density']['newFirms'] = {};
   curMsaObj['density']['shareEmp'] = {};
+  curMsaObj['density']['shareEmpQWI_HighTech'] = {};
+  curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail'] = {};
   curMsaObj['density']['composite'];
 
   processedNewFirms['raw'].forEach(metro => {
@@ -153,14 +134,19 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['density']['newFirms']['relative'] = metro;        
     }
   })
-  processedShareEmp['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['density']['shareEmp']['raw'] = metro;        
-    }
-  })
-  processedShareEmp['relative'].forEach(metro => {
+  processedShareEmpNewFirmsQWI_All['raw'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['shareEmp']['relative'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_HighTech['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_HighTech']['raw'] = metro;        
+    }
+  })
+  processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = metro;        
     }
   })
   processedDensityComposite.forEach(metro => {
@@ -169,42 +155,6 @@ Object.keys(msaPop).forEach(msaId => {
     }
   })
   //End of density data
-
-  //Start of QWI Density Data
-  curMsaObj['qwiDensity'] = {};
-  curMsaObj['qwiDensity']['shareEmpQWI_All'] = {};
-  curMsaObj['qwiDensity']['shareEmpQWI_Information'] = {};
-  curMsaObj['qwiDensity']['shareEmpQWI_Professional'] = {};
-  curMsaObj['qwiDensity']['shareEmpQWI_HighTech'] = {};
-  curMsaObj['qwiDensity']['shareEmpQWI_ExceptAccomAndRetail'] = {};
-  
-  processedShareEmpNewFirmsQWI_All['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['qwiDensity']['shareEmpQWI_All']['raw'] = metro;        
-    }
-  })
-  processedShareEmpNewFirmsQWI_Information['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['qwiDensity']['shareEmpQWI_Information']['raw'] = metro;        
-    }
-  })
-  processedShareEmpNewFirmsQWI_Professional['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['qwiDensity']['shareEmpQWI_Professional']['raw'] = metro;        
-    }
-  })
-  processedShareEmpNewFirmsQWI_HighTech['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['qwiDensity']['shareEmpQWI_HighTech']['raw'] = metro;        
-    }
-  })
-  processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'].forEach(metro => {
-    if(metro.key == msaId){
-      curMsaObj['qwiDensity']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = metro;        
-    }
-  })
-  //End of QWI Density Data
-
 
 
   //Start of Diversity Data
@@ -493,13 +443,14 @@ function _polishData(data,dataset){
         }
 
         city.values = data[metroArea].values.map(i => {
+          //qwiDensity data is shifted forward one year
             return {
-                x:i.x,
-                y:i.y,
-                rank:i.rank,
-                raw:i.raw,
-                color:_colorFunction(i,dataset)
-            }
+              x:i.x,
+              y:i.y,
+              rank:i.rank,
+              raw:i.raw,
+              color:_colorFunction(i,dataset)
+            }             
         })   
         newData.push(city);           
     }
@@ -585,7 +536,7 @@ function _sortMsaCities(){
       return 0;     
   }
 }
-function _processComposite(newFirms,share){
+function _processComposite(newFirms,share,highTech,noAccomRetail){
 
   var filteredShare = share.map(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
@@ -601,52 +552,142 @@ function _processComposite(newFirms,share){
     return metroArea;
   })
 
-  filteredShare.sort(_sortMsaCities());
-  filteredNewFirms.sort(_sortMsaCities());
+  var filteredHighTech = highTech.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+    return metroArea;
+  })
+
+  var filteredNoAccomRetail = noAccomRetail.map(metroArea => {
+    metroArea.values = metroArea.values.filter(yearValue => {
+      return yearValue.y >= 0;
+    })
+    return metroArea;
+  })
+
+  var cityFilteredShare = [],
+      cityFilteredNewFirms = [],
+      cityFilteredHighTech = [],
+      cityFilteredNoAccomRetail = [];
+
+  for(var i=0; i<filteredShare.length; i++){
+    for(var j=0; j<filteredNewFirms.length; j++){
+      if(filteredShare[i].key == filteredNewFirms[j].key){
+        for(var k=0; k<filteredHighTech.length; k++){
+          if(filteredShare[i].key == filteredHighTech[k].key){
+            for(var l=0; l<filteredNoAccomRetail.length; l++){
+              if(filteredShare[i].key == filteredNoAccomRetail[l].key){
+                cityFilteredShare.push(filteredShare[i]); 
+                cityFilteredNewFirms.push(filteredNewFirms[j])
+                cityFilteredHighTech.push(filteredHighTech[k]) 
+                cityFilteredNoAccomRetail.push(filteredNoAccomRetail[l]);    
+              }
+            }                     
+          }
+        }
+      }
+    }
+  }
+
+  var shareYearRange = ([d3.min(cityFilteredShare, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredShare, function(c) { return d3.max(c.values, function(v) { return v.x }); })]                  )
+  var newFirmsYearRange = ([d3.min(cityFilteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var highTechYearRange = ([d3.min(cityFilteredHighTech, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredHighTech, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var noAccomRetailYearRange = ([d3.min(cityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+
+  var minYear = d3.max([shareYearRange[0],newFirmsYearRange[0],highTechYearRange[0],noAccomRetailYearRange[0]])
+  var maxYear = d3.min([shareYearRange[1],newFirmsYearRange[1],highTechYearRange[1],noAccomRetailYearRange[1]])
+
+  var yearCityFilteredShare = _trimYears(([minYear,maxYear]),cityFilteredShare);
+  var yearCityFilteredNewFirms = _trimYears(([minYear,maxYear]),cityFilteredNewFirms);
+  var yearCityFilteredHighTech = _trimYears(([minYear,maxYear]),cityFilteredHighTech);
+  var yearCityFilteredNoAccomRetail = _trimYears(([minYear,maxYear]),cityFilteredNoAccomRetail);
+
+  yearCityFilteredShare.sort(_sortMsaCities());
+  yearCityFilteredNewFirms.sort(_sortMsaCities());
+  yearCityFilteredHighTech.sort(_sortMsaCities());
+  yearCityFilteredNoAccomRetail.sort(_sortMsaCities());
 
   var compositeCityRanks = [];
 
-  var newFirmScale = d3.scale.linear()
-    .range([0,100])
-    .domain(      [d3.min(filteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(filteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
-                  )
-
   var shareScale = d3.scale.linear()
     .range([0,100])
-    .domain(      [d3.min(filteredShare, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                  d3.max(filteredShare, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
-                  )
+    .domain([d3.min(yearCityFilteredShare, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+            d3.max(yearCityFilteredShare, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
 
-  filteredNewFirms.forEach(newFirmItem => {
-      for(var i=0; i<filteredShare.length;i++){
-          if(newFirmItem.key == filteredShare[i].key){
+  var newFirmsScale = d3.scale.linear()
+    .range([0,100])
+    .domain([d3.min(yearCityFilteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+            d3.max(yearCityFilteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
 
-              var resultValues = [];
+  var highTechScale = d3.scale.linear()
+    .range([0,100])
+    .domain([d3.min(yearCityFilteredHighTech, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+            d3.max(yearCityFilteredHighTech, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
 
-              newFirmItem.values.forEach(newFirmItemValues => {
-                  for(var j=0;j<filteredShare[i].values.length;j++){
-                      if(newFirmItemValues.x == filteredShare[i].values[j].x){
-                          resultValues.push({x:newFirmItemValues.x,y:((newFirmScale(newFirmItemValues.y) + shareScale((filteredShare[i].values[j].y))) /2 )})
-                      }
-                  }
-              })
-              compositeCityRanks.push({key:newFirmItem.key,values:resultValues})
-          }
+  var noAccomRetailScale = d3.scale.linear()
+    .range([0,100])
+    .domain([d3.min(yearCityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+            d3.max(yearCityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
+
+
+
+
+  for(var i=0; i<yearCityFilteredShare.length;i++){
+    var resultValues = [],
+      newFirmObj= {},
+      highTechObj = {},
+      noAccomRetailObj = {};
+
+    for(var j=0; j<yearCityFilteredShare[i]['values'].length; j++){
+      var curYear = yearCityFilteredShare[i]['values'][j].x
+
+      for(var k = 0; k<yearCityFilteredNewFirms[i]['values'].length; k++){
+        if(yearCityFilteredNewFirms[i]['values'][k].x == curYear){
+          newFirmObj[curYear] = yearCityFilteredNewFirms[i]['values'][k].y
+        }
       }
-  })
+      if(!newFirmObj[curYear]){
+        newFirmObj[curYear] = 0;
+      }
 
-  var filteredCityRanks = compositeCityRanks.filter(metro => {
-    if(metro.values.length == 0){
-      return false;
+      for(var k = 0; k<yearCityFilteredHighTech[i]['values'].length; k++){
+        if(yearCityFilteredHighTech[i]['values'][k].x == curYear){
+          highTechObj[curYear] = yearCityFilteredHighTech[i]['values'][k].y
+        }
+      }
+      if(!highTechObj[curYear]){
+        highTechObj[curYear] = 0;
+      }  
+
+      for(var k = 0; k<yearCityFilteredNoAccomRetail[i]['values'].length; k++){
+        if(yearCityFilteredNoAccomRetail[i]['values'][k].x == curYear){
+          noAccomRetailObj[curYear] = yearCityFilteredNoAccomRetail[i]['values'][k].y
+        }
+      }
+      if(!noAccomRetailObj[curYear]){
+        noAccomRetailObj[curYear] = 0;
+      }  
+
+      var compositeValue = (
+        shareScale(yearCityFilteredShare[i].values[j].y) +      
+        newFirmsScale(newFirmObj[curYear]) +
+        highTechScale(highTechObj[curYear]) +
+        noAccomRetailScale(noAccomRetailObj[curYear])
+            )/4
+
+      resultValues.push({x:curYear,y:compositeValue})      
     }
-    else{
-      return true;
-    }
-  })
+    compositeCityRanks.push({key:yearCityFilteredShare[i]['key'],values:resultValues})          
+  }
 
 
-  compositeCityRanks = _rankCities(filteredCityRanks);
+
+  compositeCityRanks = _rankCities(compositeCityRanks);
   var graphData = _polishData(compositeCityRanks,"densityComposite");
 
   return graphData;
@@ -680,6 +721,9 @@ function _convertToCoordinateArray(data,dataset){
     if(dataset == 'inc5000'){
       var years = d3.range(1990,2016);      
     }
+    else if(dataset == "qwiDensity"){
+      var years = d3.range(1991,2016)
+    }
     else{
       var years = d3.range(1990,2015);            
     }
@@ -696,6 +740,17 @@ function _convertToCoordinateArray(data,dataset){
             else{
               valueArray.push( {x:+oppYear,y:null});   
             }
+          })
+        }
+        else if (dataset == "qwiDensity"){
+          years.forEach(year => {
+              var curYear = year-1;
+              if(typeof +data[msaId][year] == "number"){
+                valueArray.push( {x:+curYear,y:+data[msaId][year]});                  
+              }
+              else{
+                valueArray.push( {x:+curYear,y:0});                  
+              }
           })
         }
         else{
@@ -764,7 +819,7 @@ function _relativeAgainstPopulation(graphRawData){
 }
 
 function _processGeneral(data,dataset){
-    var finalData = _convertToCoordinateArray(data);
+    var finalData = _convertToCoordinateArray(data,dataset);
 
     var rankedData = _rankCities(finalData);
     var polishedData = _polishData(rankedData,dataset);
@@ -844,9 +899,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
     }
   }
 
-  cityFilteredOpp.sort(_sortMsaCities());
-  cityFilteredForeignborn.sort(_sortMsaCities());
-  cityFilteredEmpVariance.sort(_sortMsaCities());
+
 
   cityFilteredForeignborn.forEach(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
@@ -889,22 +942,37 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   .domain(      [d3.min(yearCityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
                 d3.max(yearCityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
+  console.log(yearCityFilteredForiegnBorn.length,yearCityFilteredEmpVariance.length,cityFilteredOpp.length)
+  cityFilteredOpp.sort(_sortMsaCities());
+  cityFilteredForeignborn.sort(_sortMsaCities());
+  cityFilteredEmpVariance.sort(_sortMsaCities());
 
   for(var i=0; i<yearCityFilteredForiegnBorn.length;i++){
-    var resultValues = [];
-    if(yearCityFilteredForiegnBorn[i].key == cityFilteredOpp[i].key && yearCityFilteredEmpVariance[i].key == yearCityFilteredForiegnBorn[i].key){
-      if(cityFilteredOpp[i].values.length > 0){
-        for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
-          if(yearCityFilteredForiegnBorn[i]['values'].length == yearCityFilteredEmpVariance[i]['values'].length){
-            resultValues.push({x:yearCityFilteredForiegnBorn[i].values[j].x,y:((foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) + oppScale(cityFilteredOpp[i].values[0].y) + empVarianceScale(yearCityFilteredEmpVariance[i].values[j].y))/3)})      
-          }
-        }         
+    var resultValues = [],
+      empVarObj= {};
+
+    for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
+      var curYear = yearCityFilteredForiegnBorn[i]['values'][j].x
+
+      for(var k = 0; k<yearCityFilteredEmpVariance[i]['values'].length; k++){
+        if(yearCityFilteredEmpVariance[i]['values'][k].x == curYear){
+          empVarObj[curYear] = yearCityFilteredEmpVariance[i]['values'][k].y
+        }
+      }
+      if(!empVarObj[curYear]){
+        empVarObj[curYear] = 0;
       }
 
-      compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
-    }
-  }
+      var compositeValue = (
+        foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) +      
+        oppScale(cityFilteredOpp[i].values[0].y) +
+        empVarianceScale(empVarObj[curYear]) 
+            )/3
 
+      resultValues.push({x:curYear,y:compositeValue})      
+    }
+    compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
+  }
 
   var filteredCityRanks = compositeCityRanks.filter(metro => {
     if(metro.values.length == 0){
@@ -915,7 +983,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
     }
   })
 
-  //console.log(compositeCityRanks[0]);
+
 
   compositeCityRanks = _rankCities(filteredCityRanks);
   var graphData = _polishData(compositeCityRanks,"diversityComposite");
@@ -1065,9 +1133,6 @@ function _processdetailMigration(data,dataset){
 }
 
 function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
-
-
-
   var filteredRawInc = inc5000.raw.filter(metroArea => {
     return true;
   })
