@@ -28,7 +28,7 @@ var shareEmpNewFirmsQWI_ExceptAccomAndRetail =
       JSON.parse(fs.readFileSync(qwiShareEmpFileNameBase + 'AllExceptAccommodationAndRetailSectors.json'))
 
 var processedNewFirms = _processData({data:densityData,selectedMetric:"newValues"});
-var processedShareEmpNewFirmsQWI_All = processGeneral2(shareEmpNewFirmsQWI_All);
+var processedShareEmpNewFirmsQWI_All = _processGeneral(shareEmpNewFirmsQWI_All,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_All = _polishData(processedShareEmpNewFirmsQWI_All['raw'],"qwiDensity");
 var processedShareEmpNewFirmsQWI_HighTech = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw'],"qwiDensity");
@@ -590,24 +590,22 @@ function _processComposite(newFirms,share,highTech,noAccomRetail){
     }
   }
 
-var shareYearRange = ([d3.min(cityFilteredShare, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
-                  d3.max(cityFilteredShare, function(c) { return d3.max(c.values, function(v) { return v.x }); })]                  )
-var newFirmsYearRange = ([d3.min(cityFilteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
-                  d3.max(cityFilteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
-var highTechYearRange = ([d3.min(cityFilteredHighTech, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
-                  d3.max(cityFilteredHighTech, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
-var noAccomRetailYearRange = ([d3.min(cityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
-                  d3.max(cityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var shareYearRange = ([d3.min(cityFilteredShare, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredShare, function(c) { return d3.max(c.values, function(v) { return v.x }); })]                  )
+  var newFirmsYearRange = ([d3.min(cityFilteredNewFirms, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredNewFirms, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var highTechYearRange = ([d3.min(cityFilteredHighTech, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredHighTech, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var noAccomRetailYearRange = ([d3.min(cityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
 
-var minYear = d3.max([shareYearRange[0],newFirmsYearRange[0],highTechYearRange[0],noAccomRetailYearRange[0]])
-var maxYear = d3.min([shareYearRange[1],newFirmsYearRange[1],highTechYearRange[1],noAccomRetailYearRange[1]])
+  var minYear = d3.max([shareYearRange[0],newFirmsYearRange[0],highTechYearRange[0],noAccomRetailYearRange[0]])
+  var maxYear = d3.min([shareYearRange[1],newFirmsYearRange[1],highTechYearRange[1],noAccomRetailYearRange[1]])
 
-var yearCityFilteredShare = _trimYears(([minYear,maxYear]),cityFilteredShare);
-var yearCityFilteredNewFirms = _trimYears(([minYear,maxYear]),cityFilteredNewFirms);
-var yearCityFilteredHighTech = _trimYears(([minYear,maxYear]),cityFilteredHighTech);
-var yearCityFilteredNoAccomRetail = _trimYears(([minYear,maxYear]),cityFilteredNoAccomRetail);
-
-console.log(yearCityFilteredShare.length,yearCityFilteredNewFirms.length,yearCityFilteredHighTech.length,yearCityFilteredNoAccomRetail.length)
+  var yearCityFilteredShare = _trimYears(([minYear,maxYear]),cityFilteredShare);
+  var yearCityFilteredNewFirms = _trimYears(([minYear,maxYear]),cityFilteredNewFirms);
+  var yearCityFilteredHighTech = _trimYears(([minYear,maxYear]),cityFilteredHighTech);
+  var yearCityFilteredNoAccomRetail = _trimYears(([minYear,maxYear]),cityFilteredNoAccomRetail);
 
   yearCityFilteredShare.sort(_sortMsaCities());
   yearCityFilteredNewFirms.sort(_sortMsaCities());
@@ -644,7 +642,6 @@ console.log(yearCityFilteredShare.length,yearCityFilteredNewFirms.length,yearCit
       newFirmObj= {},
       highTechObj = {},
       noAccomRetailObj = {};
-
 
     for(var j=0; j<yearCityFilteredShare[i]['values'].length; j++){
       var curYear = yearCityFilteredShare[i]['values'][j].x
@@ -724,6 +721,9 @@ function _convertToCoordinateArray(data,dataset){
     if(dataset == 'inc5000'){
       var years = d3.range(1990,2016);      
     }
+    else if(dataset == "qwiDensity"){
+      var years = d3.range(1991,2016)
+    }
     else{
       var years = d3.range(1990,2015);            
     }
@@ -744,11 +744,12 @@ function _convertToCoordinateArray(data,dataset){
         }
         else if (dataset == "qwiDensity"){
           years.forEach(year => {
+              var curYear = year-1;
               if(typeof +data[msaId][year] == "number"){
-                valueArray.push( {x:+year,y:+data[msaId][year]});                  
+                valueArray.push( {x:+curYear,y:+data[msaId][year]});                  
               }
               else{
-                valueArray.push( {x:+year,y:0});                  
+                valueArray.push( {x:+curYear,y:0});                  
               }
           })
         }
@@ -898,9 +899,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
     }
   }
 
-  cityFilteredOpp.sort(_sortMsaCities());
-  cityFilteredForeignborn.sort(_sortMsaCities());
-  cityFilteredEmpVariance.sort(_sortMsaCities());
+
 
   cityFilteredForeignborn.forEach(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
@@ -943,22 +942,37 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   .domain(      [d3.min(yearCityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
                 d3.max(yearCityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
+  console.log(yearCityFilteredForiegnBorn.length,yearCityFilteredEmpVariance.length,cityFilteredOpp.length)
+  cityFilteredOpp.sort(_sortMsaCities());
+  cityFilteredForeignborn.sort(_sortMsaCities());
+  cityFilteredEmpVariance.sort(_sortMsaCities());
 
   for(var i=0; i<yearCityFilteredForiegnBorn.length;i++){
-    var resultValues = [];
-    if(yearCityFilteredForiegnBorn[i].key == cityFilteredOpp[i].key && yearCityFilteredEmpVariance[i].key == yearCityFilteredForiegnBorn[i].key){
-      if(cityFilteredOpp[i].values.length > 0){
-        for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
-          if(yearCityFilteredForiegnBorn[i]['values'].length == yearCityFilteredEmpVariance[i]['values'].length){
-            resultValues.push({x:yearCityFilteredForiegnBorn[i].values[j].x,y:((foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) + oppScale(cityFilteredOpp[i].values[0].y) + empVarianceScale(yearCityFilteredEmpVariance[i].values[j].y))/3)})      
-          }
-        }         
+    var resultValues = [],
+      empVarObj= {};
+
+    for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
+      var curYear = yearCityFilteredForiegnBorn[i]['values'][j].x
+
+      for(var k = 0; k<yearCityFilteredEmpVariance[i]['values'].length; k++){
+        if(yearCityFilteredEmpVariance[i]['values'][k].x == curYear){
+          empVarObj[curYear] = yearCityFilteredEmpVariance[i]['values'][k].y
+        }
+      }
+      if(!empVarObj[curYear]){
+        empVarObj[curYear] = 0;
       }
 
-      compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
-    }
-  }
+      var compositeValue = (
+        foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) +      
+        oppScale(cityFilteredOpp[i].values[0].y) +
+        empVarianceScale(empVarObj[curYear]) 
+            )/3
 
+      resultValues.push({x:curYear,y:compositeValue})      
+    }
+    compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
+  }
 
   var filteredCityRanks = compositeCityRanks.filter(metro => {
     if(metro.values.length == 0){
