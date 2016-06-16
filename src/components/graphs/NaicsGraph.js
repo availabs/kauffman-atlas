@@ -226,8 +226,6 @@ export class NaicsGraph extends React.Component<void, Props, void> {
     if(this.props.type !== 'employment'){
       pdata.data = this.dataMap(data, fields, noagg)
       pdata.lqdata = this.dataMap(data, lqfields, noagg)
-
-      console.log(pdata)
     } else {
       pdata.data = this.dataMap(data, fields, agg)
       pdata.lqdata = this.dataMap(data, lqfields, agg)
