@@ -178,7 +178,12 @@ export class HomeView extends React.Component<void, Props, void> {
           </div>
         </div>
         <div className='container'>
-          <div className='row' style={{padding:15, marginTop: 15}} >
+           <div className='row'>
+            <div className={'col-xs-12 ' + classes['text-div']}>
+              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
+            </div>
+          </div>
+          <div className='row' style={{padding:15}} >
             <ComponentButtons
               onComponentChange={this._setActiveComponent} 
               activeComponent={this.props.homeState.activeComponent}
@@ -188,11 +193,6 @@ export class HomeView extends React.Component<void, Props, void> {
               onBucketChange={this._setActiveBucket} 
               bucket={this.props.homeState.bucket}
             />
-          </div>
-          <div className='row'>
-            <div className={'col-xs-12 ' + classes['text-div']}>
-              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
-            </div>
           </div>
         </div>
         <div className='container'>

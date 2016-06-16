@@ -20,14 +20,15 @@ export class MetroZbpCluster extends React.Component<void, Props, void> {
     this._setFilter = this._setFilter.bind(this)
   }
   
-  _fecthData () {
-    //console.log(this.props.zbpData[this.props.year])
-    if(!this.props.zbpData[this.props.year] || !this.props.zbpData[this.props.year][this.props.currentMetro]){
-      return this.props.loadZbpDataYear(this.props.currentMetro,this.props.year)
+  _fecthData (props) {
+    //console.log('fetching', this.props.zbpData[this.props.year][this.props.currentMetro], this.props.zbpData['national'])
+
+    if(!props.zbpData[this.props.year] || !props.zbpData[props.year][props.currentMetro]){
+      return this.props.loadZbpDataYear(props.currentMetro,props.year)
     }
 
-    if(!this.props.zbpData['national']){
-      return this.props.loadZbpData('national')
+    if(!props.zbpData['national']){
+      return props.loadZbpData('national')
     }
 
   }
@@ -43,7 +44,6 @@ export class MetroZbpCluster extends React.Component<void, Props, void> {
   }
 
   _clusterToDict () {
-    console.log('clusterLib', clusterLib)
     return clusterLib.clusters.reduce((prev, cluster) => {
         prev[cluster.cluster_code_t] = cluster
         return prev
@@ -192,33 +192,31 @@ export class MetroZbpCluster extends React.Component<void, Props, void> {
   }
 
   _setSort(sort) {
-    
-    console.log('sort', sort)
     this.setState({
       sort
     })
   }
 
   componentDidMount() {
-    this._fecthData ()
+    this._fecthData (this.props)
   }
   
   componentWillReceiveProps (nextProps){
-    this._fecthData ()
+    this._fecthData (nextProps)
   }
 
  hasData () {
     return this.props.zbpData[this.props.year] && 
       this.props.zbpData[this.props.year][this.props.currentMetro] && 
-      this.props.zbpData['national'] &&
-      this.props.naicsKeys
+      this.props.zbpData['national']
   }
 
   render () {
-    if (!this.hasData()) return <span />
+    if (!this.hasData()) return (<div className='container'> Loading ... </div>)
     let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
     return (
       <div className='container'>
+        <h4>Industry Clusters</h4>
         <div>
           {this._clusterToGraph(this.props.year)}
         </div>
