@@ -2,7 +2,7 @@
 import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
-import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
+import { loadMetroData } from 'redux/modules/metroQcewData'
 import clusterLib from 'static/data/clusterLib'
 import NetworkGraph from 'components/vis/NetworkGraph/NetworkGraph'
 import {typemap} from 'support/qcew/typemap'
@@ -28,9 +28,7 @@ export class MetroQcewCluster extends React.Component<void, Props, void> {
 	
 
 	
-	return this.props.loadZbpDataYear(this.props.currentMetro,
-					      this.props.year,
-					      Object.keys(this._naicsToCluster()))
+	return this.props.loadZbpDataYear(this.props.currentMetro, Object.keys(this._naicsToCluster()))
     }
 
     _naicsToCluster () {
@@ -344,8 +342,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect((mapStateToProps), {
-    loadZbpData: (currentMetro) => loadMetroData(currentMetro),
-    loadZbpDataYear: (currentMetro,year,codes) => loadMetroDataYear(currentMetro,year,codes),
+    loadMetroData,
     loadNaicsKeys: () => loadNaicsKeys()
 })(MetroQcewCluster)
 

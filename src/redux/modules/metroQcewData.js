@@ -12,8 +12,6 @@ export const MSA_CHANGE                       = 'MSA_CHANGE'
 export const RECEIVE_METROQCEW_DATA           = 'RECEIVE_METROQCEW_DATA'
 export const RECEIVE_METROQCEW_DATA_WITH_YEAR = 'RECEIVE_METROQCEW_DATA_WITH_YEAR'
 export const QCEW_NULL_ACTION                 = 'QCEW_NULL_ACTION'
-export const SET_QCEW_YEAR_DATA               = 'SET_QCEW_YEAR_DATA'
-export const SET_QCEW_COMP_QTR_DATA           = 'SET_QCEW_COMP_QTR_DATA'
 export const QCEW_QUARTER_SELECTED            = 'QCEW_QUARTER_SELECTED'
 export const QCEW_YEARQUARTER_WHEEL_CHANGE    = 'QCEW_YEARQUARTER_WHEEL_CHANGE'
 
@@ -26,14 +24,14 @@ const industries = [
   ]
 
 const msayears = {}
-const years = [
-    '2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011',
-    '2012','2013','2014'
-  ]
+
+const years = _.map(_.range(2001, 2015), _.toString)
 
 const fields = [
-    'area_fips','qtr','all'
-  ]
+  'area_fips',
+  'qtr',
+  'all',
+]
 
 const zeropad = (code) => {
   let need = 6 - code.length
@@ -45,138 +43,95 @@ const zeropad = (code) => {
 }
 
 let defIndCodes = industries.map(zeropad);
-let fieldString = fields.map(x => 'fields[]='+x).join('&')
+let fieldString = fields.map(x => `fields[]=${x}`).join('&')
+
+
+
 // ------------------------------------
 // Actions
 // ------------------------------------
 export const msaChange = (msa) => ({
   type    : MSA_CHANGE,
-  payload : msa,
+  payload : { msa, },
 })
 
-export function receiveData (value, msaId) {
-  return {
-    type: RECEIVE_METROQCEW_DATA,
-    payload: [value, msaId]
-  }
-}
+export const receiveData = (data, msa) => ({
+  type    : RECEIVE_METROQCEW_DATA,
+  payload : { data, msa, },
+})
 
-export function receiveDataWithYear (msaId, year, value) {
-  return {
-    type: RECEIVE_METROQCEW_DATA_WITH_YEAR,
-    payload: [value, msaId, year],
-  }
-}
-
-export function setCurrentMetroYear (msaId,year) {
-    return {
-  type: SET_QCEW_YEAR_DATA,
-  payload: [null,msaId, year],
-    }
-}
-
-export function setCurrentMetroQuarter(tableData){
-    return {
-  type: SET_QCEW_COMP_QTR_DATA,
-  payload: tableData
-    }
-}
-
-export function quarterSelected (dateString) {
-    return {
-  type: QCEW_QUARTER_SELECTED,
-  payload: dateString,
-    }
-}
+export const quarterSelected = (dateString) => ({
+  type    : QCEW_QUARTER_SELECTED,
+  payload : { dateString, },
+})
 
 export const yearQuarterWheelChange = (delta) => ({
   type    : QCEW_YEARQUARTER_WHEEL_CHANGE,
-  payload : delta,
+  payload : { delta, },
 })
 
-export function nullAction() {
-    return {
-  type: QCEW_NULL_ACTION,
-    }
-}
+export const nullAction = () => ({ type: QCEW_NULL_ACTION, })
 
-export const setMetroQuarter = (td) => {
-    return (dispatch) => dispatch(setCurrentMetroQuarter(td))
-}
 
-export const loadMetroData = (msaId,codes,event) => {
 
-  let ncodes = codes || defIndCodes
-  ncodes = ncodes.map(zeropad)
+export const loadMetroData = (msa, codes) => {
+
+  let ncodes = (codes || defIndCodes).map(zeropad)
 
   let indcodes = ncodes.join('');
 
-  msayears[msaId]         = msayears[msaId] || {}
-  msayears[msaId].history = msayears[msaId].history || {}
+  msayears[msa] = msayears[msa] || {}
+  msayears[msa].history = msayears[msa].history || {}
   
+  // Determine which codes to request
   ncodes = ncodes.filter( code => {
-    let exists = !msayears[msaId] || !msayears[msaId].history[code]
+    let exists = msayears[msa].history[code]
 
-    msayears[msaId].history[code] = true
+    msayears[msa].history[code] = true
 
-    return exists
+    return !exists
   })
 
   if(ncodes.length === 0){
     return (dispatch) => dispatch(nullAction())
   }
+
   return (dispatch) => {
-    let url = qcewApi + 'data/'
-    let body = {query:''}
-    body.query += 'fips' + 'C' + msaId.slice(0, 4)
-    body.query += '/ind' + indcodes + '/yr' + years.join('')
-    body.fields = fields 
-    body.flat = '&flat=true'
-    
-    //console.log(url,body)
-    
-    return fetch(url,{
-        method:'POST',
-        headers:{
-          'Accept':'application/json',
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(body)
-    }).then(response => {
-      //console.log(response);
+
+    let url = `${qcewApi}data/`
+
+    let body = {
+      query  : `fipsC${msa.slice(0, 4)}/ind${indcodes}/yr${years.join('')}`,
+      fields : fields,
+      flat   : '&flat=true',
+    }
+
+    let postObj = { 
+      method : 'POST',
+      headers : {
+        'Accept'       : 'application/json',
+        'Content-Type' : 'application/json'
+      },
+      body : JSON.stringify(body), 
+    }
+
+    let respHandler = (response) => {
       let isOk = response.ok
+
       ncodes.forEach( code => {
-        msayears[msaId].history[code] = (isOk)? true:null
+        // Update the history to account for errors.
+        msayears[msa].history[code] = (isOk)? true : null
       })
+
       return response.json()
-    }).then(json =>{
-      if(!event){
-        dispatch(receiveData(json, msaId))
-      }
-      else{
-        dispatch(event(json))
-      }
-    })
+    }
+
+    let dispatcher = (data) => dispatch(receiveData(data, msa))
+   
+    return fetch(url, postObj).then(respHandler).then(dispatcher)
   }
 }
 
-export const loadMetroDataYear = (msaId, year, codes) => {
-  let ncodes = codes || defIndCodes
-  ncodes = ncodes.map(zeropad)
-  msayears[msaId] = msayears[msaId] || {}
-  msayears[msaId].history = msayears[msaId].history || {}
-  
-  ncodes = ncodes.filter( code => {
-    let exists = !msayears[msaId] ||
-      !msayears[msaId].history[code]
-    return exists
-  })
-
-  if(ncodes.length >0){
-    return loadMetroData(msaId,codes,receiveDataWithYear.bind(null,msaId,year))
-  }
-  return (dispatch) => dispatch(setCurrentMetroYear(msaId,year))  
-}
 
 let datamaper = (schema,x) => {
   let t = {}
@@ -186,71 +141,49 @@ let datamaper = (schema,x) => {
   return t
 }
 
-let addQcewRows = (state,action) => {
-  var newState = Object.assign({}, state)
-  let msa = action.payload[1]
-  let data = action.payload[0].rows
-  let schema = action.payload[0].schema
-  data = data.map(datamaper.bind(null,schema))
-  if(newState.data && newState.data.length){
-    newState.data = newState.data.concat(data)
-  }
-  else{
-    newState.data = data
-  }
+let addQcewRows = (state, action) => {
+
+  let newState = Object.assign({}, state)
+   
+  let msa    = action.payload.msa
+  let rows   = action.payload.data.rows
+  let schema = action.payload.data.schema
+
+  let data = rows.map(datamaper.bind(null, schema))
+
+  newState.data = (newState.data && newState.data.length) ? newState.data.concat(data) : data
+
+  let nestedData = d3.nest()
+                     .key(x => x.year)
+                     .rollup(value => value)
+                     .map(data)
+
+  newState.yeardata = state.yeardata || {}
+  let yearlyDataForMSA = newState.yeardata[msa] || (newState.yeardata[msa] = {})
+
+  _.forEach(nestedData, (dataForYear, year) => {
+    yearlyDataForMSA[year] = (yearlyDataForMSA[year] || (yearlyDataForMSA[year] = [])).concat(dataForYear)
+  })
+  
+console.log(newState)
   return newState
 }
 
-let setYearData = (state,action) => {
-  let year = action.payload[2]
-  let msa = action.payload[1]
-  let shell ={}
-  shell[msa] = null
-  state.yeardata = Object.assign({},shell) || {}
-  state.yeardata[msa] = d3.nest()
-    .key( x=> x.year )
-    .rollup( value => value )
-    .map( state.data || [] )
-  return state
-}
+
 
 const ACTION_HANDLERS = {
   
   [MSA_CHANGE]: (state, action) => {
-    if (action.payload === state.msa) { return state }
-
-    console.log(Object.assign({}, state, { msa: action.payload }))
-    return Object.assign({}, state, { msa: action.payload })
+    return (action.payload.msa === state.msa) ? state : Object.assign({}, state, { msa: action.payload.msa })
   },
 
-  [RECEIVE_METROQCEW_DATA]: (state, action) => {
-    return addQcewRows(state,action)
-  },
-  
-  [RECEIVE_METROQCEW_DATA_WITH_YEAR]: (state, action) => {
-    let newState = addQcewRows(state, action)
-    return setYearData(newState,action)
-  },
-  
-  [SET_QCEW_YEAR_DATA]: (state, action) => {
-    return setYearData(state,action)
-  },
-  
-  [QCEW_NULL_ACTION]: (state, action) => {
-    return state
-  },
-  
-  [SET_QCEW_COMP_QTR_DATA]: (state, action) => {
-    let newState = Object.assign({}, state)
-    let data = action.payload
+  [RECEIVE_METROQCEW_DATA]: addQcewRows,
 
-    newState.qtrData = data
-    return newState
-  },
+  [QCEW_NULL_ACTION]: (state) => state,
 
   [QCEW_QUARTER_SELECTED]: (state, action) => {
     let newState = Object.assign({}, state)
-    let qrtDateObj = new Date(action.payload)
+    let qrtDateObj = new Date(action.payload.dateString)
 
     newState.selectedQuarter = {
       year    : qrtDateObj.getFullYear().toString(),
@@ -260,8 +193,10 @@ const ACTION_HANDLERS = {
     return newState
   },
 
+
   [QCEW_YEARQUARTER_WHEEL_CHANGE]: handleYearQuarterWheelChange,
 }
+
 
 
 function handleYearQuarterWheelChange (state, action) {
@@ -286,7 +221,7 @@ function handleYearQuarterWheelChange (state, action) {
   oldYearQuarter.year = +oldYearQuarter.year
   oldYearQuarter.quarter = +oldYearQuarter.quarter
 
-  let delta = action.payload
+  let delta = action.payload.delta
 
   if (delta < 0) {
 
@@ -338,7 +273,12 @@ function handleYearQuarterWheelChange (state, action) {
 // ------------------------------
 // Reducer
 // ------------------------------
-const initialState = {}
+const initialState = {
+  selectedQuarter : {
+    year : '2010',
+    quarter : '1',
+  } 
+}
 
 export default function metroQcewReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
