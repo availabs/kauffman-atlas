@@ -34,12 +34,12 @@ const fields = [
   'all',
 ]
 
-let startEconQuarter = {
+const startEconQuarter = {
   year: 2001,
   quarter: 1,
 }
 
-let endEconQuarter = {
+const endEconQuarter = {
   year: 2014,
   quarter: 4,
 }
@@ -62,6 +62,38 @@ const measures = [
   'lq_total_qtrly_wages',
 ]
  
+const transformers = {
+
+  emplvl: {
+    input: [
+      'month1_emplvl',
+      'month2_emplvl',
+      'month3_emplvl',
+    ],
+
+    f : (emps) => _(emps).filter(Number.isFinite).mean(),
+  },
+
+  lq_emplvl: {
+    input: [
+      'lq_month1_emplvl',
+      'lq_month2_emplvl',
+      'lq_month3_emplvl',
+    ],
+
+    f : (lq_emps) => _(lq_emps).filter(Number.isFinite).mean(),
+  },
+
+  avg_wkly_wage    : null,
+  lq_avg_wkly_wage : null,
+
+  qtrly_estabs_count    : null,
+  lq_qtrly_estabs_count : null,
+
+  total_qtrly_wages    : null,
+  lq_total_qtrly_wages : null,
+}
+
 
 
 const zeropad = (code) => {
@@ -168,42 +200,9 @@ export const loadMetroData = (msa, codes) => {
 
       let data = restructureResponse(respData[0].values)
 
-console.log(data)
-
-      let transformers = {
-
-        emplvl: {
-          input: [
-            'month1_emplvl',
-            'month2_emplvl',
-            'month3_emplvl',
-          ],
-
-          f : (emps) => _(emps).filter(Number.isFinite).mean(),
-        },
-
-        lq_emplvl: {
-          input: [
-            'lq_month1_emplvl',
-            'lq_month2_emplvl',
-            'lq_month3_emplvl',
-          ],
-
-          f : (lq_emps) => _(lq_emps).filter(Number.isFinite).mean(),
-        },
-
-        avg_wkly_wage    : null,
-        lq_avg_wkly_wage : null,
-
-        qtrly_estabs_count    : null,
-        lq_qtrly_estabs_count : null,
-
-        total_qtrly_wages    : null,
-        lq_total_qtrly_wages : null,
-      }
-
       byMSANaicsTrees[msa].insertData(data, transformers)
-    }).then(() => console.log(byMSANaicsTrees[msa].root))
+    }).then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustries(null, 'emplvl')))
+      .then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustriesForQuarter(null,'emplvl',2010,1)))
 
     return fetch(url, postObj).then(respHandler)
                               .then((data) => dispatch(receiveData(data, msa)))

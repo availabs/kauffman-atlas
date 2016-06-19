@@ -18,51 +18,6 @@ export class NaicsTree {
   }
 
 
-  // params:
-  //   data -- must have the following structure: { <year>: { <quarter>: { <measure>: <value> } } }
-  //   transformers: see insertData
-  insertDataIntoTreeNode (node, data, transformers) {
-
-    let quarterIterator = newQuarterIterator(this.startEconQuarter, this.endEconQuarter)
-
-    node.dataArraysByMeasure = _.mapValues(transformers, () => [])
-    node.byQuarterLookupTree = {}
-
-    let lastKnownValues = _.mapValues(transformers, () => null)
-
-    let curQtr
-
-    while (curQtr = quarterIterator.next()) {
-
-      let dataForQuarter = _.get(data, [curQtr.year, curQtr.quarter], {})
-
-      _.forEach(transformers, (rules, name) => {
-
-        let dataElement = {
-          filledValue : false 
-        } 
-
-        let val = +((rules && rules.f) ? 
-                        rules.f(_(dataForQuarter).pick(rules.input || name).map(_.toFinite).value()) : 
-                        (dataForQuarter[(rules && rules.input) || name]))
-
-        if (Number.isFinite(lastKnownValues[name]) && !Number.isFinite(val)) {
-          val = lastKnownValues[name]
-          dataElement.filledValue = true
-        } 
-
-        if (Number.isFinite(val)) {
-          dataElement.value = lastKnownValues[name] = val
-
-          _.setWith(node.byQuarterLookupTree, [curQtr.year, curQtr.quarter, name], dataElement, Object)
-
-          node.dataArraysByMeasure[name].push(dataElement)
-        }
-      })
-    }
-  }
-
-
   // params: 
   //   data -- must have the following structure: 
   //                   { 
@@ -88,24 +43,98 @@ export class NaicsTree {
 
     let naicsCodes = Object.keys(data)
 
-    let node = this.root
-
-    let descendInto
-
-
-    while (descendInto = _.find(node.children, (node, naicsOfSub) => _.startsWith(naicsCodes[0], naicsOfSub))) {
-      console.log(descendInto)
-      node = descendInto
-    }
+    let node = findParentNodeForNaicsCode.call(this, naicsCodes[0])
 
     node.children = naicsCodes.reduce((acc, naicsCode) => {
       acc[naicsCode] = newNaicsTreeNode()
 
-      this.insertDataIntoTreeNode(acc[naicsCode], data[naicsCode], transformers)
+      insertDataIntoTreeNode.call(this, acc[naicsCode], data[naicsCode], transformers)
       return acc
     }, {})
   }
+
+  queryMeasureDataForSubindustries (naics, measure) {
+    let node = findParentNodeForNaicsCode.call(this, naics) 
+    
+    if (!(node && node.children)) { return null }
+
+    return _(node.children).mapValues((childNode) => _.get(childNode, ['dataArraysByMeasure', measure], null)).value()
+  }
+
+  queryMeasureDataForSubindustriesForQuarter (naics, measure, year, quarter) {
+    let node = findParentNodeForNaicsCode.call(this, naics) 
+    
+    if (!(node && node.children)) { return null }
+
+    let dataPath = `byQuarterLookupTree.${year}.${quarter}.${measure}`
+
+    return _(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value()
+  }
+
 }
+
+
+function findParentNodeForNaicsCode (naicsCode) {
+  let node = this.root
+
+  let descendInto
+  while (descendInto = _.find(node.children, (node, naicsOfSub) => _.startsWith(naicsCode, naicsOfSub))) {
+    console.log(descendInto)
+    node = descendInto
+  }
+
+  return node
+}
+
+
+  // params:
+  //   data -- must have the following structure: { <year>: { <quarter>: { <measure>: <value> } } }
+  //   transformers: see insertData
+function insertDataIntoTreeNode (node, data, transformers) {
+
+  let quarterIterator = newQuarterIterator(this.startEconQuarter, this.endEconQuarter)
+
+  node.dataArraysByMeasure = _.mapValues(transformers, () => [])
+  node.byQuarterLookupTree = {}
+
+  let lastKnownValues = _.mapValues(transformers, () => null)
+
+  let curQtr
+
+  while (curQtr = quarterIterator.next()) {
+
+    let dataForQuarter = _.get(data, [curQtr.year, curQtr.quarter], {})
+
+    _.forEach(transformers, (rules, name) => {
+
+      let dataElement = {
+        year    : curQtr.year,
+        quarter : curQtr.quarter,
+
+        filledValue : false
+      } 
+
+      let val = +((rules && rules.f) ? 
+                      rules.f(_(dataForQuarter).pick(rules.input || name).map(_.toFinite).value()) : 
+                      (dataForQuarter[(rules && rules.input) || name]))
+
+      if (Number.isFinite(lastKnownValues[name]) && !Number.isFinite(val)) {
+        val = lastKnownValues[name]
+        dataElement.filledValue = true
+      } 
+
+      if (Number.isFinite(val)) {
+        dataElement.value = lastKnownValues[name] = val
+
+        _.setWith(node.byQuarterLookupTree, [curQtr.year, curQtr.quarter, name], dataElement, Object)
+
+        node.dataArraysByMeasure[name].push(dataElement)
+      }
+    })
+  }
+}
+
+
 
 
 function newNaicsTreeNode () {
