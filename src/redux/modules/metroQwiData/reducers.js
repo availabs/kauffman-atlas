@@ -34,7 +34,7 @@ const initialState = {
   lineGraphs: {
     focused: 'qwi-rawData-linegraph',
     tooltip: {
-      yearQuarter: {
+      econQuarter: {
         year:    null,
         quarter: null,
       },
@@ -75,10 +75,10 @@ const handleActionError = (state, action) => {
 
 const handleLineGraphYearQuarterChange = (state, action) => {
 
-  let yearQuarter = action.payload.yearQuarter
+  let econQuarter = action.payload.econQuarter
 
-  if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, yearQuarter.year, yearQuarter.quarter]))) {
-    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', action.payload.yearQuarter)
+  if (!_.isEmpty(_.get(state, ['data', 'raw', state.msa, econQuarter.year, econQuarter.quarter]))) {
+    return setStateField(state, 'lineGraphs.tooltip.econQuarter', action.payload.econQuarter)
   }
 
   return state
@@ -101,7 +101,7 @@ const handleYearQuarterWheelChange = (state, action) => {
     }
   })()
 
-  let oldYearQuarter = state.lineGraphs.tooltip.yearQuarter
+  let oldYearQuarter = state.lineGraphs.tooltip.econQuarter
 
   if (oldYearQuarter.year === null) {
     oldYearQuarter = lastYearQuarterInData
@@ -137,7 +137,7 @@ const handleYearQuarterWheelChange = (state, action) => {
       newYearQuarter.year -= 1
     }
     
-    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', newYearQuarter)
+    return setStateField(state, 'lineGraphs.tooltip.econQuarter', newYearQuarter)
 
   }
 
@@ -158,7 +158,7 @@ const handleYearQuarterWheelChange = (state, action) => {
       newYearQuarter.year += 1
     }
     
-    return setStateField(state, 'lineGraphs.tooltip.yearQuarter', newYearQuarter)
+    return setStateField(state, 'lineGraphs.tooltip.econQuarter', newYearQuarter)
 
   }
 }

@@ -107,17 +107,17 @@ const renderVisualizations = (props) => (
                                      marginTop: '5px'}, 
                                    buttonStyle)}
                     onWheel={(e) => { 
-                             props.yearQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
+                             props.econQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
                              e.preventDefault()}}>
 
-                {`Quarter:  Q${props.yearQuarter.quarter}-${props.yearQuarter.year}`}
+                {`Quarter:  Q${props.econQuarter.quarter}-${props.econQuarter.year}`}
             </strong>
             <button id='qwi-quarter-decrement' 
                     type="button" 
                     className="btn btn-secondary btn-sm" 
                     style={buttonStyle}
                     onClick={(e) => { 
-                             props.yearQuarterWheelChange(-1)
+                             props.econQuarterWheelChange(-1)
                              e.preventDefault()}}> -
             </button>
             <button id='qwi-quarter-increment' 
@@ -125,7 +125,7 @@ const renderVisualizations = (props) => (
                     className="btn btn-secondary btn-sm" 
                     style={buttonStyle}
                     onClick={(e) => { 
-                             props.yearQuarterWheelChange(1)
+                             props.econQuarterWheelChange(1)
                              e.preventDefault()}}> +
             </button>
           </div>

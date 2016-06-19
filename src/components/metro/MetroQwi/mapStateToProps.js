@@ -46,7 +46,7 @@ const getData = (state, ownProps) => {
     }
   })()
 
-  let tooltipYearQuarter = _.get(state, 'lineGraphs.tooltip.yearQuarter')
+  let tooltipYearQuarter = _.get(state, 'lineGraphs.tooltip.econQuarter')
     
   let overviewTableColumnNames = {
     naicsCode             : 'NAICS Code',
@@ -348,7 +348,7 @@ const getData = (state, ownProps) => {
     shareByIndustryRadarGraphData: [shareByIndustryRadarGraphData],
     shareOfMetroTotalRadarGraphData: [shareOfMetroTotalRadarGraphData],
     overviewTableData,
-    yearQuarter: tooltipYearQuarter,
+    econQuarter: tooltipYearQuarter,
     firmageLabel,
     measureLabel: measureLabels[measure],
     measureIsCurrency,

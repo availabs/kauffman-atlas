@@ -87,7 +87,7 @@ export const measureChange = (measure) => ({
 
 
 
-export const yearQuarterWheelChange = (delta) => ({
+export const econQuarterWheelChange = (delta) => ({
   type : QWI_YEARQUARTER_WHEEL_CHANGE,
   payload : { 
     delta, 
@@ -97,7 +97,7 @@ export const yearQuarterWheelChange = (delta) => ({
 export const lineGraphYearQuarterChange = (dateObj) => ({
   type : QWI_LINEGRAPH_YEARQUARTER_CHANGE,
   payload : { 
-    yearQuarter: getYearQuarterObjFromDateObj(dateObj), 
+    econQuarter: getYearQuarterObjFromDateObj(dateObj), 
   },
 })
 

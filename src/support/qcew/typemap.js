@@ -1,6 +1,6 @@
 export const typemap = {
     employment: [
-      'month1_emplvl',
+      'month1_emplvl', // The lq_* versions are used as well
       'month2_emplvl',
       'month3_emplvl'
     ],
@@ -11,13 +11,13 @@ export const typemap = {
       'total_qtrly_wages'
     ],
     contributions: [
-      'qtrly_contributions'
+      'qtrly_contributions' //not used
     ],
     taxablewages: [
-      'taxable_qtrly_wages'
+      'taxable_qtrly_wages' // not used
     ],
     avgweekwages: [
-      'avg_wkly_wage'
+      'avg_wkly_wage' // not used
     ],
     cluster: [
       [

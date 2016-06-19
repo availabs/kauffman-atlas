@@ -1,6 +1,7 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
 import {qcewApi} from '../../AppConfig'
+import NaicsTree from '../../support/NaicsTree'
 import d3 from 'd3'
 import _ from 'lodash'
 
@@ -33,6 +34,36 @@ const fields = [
   'all',
 ]
 
+let startEconQuarter = {
+  year: 2001,
+  quarter: 1,
+}
+
+let endEconQuarter = {
+  year: 2014,
+  quarter: 4,
+}
+
+const measures = [
+  'month1_emplvl',
+  'month2_emplvl',
+  'month3_emplvl',
+  'lq_month1_emplvl',
+  'lq_month2_emplvl',
+  'lq_month3_emplvl',
+
+  'avg_wkly_wage',
+  'lq_avg_wkly_wage',
+
+  'qtrly_estabs_count',
+  'lq_qtrly_estabs_count',
+
+  'total_qtrly_wages',
+  'lq_total_qtrly_wages',
+]
+ 
+
+
 const zeropad = (code) => {
   let need = 6 - code.length
   while(need > 0){
@@ -45,7 +76,7 @@ const zeropad = (code) => {
 let defIndCodes = industries.map(zeropad);
 let fieldString = fields.map(x => `fields[]=${x}`).join('&')
 
-
+const byMSANaicsTrees = {}
 
 // ------------------------------------
 // Actions
@@ -65,7 +96,7 @@ export const quarterSelected = (dateString) => ({
   payload : { dateString, },
 })
 
-export const yearQuarterWheelChange = (delta) => ({
+export const econQuarterWheelChange = (delta) => ({
   type    : QCEW_YEARQUARTER_WHEEL_CHANGE,
   payload : { delta, },
 })
@@ -126,9 +157,56 @@ export const loadMetroData = (msa, codes) => {
       return response.json()
     }
 
-    let dispatcher = (data) => dispatch(receiveData(data, msa))
-   
-    return fetch(url, postObj).then(respHandler).then(dispatcher)
+
+    let url2 = `${qcewApi}data/fipsC${msa.slice(0, 4)}/ind${indcodes}/yr${years.join('')}/qtr1234/` +
+               `?${measures.map((m) => `fields[]=${m}`).join('&')}`
+               
+    fetch(url2).then(r => r.json()).then((respData) => {
+      if (!byMSANaicsTrees[msa]) {
+        byMSANaicsTrees[msa] = new NaicsTree(startEconQuarter, endEconQuarter)
+      }
+
+      let data = restructureResponse(respData[0].values)
+
+console.log(data)
+
+      let transformers = {
+
+        emplvl: {
+          input: [
+            'month1_emplvl',
+            'month2_emplvl',
+            'month3_emplvl',
+          ],
+
+          f : (emps) => _(emps).filter(Number.isFinite).mean(),
+        },
+
+        lq_emplvl: {
+          input: [
+            'lq_month1_emplvl',
+            'lq_month2_emplvl',
+            'lq_month3_emplvl',
+          ],
+
+          f : (lq_emps) => _(lq_emps).filter(Number.isFinite).mean(),
+        },
+
+        avg_wkly_wage    : null,
+        lq_avg_wkly_wage : null,
+
+        qtrly_estabs_count    : null,
+        lq_qtrly_estabs_count : null,
+
+        total_qtrly_wages    : null,
+        lq_total_qtrly_wages : null,
+      }
+
+      byMSANaicsTrees[msa].insertData(data, transformers)
+    }).then(() => console.log(byMSANaicsTrees[msa].root))
+
+    return fetch(url, postObj).then(respHandler)
+                              .then((data) => dispatch(receiveData(data, msa)))
   }
 }
 
@@ -165,7 +243,6 @@ let addQcewRows = (state, action) => {
     yearlyDataForMSA[year] = (yearlyDataForMSA[year] || (yearlyDataForMSA[year] = [])).concat(dataForYear)
   })
   
-console.log(newState)
   return newState
 }
 
@@ -266,6 +343,18 @@ function handleYearQuarterWheelChange (state, action) {
 
     return Object.assign({}, state, { selectedQuarter: _.mapValues(newYearQuarter, _.toString) })
   }
+}
+
+function restructureResponse (values) {
+
+  return values.reduce((acc, val) => {
+    if (val.key && val.values) {
+      acc[val.key] = restructureResponse(val.values)
+      return acc
+    }
+
+    return val
+  }, {})
 }
 
 
