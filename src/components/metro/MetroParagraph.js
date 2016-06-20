@@ -107,15 +107,15 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         var j = i % 10,
             k = i % 100;
         if (j == 1 && k != 11) {
-            return i + "st";
+            return (<span>{i}<sup>st</sup></span>);
         }
         if (j == 2 && k != 12) {
-            return i + "nd";
+            return (<span>{i}<sup>nd</sup></span>);
         }
         if (j == 3 && k != 13) {
-            return i + "rd";
+            return (<span>{i}<sup>rd</sup></span>);
         }
-        return i + "th";
+        return (<span>{i}<sup>th</sup></span>);
     }
 
 
