@@ -8,6 +8,7 @@ import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".3f")
 import CategoryNames from 'components/misc/categoryNames'
 import CategoryText from 'components/misc/categoryText'
+import CategoryUnits from 'components/misc/categoryUnits'
 type Props = {
 };
 
@@ -134,10 +135,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var topScore = this._highScore(data)
     var bottomScore = this._lowScore(data)
 
-
-
-    
-    
     console.log(data)
     return (
     <div>
@@ -146,7 +143,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
           <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <p>{name} is ranked {ordinal_suffix_of(compScore.rank)} out of {this.props.combinedcomposite.length} qualifying metropolitan statistical areas in the United States with a score of {roundFormat(compScore.y)}. That puts it in the {ordinal_suffix_of(Math.floor(compPercentile))} percentile for composite Entrepreneurial Ecosystem Index (EEI).</p>
-              <p>It scores highest in the {topScore.metric.metric} category with a score of {roundFormat(topScore.metric.value.y)} which ranks as the {ordinal_suffix_of(topScore.metric.value.rank)} highest score in that category. The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}. {topScore.sub.metric} measures [hovertext for {topScore.sub.metric}]. In {name} {topScore.sub.metric} measures at {roundFormat(topScore.sub.value.y)}[units] which ranks {ordinal_suffix_of(topScore.sub.value.rank)} nationally.</p>
+              <p>It scores highest in the {topScore.metric.metric} category with a score of {roundFormat(topScore.metric.value.y)} which ranks as the {ordinal_suffix_of(topScore.metric.value.rank)} highest score in that category. The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}. {topScore.sub.metric} measures [hovertext for {topScore.sub.metric}]. In {name} {topScore.sub.metric} measures at {roundFormat(topScore.sub.value.y)}{CategoryUnits[topScore.sub.metric]} which ranks {ordinal_suffix_of(topScore.sub.value.rank)} nationally.</p>
               <p>{name} scores lowest in the {bottomScore.metric.metric} category which measures [hovertext for {bottomScore.metric.metric}]. It ranks {ordinal_suffix_of(bottomScore.sub.value.rank)} in {bottomScore.sub.metric} and {ordinal_suffix_of(bottomScore.metric.value.rank)} in {bottomScore.metric.metric}.</p>
               <p>Two digit sector with highest emp is BLANK Driven by two SIX DIGIT WITHIN 2 DIGIT by num employed </p>
               <p>Two digit nacsi with highest LQ driven by two six digiti wthin 2 digit with highest LQ</p>
