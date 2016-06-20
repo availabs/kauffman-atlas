@@ -443,14 +443,26 @@ function _polishData(data,dataset){
         }
 
         city.values = data[metroArea].values.map(i => {
-          //qwiDensity data is shifted forward one year
+          //only place we can modify the annualchurn data
+          if(dataset == "annualChurn"){
+            return {
+              x:i.x,
+              y:(i.y * 100),
+              rank:i.rank,
+              raw:i.raw,
+              color:_colorFunction(i,dataset)
+            }
+          }
+          else{
             return {
               x:i.x,
               y:i.y,
               rank:i.rank,
               raw:i.raw,
               color:_colorFunction(i,dataset)
-            }             
+            }            
+          }
+             
         })   
         newData.push(city);           
     }
@@ -728,14 +740,13 @@ function _convertToCoordinateArray(data,dataset){
       var years = d3.range(1990,2015);            
     }
 
-
     Object.keys(data).forEach(msaId => {
         var valueArray = [];
 
         if(dataset == 'opportunity'){
           Object.keys(data[msaId]).forEach(oppYear => {
             if(typeof data[msaId][oppYear] == "number"){
-              valueArray.push( {x:oppYear,y:+data[msaId][oppYear]});                 
+              valueArray.push( {x:oppYear,y:(+data[msaId][oppYear] * 100)});                 
             }
             else{
               valueArray.push( {x:+oppYear,y:null});   
@@ -746,12 +757,22 @@ function _convertToCoordinateArray(data,dataset){
           years.forEach(year => {
               var curYear = year-1;
               if(typeof +data[msaId][year] == "number"){
-                valueArray.push( {x:+curYear,y:+data[msaId][year]});                  
+                valueArray.push( {x:+curYear,y:(+data[msaId][year] * 100)});                  
               }
               else{
                 valueArray.push( {x:+curYear,y:0});                  
               }
           })
+        }
+        else if (dataset == "foreignborn"){
+          years.forEach(year => {
+            if(typeof +data[msaId][year] == "number"){
+              valueArray.push( {x:+year,y:(+data[msaId][year] * 100)});                  
+            }
+            else{
+              valueArray.push( {x:+year,y:0});                  
+            }          
+          })            
         }
         else{
           years.forEach(year => {
@@ -805,7 +826,7 @@ function _relativeAgainstPopulation(graphRawData){
             if(msaPop[metroArea.key][year]){
               if(curVal != -1){
                 var newY = curVal / msaPop[metroArea.key][year];
-                newCoord = {x: year, y:newY};                 
+                newCoord = {x: year, y:(newY * 100)};                 
               }              
             }
         }
