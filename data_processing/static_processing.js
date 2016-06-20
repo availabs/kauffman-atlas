@@ -764,16 +764,6 @@ function _convertToCoordinateArray(data,dataset){
               }
           })
         }
-        else if (dataset == "foreignborn"){
-          years.forEach(year => {
-            if(typeof +data[msaId][year] == "number"){
-              valueArray.push( {x:+year,y:(+data[msaId][year] * 100)});                  
-            }
-            else{
-              valueArray.push( {x:+year,y:0});                  
-            }          
-          })            
-        }
         else{
           years.forEach(year => {
             if(dataset != "inc5000"){
