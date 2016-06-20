@@ -138,18 +138,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       <div className='container'> 
         <div className='row' >
           <div className='col-xs-3'>
-            <h4 data-tip data-for="composite">Composite Entrepreneurial Ecosystem Index</h4>
+            <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
             <ReactTooltip 
               id="composite" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:170}}
+              offset={{right:10}}
               class={classes['tooltip']}
-              delayShow={100}
-              delayHide={300}
-              event="click"
-              eventOff="mouseout"
+              delayShow={350}
+              delayHide={200}
               >
               <span>{CategoryText.combined}</span>
             </ReactTooltip>
@@ -177,13 +175,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         <div className='row' style={rowStyle}>
           <h4>Density</h4>
           <div className='col-xs-4' style={graphBox}>
-            <h4 data-tip data-for="density">Density Composite Index</h4>
+            <h4><span data-tip data-for="density" className={"pull-right " + classes['info']}>?</span>Density Composite Index</h4>
             <ReactTooltip 
               id="density" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:170}}
+              offset={{right:10}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -252,13 +250,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
           <div className='col-xs-4' style={graphBox}>
-            <h4 data-tip data-for="fluidity">Fluidity Composite Index</h4>
+            <h4><span data-tip data-for="fluidity" className={"pull-right " + classes['info']}>?</span>Fluidity Composite Index</h4>
             <ReactTooltip 
               id="fluidity" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:170}}
+              offset={{right:10}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -369,13 +367,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         <div className='row' style={rowStyle}>
           <h4>Diversity</h4>
           <div className='col-xs-4' style={graphBox}>
-            <h4 data-tip data-for="diversity">Diversity Composite Index</h4>
+            <h4><span data-tip data-for="diversity" className={"pull-right " + classes['info']}>?</span>Diversity Composite Index</h4>
             <ReactTooltip 
               id="diversity" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:170}}
+              offset={{right:10}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
