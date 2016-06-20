@@ -137,7 +137,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     return (
       <div className='container'> 
         <div className='row' >
-          <div className='col-xs-3'>
+          <div className='col-xs-4'>
             <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
             <ReactTooltip 
               id="composite" 

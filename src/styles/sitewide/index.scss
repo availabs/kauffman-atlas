@@ -168,8 +168,10 @@
   border-radius: 25px;
   background-color: #5d5d5d;
   cursor: pointer;
+  padding:3px;
 }
 
 .info:hover{
   color: darken(#db9a36, 5%)!important;
+  background-color: darken(#5d5d5d, 5%)!important;
 }
