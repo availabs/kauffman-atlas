@@ -759,9 +759,6 @@ function _convertToCoordinateArray(data,dataset){
               if(typeof +data[msaId][year] == "number"){
                 valueArray.push( {x:+curYear,y:(+data[msaId][year] * 100)});                  
               }
-              else{
-                valueArray.push( {x:+curYear,y:0});                  
-              }
           })
         }
         else{
@@ -1045,7 +1042,7 @@ function _processinc5000(data,newFirms){
 
               if(totalEmp[metroArea.key] && totalEmp[metroArea.key]["values"][year] && curVal != -1){
                   var newY = +curVal / totalEmp[metroArea.key]["values"][year];
-                  newCoord.y = newY;
+                  newCoord.y = (newY*100);
               }
               return newCoord;
       })
