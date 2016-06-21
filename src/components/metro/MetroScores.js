@@ -144,7 +144,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:10}}
+              offset={{right:0}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -181,7 +181,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:10}}
+              offset={{right:0}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -230,12 +230,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <h4> Share of Employment in New Firms </h4>
             <div>
               <div className='pull-left'>
-                <h4>{(100*densityShareEmp.y).toLocaleString()}%</h4>
+                <h4>{(densityShareEmp.y).toLocaleString()}%</h4>
                 Rank {densityShareEmp.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityShareEmpSelected ? (100*densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{densityShareEmpSelected ? (densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
                 {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
                 <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -256,7 +256,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:10}}
+              offset={{right:0}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -326,12 +326,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <small> (inflow - outflow) </small>
             <div>
               <div className='pull-left'>
-                <h4>{(100*fluidityNetMigration.y).toLocaleString()}%</h4>
+                <h4>{(fluidityNetMigration.y).toLocaleString()}%</h4>
                 Rank {fluidityNetMigration.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityNetMigrationSelected ? (100*fluidityNetMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{fluidityNetMigrationSelected ? (fluidityNetMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
                 {fluidityNetMigrationSelected ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
                 <div>{fluidityNetMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -347,12 +347,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <small> (inflow + outflow) </small>
             <div>
               <div className='pull-left'>
-                <h4>{(100*fluidityTotalMigration.y).toLocaleString()}%</h4>
+                <h4>{(fluidityTotalMigration.y).toLocaleString()}%</h4>
                 Rank {fluidityTotalMigration.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityTotalMigrationSelected ? (100*fluidityTotalMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{fluidityTotalMigrationSelected ? (fluidityTotalMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
                 {fluidityTotalMigrationSelected ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
                 <div>{fluidityTotalMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -373,7 +373,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{right:10}}
+              offset={{right:0}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -402,12 +402,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <h4> % Foreign Born </h4>
             <div>
               <div className='pull-left'>
-                <h4>{(100*diversityForeignBorn.y).toLocaleString()}%</h4>
+                <h4>{(diversityForeignBorn.y).toLocaleString()}%</h4>
                 Rank {diversityForeignBorn.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{diversityForeignBornSelected ? (100*diversityForeignBornSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{diversityForeignBornSelected ? (diversityForeignBornSelected.y).toLocaleString() + "%" : ""}</h4>
                 {diversityForeignBornSelected ? "Rank " + diversityForeignBornSelected.rank : ""}   
                 <div>{diversityForeignBornSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -420,12 +420,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           </div>
           <div className='col-xs-2' style={graphBox}>
             <h4> Opportunity for Low Income Children </h4>
-            <h4>{(diversityOppLow.y*100).toLocaleString()}</h4> 
+            <h4>{(diversityOppLow.y).toLocaleString()}</h4> 
             Rank {diversityOppLow.rank}
           </div>
           <div className='col-xs-2'>
             <h4> Opportunity for High Income Children </h4>
-            <h4>{(diversityOppHigh.y*100).toLocaleString()}</h4> 
+            <h4>{(diversityOppHigh.y).toLocaleString()}</h4> 
             Rank {diversityOppHigh.rank}
           </div>
         </div>

@@ -6,11 +6,11 @@ let categoryUnits = {
   'Equality of Opportunity': '%',
   '% Foreign Born': '%',
   'Variance of Emp Location Quotient': ' variance',
-   'High Growth Firms': '% firms that are high growth',
-   'Net Migration' : '%',
-   'Total Migration': '%',
- 'Inflow Migration': '%',
-   'Outflow Migration': '%',
+  'High Growth Firms': '% firms that are high growth',
+  'Net Migration' : '%',
+  'Total Migration': '%',
+  'Inflow Migration': '%',
+  'Outflow Migration': '%',
   'Employee Churn': '%',
 }
 
