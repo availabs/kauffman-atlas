@@ -5,8 +5,19 @@ import { Link } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
+import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
+import { loadNaicsKeys } from 'redux/modules/msaLookup'
+import {typemap} from 'support/qcew/typemap'
+
 let roundFormat = d3.format(".3f")
 import CategoryNames from 'components/misc/categoryNames'
+import CategoryText from 'components/misc/categoryText'
+import CategoryUnits from 'components/misc/categoryUnits'
+import { kmgtFormatter } from '../misc/numberFormatters'
+
+const integerFormatter = kmgtFormatter.bind(null, 0)
+
+
 type Props = {
 };
 
@@ -16,14 +27,24 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     this.state = {
       display: 'combined'
     }
+    this._processData = this._processData.bind(this)
+    this._topNaics = this._topNaics.bind(this)
+    this._renderEei = this._renderEei.bind(this)
+    this._renderNaics = this._renderNaics.bind(this)
   }
 
   _fetchData () {
+    if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
+      return this.props.loadQcewDataYear(this.props.metroId,2013)
+    }
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
     }
     if(!this.props.combinedcomposite){
       return this.props.getcombinedcomposite();
+    }
+    if(!this.props.naicsKeys){
+      return this.props.loadNaicsKeys()
     }
   }
 
@@ -34,6 +55,22 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   componentWillReceiveProps (nextProps){
     this._fetchData ()
   }
+
+  ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return (<span>{i}<sup>st</sup></span>);
+    }
+    if (j == 2 && k != 12) {
+        return (<span>{i}<sup>nd</sup></span>);
+    }
+    if (j == 3 && k != 13) {
+        return (<span>{i}<sup>rd</sup></span>);
+    }
+    return (<span>{i}<sup>th</sup></span>);
+  }
+
 
   _highScore(data){
     let compScores = [];
@@ -100,14 +137,111 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     return bottomScore
   }
 
+  _processData (msa,year,depth,filter,typeData) {
+    if(!this.props.qcewData || !this.props.qcewData[msa] ||
+       !this.props.qcewData[msa][year]){
+     return      
+    }
 
-  render () {
+
+    let currentData = d3.nest()
+      .key( x=>x.industry_code )
+      .entries(this.props.qcewData[msa][year]);
+
+    let naicsLib = this.props.naicsKeys
+    if(!depth) depth = 2
+    let fields = typemap[typeData]
+    let naicsKeys = currentData.filter((ind)=>{
+        return ind.values.reduce((a,b) => { 
+      return a && fields.reduce((tf,field) => tf && b[field],true)
+        },true)
+    })
+
+    if(filter){
+      let truekeys = this.props.naicsTable.Query(filter,1,true)
+      naicsKeys = naicsKeys.filter(obj => truekeys.indexOf(obj.key) >= 0)
+    }
+    
+    let totalType = 0
+    var scope = this
+    var data = naicsKeys.reduce((prev,current) => {
+      var twoDigit = current.key.substr(0,depth)
+      if(naicsLib[twoDigit].part_of_range){
+          twoDigit = naicsLib[twoDigit].part_of_range;
+      }
+      if(!prev[twoDigit]){
+        prev[twoDigit] = {
+          type:0,  typeShare:0 
+        }
+      }
+
+      let t1 = 0
+      t1 = fields.map(key => {
+        return scope._quarterReduce(current.values,key)
+      }).reduce((a,b) => a+b)/fields.length
+    
+      totalType += t1
+
+      let lqtypekeys = fields.map(x => 'lq_'+x)
+  
+      let lqt1 = 0
+    
+      lqt1 = lqtypekeys.map(key =>{
+        return scope._quarterReduce(current.values,key)
+      }).reduce((a,b) => a+b)/lqtypekeys.length
+    
+      prev[twoDigit].typeQuot = lqt1
+    
+      prev[twoDigit].type += t1
+    
+      return prev
+    },{})
+
+    Object.keys(data).map((k) => {
+      let x = data[k]
+      x.typeShare = x.type/totalType || 0
+      return x
+    })
+    return data
+  }
+
+  _quarterReduce(obj,field) {
+    let total = obj.reduce((x,y) => {
+      return x + +y[field]
+    },0)
+    return total/4
+  }
+
+  _topNaics(year,depth,filter,metric,type,length){
+    // (msa,year,depth,filter,type)
+    var aggNaics = this._processData(this.props.metroId,year,depth,filter,metric);
+    if(filter != null){
+      console.log(aggNaics)
+    }
+
+    var sortedNaics = Object.keys(aggNaics).map(d => {
+      aggNaics[d].type = aggNaics[d].type
+      return d
+    })
+    .sort((a,b) => {
+      return aggNaics[b][type] - aggNaics[a][type]
+    })
+
+
+    return sortedNaics    
+    .filter((d,i) => { return i < length  })
+    .map((naicsCode,i) => {
+      
+      return (
+        {key:naicsCode,value:aggNaics[naicsCode]}
+      )
+    })
+  }
+
+  _renderEei(){
     var metroId = this.props.metroId;
 
-    if(!this.props.metros || !this.props.metroScores[metroId]){
-      return <span></span>
-    }
-    console.log(this.props.metroScores)
+
     var data = this.props.metroScores[metroId];
     var name = this.props.metros[metroId].name;
 
@@ -116,18 +250,111 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     var topScore = this._highScore(data)
     var bottomScore = this._lowScore(data)
-    //console.log(data)
+
+
+    return(   
+      <div>           
+        <p>
+          With a composite Entrepreneurial Ecosystem Index (EEI) score of {roundFormat(compScore.y)}.  
+          {" " + name} is ranked {this.ordinal_suffix_of(compScore.rank)} out of {this.props.combinedcomposite.length} qualifying metropolitan statistical areas in the United States. 
+          That puts it in the {this.ordinal_suffix_of(Math.floor(compPercentile))} percentile.
+        </p>
+        <p>
+          It scores highest in the {topScore.metric.metric} category with a score of {roundFormat(topScore.metric.value.y)} which ranks as the {this.ordinal_suffix_of(topScore.metric.value.rank)} highest score in that category. 
+          The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}, which measures [hovertext for {topScore.sub.metric}], where it ranks {this.ordinal_suffix_of(topScore.sub.value.rank)} nationally at {roundFormat(topScore.sub.value.y)}{CategoryUnits[topScore.sub.metric]}.
+        </p>
+        <p>
+          {name} scores lowest in the {bottomScore.metric.metric} category which measures [hovertext for {bottomScore.metric.metric}]. 
+          It ranks {this.ordinal_suffix_of(bottomScore.sub.value.rank)} in {bottomScore.sub.metric} and {this.ordinal_suffix_of(bottomScore.metric.value.rank)} in {bottomScore.metric.metric}.
+        </p>
+      </div>
+          )
+
+
+
+  }
+
+  _renderNaics(){
+    var metroId = this.props.metroId;
+
+//(year,depth,filter,metric,type,length)
+    let topTwoDigitEmpShare = this._topNaics(2013,2,null,'employment','typeShare',1)[0]
+    var topEmpShareTwoDigName = this.props.naicsKeys[topTwoDigitEmpShare.key].title
+    var topEmpShareTwoDigValue = topTwoDigitEmpShare.value['typeShare']
+    var topSixDigitEmployed = this._topNaics(2013,4,(topTwoDigitEmpShare.key),'employment','type',1)[0]  
+    var topSixDigitEmployedName = 'this.props.naicsKeys[topSixDigitEmployed.key].title'
+
+    let topTwoDigitNumEstab = this._topNaics(2013,2,null,'establishment','type',1)[0]   
+    var topTwoDigitNumEstabName = this.props.naicsKeys[topTwoDigitNumEstab.key].title
+    var topTwoDigitNumEstabValue = topTwoDigitNumEstab.value['type']
+    var topTwoDigitNumEstabShareValue = topTwoDigitNumEstab.value['typeShare']
+
+
+    var topThreeTwoDigitEstabQuot = this._topNaics(2013,2,null,'establishment','typeQuot',3)
+
+    var topTwoDigitEstabQuotZero = topThreeTwoDigitEstabQuot[0]
+    var topTwoDigitEstabQuotZeroName = this.props.naicsKeys[topTwoDigitEstabQuotZero.key].title
+
+    var topTwoDigitEstabQuotOne = topThreeTwoDigitEstabQuot[1]
+    var topTwoDigitEstabQuotOneName = this.props.naicsKeys[topTwoDigitEstabQuotOne.key].title
+
+    var topTwoDigitEstabQuotTwo = topThreeTwoDigitEstabQuot[2]
+    var topTwoDigitEstabQuotTwoName = this.props.naicsKeys[topTwoDigitEstabQuotTwo.key].title
+
+    return (
+          <div>
+            <p>
+              In terms of industry sectors, {name} has a high concentration of jobs in {topEmpShareTwoDigName} compared to the national average. 
+              {" " + topEmpShareTwoDigName} accounts for {(roundFormat(topEmpShareTwoDigValue)*100)}% of all jobs in the region. 
+              Within that sector, {topSixDigitEmployedName} has the greatest number of employees.
+            </p>
+            <p>
+              The sector in {name} with the highest number of establishments is {topTwoDigitNumEstabName} with {integerFormatter(topTwoDigitNumEstabValue)} establishments making up {(roundFormat(topTwoDigitNumEstabShareValue) * 100)}% of the total establishments. 
+              Relative to the rest of the nation, {name} has a high concentration of {topTwoDigitEstabQuotZeroName}, {topTwoDigitEstabQuotOneName}, and {topTwoDigitEstabQuotTwoName} establishments.
+            </p> 
+          </div>
+      )
+  }
+
+
+  render () {
+
+
+
+    var metroId = this.props.metroId;
+
+    if(!this.props.metros || 
+      !this.props.metroScores[metroId] || 
+      !this.props.combinedcomposite){
+      var eei = (<span>Loading EEI</span>)
+    }
+    else{
+      var eei = this._renderEei()
+    }
+
+
+    if(!this.props.metros || 
+      !this.props.metroScores[metroId] || 
+      !this.props.combinedcomposite || 
+      !this.props.naicsKeys || 
+      !this.props.qcewData || 
+      !Object.keys(this.props.qcewData[this.props.metroId]).length){
+      console.log("not")
+         var naics = (<span>Loading Naics</span>) 
+    }
+    else{
+      var naics = this._renderNaics()
+    }
+
+
     return (
     <div>
       <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
         <div className='container'>
           <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
-              <p>{name} is in the {Math.floor(compPercentile)} percentile for composite with a score of {roundFormat(compScore.y)} and a rank of {compScore.rank}</p>
-              <p>It scores best in {topScore.metric.metric} with a rank of {topScore.metric.value.rank} and a score of {roundFormat(topScore.metric.value.y)}, driven by a rank of {topScore.sub.value.rank} and score of {roundFormat(topScore.sub.value.y)} in {topScore.sub.metric}</p>
-              <p>It scores worst in {bottomScore.metric.metric} with a rank of {bottomScore.metric.value.rank} and a score of {roundFormat(bottomScore.metric.value.y)}, driven by a rank of {bottomScore.sub.value.rank} and score of {roundFormat(bottomScore.sub.value.y)} in {bottomScore.sub.metric}</p>
-              <p>Two digit sector with highest emp is BLANK Driven by two SIX DIGIT WITHIN 2 DIGIT by num employed </p>
-              <p>Two digit nacsi with highest LQ driven by two six digiti wthin 2 digit with highest LQ</p>
+              {eei}
+              {naics}
             </div>
           </div>
         </div>
@@ -141,10 +368,15 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 const mapStateToProps = (state) => ({
   metroScores : state.metroScoresData,
   metros : state.metros,
-  combinedcomposite : state.combinedData.combinedcomposite
+  combinedcomposite : state.combinedData.combinedcomposite,
+  naicsKeys : state.metros.naicsKeys,
+  naicsTable: state.metros.naicsLookup,
+  qcewData  : state.metroQcewData.yeardata
 })
 
 export default connect((mapStateToProps), {  
   loadMetroScores: (currentMetro) => loadMetroScores (currentMetro),
-  getcombinedcomposite: () => loadCombinedComposite()  
+  getcombinedcomposite: () => loadCombinedComposite(), 
+  loadNaicsKeys: () => loadNaicsKeys(),
+  loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes)
 })(MetroParagraph)

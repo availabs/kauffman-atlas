@@ -170,8 +170,7 @@ export class BarChart extends React.Component<void, Props, void> {
 		    .scale(y)
 		    .orient("left")
             .ticks(20)
-            .tickFormat(percFormat);
-		    
+
         var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(d.city.key); })
             .y(function(d) { return y(d.y); })

@@ -107,8 +107,10 @@ export class RankBoxes extends React.Component<void, Props, void> {
     //Checking to see if passed year property is within bounds of composite data
     //If it isn't, choose the closest existing value
 
-    var minYear = currentData[0].values[0] ? currentData[0].values[0].x : 2013;
-    var maxYear = currentData[0].values[currentData[0].values.length-1] ? currentData[0].values[currentData[0].values.length-1].x : 2013;
+    //console.log(this.props.year)
+
+    var minYear = d3.min(currentData, function(c) { return d3.min(c.values, function(v) { return v.x }); })
+    var maxYear = d3.max(currentData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
 
     if(this.props.year >=  minYear && this.props.year <= maxYear){ 
       var year = this.props.year;

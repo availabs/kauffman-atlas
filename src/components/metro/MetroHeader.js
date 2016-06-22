@@ -79,13 +79,13 @@ export class MetroHeader extends React.Component<void, Props, void> {
       key:'Population',
       strokeWidth: 2,
       color:'#efefef',
-      values: this.props.gdpData[this.props.metroId].gdp
+      values: this.props.gdpData[this.props.metroId].gdp_per_capita
         .map((d,i) => {
         return {
           key: d.key,
           values:{
             x: +d.key,
-            y: +Math.round((d.value / popData[0].values[i].values.y)* 1000000)//i === 0 ? 0 : (this.props.metroData.pop[d] - this.props.metroData.pop[d - 1]) / this.props.metroData.pop[d - 1] * 100 ,
+            y: +Math.round((d.value)) // / popData[0].values[i].values.y)* 1000000)//i === 0 ? 0 : (this.props.metroData.pop[d] - this.props.metroData.pop[d - 1]) / this.props.metroData.pop[d - 1] * 100 ,
           }
         }
       })

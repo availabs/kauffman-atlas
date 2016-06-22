@@ -3,7 +3,6 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import classes from '../../components/maps/NationalMap.scss'
-import { withRouter } from 'react-router'
 
 
 export class LineGraph extends React.Component<void, Props, void> {
@@ -236,7 +235,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
     //For each city
     //Draws two lines, to create a colored line with a black border
-    filteredData.forEach(function(b,i){
+    filteredData.forEach(function(b){
         svg.append("g")
             .append("path")
             .attr("d",function(){b.border = this; return line(b.values)})
@@ -254,6 +253,39 @@ export class LineGraph extends React.Component<void, Props, void> {
             .style("fill","none")
             .style("opacity",".6");                    
     })
+
+    //Guideline stuff
+    var lineGroup = svg.append('g')
+    lineGroup.attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')')
+
+    function showLine () {
+      guideLine.attr('stroke', '#000')
+      guideLine.attr('stroke-width', '2px')
+    }
+
+    function hideLine () {
+      guideLine.attr('stroke', 'none')
+    }
+
+    function mousemove (d) {
+      var xHere = x(d.x)
+      guideLine.attr({
+        x1: (xHere-margin.left),
+        x2: (xHere-margin.left)
+      })
+    }
+
+    var guideLine = lineGroup
+      .selectAll('line')
+      .data(['line'])
+
+    guideLine.enter().append('line')
+      .attr({
+        y1: -margin.top,
+        y2: (paddedHeight-margin.top),
+        class: 'home-guide-line',
+        stroke: 'none'
+      })
 
     //Focus is the hover popup text
     var focus = svg.append("g")
@@ -281,7 +313,11 @@ export class LineGraph extends React.Component<void, Props, void> {
             .datum(function(d) { if(d!=undefined){return d.point}; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
+            .on("mousemove",mousemove)
             .on("click",click);
+
+
+
 
     svg.append("g")
       .attr("class", "x axis")
@@ -291,7 +327,7 @@ export class LineGraph extends React.Component<void, Props, void> {
       .style("text-anchor", "end")
       .attr("dx", "-.6em")
       .attr("dy", ".15em")
-      .attr("transform", function(d) {
+      .attr("transform", function() {
           return "rotate(-65)" 
       })
 
@@ -323,7 +359,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
     function mouseover(d) {
         props.onMouseover({id: d.city.key,year:d.x})
-
+        showLine();
         d3.select(d.city.line).style("stroke-width",( (paddedHeight/(heightVal) )+2))
         d3.select(d.city.line).style("stroke","#000000")
         d3.select(d.city.line).style("opacity","2")
@@ -355,7 +391,8 @@ export class LineGraph extends React.Component<void, Props, void> {
         scope._msaClick(d.city);
     }
 
-    function mouseout(d) {                              
+    function mouseout(d) {       
+        hideLine();                       
         d3.select(d.city.line).style("stroke-width",.5)
         d3.select(d.city.line).style("stroke",function(){return d.city.color})
         d3.select(d.city.line).style("opacity",".6")
