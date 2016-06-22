@@ -6,7 +6,7 @@ import _ from 'lodash'
 import classes from 'styles/sitewide/index.scss'
 
 
-export const StartupsOverviewTable = (props) => (
+const renderTable = (props) => (
   <table className='table'>
 
     <thead>
@@ -41,5 +41,6 @@ export const StartupsOverviewTable = (props) => (
   </table>
 )
 
+export const StartupsOverviewTable = (props) => (props.data) ? renderTable(props) : (<div>No OverviewTable Data</div>)
 
 export default StartupsOverviewTable

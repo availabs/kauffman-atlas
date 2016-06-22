@@ -40,16 +40,17 @@ const getRows = (data, isCurrency, hoveredRowKey, onMouseEnter, onMouseLeave) =>
                onMouseLeave={onMouseLeave.bind(null, d.key)}>
 
              <span title={industryTitles[d.key]} 
-                   style={(d.key === hoveredRowKey) ? Object.assign({backgroundColor: d.color}, labelHover) : {color: '#efefef'}}>
+                   style={(d.key === hoveredRowKey) ? 
+                            Object.assign({backgroundColor: d.color}, labelHover) : {color: '#efefef'}}>
 
-                     {(d.key === hoveredRowKey) ? 
-                        industryTitles[d.key] : 
-                        `${industryTitles[d.key].substring(0,31)}${industryTitles[d.key].length > 31 ? '...' : ''}`}
+                     { (d.key === hoveredRowKey) ? 
+                         industryTitles[d.key] : 
+                         `${industryTitles[d.key].substring(0,31)}${industryTitles[d.key].length > 31 ? '...' : ''}`}
              </span>
            </td>
 
            <td style={Object.assign({}, innerStyle)}>
-             { `${(isCurrency) ? dollarFormatter(d.value) : numFormatter(d.value)}${(d.filledNull) ? '*' : ''}` }
+             { `${(isCurrency) ? dollarFormatter(d.value) : numFormatter(d.value)}${(d.filledValue) ? '*' : ''}` }
            </td>
          </tr>)
      )
@@ -81,9 +82,7 @@ export const StartupsNaicsTooltip = (props) =>
             </tbody>
 
             <tfoot>
-              <td>
-                { _.some(props.data, (d) => d.filledNull) ? '* Value filled in with last known value.' : '\u00a0'}
-              </td>
+              { _.some(props.data, (d => d && d.filledValue)) ? '* Value filled in with last known value.':'\u00a0'}
             </tfoot>
 
           </table>

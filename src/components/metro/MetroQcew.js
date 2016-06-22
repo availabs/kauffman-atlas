@@ -8,7 +8,7 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import { StickyContainer, Sticky } from 'react-sticky'
 
-import { msaChange, loadMetroData, econQuarterWheelChange } from 'redux/modules/metroQcewData'
+import { msaChange, loadMetroData, selectedQuarterWheelChange } from 'redux/modules/metroQcewData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import { setYear } from 'redux/modules/metroTime'
 import RadarChart from 'components/vis/RadarChart/RadarChart'
@@ -423,7 +423,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
                                          marginTop     : '5px', },
                                        buttonStyle)}
                         onWheel={(e) => { 
-                                    props.econQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
+                                    props.selectedQuarterWheelChange((e.deltaY) < 0 ? 1 : -1)
                                     e.preventDefault() }}>
 
                     {(props.selectedQuarter) ? 
@@ -435,7 +435,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
                         className="btn btn-secondary btn-sm" 
                         style={buttonStyle}
                         onClick={(e) => { 
-                                 props.econQuarterWheelChange(-1)
+                                 props.selectedQuarterWheelChange(-1)
                                  e.preventDefault()}}> -
                 </button>
                 <button id='qwi-quarter-increment' 
@@ -443,7 +443,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
                         className="btn btn-secondary btn-sm" 
                         style={buttonStyle}
                         onClick={(e) => { 
-                                 props.econQuarterWheelChange(1)
+                                 props.selectedQuarterWheelChange(1)
                                  e.preventDefault()}}> +
                 </button>
               </div>
@@ -493,7 +493,7 @@ const mapDispatchToProps = {
   msaChange,
   loadQcewData : loadMetroData,
   loadNaicsKeys,
-  econQuarterWheelChange,
+  selectedQuarterWheelChange,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetroQcew)

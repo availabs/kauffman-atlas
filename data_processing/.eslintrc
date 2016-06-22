@@ -1,0 +1,22 @@
+{
+  "parser"  : "babel-eslint",
+  "env"     : {
+    "es6": true,
+    "node": true,
+  },
+  "globals" : {
+    "Action"       : false,
+    "__DEV__"      : false,
+    "__PROD__"     : false,
+    "__DEBUG__"    : false,
+    "__DEBUG_NEW_WINDOW__" : false,
+    "__BASENAME__" : false,
+    "d3": false,
+    "Props": false
+  },
+  "rules": {
+    "indent": 0,
+    "no-undef": 2,
+    "linebreak-style": [ 2, "unix" ]
+  }
+}

@@ -1,20 +1,24 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
-import {qcewApi} from '../../AppConfig'
-import NaicsTree from '../../support/NaicsTree'
 import d3 from 'd3'
 import _ from 'lodash'
+
+import {qcewApi} from '../../AppConfig'
+import NaicsTree from '../../support/NaicsTree'
 
 
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const MSA_CHANGE                       = 'MSA_CHANGE'
 export const RECEIVE_METROQCEW_DATA           = 'RECEIVE_METROQCEW_DATA'
-export const RECEIVE_METROQCEW_DATA_WITH_YEAR = 'RECEIVE_METROQCEW_DATA_WITH_YEAR'
-export const QCEW_NULL_ACTION                 = 'QCEW_NULL_ACTION'
-export const QCEW_QUARTER_SELECTED            = 'QCEW_QUARTER_SELECTED'
-export const QCEW_YEARQUARTER_WHEEL_CHANGE    = 'QCEW_YEARQUARTER_WHEEL_CHANGE'
+
+export const QCEW_MSA_CHANGE               = 'QCEW_MSA_CHANGE'
+export const QCEW_NAICS_CHANGE             = 'QCEW_NAICS_CHANGE'
+export const QCEW_NULL_ACTION              = 'QCEW_NULL_ACTION'
+export const QCEW_DATA_RECIEVED            = 'QCEW_DATA_RECIEVED'
+export const QCEW_QUARTER_SELECTED         = 'QCEW_QUARTER_SELECTED'
+export const QCEW_YEARQUARTER_WHEEL_CHANGE = 'QCEW_YEARQUARTER_WHEEL_CHANGE'
+
 
 
 const industries = [
@@ -44,23 +48,23 @@ const endEconQuarter = {
   quarter: 4,
 }
 
-const measures = [
-  'month1_emplvl',
-  'month2_emplvl',
-  'month3_emplvl',
-  'lq_month1_emplvl',
-  'lq_month2_emplvl',
-  'lq_month3_emplvl',
+//const requiredMeasures = [
+  //'month1_emplvl',
+  //'month2_emplvl',
+  //'month3_emplvl',
+  //'lq_month1_emplvl',
+  //'lq_month2_emplvl',
+  //'lq_month3_emplvl',
 
-  'avg_wkly_wage',
-  'lq_avg_wkly_wage',
+  //'avg_wkly_wage',
+  //'lq_avg_wkly_wage',
 
-  'qtrly_estabs_count',
-  'lq_qtrly_estabs_count',
+  //'qtrly_estabs_count',
+  //'lq_qtrly_estabs_count',
 
-  'total_qtrly_wages',
-  'lq_total_qtrly_wages',
-]
+  //'total_qtrly_wages',
+  //'lq_total_qtrly_wages',
+//]
  
 const transformers = {
 
@@ -106,16 +110,19 @@ const zeropad = (code) => {
 }
 
 let defIndCodes = industries.map(zeropad);
-let fieldString = fields.map(x => `fields[]=${x}`).join('&')
-
-const byMSANaicsTrees = {}
+//let reqFieldsString = requiredMeasures.map((m) => `fields[]=${m}`).join('&')
 
 // ------------------------------------
 // Actions
 // ------------------------------------
 export const msaChange = (msa) => ({
-  type    : MSA_CHANGE,
+  type    : QCEW_MSA_CHANGE,
   payload : { msa, },
+})
+
+export const naicsChange = (naics) => ({
+  type    : QCEW_NAICS_CHANGE,
+  payload : { naics, },
 })
 
 export const receiveData = (data, msa) => ({
@@ -123,12 +130,17 @@ export const receiveData = (data, msa) => ({
   payload : { data, msa, },
 })
 
+export const dataRecieved = (msa, data) => ({
+  type : QCEW_DATA_RECIEVED,
+  payload : { msa, data, },
+})
+
 export const quarterSelected = (dateString) => ({
   type    : QCEW_QUARTER_SELECTED,
   payload : { dateString, },
 })
 
-export const econQuarterWheelChange = (delta) => ({
+export const selectedQuarterWheelChange = (delta) => ({
   type    : QCEW_YEARQUARTER_WHEEL_CHANGE,
   payload : { delta, },
 })
@@ -139,7 +151,9 @@ export const nullAction = () => ({ type: QCEW_NULL_ACTION, })
 
 export const loadMetroData = (msa, codes) => {
 
-  let ncodes = (codes || defIndCodes).map(zeropad)
+  //let ncodes = (codes || defIndCodes).map(zeropad)
+
+  let ncodes = (codes || defIndCodes).map(code => _.padStart(code, 6, '0'))
 
   let indcodes = ncodes.join('');
 
@@ -190,19 +204,12 @@ export const loadMetroData = (msa, codes) => {
     }
 
 
-    let url2 = `${qcewApi}data/fipsC${msa.slice(0, 4)}/ind${indcodes}/yr${years.join('')}/qtr1234/` +
-               `?${measures.map((m) => `fields[]=${m}`).join('&')}`
+    //let url2 = `${qcewApi}data/fipsC${msa.slice(0, 4)}/ind${indcodes}/yr${years.join('')}/qtr1234?${reqFieldsString}`
                
-    fetch(url2).then(r => r.json()).then((respData) => {
-      if (!byMSANaicsTrees[msa]) {
-        byMSANaicsTrees[msa] = new NaicsTree(startEconQuarter, endEconQuarter)
-      }
-
-      let data = restructureResponse(respData[0].values)
-
-      byMSANaicsTrees[msa].insertData(data, transformers)
-    }).then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustries(null, 'emplvl')))
-      .then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustriesForQuarter(null,'emplvl',2010,1)))
+    //fetch(url2).then(r => r.json()).then((data) => dispatch(dataRecieved(msa, data[0].values)))
+    
+    //.then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustries(null, 'emplvl')))
+    //.then(() => console.log(byMSANaicsTrees[msa].queryMeasureDataForSubindustriesForQuarter(null,'emplvl',2010,1)))
 
     return fetch(url, postObj).then(respHandler)
                               .then((data) => dispatch(receiveData(data, msa)))
@@ -249,30 +256,70 @@ let addQcewRows = (state, action) => {
 
 const ACTION_HANDLERS = {
   
-  [MSA_CHANGE]: (state, action) => {
-    return (action.payload.msa === state.msa) ? state : Object.assign({}, state, { msa: action.payload.msa })
-  },
-
   [RECEIVE_METROQCEW_DATA]: addQcewRows,
 
-  [QCEW_NULL_ACTION]: (state) => state,
+  [QCEW_MSA_CHANGE]: handleMsaChange,
 
-  [QCEW_QUARTER_SELECTED]: (state, action) => {
-    let newState = Object.assign({}, state)
-    let qrtDateObj = new Date(action.payload.dateString)
+  [QCEW_NAICS_CHANGE]: handleNaicsChange,
 
-    newState.selectedQuarter = {
-      year    : qrtDateObj.getFullYear().toString(),
-      quarter : Math.ceil((qrtDateObj.getMonth() + 1) / 3).toString(),
-    }
+  [QCEW_NULL_ACTION]: _.identity,
 
-    return newState
-  },
+  [QCEW_DATA_RECIEVED] : handleReceivedData,
 
+  [QCEW_QUARTER_SELECTED]: handleQuarterSelection,
 
   [QCEW_YEARQUARTER_WHEEL_CHANGE]: handleYearQuarterWheelChange,
 }
 
+
+function handleMsaChange (state, action) {
+  let newState = 
+        (action.payload.msa === state.msa) ? state : Object.assign({}, state, { msa: action.payload.msa })
+
+    //TODO: query the NaicsTree
+    
+  return newState
+}
+
+
+function handleNaicsChange (state, action) {
+  let newState = 
+        (action.payload.naics === state.naics) ? state : Object.assign({}, state, { naics: action.payload.naics })
+
+  //TODO: query the NaicsTree
+
+  return newState
+}
+
+
+function handleQuarterSelection (state, action) {
+  let newState = Object.assign({}, state)
+  let qrtDateObj = new Date(action.payload.dateString)
+
+  newState.selectedQuarter = {
+    year    : qrtDateObj.getFullYear().toString(),
+    quarter : Math.ceil((qrtDateObj.getMonth() + 1) / 3).toString(),
+  }
+
+  return newState
+}
+
+
+function handleReceivedData (state, action) {
+
+  let msa = action.payload.msa
+  let data = restructureData(action.payload.data)
+
+  let newState = Object.assign({}, state)
+
+  if (!newState.byMSANaicsTrees[msa]) {
+    newState.byMSANaicsTrees[msa] = new NaicsTree(startEconQuarter, endEconQuarter)
+  }
+
+  newState.byMSANaicsTrees[msa].insertData(data, transformers)
+
+  return newState
+}
 
 
 function handleYearQuarterWheelChange (state, action) {
@@ -344,11 +391,11 @@ function handleYearQuarterWheelChange (state, action) {
   }
 }
 
-function restructureResponse (values) {
+function restructureData (values) {
 
   return values.reduce((acc, val) => {
     if (val.key && val.values) {
-      acc[val.key] = restructureResponse(val.values)
+      acc[val.key] = restructureData(val.values)
       return acc
     }
 
@@ -362,10 +409,13 @@ function restructureResponse (values) {
 // Reducer
 // ------------------------------
 const initialState = {
+
   selectedQuarter : {
     year : '2010',
     quarter : '1',
-  } 
+  },
+
+  byMSANaicsTrees : {},
 }
 
 export default function metroQcewReducer (state = initialState, action) {
