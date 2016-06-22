@@ -30,7 +30,7 @@ export class MetroQcew extends React.Component<void, Props, void> {
 	this.renderRadar = this.renderRadar.bind(this)
     }
     
-    _fetchData () {
+    _fetchData (props) {
 	//console.log(this.props.zbpData[this.props.year])
 	let qcew = this.props.qcewData
 	let msa = this.props.currentMetro
@@ -276,19 +276,19 @@ export class MetroQcew extends React.Component<void, Props, void> {
     }
 
     componentDidMount() {
-	console.info('fetching initial data')
-	this._fetchData ()
+		console.info('fetching initial data')
+		this._fetchData ()
     }
     
     componentWillReceiveProps (nextProps) {
-	this._fetchData();
-	let naics_code = nextProps.params.naics_code
-	if(naics_code && (naics_code !== this.state.filter)){
-	    this.setState({filter:naics_code,depth:naics_code.length+1})
-	}
-	if(!naics_code && (this.state.filter)){
-	    this.setState({filter:null,depth:2})
-	}
+		this._fetchData();
+		let naics_code = nextProps.params.naics_code
+		if(naics_code && (naics_code !== this.state.filter)){
+		    this.setState({filter:naics_code,depth:naics_code.length+1})
+		}
+		if(!naics_code && (this.state.filter)){
+		    this.setState({filter:null,depth:2})
+		}
     }
 
     componentDidUpdate (p,prevState){
@@ -299,9 +299,9 @@ export class MetroQcew extends React.Component<void, Props, void> {
     hasData () {
 	return  this.props.naicsKeys
     }
+
     render () {
 
-	
 	if (!this.hasData()) return <span />
 	    let naicsLib = this.props.naicsKeys
 	let filter = this.state.filter
