@@ -207,7 +207,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
            <div className='col-xs-4' style={graphBox}>
-            <h4> New Firms / 1k Pop</h4>
+            <h4><span data-tip data-for="newFirms" className={"pull-right " + classes['info']}>?</span>New Firms / 1k pop</h4>
+            <ReactTooltip 
+              id="newFirms" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{right:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.newfirms}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{densityNewFirms.y.toLocaleString()}</h4>
@@ -227,7 +239,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
             <div className='col-xs-4'>
-            <h4> Share of Employment in New Firms </h4>
+            <h4><span data-tip data-for="shareEmp" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Firms</h4>
+            <ReactTooltip 
+              id="shareEmp" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:300}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.shareofemploymentinnewfirms}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{(densityShareEmp.y).toLocaleString()}%</h4>
@@ -235,9 +259,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityShareEmpSelected ? (densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
-                {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
-                <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
+                <h4>{densityShareEmpSelected ? densityShareEmpSelected.y ? (densityShareEmpSelected.y).toLocaleString() + "%" : "" : ""}</h4>
+                {densityShareEmpSelected ? densityShareEmpSelected.y ? "Rank " + densityShareEmpSelected.rank : "" : ""}   
+                <div>{densityShareEmpSelected ? densityShareEmpSelected.y ? this.state.displayYear : "" : ""}</div>
               </div>         
             </div>
             <div>
@@ -302,7 +326,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>           
           </div>
           <div className='col-xs-2' style={graphBox}>
-            <h4> High Growth Firms </h4>
+            <h4><span data-tip data-for="highgrowthfirms" className={"pull-right " + classes['info']}>?</span>High Growth Firms</h4>
+            <ReactTooltip 
+              id="highgrowthfirms" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.highgrowthfirms}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{fluidityHighRaw.y.toLocaleString()}</h4>
@@ -322,7 +358,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className='col-xs-2' style={graphBox}>
-            <h4> Net Mirgration</h4>
+            <h4><span data-tip data-for="netmigration" className={"pull-right " + classes['info']}>?</span>Net Migration</h4>
+            <ReactTooltip 
+              id="netmigration" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:100}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.netmigration}</span>
+            </ReactTooltip>
             <small> (inflow - outflow) </small>
             <div>
               <div className='pull-left'>
@@ -343,7 +391,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className='col-xs-2'>
-            <h4> Total Migration</h4>
+            <h4><span data-tip data-for="totalmigration" className={"pull-right " + classes['info']}>?</span>Total Migration</h4>
+            <ReactTooltip 
+              id="totalmigration" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:300}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.totalmigration}</span>
+            </ReactTooltip>
             <small> (inflow + outflow) </small>
             <div>
               <div className='pull-left'>
@@ -399,7 +459,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
            <div className='col-xs-4' style={graphBox}>
-            <h4> % Foreign Born </h4>
+            <h4><span data-tip data-for="foreignborn" className={"pull-right " + classes['info']}>?</span>% Foreign Born</h4>
+            <ReactTooltip 
+              id="foreignborn" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.foreignborn}</span>
+            </ReactTooltip>
             <div>
               <div className='pull-left'>
                 <h4>{(diversityForeignBorn.y).toLocaleString()}%</h4>
@@ -424,7 +496,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             Rank {diversityOppLow.rank}
           </div>
           <div className='col-xs-2'>
-            <h4> Opportunity for High Income Children </h4>
+            <h4><span data-tip data-for="opportunity" className={"pull-right " + classes['info']}>?</span>Opportunity for High Income Children</h4>
+            <ReactTooltip 
+              id="opportunity" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:300}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.opportunity}</span>
+            </ReactTooltip>
             <h4>{(diversityOppHigh.y).toLocaleString()}</h4> 
             Rank {diversityOppHigh.rank}
           </div>
