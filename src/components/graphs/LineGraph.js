@@ -655,7 +655,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
   render () {
     var scope = this;
-    console.log('linegraph render')
+    //console.log('linegraph render')
 
     return (
         <div className={classes['graphContainer']}>
