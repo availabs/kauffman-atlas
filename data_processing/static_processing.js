@@ -134,7 +134,7 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['density']['newFirms']['relative'] = metro;        
     }
   })
-  processedShareEmpNewFirmsQWI_All['raw'].forEach(metro => {
+  coloredShareEmpNewFirmsQWI_All.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['shareEmp']['relative'] = metro;        
     }

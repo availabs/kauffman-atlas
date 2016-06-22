@@ -259,9 +259,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityShareEmpSelected ? densityShareEmpSelected.y ? (densityShareEmpSelected.y).toLocaleString() + "%" : "" : ""}</h4>
-                {densityShareEmpSelected ? densityShareEmpSelected.y ? "Rank " + densityShareEmpSelected.rank : "" : ""}   
-                <div>{densityShareEmpSelected ? densityShareEmpSelected.y ? this.state.displayYear : "" : ""}</div>
+                <h4>{densityShareEmpSelected ? (densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
+                {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
+                <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
