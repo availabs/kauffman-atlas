@@ -148,6 +148,8 @@ export const selectedQuarterWheelChange = (delta) => ({
 export const nullAction = () => ({ type: QCEW_NULL_ACTION, })
 
 
+export const loadMetroDataYear = nullAction
+
 
 export const loadMetroData = (msa, codes) => {
 

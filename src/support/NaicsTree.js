@@ -6,14 +6,19 @@ import _ from 'lodash'
 
 export class NaicsTree {
 
-  constructor (startEconQuarter, endEconQuarter, additionalLevels) {
+  // params:
+  //   startQuarter     -- { year, quarter }
+  //   endQuarter       -- { year, quarter }
+  //   additionalLevels -- [ { name, domain } ]
+  //
+  constructor (startQuarter, endQuarter, additionalLevels) {
 
     this.root = {
       children: null,
     }
 
-    this.startEconQuarter = startEconQuarter
-    this.endEconQuarter   = endEconQuarter
+    this.startQuarter     = startQuarter
+    this.endQuarter       = endQuarter
     this.additionalLevels = additionalLevels
   }
 
@@ -52,13 +57,18 @@ export class NaicsTree {
   queryMeasureDataForSubindustries (queryObj) {
     let naics = queryObj.naics
     let measure = queryObj.measure
-    let firmage = queryObj.firmage
+
+    let additionalLevels = this.additionalLevels
+
+    validateAdditionalLevelsParams(queryObj, ['naics', 'measure'], additionalLevels)
 
     let node = findParentNodeForNaicsCode.call(this, naics) 
     
     if (!(node && node.children)) { return null }
 
-    let dataPath = `dataArraysByMeasure.${firmage}.${measure}`
+    let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
+
+    let dataPath = `dataArraysByMeasure${additionalLevelsPath}.${measure}`
 
     // CONSIDER: May be wise to return deep copies.
     return _.cloneDeep(_(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value())
@@ -69,21 +79,19 @@ export class NaicsTree {
     let year = queryObj.year
     let quarter = queryObj.quarter
     let measure = queryObj.measure
-    let firmage = queryObj.firmage
+
+    let additionalLevels = this.additionalLevels
+
+    validateAdditionalLevelsParams(queryObj, ['naics', 'year', 'quarter', 'measure'], additionalLevels)
 
     let node = findParentNodeForNaicsCode.call(this, naics) 
     
     if (!(node && node.children)) { return null }
 
+    let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
 
-    let dataPath = `byQuarterLookupTree.${year}.${quarter}.${firmage}.${measure}`
+    let dataPath = `byQuarterLookupTree.${year}.${quarter}${additionalLevelsPath}.${measure}`
 
-//console.log(this.additionalLevels)
-//console.log(node.children)
-//console.log(dataPath)
-//console.log(_(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value())
-
-    // CONSIDER: May be wise to return deep copies.
     return _.cloneDeep(_(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value())
   }
 
@@ -178,8 +186,6 @@ function insertDataIntoTreeNode (node, data, transformers) {
 }
 
 
-
-
 function newNaicsTreeNode () {
   return {
     children: null,
@@ -193,8 +199,8 @@ function newNaicsTreeNode () {
 function newTreePathIterator () {
 
 
-  let startQtr = this.startEconQuarter
-  let endQtr   = this.endEconQuarter
+  let startQtr = this.startQuarter
+  let endQtr   = this.endQuarter
 
 
   let xtraLevelsPathIterator = (this.additionalLevels) ? newXtraLevelsPathIterator.call(this) : null
@@ -243,11 +249,13 @@ function newTreePathIterator () {
 
 
 function newXtraLevelsPathIterator () {
-  let xtraLevels = this.additionalLevels
-  let xtraLevelsNames = _.keys(xtraLevels).sort()
+  if (!this.additionalLevels) { return null }
 
-  let startPath = xtraLevelsNames.map(name => xtraLevels[name][0])
-  let nextPath = _.clone(startPath)
+  let xtraLevels = this.additionalLevels
+  let xtraLevelsNames = xtraLevels.map(l => l.name)
+
+  let startPath = xtraLevels.map(l => l.domain[0])
+  let nextPath  = _.clone(startPath)
 
   return {
     next : () => {
@@ -258,7 +266,7 @@ function newXtraLevelsPathIterator () {
 
       let i
       for (i = (xtraLevelsNames.length - 1); i >= 0; --i) {
-        let domain = xtraLevels[xtraLevelsNames[i]]
+        let domain = xtraLevels[i].domain
 
         let j = domain.indexOf(nextPath[i])
         if ((j !== -1) && (j < (domain.length - 1))) {
@@ -282,4 +290,25 @@ function newXtraLevelsPathIterator () {
 
 }
 
+function validateAdditionalLevelsParams (queryObj, standardParams, additionalLevels) {
+  additionalLevels = additionalLevels || []
+
+  let additionalLevelsParamNames = _.difference(Object.keys(queryObj), standardParams).sort()
+  let additionalLevelsNames  = (additionalLevels) ? additionalLevels.map(l => l.name).sort() : []
+
+  let unsupported = _.difference(additionalLevelsParamNames, additionalLevelsNames)
+  if (unsupported.length) {
+    throw new Error(`The following parameters are not supported for this ` +
+                    `NaicsTree's queryMeasureDataForSubindustries:\n${JSON.stringify(unsupported)}`) 
+  }
+
+  let missing = _.difference(additionalLevelsNames, additionalLevelsParamNames)
+  if (missing.length) {
+    throw new Error(`The following required parameters are missing from this ` +
+                    `NaicsTree's queryMeasureDataForSubindustries:\n${JSON.stringify(unsupported)}`) 
+  }
+}
+
+
 export default NaicsTree
+

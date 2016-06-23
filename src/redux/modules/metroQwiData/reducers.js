@@ -41,9 +41,10 @@ const endQuarter = {
   quarter: 1,
 }
 
-const additionalLevels = {
-  firmage: _.range(0, 6),
-}
+const additionalLevels = [{
+  'name'   : 'firmage',
+  'domain' : _.range(0, 6),
+}]
 
 const ratiosTransformers = requestedRatioMeasures.reduce((acc, m) => _.set(acc, m, null), {})
 
