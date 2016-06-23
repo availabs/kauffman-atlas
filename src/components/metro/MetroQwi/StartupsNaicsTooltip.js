@@ -3,8 +3,6 @@
 import React from 'react'
 import _ from 'lodash'
 
-import { industryTitles } from '../../../support/qwi'
-
 import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
 
 const numFormatter = kmgtFormatter.bind(null, 3)
@@ -39,13 +37,11 @@ const getRows = (data, isCurrency, hoveredRowKey, onMouseEnter, onMouseLeave) =>
                onMouseEnter={onMouseEnter.bind(null, d.key)}
                onMouseLeave={onMouseLeave.bind(null, d.key)}>
 
-             <span title={industryTitles[d.key]} 
+             <span title={d.title} 
                    style={(d.key === hoveredRowKey) ? 
                             Object.assign({backgroundColor: d.color}, labelHover) : {color: '#efefef'}}>
 
-                     { (d.key === hoveredRowKey) ? 
-                         industryTitles[d.key] : 
-                         `${industryTitles[d.key].substring(0,31)}${industryTitles[d.key].length > 31 ? '...' : ''}`}
+                     {((d.key === hoveredRowKey)||(d.title.length <= 31)) ? d.title : `${d.title.substring(0,31)}...`}
              </span>
            </td>
 

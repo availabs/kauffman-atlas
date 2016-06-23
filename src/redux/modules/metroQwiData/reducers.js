@@ -390,6 +390,7 @@ function getRawTooltipTableData (state) {
   return _(data).keys().pull('00').sort().map( (naics, i) => ({
     color       : colors(i % 20),
     key         : naics,
+    title       : industryTitles[naics],
     value       : (Number.isFinite(_.get(data, [naics, 'value'], NaN))) ? data[naics].value : 'No data.',
     filledValue : _.get(data, [naics, 'filledValue'], false),
   })).sort(tooltipComparator).value()
@@ -424,6 +425,7 @@ function getLQTooltipTableData (state) {
     return {
       color       : colors(i % 20),
       key         : naics,
+      title       : industryTitles[naics],
       value       : (Number.isFinite(value)) ? value : 'No data.',
       filledValue : _.get(ratioDataForMSA, [naics, 'filledValue'], false),
     }
