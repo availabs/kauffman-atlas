@@ -272,20 +272,14 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var metroId = this.props.metroId;
     var name = this.props.metros[metroId].name;
 
-//(year,depth,filter,metric,type,length)
     let topTwoDigitEmpShare = this._topNaics(2013,2,null,'employment','typeQuot',1)[0]
     var topEmpShareTwoDigName = this.props.naicsKeys[topTwoDigitEmpShare.key].title
     var topEmpShareTwoDigValue = topTwoDigitEmpShare.value['typeShare']
-
-    var topSixDigitEmployed = this._topNaics(2013,3,(topTwoDigitEmpShare.key),'employment','type',1)[0]  
-
-    var topSixDigitEmployedName = topSixDigitEmployed ? this.props.naicsKeys[topSixDigitEmployed.key].title :null
 
     let topTwoDigitNumEstab = this._topNaics(2013,2,null,'establishment','type',1)[0]   
     var topTwoDigitNumEstabName = this.props.naicsKeys[topTwoDigitNumEstab.key].title
     var topTwoDigitNumEstabValue = topTwoDigitNumEstab.value['type']
     var topTwoDigitNumEstabShareValue = topTwoDigitNumEstab.value['typeShare']
-
 
     var topThreeTwoDigitEstabQuot = this._topNaics(2013,2,null,'establishment','typeQuot',3)
 
@@ -298,31 +292,22 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var topTwoDigitEstabQuotTwo = topThreeTwoDigitEstabQuot[2]
     var topTwoDigitEstabQuotTwoName = this.props.naicsKeys[topTwoDigitEstabQuotTwo.key].title
 
-    if(topSixDigitEmployedName == null){
-      return (<span>Loading Naics </span>)
-    }
-    else{
-      return (
-        <div>
-          <p>
-            In terms of industry sectors, {name} has a high concentration of jobs in {topEmpShareTwoDigName} compared to the national average. 
-            {" " + topEmpShareTwoDigName} accounts for {(roundFormat(topEmpShareTwoDigValue)*100)}% of all jobs in the region. 
-            Within that sector, {topSixDigitEmployedName} has the greatest number of employees.
-          </p>
-          <p>
-            The sector in {name} with the highest number of establishments is {topTwoDigitNumEstabName} with {integerFormatter(topTwoDigitNumEstabValue)} establishments making up {(roundFormat(topTwoDigitNumEstabShareValue) * 100)}% of the total establishments. 
-            Relative to the rest of the nation, {name} has a high concentration of {topTwoDigitEstabQuotZeroName}, {topTwoDigitEstabQuotOneName}, and {topTwoDigitEstabQuotTwoName} establishments.
-          </p> 
-        </div>
+
+    return (
+      <div>
+        <p>
+          In terms of industry sectors, {name} has a high concentration of jobs in {topEmpShareTwoDigName} compared to the national average. 
+          {" " + topEmpShareTwoDigName} accounts for {(roundFormat(topEmpShareTwoDigValue)*100)}% of all jobs in the region. 
+        </p>
+        <p>
+          The sector in {name} with the highest number of establishments is {topTwoDigitNumEstabName} with {integerFormatter(topTwoDigitNumEstabValue)} establishments making up {(roundFormat(topTwoDigitNumEstabShareValue) * 100)}% of the total establishments. 
+          Relative to the rest of the nation, {name} has a high concentration of {topTwoDigitEstabQuotZeroName}, {topTwoDigitEstabQuotOneName}, and {topTwoDigitEstabQuotTwoName} establishments.
+        </p> 
+      </div>
     )      
-    }
   }
 
-
   render () {
-
-
-
     var metroId = this.props.metroId;
 
     if(!this.props.metros || 
