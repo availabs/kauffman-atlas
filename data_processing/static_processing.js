@@ -32,7 +32,7 @@ var processedShareEmpNewFirmsQWI_All = _processGeneral(shareEmpNewFirmsQWI_All,"
 var coloredShareEmpNewFirmsQWI_All = _polishData(processedShareEmpNewFirmsQWI_All['raw'],"qwiDensity");
 var processedShareEmpNewFirmsQWI_HighTech = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw'],"qwiDensity");
-var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
+var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = _processGeneral(shareEmpNewFirmsQWI_ExceptAccomAndRetail,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail = _polishData(processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'],"qwiDensity");
 var processedDensityComposite = _processComposite(processedNewFirms['relative'],coloredShareEmpNewFirmsQWI_All,coloredShareEmpNewFirmsQWI_HighTech,coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail);
 

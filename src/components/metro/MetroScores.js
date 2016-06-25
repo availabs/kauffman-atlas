@@ -53,6 +53,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       color: color,
       values: data
         //.filter(d => { return d.x >= 2001})
+        .filter(d => {
+          return d.y != null
+        })
         .map((d,i) => {
         return {
           key: d.x,
@@ -80,7 +83,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
   render () {
     if (!this.hasData()) return <span />
-    //console.log('got data', this.props.metroScores[this.props.metroId])
+    console.log('got data', this.props.metroScores[this.props.metroId])
 
     let year = 2013
     let scores = this.props.metroScores[this.props.metroId];
@@ -97,6 +100,15 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityShareEmpGraph = this.formatData(scores.density.shareEmp.relative.values)
+    let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
+    let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values)
+    let densityExceptAccom = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === year })[0] || {}
+    let densityExceptAccomSelected = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values)
+
+
+
 
     let fluidityComposite = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityCompositeSelected = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
@@ -114,6 +126,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let fluidityTotalMigrationSelected = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values)
     
+
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [])
@@ -121,6 +134,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let diversityForeignBornSelected =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x=== this.state.displayYear })[0] || null
     let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [])
     
+    let diversityEmpVariance = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === year })[0] || {}
+    let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values)
+    
+
+
+
+
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
 
@@ -206,7 +227,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
             </div>
           </div>
-           <div className='col-xs-4' style={graphBox}>
+           <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="newFirms" className={"pull-right " + classes['info']}>?</span>New Firms / 1k pop</h4>
             <ReactTooltip 
               id="newFirms" 
@@ -238,14 +259,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityNewFrirmsGraph[0].values[densityNewFrirmsGraph[0].values.length-1].key}</span>
             </div>
           </div>
-            <div className='col-xs-4'>
+          <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="shareEmp" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Firms</h4>
             <ReactTooltip 
               id="shareEmp" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{left:300}}
+              offset={{}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -270,6 +291,70 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
             </div>
           </div>
+          <div className='col-xs-2' style={graphBox}>
+            <h4><span data-tip data-for="highTech" className={"pull-right " + classes['info']}>?</span>Share of Employment in High Tech Firms</h4>
+            <ReactTooltip 
+              id="highTech" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:100}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.shareEmpHighTech}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(densityHighTech.y).toLocaleString()}%</h4>
+                Rank {densityHighTech.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{densityHighTechSelected ? (densityHighTechSelected.y).toLocaleString() + "%" : ""}</h4>
+                {densityHighTechSelected ? "Rank " + densityHighTechSelected.rank : ""}   
+                <div>{densityHighTechSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={densityHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+              <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
+            </div>
+          </div>
+          <div className='col-xs-2'>
+            <h4><span data-tip data-for="exceptAccom" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Traded</h4>
+            <ReactTooltip 
+              id="exceptAccom" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:300}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.shareEmpNoAccRet}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(densityExceptAccom.y).toLocaleString()}%</h4>
+                Rank {densityExceptAccom.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{densityExceptAccomSelected ? (densityExceptAccomSelected.y).toLocaleString() + "%" : ""}</h4>
+                {densityExceptAccomSelected ? "Rank " + densityExceptAccomSelected.rank : ""}   
+                <div>{densityExceptAccomSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={densityExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+              <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
+            </div>
+          </div>        
         </div>
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
@@ -458,7 +543,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
             </div>
           </div>
-           <div className='col-xs-4' style={graphBox}>
+          <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="foreignborn" className={"pull-right " + classes['info']}>?</span>% Foreign Born</h4>
             <ReactTooltip 
               id="foreignborn" 
@@ -490,6 +575,38 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{diversityForeignBornGraph[0].values[diversityForeignBornGraph[0].values.length-1].key}</span>
             </div>
           </div>
+          <div className='col-xs-2' style={graphBox}>
+            <h4><span data-tip data-for="empVariance" className={"pull-right " + classes['info']}>?</span>Economic Diversity</h4>
+            <ReactTooltip 
+              id="empVariance" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.emplqvariance}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(diversityEmpVariance.y).toLocaleString()}%</h4>
+                Rank {diversityEmpVariance.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{diversityEmpVarianceSelected ? (diversityEmpVarianceSelected.y).toLocaleString() + "%" : ""}</h4>
+                {diversityEmpVarianceSelected ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
+                <div>{diversityEmpVarianceSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
+              <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
+            </div>
+          </div>          
           <div className='col-xs-2' style={graphBox}>
             <h4> Opportunity for Low Income Children </h4>
             <h4>{(diversityOppLow.y).toLocaleString()}</h4> 
