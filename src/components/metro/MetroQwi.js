@@ -1,17 +1,20 @@
 "use strict"
 
 import React from 'react'
+import { connect } from 'react-redux'
 import {StickyContainer, Sticky} from 'react-sticky'
 import _ from 'lodash'
 
+import * as metroQwiActions from '../../redux/modules/metroQwiData/actions'
 
-import LineGraph from '../../../components/graphs/SimpleLineGraph'
-import StartupsNaicsTooltip from './StartupsNaicsTooltip'
-import RadarChart from '../../../components/vis/RadarChart/RadarChart'
-import StartupsOverviewTable from './StartupsOverviewTable'
 
-import { firmageLabels, measureLabels } from '../../../support/qwi'
-import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
+import LineGraph from '../../components/graphs/SimpleLineGraph'
+import TooltipTable from '../tables/TooltipTable'
+import RadarChart from '../../components/vis/RadarChart/RadarChart'
+import OverviewTable from '../tables/OverviewTable'
+
+import { firmageLabels, measureLabels } from '../../support/qwi'
+import { kmgtFormatter, kmgtDollarFormatter } from '../misc/numberFormatters'
 
 const integerFormatter = kmgtFormatter.bind(null, 0)
 const floatFormatter = kmgtFormatter.bind(null, 1)
@@ -133,26 +136,26 @@ const renderVisualizations = (props) => (
       <div className='row' style={{overflow:'hidden'}} >
 
         <div className='col-xs-8'>
-          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-rawData-linegraph')}>
+          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'rawData-lineGraph')}>
 
             <LineGraph data={props.lineGraphRawData}
-                       key='qwi-rawData-linegraph'
-                       uniq='qwi-rawData-linegraph'
+                       key='rawData-lineGraph'
+                       uniq='rawData-lineGraph'
                        yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
                        xScaleType={'time'}
                        yAxis={true}
                        margin={graphMargin}
                        tooltip={true}
-                       quarterChangeListener={props.lineGraphYearQuarterChange} />
+                       quarterChangeListener={props.selectedQuarterChange} />
           </div>
 
           {
             (!props.lineGraphLQData || (firmageLabels[props.selectedFirmage] === 'All Firm Ages')) ? <div/> : (
-              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'qwi-lqData-linegraph')}>
+              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'lqData-lineGraph')}>
 
                 <LineGraph data={props.lineGraphLQData}
-                           key='qwi-lqData-linegraph'
-                           uniq='qwi-lqData-linegraph'
+                           key='lqData-lineGraph'
+                           uniq='lqData-lineGraph'
                            xScaleType={'time'}
                            xAxis={true}
                            xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
@@ -160,20 +163,20 @@ const renderVisualizations = (props) => (
                            yFormat={floatFormatter}
                            margin={graphMargin}
                            tooltip={true}
-                           quarterChangeListener={props.lineGraphYearQuarterChange} />
+                           quarterChangeListener={props.selectedQuarterChange} />
               </div>)
           }
         </div>
 
         <div className='col-xs-4'>
-            <StartupsNaicsTooltip data={props.tooltipData}
-                                  measureIsCurrency={
-                                    (props.focusedLineGraph === 'qwi-rawData-linegraph') && props.measureIsCurrency
-                                  }
-                                  onMouseEnter={props.mouseEnteredTooltipCell}
-                                  onMouseLeave={props.mouseLeftTooltipCell}
-                                  hoveredRowKey={props.tooltipHoveredNaicsLabel}
-                                  uniq={props.field} />
+            <TooltipTable data={props.tooltipData}
+                          measureIsCurrency={
+                            (props.focusedLineGraph === 'rawData-lineGraph') && props.measureIsCurrency
+                          }
+                          onMouseEnter={props.mouseEnteredTooltipCell}
+                          onMouseLeave={props.mouseLeftTooltipCell}
+                          hoveredRowKey={props.tooltipHoveredNaicsLabel}
+                          uniq={props.field} />
         </div>
       </div>
 
@@ -204,8 +207,8 @@ const renderVisualizations = (props) => (
       </div>
 
       <div className='row'>
-        <StartupsOverviewTable data={props.overviewTableData}
-                               sortFieldChange={props.overviewTableSortFieldChange} />
+        <OverviewTable data={props.overviewTableData}
+                       sortFieldChange={props.overviewTableSortFieldChange} />
       </div>
     </StickyContainer>
   </div>
@@ -236,4 +239,20 @@ class MetroQwi extends React.Component<void, Props, void> {
 }
 
 
-export default MetroQwi
+const mapStateToProps = (state) => ({
+  lineGraphRawData                : state.metroQwiData.lineGraphs.rawGraphData,
+  lineGraphLQData                 : state.metroQwiData.lineGraphs.lqGraphData,
+  tooltipData                     : state.metroQwiData.tooltipTable.data,
+  shareByIndustryRadarGraphData   : [state.metroQwiData.selectedFirmageRadarChartData],
+  shareOfMetroTotalRadarGraphData : [state.metroQwiData.acrossFirmagesRadarChartData],
+  overviewTableData               : state.metroQwiData.overviewTable.data,
+  selectedQuarter                 : state.metroQwiData.selectedQuarter,
+  measureIsCurrency               : state.metroQwiData.measureIsCurrency,
+  focusedLineGraph                : state.metroQwiData.lineGraphs.focused,
+  selectedFirmage                 : state.metroQwiData.selectedFirmage,
+  tooltipHoveredNaicsLabel        : state.metroQwiData.tooltipTable.hoveredNaicsLabel,
+})
+
+const mapActionCreators = _.pickBy(metroQwiActions, _.isFunction)
+
+export default connect(mapStateToProps, mapActionCreators)(MetroQwi)

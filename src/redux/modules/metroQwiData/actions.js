@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { qwiAPIServer as apiConfig } from '../../../AppConfig'
 import { msaToFips, requestedRatioMeasures, requestedRawMeasures } from '../../../support/qwi'
 
-import { industryTitles } from '../../../support/qwi'
+import industryTitles from '../../../support/industryTitles'
 
 const apiServerAddress = `${apiConfig.hostname}${(apiConfig.port) ? (':' + apiConfig.port) : ''}`
 
@@ -102,7 +102,7 @@ export const selectedQuarterWheelChange = (delta) => ({
   },
 })
 
-export const lineGraphYearQuarterChange = (dateObj) => ({
+export const selectedQuarterChange = (dateObj) => ({
   type : QWI_SELECTED_QUARTER_CHANGE,
   payload : { 
     selectedQuarter: getYearQuarterObjFromDateObj(dateObj), 

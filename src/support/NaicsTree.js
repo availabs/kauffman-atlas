@@ -23,6 +23,8 @@ export class NaicsTree {
   }
 
 
+  // !!! Expects all data to be inserted to be sibling NAICS codes !!!
+  // 
   // params: 
   //   data -- must have the following structure: 
   //                   { 
@@ -47,11 +49,12 @@ export class NaicsTree {
   insertData (data, transformers) {
     let naicsCodes = Object.keys(data)
 
-    let node = findParentNodeForNaicsCode.call(this, naicsCodes[0])
+    let node = getParentNodeForNaicsCode.call(this, naicsCodes[0])
 
-    node.children = node.children || _.mapValues(data, newNaicsTreeNode)
+    node.children = _.defaults(node.children, _.mapValues(data, newNaicsTreeNode))
     
-    naicsCodes.forEach((naicsCode) => insertDataIntoTreeNode.call(this, node.children[naicsCode], data[naicsCode], transformers))
+    naicsCodes.forEach((naicsCode) => 
+        insertDataIntoTreeNode.call(this, node.children[naicsCode], data[naicsCode], transformers))
   }
 
   queryMeasureDataForSubindustries (queryObj) {
@@ -62,15 +65,14 @@ export class NaicsTree {
 
     validateAdditionalLevelsParams(queryObj, ['naics', 'measure'], additionalLevels)
 
-    let node = findParentNodeForNaicsCode.call(this, naics) 
-    
+    let node = findNodeForNaicsCode.call(this, naics) 
+
     if (!(node && node.children)) { return null }
 
     let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
 
     let dataPath = `dataArraysByMeasure${additionalLevelsPath}.${measure}`
 
-    // CONSIDER: May be wise to return deep copies.
     return _.cloneDeep(_(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value())
   }
 
@@ -84,9 +86,9 @@ export class NaicsTree {
 
     validateAdditionalLevelsParams(queryObj, ['naics', 'year', 'quarter', 'measure'], additionalLevels)
 
-    let node = findParentNodeForNaicsCode.call(this, naics) 
+    let node = findNodeForNaicsCode.call(this, naics) 
     
-    if (!(node && node.children)) { return null }
+    if (!node) { return null }
 
     let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
 
@@ -94,20 +96,40 @@ export class NaicsTree {
 
     return _.cloneDeep(_(node.children).mapValues((childNode) => _.get(childNode, dataPath, null)).value())
   }
-
 }
 
 
-function findParentNodeForNaicsCode (naicsCode) {
-  let node = this.root
+function findNodeForNaicsCode (naicsCode) {
 
-  // TODO: Handle case where we start from a subnaics without the parent naics already in the tree.
-  let descendInto
-  while (descendInto = _.find(node.children, (node, naicsOfSub) => (_.startsWith(naicsCode, naicsOfSub) && (naicsCode.length < naicsOfSub.length)))) {
-    node = descendInto
+  if (!naicsCode) { return this.root }
+
+  let curNode = this.root
+
+  for (let i = 2; i <= naicsCode.length; ++i) {
+    let ancestorCode = naicsCode.slice(0, i)
+
+    curNode = curNode.children[ancestorCode] 
+
+    if (!curNode) { return null }
   }
 
-  return node
+  return curNode
+}
+
+// Creates nodes, if needed.
+function getParentNodeForNaicsCode (naicsCode) {
+
+  if (!naicsCode) { return this.root }
+
+  let curNode = this.root
+
+  for (let i = 2; i < naicsCode.length; ++i) {
+    let ancestorCode = naicsCode.slice(0, i)
+
+    curNode = (curNode.children[ancestorCode] || (curNode.children[ancestorCode] = newNaicsTreeNode()))
+  }
+
+  return curNode
 }
 
 
@@ -289,6 +311,7 @@ function newXtraLevelsPathIterator () {
   }
 
 }
+
 
 function validateAdditionalLevelsParams (queryObj, standardParams, additionalLevels) {
   additionalLevels = additionalLevels || []

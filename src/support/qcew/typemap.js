@@ -33,3 +33,5 @@ export const typemap = {
       ]
     ],
 }
+
+export default typemap

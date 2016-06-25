@@ -3,7 +3,7 @@
 import React from 'react'
 import _ from 'lodash'
 
-import { kmgtFormatter, kmgtDollarFormatter } from '../../misc/numberFormatters'
+import { kmgtFormatter, kmgtDollarFormatter } from '../misc/numberFormatters'
 
 const numFormatter = kmgtFormatter.bind(null, 3)
 const dollarFormatter = kmgtDollarFormatter.bind(null, 2)

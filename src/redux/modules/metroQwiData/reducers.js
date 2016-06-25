@@ -5,9 +5,24 @@ import NaicsTree from '../../../support/NaicsTree'
 
 import { currencyMeasures, 
          firmageLabels, 
-         industryTitles, 
          requestedRatioMeasures, 
          requestedRawMeasures } from '../../../support/qwi'
+
+import { updateFirstAndLastQuarterWithData, 
+         resetFirstAndLastQuarterWithData,
+         newOverviewTableDataComparator, 
+         tooltipComparator,
+         lineGraphDataTransformer, } from '../../../support/sharedReducers'
+
+import industryTitles from '../../../support/industryTitles'
+
+
+const colors = d3.scale.category20c()
+let colorMappings = Object.keys(industryTitles).sort().reduce((acc, naics, i) => _.set(acc, naics, colors(i)), {}) 
+
+
+
+
 
 import { 
   QWI_MSA_CHANGE,
@@ -50,7 +65,6 @@ const ratiosTransformers = requestedRatioMeasures.reduce((acc, m) => _.set(acc, 
 
 const rawTransformers = requestedRawMeasures.reduce((acc, m) => _.set(acc, m, null), {})
 
-const colors = d3.scale.category20c()
 
 
 const initialState = {
@@ -67,7 +81,7 @@ const initialState = {
   byMsaNaicsTrees: {},
 
   lineGraphs: {
-    focused: 'qwi-rawData-linegraph',
+    focused: 'rawData-lineGraph',
     rawGraphData : null,
     lqGraphData  : null,
   },
@@ -319,7 +333,7 @@ function getRawLineGraphData (state) {
 
   updateFirstAndLastQuarterWithData(state, data)
 
-  return lineGraphDataTransformer(data)
+  return lineGraphDataTransformer(data, colorMappings)
 }
 
 
@@ -361,12 +375,12 @@ function getLQLineGraphData (state) {
 
   updateFirstAndLastQuarterWithData(state, data)
 
-  return data ? lineGraphDataTransformer(data) : null
+  return data ? lineGraphDataTransformer(data, colorMappings) : null
 }
 
 
 function getTooltipTableData (state) {
-  return ((state.lineGraphs.focused==='qwi-rawData-linegraph') ? getRawTooltipTableData : getLQTooltipTableData)(state)
+  return ((state.lineGraphs.focused==='rawData-lineGraph') ? getRawTooltipTableData : getLQTooltipTableData)(state)
 }
 
 
@@ -387,8 +401,8 @@ function getRawTooltipTableData (state) {
   if (!data) { return null }
 
   // Omit the 'all industries' data, then create a sorter array of data elems.
-  return _(data).keys().pull('00').sort().map( (naics, i) => ({
-    color       : colors(i % 20),
+  return _(data).keys().pull('00').sort().map( (naics) => ({
+    color       : colorMappings[naics],
     key         : naics,
     title       : industryTitles[naics],
     value       : (Number.isFinite(_.get(data, [naics, 'value'], NaN))) ? data[naics].value : 'No data.',
@@ -418,12 +432,12 @@ function getLQTooltipTableData (state) {
   if (! (ratioDataForMSA && ratioDataForNation)) { return null }
 
   // Omit the 'all industries' data, then create a sorter array of data elems.
-  return _(ratioDataForMSA).keys().pull('00').sort().map( (naics, i) => {
+  return _(ratioDataForMSA).keys().pull('00').sort().map( (naics) => {
 
     let value = _.get(ratioDataForMSA, [naics, 'value'], NaN) / _.get(ratioDataForNation, [naics, 'value'], NaN)
 
     return {
-      color       : colors(i % 20),
+      color       : colorMappings[naics],
       key         : naics,
       title       : industryTitles[naics],
       value       : (Number.isFinite(value)) ? value : 'No data.',
@@ -433,7 +447,7 @@ function getLQTooltipTableData (state) {
 }
 
 
-function getSelectedFirmageRadarGraphData (state) {
+function getSelectedFirmageRadarChartData (state) {
 
   let msa     = state.msa
   let measure = state.measure
@@ -461,7 +475,7 @@ function getSelectedFirmageRadarGraphData (state) {
 }
 
 
-function getAcrossFirmagesRadarGraphData (state) {
+function getAcrossFirmagesRadarChartData (state) {
 
   let msa     = state.msa
   let measure = state.measure
@@ -517,44 +531,50 @@ function getOverviewTableData (state) {
 
   let tableData = {}
 
-  let sortField = state.overviewTable.sortField
-
-  let colNames = {
-    naicsCode             : 'NAICS Code',
-    sectorTitle           : 'Sector Title',
-    measureForFirmage     : `${measure} for ${firmageLabels[firmage]} firms`,
-    measureForAllFirmages : `${measure} for all firmages`,
-    locationQuotient      : 'Location Quotient',
-  }
-
-  // Consistent ordering of the column names.
-  tableData.__columnNames = [
-    colNames.naicsCode,
-    colNames.sectorTitle,
-    colNames.measureForFirmage,
-    colNames.measureForAllFirmages,
-    colNames.locationQuotient,
+  // For consistent ordering of the column names.
+  tableData.__columns = [
+    'naicsCode',
+    'sectorTitle',
+    'measureForFirmage',
+    'measureForAllFirmages',
+    'measureLocationQuotient',
   ]
  
-  let stringifier = (d) => (Number.isFinite(d && d.value)) ? 
-        `${(state.measureIsCurrency) ? '$' : ''}${d.value.toLocaleString()}${d.filledValue ? '*' : ''}` : 'No data'
+  tableData.__columnNames = {
+    naicsCode               : 'NAICS Code',
+    sectorTitle             : 'Sector Title',
+    measureForFirmage       : `${measure} for ${firmageLabels[firmage]} firms`,
+    measureForAllFirmages   : `${measure} for all firmages`,
+    measureLocationQuotient : 'Location Quotient',
+  }
 
-  Object.keys(industryTitles).forEach((naics) => {
 
+  let measureIsCurrency = state.measureIsCurrency
+
+  let stringifier = (d, isCurrency, filledValue, numOfDecimals = 0) => (Number.isFinite(d)) ? 
+        `${(isCurrency)?'$':''}${parseFloat(d.toFixed(numOfDecimals)).toLocaleString()}${filledValue?'*':''}` : 'No data'
+
+  let naicsCodes = Object.keys(industryTitles)
+
+  naicsCodes.forEach((naics) => {
+
+    let measureForFirmage = _.get(rawDataForFirmage, [naics, 'value'], NaN)
+    let measureForAllFirmages = _.get(rawDataAcrossFirmages, [naics, 'value'], NaN)
     let lq = _.get(ratioDataForFirmage, [naics, 'value'], NaN) / _.get(ratioDataForNation, [naics, 'value'], NaN)
 
-    _.set(tableData, [naics, colNames.naicsCode], naics)
-    _.set(tableData, [naics, colNames.sectorTitle], industryTitles[naics])
-    _.set(tableData, [naics, colNames.measureForFirmage], stringifier(rawDataForFirmage[naics]))
-    _.set(tableData, [naics, colNames.measureForAllFirmages], stringifier(rawDataAcrossFirmages[naics]))
-    _.set(tableData, [naics, colNames.locationQuotient], Number.isFinite(lq) ? lq : 'No data')
+    _.set(tableData, [naics, 'naicsCode'], naics)
+    _.set(tableData, [naics, 'sectorTitle'], industryTitles[naics])
+    _.set(tableData, [naics, 'measureForFirmage'], stringifier(measureForFirmage, measureIsCurrency))
+    _.set(tableData, [naics, 'measureForAllFirmages'], stringifier(measureForAllFirmages, measureIsCurrency))
+    _.set(tableData, [naics, 'measureLocationQuotient'], stringifier(lq, false, 3))
   })
 
 
-  let overviewDataComparator = newOverviewDataComparator(sortField, colNames, tableData)
+  let sortField = state.overviewTable.sortField
+  let overviewDataComparator = newOverviewTableDataComparator(sortField, tableData)
 
   // Provided the requested sorted order for the table rows.
-  tableData.__naicsRowOrder = Object.keys(tableData).sort(overviewDataComparator)
+  tableData.__naicsRowOrder = naicsCodes.sort(overviewDataComparator)
 
   return tableData
 }
@@ -570,7 +590,7 @@ function updateAllVisualizationsData (state) {
   state.lineGraphs.rawGraphData = getRawLineGraphData(state)
   state.lineGraphs.lqGraphData =  getLQLineGraphData(state)
 
-  state.selectedQuarter = state.lastQuarterWithData
+  //state.selectedQuarter = state.lastQuarterWithData
 
   updateQuarterTrackingVisualizationsData(state)
 }
@@ -594,9 +614,9 @@ function updateQuarterTrackingVisualizationsData (state) {
   }
 
   state.quarterlyDataCache[qtrString] = {
-    selectedFirmageRadarChartData : (state.selectedFirmageRadarChartData = getSelectedFirmageRadarGraphData(state)),
+    selectedFirmageRadarChartData : (state.selectedFirmageRadarChartData = getSelectedFirmageRadarChartData(state)),
 
-    acrossFirmagesRadarChartData  : (state.acrossFirmagesRadarChartData  = getAcrossFirmagesRadarGraphData(state)),
+    acrossFirmagesRadarChartData  : (state.acrossFirmagesRadarChartData  = getAcrossFirmagesRadarChartData(state)),
 
     tooltipTableData : (state.tooltipTable.data = getTooltipTableData(state)),
 
@@ -604,103 +624,6 @@ function updateQuarterTrackingVisualizationsData (state) {
   }
 }
 
-
-
-function lineGraphDataTransformer (data) {
-
-  if (!data) { return null }
-
-  let naicsCodes = _(data).keys().pull('00').sort().value()
-
-  let lineGraphRawData = []
-
-  naicsCodes.forEach((naics, i) => {
-
-    let color = colors(i % 20)
-
-    let dataArr = data[naics]
- 
-    if (!Array.isArray(dataArr)) { return null }
-
-    dataArr.forEach(d => {
-
-      let val = d.value
-      let filledValue = d.filledValue
-
-      let month = 1 + 3*(d.quarter-1)
-      let quarterCentralMonth = new Date(d.year, month)
-
-      let elem = {
-        key: quarterCentralMonth,
-        values: {
-          x: quarterCentralMonth,
-          y: val,
-        },
-      }
-
-      let lastLineGraphRawDataElem = _.last(lineGraphRawData)
-
-      if ((_.get(lastLineGraphRawDataElem, 'key') !== naics) ||
-          (_.get(lastLineGraphRawDataElem, 'filledValue') !== filledValue)) {
-
-            lineGraphRawData.push({
-              color: color,
-              key: naics,
-              values: [],
-              filledValue,
-            })
-
-            // Connect the fill segment with the new non-filled segment.
-            if (lastLineGraphRawDataElem && (lastLineGraphRawDataElem.key === naics)) {
-            
-              if (filledValue) {
-                _.last(lineGraphRawData).values.push(_.last(lastLineGraphRawDataElem.values)) 
-              } else {
-                lastLineGraphRawDataElem.values.push(elem)
-              }
-            }
-      }
-
-      _.last(lineGraphRawData).values.push(elem) 
-    })
-  })
-
-  return lineGraphRawData
-}
-
-
-function tooltipValGetter (x) { return ((Number.isFinite(x.value)) ? x.value : Number.NEGATIVE_INFINITY) }
-function tooltipComparator (a,b) { return tooltipValGetter(b) - tooltipValGetter(a) }
-
-
-function newOverviewDataComparator (sortField, columnNames, tableData) {
-
-  return (naicsCodeA, naicsCodeB) => {
-
-    let order = ((sortField === columnNames.naicsCode) || 
-                 (sortField === columnNames.sectorTitle)) ? 1 : -1
-
-    let aVal = _.get(tableData, [naicsCodeA, sortField], '')
-    let bVal = _.get(tableData, [naicsCodeB, sortField], '')
-
-    aVal = aVal.replace ? aVal.replace(/\$|,|\*/g, '') : aVal
-    bVal = bVal.replace ? bVal.replace(/\$|,|\*/g, '') : bVal
-
-    if (!(Number.isFinite(aVal) || Number.isFinite(bVal))) {
-      return (aVal.localeCompare(bVal) * order)
-    }
-
-    if (Number.isFinite(aVal) && !Number.isFinite(bVal)) {
-      return (1 * order)
-    }
-
-    if (!Number.isFinite(aVal) && Number.isFinite(bVal)) {
-      return (-1 * order)
-    }
-
-    return ((aVal - bVal) * order)
-  }
-}
 
 
 function resetAllVisualizationsData (state) {
@@ -719,59 +642,6 @@ function resetAllVisualizationsData (state) {
   state.quarterlyDataCache = {}
 
   resetFirstAndLastQuarterWithData(state)
-}
-
-
-function updateFirstAndLastQuarterWithData (state, data) {
-
-  if (!data) { return }
-
-  let firstQtr = _.clone(state.firstQuarterWithData)
-  let lastQtr  = _.clone(state.lastQuarterWithData)
-
-  let naicsCodes = Object.keys(data)
-
-  for (let i = 0; i < naicsCodes.length; ++i) {
-    let naics = naicsCodes[i]
-
-    let dataForNaics = data[naics]
-
-    if (!(Array.isArray(dataForNaics) && dataForNaics.length)) { continue }
-
-    if (dataForNaics[0].year <= firstQtr.year) {
-      if (dataForNaics[0].quarter < firstQtr.quarter) {
-        firstQtr = {
-          year: dataForNaics[0].year,
-          quarter: dataForNaics[0].quarter,
-        }
-      } 
-    }
-
-    if (dataForNaics[dataForNaics.length - 1].year >= lastQtr.year) {
-      if (dataForNaics[dataForNaics.length - 1].quarter > lastQtr.quarter) {
-        lastQtr = {
-          year: dataForNaics[dataForNaics.length - 1].year,
-          quarter: dataForNaics[dataForNaics.length - 1].quarter,
-        }
-      } 
-    }
-  }
-
-  state.firstQuarterWithData = firstQtr
-  state.lastQuarterWithData  = lastQtr
-}
-
-
-function resetFirstAndLastQuarterWithData (state) {
-  state.firstQuarterWithData = {
-    year: Number.POSITIVE_INFINITY,
-    quarter: Number.POSITIVE_INFINITY,
-  }
-
-  state.lastQuarterWithData = {
-    year: Number.NEGATIVE_INFINITY,
-    quarter: Number.NEGATIVE_INFINITY,
-  }
 }
 
 
