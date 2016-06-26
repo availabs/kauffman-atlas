@@ -2,6 +2,11 @@
 
 import _ from 'lodash'
 
+import industryTitles from './industryTitles'
+ 
+
+const twoDigitNaicsCodes = Object.keys(industryTitles)
+
 
 
 export class NaicsTree {
@@ -13,9 +18,18 @@ export class NaicsTree {
   //
   constructor (startQuarter, endQuarter, additionalLevels) {
 
-    this.root = {
-      children: null,
-    }
+    this.root = {} 
+
+    this.root.children = twoDigitNaicsCodes.reduce((acc, naicsCode) => {
+      acc[naicsCode] = newNaicsTreeNode()
+
+      let splitNaics = naicsCode.split('-')
+      let subNaicsCodes = _.range(+splitNaics[0], +_.last(splitNaics) + 1)
+      let subCodesPattern = subNaicsCodes.map((subNaics) => `${subNaics}\\d{1,4}$`).join('|')
+
+      acc[naicsCode].descendentsMatcher = new RegExp(subCodesPattern)
+      return acc
+    }, {})
 
     this.startQuarter     = startQuarter
     this.endQuarter       = endQuarter
@@ -46,15 +60,26 @@ export class NaicsTree {
   //                      }
   //                   }
   //
-  insertData (data, transformers) {
-    let naicsCodes = Object.keys(data)
+  //insertData (data, transformers) {
+    //let naicsCodes = Object.keys(data)
 
-    let node = getParentNodeForNaicsCode.call(this, naicsCodes[0])
+    //let node = getParentNodeForNaicsCode.call(this, naicsCodes[0])
 
-    node.children = _.defaults(node.children, _.mapValues(data, newNaicsTreeNode))
+    //node.children = _.defaults(node.children, _.mapValues(data, newNaicsTreeNode))
     
-    naicsCodes.forEach((naicsCode) => 
-        insertDataIntoTreeNode.call(this, node.children[naicsCode], data[naicsCode], transformers))
+    //naicsCodes.forEach((naicsCode) => 
+        //insertDataIntoTreeNode.call(this, node.children[naicsCode], data[naicsCode], transformers))
+  //}
+
+  insertData (data, transformers) {
+
+    Object.keys(data).forEach((naicsCode) => {
+        let parentNode = getParentNodeForNaicsCode.call(this, naicsCode)
+
+        let node = (parentNode.children[naicsCode] || (parentNode.children[naicsCode] = newNaicsTreeNode()))
+
+        insertDataIntoTreeNode.call(this, node, data[naicsCode], transformers)
+    })
   }
 
   queryMeasureDataForSubindustries (queryObj) {
@@ -67,7 +92,9 @@ export class NaicsTree {
 
     let node = findNodeForNaicsCode.call(this, naics) 
 
-    if (!(node && node.children)) { return null }
+    // Because we create nodes to insert remote descendents' data,
+    // we need to actually make sure data was inserted for the immediate children.
+    if (!(node && _.some(node.children, 'dataArraysByMeasure'))) { return null }
 
     let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
 
@@ -88,7 +115,9 @@ export class NaicsTree {
 
     let node = findNodeForNaicsCode.call(this, naics) 
     
-    if (!node) { return null }
+    // Because we create nodes to insert remote descendents' data,
+    // we need to actually make sure data was inserted for the immediate descendents.
+    if (!(node && _.some(node.children, 'byQuarterLookupTree'))) { return null }
 
     let additionalLevelsPath = additionalLevels ? `.${additionalLevels.map(l => queryObj[l.name]).join('.')}` : ''
 
@@ -101,15 +130,24 @@ export class NaicsTree {
 
 function findNodeForNaicsCode (naicsCode) {
 
+  // The root's code is null.
   if (!naicsCode) { return this.root }
 
-  let curNode = this.root
+  // If the naicsCode is a '2-digit' NAICS, we get it immediately from the root's children object.
+  if (this.root.children[naicsCode]) {
+    return this.root.children[naicsCode]
+  }
 
-  for (let i = 2; i <= naicsCode.length; ++i) {
+  // For 3-digit or longer codes, we first find the 2-digit ancestor.
+  let curNode = _.find(this.root.children, (twoDigitNode) => naicsCode.match(twoDigitNode.descendentsMatcher))
+
+  // Descend until we find the node.
+  for (let i = 3; i <= naicsCode.length; ++i) {
     let ancestorCode = naicsCode.slice(0, i)
 
     curNode = curNode.children[ancestorCode] 
 
+    // Dead end. No such code in the tree.
     if (!curNode) { return null }
   }
 
@@ -119,13 +157,25 @@ function findNodeForNaicsCode (naicsCode) {
 // Creates nodes, if needed.
 function getParentNodeForNaicsCode (naicsCode) {
 
-  if (!naicsCode) { return this.root }
+  if (!naicsCode) { throw new Error('Empty NAICS code error.') }
 
-  let curNode = this.root
+  // Is the naicsCode a '2-digit' NAICS? Then root is the parent.
+  if (this.root.children[naicsCode]) {
+    return this.root
+  }
 
-  for (let i = 2; i < naicsCode.length; ++i) {
+  // Get the 2-digit NAICS code that is the ancestor of the NAICS code.
+  let curNode = _.find(this.root.children, (twoDigitNode) => naicsCode.match(twoDigitNode.descendentsMatcher))
+  
+  // If there wasn't a match on any of the descendents RegExp matcher, then its an invalid code.
+  if (!curNode) { throw new Error(`Invalid NAICS code: ${naicsCode}`)}
+
+  // if the NAICS code is 4 or more digits, we need to descend past the 2-digit NAICS codes.
+  for (let i = 3; i < naicsCode.length; ++i) {
     let ancestorCode = naicsCode.slice(0, i)
 
+    // Create Ancestors, if necessary.
+    // Root matcher RegExp should enforce invalid NAICS codes, and throw if invalid code passed to insert.
     curNode = (curNode.children[ancestorCode] || (curNode.children[ancestorCode] = newNaicsTreeNode()))
   }
 
@@ -210,7 +260,7 @@ function insertDataIntoTreeNode (node, data, transformers) {
 
 function newNaicsTreeNode () {
   return {
-    children: null,
+    children: {},
     dataArraysByMeasure: null,
     byQuarterLookupTree: null,
   } 

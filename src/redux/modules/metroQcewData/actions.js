@@ -132,9 +132,8 @@ export const loadData = (msa, parentNaics, retryNumber) => (dispatch, getState) 
 }
 
 export const selectParentNaics = (parentNaics) => (dispatch, getState) => {
-  debugger
-  dispatch(selectedParentNaicsChange(parentNaics))
 
+  dispatch(selectedParentNaicsChange(parentNaics))
 
   return requestTheData(dispatch, getState, null, parentNaics, 0)
 }

@@ -149,7 +149,7 @@ const handleActionError = (state, action) => {
 
 
 const handleSelectedParentNaicsChange = (state, action) => {
-//debugger
+
   let newState = setStateField(state, 'selectedParentNaics', action.payload.parentNaics || null)
 
   updateAllVisualizationsData(newState)
@@ -292,7 +292,7 @@ const handleMeasureChange = (state, action) => {
 
 
 const handleMsaAndMeasureChange = (state, action) => {
-debugger
+
   let newState = setStateField(state, 'msa', action.payload.msa)
   newState = setStateField(newState, 'measure', action.payload.measure)
 
@@ -469,7 +469,6 @@ function getLQRadarChartData (state) {
 
 function getOverviewTableData (state) {
 
-//debugger
   let msa = state.msa
 
   if (!state.byMsaNaicsTrees[msa]) { return null }
@@ -563,7 +562,7 @@ function getOverviewTableData (state) {
 
 
 function updateAllVisualizationsData (state) {
-debugger
+
   _.set(state, 'quarterlyDataCache', {})
 
   resetFirstAndLastQuarterWithData(state)
