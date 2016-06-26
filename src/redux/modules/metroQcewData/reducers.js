@@ -24,7 +24,10 @@ import {
   QCEW_NAICS_TABLE_RECEIVED,
 
   QCEW_LINEGRAPH_FOCUS_CHANGE,
-  QCEW_SELECTED_PARENT_NAICS_CHANGE,
+  QCEW_NAICS_DRILLDOWN,
+  QCEW_NAICS_ONE_LEVEL_ASCENT,
+  QCEW_NAICS_RETURN_TO_ROOT,
+
   QCEW_SELECTED_QUARTER_CHANGE,
   QCEW_SELECTED_QUARTER_WHEEL_CHANGE,
   QCEW_OVERVIEW_TABLE_SORT_FIELD_CHANGE,
@@ -92,7 +95,9 @@ const initialState = {
 
   measureIsCurrency: null,
   
-  selectedParentNaics: null,
+  naicsDrilldownHistory: [null],
+
+  selectedParentNaicsTitle: null,
 
   selectedQuarter: endQuarter,
 
@@ -148,9 +153,33 @@ const handleActionError = (state, action) => {
 }
 
 
-const handleSelectedParentNaicsChange = (state, action) => {
+const handleNaicsDrilldown = (state, action) => {
 
-  let newState = setStateField(state, 'selectedParentNaics', action.payload.parentNaics || null)
+  let newState = Object.assign({}, state)
+    
+  newState.naicsDrilldownHistory.push(action.payload.subNaics || null)
+
+  updateAllVisualizationsData(newState)
+
+  return newState
+} 
+
+const handleNaicsOneLevelAscent = (state) => {
+
+  let newState = Object.assign({}, state)
+    
+  newState.naicsDrilldownHistory.pop()
+
+  updateAllVisualizationsData(newState)
+
+  return newState
+} 
+
+const handleNaicsReturnToRoot = (state) => {
+
+  let newState = Object.assign({}, state)
+    
+  newState.naicsDrilldownHistory = [null]
 
   updateAllVisualizationsData(newState)
 
@@ -263,7 +292,7 @@ const handleMsaChange = (state, action) => {
 
   if (newState === state) { return state }
 
-  newState.selectedParentNaics = null
+  newState.naicsDrilldownHistory = [null]
 
   resetAllVisualizationsData(newState)
 
@@ -284,7 +313,7 @@ const handleMeasureChange = (state, action) => {
 
   newState.measureIsCurrency = !!currencyMeasures[measure]
 
-  newState.selectedParentNaics = null
+  newState.naicsDrilldownHistory = [null]
 
   updateAllVisualizationsData(newState)
 
@@ -302,7 +331,7 @@ const handleMsaAndMeasureChange = (state, action) => {
   newState.measureIsCurrency = !!currencyMeasures[action.payload.measure]
   
   if (state.msa !== newState.msa) {
-    newState.selectedParentNaics = null
+    newState.naicsDrilldownHistory = [null]
   }
 
   resetAllVisualizationsData(newState)
@@ -351,7 +380,7 @@ function getLQLineGraphData  (state) { return getLineGraphData(state, `lq_${stat
 function getLineGraphData (state, measure) {
 
   let msa = state.msa
-  let parentNaics = state.selectedParentNaics
+  let parentNaics = _.last(state.naicsDrilldownHistory)
 
   if (!state.byMsaNaicsTrees[msa]) { return null }
 
@@ -373,7 +402,7 @@ function getTooltipTableData (state) {
 
   let msa     = state.msa
   let measure = (state.lineGraphs.focused==='rawData-lineGraph') ? state.measure : `lq_${state.measure}`
-  let parentNaics = state.selectedParentNaics
+  let parentNaics = _.last(state.naicsDrilldownHistory)
 
   let year = state.selectedQuarter.year
   let quarter = state.selectedQuarter.quarter
@@ -407,7 +436,7 @@ function getShareRadarChartData (state) {
 
   let msa         = state.msa
   let measure     = state.measure
-  let parentNaics = state.selectedParentNaics
+  let parentNaics = _.last(state.naicsDrilldownHistory)
 
   let year = state.selectedQuarter.year
   let quarter = state.selectedQuarter.quarter
@@ -444,7 +473,7 @@ function getLQRadarChartData (state) {
 
   let msa     = state.msa
   let measure = `lq_${state.measure}`
-  let parentNaics = state.selectedParentNaics
+  let parentNaics = _.last(state.naicsDrilldownHistory)
 
   let year = state.selectedQuarter.year
   let quarter = state.selectedQuarter.quarter
@@ -476,7 +505,7 @@ function getOverviewTableData (state) {
 
 
   let measure     = state.measure
-  let parentNaics = state.selectedParentNaics
+  let parentNaics = _.last(state.naicsDrilldownHistory)
 
   let year    = state.selectedQuarter.year
   let quarter = state.selectedQuarter.quarter
@@ -568,9 +597,13 @@ function updateAllVisualizationsData (state) {
 
   resetFirstAndLastQuarterWithData(state)
 
-  if (!(state.inventory[state.msa] && state.inventory[state.msa][state.selectedParentNaics])) {
+  if (!(state.inventory[state.msa] && state.inventory[state.msa][_.last(state.naicsDrilldownHistory)])) {
     return resetAllVisualizationsData(state)
   }
+
+  state.selectedParentNaicsTitle = (_.last(state.naicsDrilldownHistory) === null) ?  'All Industries' : 
+      _.get(state.naicsInfoTable, [_.last(state.naicsDrilldownHistory), 'title'], 'Unrecognized Naics Code')
+
 
   state.lineGraphs.rawGraphData = getRawLineGraphData(state)
   state.lineGraphs.lqGraphData =  getLQLineGraphData(state)
@@ -649,7 +682,9 @@ export const ACTION_HANDLERS = {
 
   [QCEW_SELECTED_QUARTER_WHEEL_CHANGE]: handleSelectedQuarterWheelChange,
 
-  [QCEW_SELECTED_PARENT_NAICS_CHANGE]: handleSelectedParentNaicsChange,
+  [QCEW_NAICS_DRILLDOWN]: handleNaicsDrilldown,
+  [QCEW_NAICS_ONE_LEVEL_ASCENT]: handleNaicsOneLevelAscent,
+  [QCEW_NAICS_RETURN_TO_ROOT]: handleNaicsReturnToRoot,
 
   [QCEW_SELECTED_QUARTER_CHANGE]: handleSelectedQuarterChange,
 

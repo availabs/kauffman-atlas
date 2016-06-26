@@ -15,7 +15,10 @@ export const QCEW_DATA_RECEIVED = 'QCEW_DATA_RECIEVED'
 
 export const QCEW_NAICS_TABLE_RECEIVED = 'QCEW_NAICS_TABLE_RECEIVED'
 
-export const QCEW_SELECTED_PARENT_NAICS_CHANGE = 'QCEW_SELECTED_PARENT_NAICS_CHANGE'
+export const QCEW_NAICS_DRILLDOWN = 'QCEW_NAICS_DRILLDOWN'
+export const QCEW_NAICS_ONE_LEVEL_ASCENT = 'QCEW_NAICS_ONE_LEVEL_ASCENT'
+export const QCEW_NAICS_RETURN_TO_ROOT = 'QCEW_NAICS_RETURN_TO_ROOT'
+
 
 export const QCEW_LINEGRAPH_FOCUS_CHANGE = 'QCEW_LINEGRAPH_FOCUS_CHANGE'
 export const QCEW_SELECTED_QUARTER_WHEEL_CHANGE = 'QCEW_SELECTED_QUARTER_WHEEL_CHANGE'
@@ -59,12 +62,16 @@ const dataReceived = (msa, parentNaics, data) => ({
   },
 })
 
-const selectedParentNaicsChange = (parentNaics) => ({
-  type : QCEW_SELECTED_PARENT_NAICS_CHANGE,
+const naicsDrilldown = (subNaics) => ({
+  type : QCEW_NAICS_DRILLDOWN,
   payload : { 
-    parentNaics, 
+    subNaics, 
   },
 })
+
+const naicsOneLevelAscent = () => ({ type: QCEW_NAICS_ONE_LEVEL_ASCENT })
+
+const naicsReturnToRoot = () => ({ type: QCEW_NAICS_RETURN_TO_ROOT })
 
 const naicsTablesReceived = (naicsInfoTable, naicsLookup) => ({
   type: QCEW_NAICS_TABLE_RECEIVED,
@@ -131,11 +138,39 @@ export const loadData = (msa, parentNaics, retryNumber) => (dispatch, getState) 
   requestTheData(dispatch, getState, msa, parentNaics, retryNumber)
 }
 
-export const selectParentNaics = (parentNaics) => (dispatch, getState) => {
+export const drilldownIntoNaicsSubindustry = (parentNaics) => (dispatch, getState) => {
 
-  dispatch(selectedParentNaicsChange(parentNaics))
+  dispatch(naicsDrilldown(parentNaics))
 
   return requestTheData(dispatch, getState, null, parentNaics, 0)
+}
+
+export const ascendOneNaicsLevel = () => (dispatch, getState) => {
+
+  let naicsDrilldownHistory = getState().metroQcewData.naicsDrilldownHistory
+  let currentNaicsParentCode = _.last(naicsDrilldownHistory)
+
+  if (currentNaicsParentCode === null) {
+    return dispatch(nullAction())
+  }
+
+  dispatch(naicsOneLevelAscent())
+
+  return requestTheData(dispatch, getState, null, naicsDrilldownHistory[naicsDrilldownHistory.length - 2], 0)
+}
+
+export const naicsRootReturn = () => (dispatch, getState) => {
+
+  let naicsDrilldownHistory = getState().metroQcewData.naicsDrilldownHistory
+  let currentNaicsParentCode = _.last(naicsDrilldownHistory)
+
+  if (currentNaicsParentCode === null) {
+    return dispatch(nullAction())
+  }
+
+  dispatch(naicsReturnToRoot())
+
+  return requestTheData(dispatch, getState, null, null, 0)
 }
 
 

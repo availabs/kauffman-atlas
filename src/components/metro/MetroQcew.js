@@ -73,7 +73,19 @@ const renderVisualizations = (props) => (
         </div>
 
         <div className='row'>
-          <div className='col-xs-4 button-group text-left'>
+          <div className='col-xs-4 button-group text-left' role="group">
+            <button id='qcew-quarter-decrement' 
+                    type="button" 
+                    className="btn btn-secondary btn-sm" 
+                    style={buttonStyle}
+                    onClick={props.naicsRootReturn}> {'\u290A'}
+            </button>
+            <button id='qcew-quarter-increment' 
+                    type="button" 
+                    className="btn btn-secondary btn-sm" 
+                    onClick={props.ascendOneNaicsLevel}> {'\u21D1'}
+            </button>
+            <span><b>{`${props.selectedParentNaicsTitle}`}</b></span>
           </div>
 
           <div className='col-xs-4 button-group text-right' role="group">
@@ -186,7 +198,7 @@ const renderVisualizations = (props) => (
       <div className='row'>
         <OverviewTable data={props.overviewTableData}
                        sortFieldChange={props.overviewTableSortFieldChange}
-                       onNaicsLabelClick={props.selectParentNaics}/>
+                       onNaicsLabelClick={props.drilldownIntoNaicsSubindustry}/>
       </div>
     </StickyContainer>
   </div>
@@ -228,6 +240,7 @@ const mapStateToProps = (state) => ({
   measureIsCurrency        : state.metroQcewData.measureIsCurrency,
   focusedLineGraph         : state.metroQcewData.lineGraphs.focused,
   selectedParentNaics      : state.metroQcewData.selectedParentNaics,
+  selectedParentNaicsTitle : state.metroQcewData.selectedParentNaicsTitle,
   tooltipHoveredNaicsLabel : state.metroQcewData.tooltipTable.hoveredNaicsLabel,
 })
 

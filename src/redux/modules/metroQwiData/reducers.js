@@ -651,7 +651,6 @@ function updateQuarterTrackingVisualizationsData (state) {
     return
   }
 
-debugger
   state.quarterlyDataCache[qtrString] = {
     selectedFirmageRadarChartData : (state.selectedFirmageRadarChartData = getSelectedFirmageRadarChartData(state)),
 
@@ -661,8 +660,6 @@ debugger
 
     overviewTableData : (state.overviewTable.data = getOverviewTableData(state))
   }
-
-  console.log(state)
 }
 
 
