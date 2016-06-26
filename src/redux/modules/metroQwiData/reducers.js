@@ -96,7 +96,7 @@ const initialState = {
   acrossFirmagesRadarChartData: null,
 
   overviewTable: {
-    sortField: 'Location Quotient',
+    sortField: 'measureLocationQuotient',
     data: null,
   },
 
@@ -370,7 +370,32 @@ function getLQLineGraphData (state) {
     }
 
     // replace all ratioData with the LocationQuotients
-    return msaData.map((d) => _.set(_.clone(d), 'value', (d.value / natDataForNaics[nat_i++].value)))
+    
+    let natDataFiller = Number.POSITIVE_INFINITY
+
+    return msaData.map((d) => {
+      
+      if (!(d.year === natDataForNaics[nat_i].year) && (d.quarter === natDataForNaics[nat_i].quarter)) {
+        console.log("!!! Unaligned msa and national data. This shouldn't happen.")
+      }
+
+      let newD = _.clone(d)
+
+      let natDataVal = natDataForNaics[nat_i++].value 
+        
+      if (!natDataVal && d.value) {
+        natDataVal = natDataFiller
+        newD.filledValue = true
+      }
+
+      natDataFiller = natDataVal 
+
+      let lq = (d.value / natDataVal)
+
+      newD.value = lq
+
+      return newD
+    })
   })
 
   updateFirstAndLastQuarterWithData(state, data)
@@ -469,8 +494,8 @@ function getSelectedFirmageRadarChartData (state) {
   // industry measure across all firmages, for the MSA.
   return _(industryTitles).keys().pull('00').sort().map((naics) => ({
     axis  : industryTitles[naics].substring(0,6),
-    value : _.get(selectedFirmageData, [naics, 'value'], 0) / 
-            _.get(acrossFirmagesData, [naics, 'value'], Number.POSITIVE_INFINITY)
+    value : (_.get(selectedFirmageData, [naics, 'value'], 0) / 
+            (_.get(acrossFirmagesData, [naics, 'value']) || Number.POSITIVE_INFINITY))
   })).value()
 }
 
@@ -494,7 +519,7 @@ function getAcrossFirmagesRadarChartData (state) {
   // measure for the MSA's economy as a whole
   return _(industryTitles).keys().pull('00').sort().map((naics) => ({
     axis  : industryTitles[naics].substring(0,6),
-    value : _.get(data, [naics, 'value'], 0) / _.get(data, ['00', 'value'], Number.POSITIVE_INFINITY)
+    value : (_.get(data, [naics, 'value'], 0) / (_.get(data, ['00', 'value']) || Number.POSITIVE_INFINITY))
   })).value()
 }
 
@@ -559,14 +584,27 @@ function getOverviewTableData (state) {
   naicsCodes.forEach((naics) => {
 
     let measureForFirmage = _.get(rawDataForFirmage, [naics, 'value'], NaN)
+    let measureFilled = _.get(rawDataForFirmage, [naics, 'filledValue'])
+
     let measureForAllFirmages = _.get(rawDataAcrossFirmages, [naics, 'value'], NaN)
-    let lq = _.get(ratioDataForFirmage, [naics, 'value'], NaN) / _.get(ratioDataForNation, [naics, 'value'], NaN)
+    let measureForAllFirmagesFilled = _.get(rawDataAcrossFirmages, [naics, 'filledValue'])
+
+    let ratioForFirmage = _.get(ratioDataForFirmage, [naics, 'value'], NaN) 
+    let ratioForFirmageFilled = _.get(ratioDataForFirmage, [naics, 'filledValue'])
+
+    let ratioForNation = _.get(ratioDataForNation, [naics, 'value'], NaN)
+    let ratioForNationFilled = _.get(ratioDataForNation, [naics, 'filledValue'])
+
+    let lq = ratioForFirmage / ratioForNation
+    let lqFilled =(ratioForFirmageFilled || ratioForNationFilled) 
 
     _.set(tableData, [naics, 'naicsCode'], naics)
     _.set(tableData, [naics, 'sectorTitle'], industryTitles[naics])
-    _.set(tableData, [naics, 'measureForFirmage'], stringifier(measureForFirmage, measureIsCurrency))
-    _.set(tableData, [naics, 'measureForAllFirmages'], stringifier(measureForAllFirmages, measureIsCurrency))
-    _.set(tableData, [naics, 'measureLocationQuotient'], stringifier(lq, false, 3))
+    _.set(tableData, [naics, 'measureForFirmage'], stringifier(measureForFirmage, measureIsCurrency, measureFilled))
+    _.set(tableData, [naics, 'measureForAllFirmages'], stringifier(measureForAllFirmages, 
+                                                                   measureIsCurrency, 
+                                                                   measureForAllFirmagesFilled))
+    _.set(tableData, [naics, 'measureLocationQuotient'], stringifier(lq, false, lqFilled, 3))
   })
 
 
@@ -590,7 +628,7 @@ function updateAllVisualizationsData (state) {
   state.lineGraphs.rawGraphData = getRawLineGraphData(state)
   state.lineGraphs.lqGraphData =  getLQLineGraphData(state)
 
-  //state.selectedQuarter = state.lastQuarterWithData
+  state.selectedQuarter = state.lastQuarterWithData
 
   updateQuarterTrackingVisualizationsData(state)
 }
@@ -613,6 +651,7 @@ function updateQuarterTrackingVisualizationsData (state) {
     return
   }
 
+debugger
   state.quarterlyDataCache[qtrString] = {
     selectedFirmageRadarChartData : (state.selectedFirmageRadarChartData = getSelectedFirmageRadarChartData(state)),
 
@@ -622,6 +661,8 @@ function updateQuarterTrackingVisualizationsData (state) {
 
     overviewTableData : (state.overviewTable.data = getOverviewTableData(state))
   }
+
+  console.log(state)
 }
 
 

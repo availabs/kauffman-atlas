@@ -159,6 +159,12 @@ function getParentNodeForNaicsCode (naicsCode) {
 
   if (!naicsCode) { throw new Error('Empty NAICS code error.') }
 
+  if ((naicsCode === '00') && (!this.root.children['00'])) { // QWI case
+    this.root.children['00'] = newNaicsTreeNode()
+    this.root.children['00'].descendentsMatcher = null
+    return this.root
+  }
+
   // Is the naicsCode a '2-digit' NAICS? Then root is the parent.
   if (this.root.children[naicsCode]) {
     return this.root

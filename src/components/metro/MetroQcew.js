@@ -73,6 +73,9 @@ const renderVisualizations = (props) => (
         </div>
 
         <div className='row'>
+          <div className='col-xs-4 button-group text-left'>
+          </div>
+
           <div className='col-xs-4 button-group text-right' role="group">
             <strong style={_.merge({ paddingTop: '1px', 
                                      paddingBottom: '1px', 
