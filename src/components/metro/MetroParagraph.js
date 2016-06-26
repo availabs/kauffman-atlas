@@ -34,9 +34,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   }
 
   _fetchData () {
-    if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
-      return this.props.loadQcewDataYear(this.props.metroId,2013)
-    }
+    //if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
+      //return this.props.loadQcewDataYear(this.props.metroId,2013)
+    //}
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
     }
@@ -378,5 +378,5 @@ export default connect((mapStateToProps), {
   loadMetroScores: (currentMetro) => loadMetroScores (currentMetro),
   getcombinedcomposite: () => loadCombinedComposite(), 
   loadNaicsKeys: () => loadNaicsKeys(),
-  loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes)
+  //loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes)
 })(MetroParagraph)

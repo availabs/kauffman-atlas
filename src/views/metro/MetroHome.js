@@ -54,7 +54,11 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    )
 		    case 'Employment':
 			    return (
-					<MetroQcew currentMetro={metroId} year={year}
+					<MetroQcew 
+               msa={metroId} 
+               measure='emplvl'
+               currentMetro={metroId} 
+               year={year}
 						   syear={syear}
 						   type={'employment'}
 						   title={'Employment'}
@@ -63,7 +67,11 @@ export class MetroHome extends React.Component<void, Props, void> {
 			    )
 		    case 'Establishment':
 			    return (
-					<MetroQcew currentMetro={metroId} year={year}
+					<MetroQcew 
+               msa={metroId} 
+               measure='qtrly_estabs_count'
+               currentMetro={metroId} 
+               year={year}
 						   syear={syear}
 						   type='establishment'
 						   title='Establishment'
@@ -72,7 +80,11 @@ export class MetroHome extends React.Component<void, Props, void> {
 			    )
 		    case 'Wages' :
 			    return (
-					<MetroQcew currentMetro={metroId} year={year}
+					<MetroQcew 
+               msa={metroId} 
+               measure='avg_wkly_wage'
+               currentMetro={metroId} 
+               year={year}
 						   syear={syear}
 						   type='totalwages'
 						   title='Wages'
@@ -81,7 +93,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 			    )
 			case 'StartupEmployment':
 				return (
-					<MetroQwi msa={metroId}
+					<MetroQwi 
+                 msa={metroId}
 					       measure='emptotal'
 					       title='Employment by Firm Age'
 					       params={this.props.params}
@@ -89,7 +102,8 @@ export class MetroHome extends React.Component<void, Props, void> {
 				)
 			case 'StartupPayroll':
 				return (
-				  	<MetroQwi msa={metroId}
+				  	<MetroQwi 
+               msa={metroId}
 				       measure='payroll'
 				       title='Payroll by Firm Age'
 				       params={this.props.params}

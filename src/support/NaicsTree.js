@@ -25,7 +25,7 @@ export class NaicsTree {
 
       let splitNaics = naicsCode.split('-')
       let subNaicsCodes = _.range(+splitNaics[0], +_.last(splitNaics) + 1)
-      let subCodesPattern = subNaicsCodes.map((subNaics) => `${subNaics}\\d{1,4}$`).join('|')
+      let subCodesPattern = subNaicsCodes.map((subNaics) => `^${subNaics}\\d{1,4}$`).join('|')
 
       acc[naicsCode].descendentsMatcher = new RegExp(subCodesPattern)
       return acc

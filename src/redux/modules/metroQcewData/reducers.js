@@ -231,6 +231,7 @@ const handleInventoryUpdate = (inventoryStatus, state, action) => {
 
 const handleDataReceived = (state, action) => {
 
+  console.log("==> QCEW Data Received")
   let newState = handleInventoryUpdate('RECEIVED', state, action)
 
   if (state === newState) { return state }
