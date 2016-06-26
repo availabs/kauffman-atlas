@@ -210,7 +210,7 @@ module.exports = function () {
     lines.attr('stroke', (d) => {
       return d.color || '#000'
     })
-    lines.attr('stroke-dasharray', (d) => d.filledNull ? "2,2" : "")
+    lines.attr('stroke-dasharray', (d) => d.filledValue ? "2,2" : "")
 
     if (transitionTime) {
       lines.transition().delay(transitionTime)
