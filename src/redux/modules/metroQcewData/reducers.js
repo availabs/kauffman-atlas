@@ -457,12 +457,12 @@ function getShareRadarChartData (state) {
   return subNaicsCodes.map((subNaics) => {
 
     let measureValue = _.get(data, [subNaics, 'value'], 0)
-    let measureShare = (Number.isFinite(measureValue / totalAcrossNaics)) ? (measureValue / totalAcrossNaics) : '-'
+    let measureShare = (measureValue / totalAcrossNaics)
 
     let naicsTitle = _.get(naicsInfoTable, [subNaics, 'title'], subNaics.toString())
     return {
       axis  : naicsTitle.substring(0,6),
-      value : measureShare,
+      value : Number.isFinite(measureShare) ? measureShare : 0,
     }
   })
 }
@@ -490,10 +490,15 @@ function getLQRadarChartData (state) {
   let subNaicsCodes = Object.keys(state.inventory[msa][parentNaics]).sort()
 
   //let naicsTitle = _.get(naicsInfoTable, [subNaics, 'title'], subNaics.toString())
-  return subNaicsCodes.map((subNaics) => ({
-    axis  : (_.get(naicsInfoTable, [subNaics, 'title'], subNaics.toString())).substring(0,6),
-    value : _.get(data, [subNaics, 'value'], 0),
-  }))
+  return subNaicsCodes.map((subNaics) => {
+
+    let lq = +_.get(data, [subNaics, 'value'])
+
+    return {
+      axis  : (_.get(naicsInfoTable, [subNaics, 'title'], subNaics.toString())).substring(0,6),
+      value : Number.isFinite(lq) ? lq : 0,
+    }
+  })
 }
 
 
