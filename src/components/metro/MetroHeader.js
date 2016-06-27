@@ -7,7 +7,7 @@ import LineGraph from 'components/graphs/SimpleLineGraph'
 import Select from 'react-select'
 import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
-
+import 'react-select/dist/react-select.css';
 
 
 export class MetroHeader extends React.Component<void, Props, void> {
