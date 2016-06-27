@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import Navbar from 'components/layout/Navbar'
+import Footer from 'components/layout/Footer'
 import '../../styles/core.scss'
 
 // Note: Stateless/function components *will not* hot reload!
@@ -18,6 +19,7 @@ function CoreLayout ({ children }) {
       	<Navbar />
         {children}
       </div>
+      <Footer />
     </div>
   )
 }

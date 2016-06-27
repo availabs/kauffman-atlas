@@ -105,8 +105,7 @@ export class MetroHeader extends React.Component<void, Props, void> {
     })
 
     function selectChange (value){
-      console.log("Select Change",value);
-
+      
       if(value && scope.props.metros[value.value] && scope.props.metros[value.value].pop){
         scope.props.selectChange(value.value) 
       }
