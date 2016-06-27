@@ -352,7 +352,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>
               <div className='pull-right'>
                 <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
-                        `${densityExceptAccomSelected.toLocaleString()}%` : ''}
+                        `${densityExceptAccomSelected.y.toLocaleString()}%` : ''}
                 </h4>
                 {densityExceptAccomSelected ? "Rank " + densityExceptAccomSelected.rank : ""}   
                 <div>{densityExceptAccomSelected ? this.state.displayYear : ""}</div>
@@ -469,14 +469,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                <h4>{(fluidityNetMigration && fluidityNetMigration.y) ? 
-                        `${fluidityNetMigration.toLocaleString()}%` : ''}
+                        `${fluidityNetMigration.y.toLocaleString()}%` : ''}
                </h4>
                 Rank {fluidityNetMigration.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                <h4>{(fluidityNetMigrationSelected && fluidityNetMigrationSelected.y) ? 
-                        `${fluidityNetMigrationSelected.toLocaleString()}%` : ''}
+                        `${fluidityNetMigrationSelected.y.toLocaleString()}%` : ''}
                </h4>
                 {fluidityNetMigrationSelected ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
                 <div>{fluidityNetMigrationSelected ? this.state.displayYear : ""}</div>
@@ -506,7 +506,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                <h4>{(fluidityTotalMigration && fluidityTotalMigration.y) ? 
-                        `${fluidityTotalMigration.toLocaleString()}%` : ''}
+                        `${fluidityTotalMigration.y.toLocaleString()}%` : ''}
                </h4>
                 Rank {fluidityTotalMigration.rank}
                 <div>2013</div>
@@ -577,7 +577,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                 <h4>{(diversityForeignBorn && diversityForeignBorn.y) ? 
-                      `diversityForeignBorn.y.toLocaleString()%` : ''}
+                      `${diversityForeignBorn.y.toLocaleString()}%` : ''}
                 </h4>
                 Rank {diversityForeignBorn.rank}
                 <div>2013</div>
