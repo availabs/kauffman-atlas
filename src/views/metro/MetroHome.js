@@ -251,20 +251,19 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    </div>
 		</div>
 	    ) 
-	}
-	else{
+	} else {
 	    return (
-		<div>
-		    <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-			<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} selectChange={selectChange}/>
-			<MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/>
-		    </div>
-		    {this.renderNav()}
-		    {this.subNav()}
-		    <div style={{marginTop: 15, minHeight: 500}}>
-			{this.renderDisplay()}
-		    </div>   
-		</div>
+			<div>
+			    <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
+				<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} selectChange={selectChange}/>
+				<MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/>
+			    </div>
+			    {this.renderNav()}
+			    {this.subNav()}
+			    <div style={{marginTop: 15, minHeight: 500}}>
+				{this.renderDisplay()}
+			    </div>   
+			</div>
 	    )
 	}
 
