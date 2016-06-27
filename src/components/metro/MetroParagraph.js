@@ -34,9 +34,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   }
 
   _fetchData () {
-    if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
-      return this.props.loadQcewDataYear(this.props.metroId,2013)
-    }
+    //if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
+      //return this.props.loadQcewDataYear(this.props.metroId,2013)
+    //}
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
     }
@@ -138,11 +138,13 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   }
 
   _processData (msa,year,depth,filter,typeData) {
-    if(!this.props.qcewData || !this.props.qcewData[msa] ||
-       !this.props.qcewData[msa][year]){
-     return      
-    }
 
+    if(filter != null){
+      this.props.loadQcewDataYear(
+      msa,
+      year,
+      this.props.naicsTable.Query(filter,1,true))
+    }
 
     let currentData = d3.nest()
       .key( x=>x.industry_code )
@@ -215,9 +217,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   _topNaics(year,depth,filter,metric,type,length){
     // (msa,year,depth,filter,type)
     var aggNaics = this._processData(this.props.metroId,year,depth,filter,metric);
-    if(filter != null){
-      console.log(aggNaics)
-    }
 
     var sortedNaics = Object.keys(aggNaics).map(d => {
       aggNaics[d].type = aggNaics[d].type
@@ -240,8 +239,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
   _renderEei(){
     var metroId = this.props.metroId;
-
-
     var data = this.props.metroScores[metroId];
     var name = this.props.metros[metroId].name;
 
@@ -269,26 +266,20 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         </p>
       </div>
           )
-
-
-
   }
 
   _renderNaics(){
     var metroId = this.props.metroId;
+    var name = this.props.metros[metroId].name;
 
-//(year,depth,filter,metric,type,length)
-    let topTwoDigitEmpShare = this._topNaics(2013,2,null,'employment','typeShare',1)[0]
+    let topTwoDigitEmpShare = this._topNaics(2013,2,null,'employment','typeQuot',1)[0]
     var topEmpShareTwoDigName = this.props.naicsKeys[topTwoDigitEmpShare.key].title
     var topEmpShareTwoDigValue = topTwoDigitEmpShare.value['typeShare']
-    var topSixDigitEmployed = this._topNaics(2013,4,(topTwoDigitEmpShare.key),'employment','type',1)[0]  
-    var topSixDigitEmployedName = 'this.props.naicsKeys[topSixDigitEmployed.key].title'
 
     let topTwoDigitNumEstab = this._topNaics(2013,2,null,'establishment','type',1)[0]   
     var topTwoDigitNumEstabName = this.props.naicsKeys[topTwoDigitNumEstab.key].title
     var topTwoDigitNumEstabValue = topTwoDigitNumEstab.value['type']
     var topTwoDigitNumEstabShareValue = topTwoDigitNumEstab.value['typeShare']
-
 
     var topThreeTwoDigitEstabQuot = this._topNaics(2013,2,null,'establishment','typeQuot',3)
 
@@ -301,26 +292,22 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var topTwoDigitEstabQuotTwo = topThreeTwoDigitEstabQuot[2]
     var topTwoDigitEstabQuotTwoName = this.props.naicsKeys[topTwoDigitEstabQuotTwo.key].title
 
+
     return (
-          <div>
-            <p>
-              In terms of industry sectors, {name} has a high concentration of jobs in {topEmpShareTwoDigName} compared to the national average. 
-              {" " + topEmpShareTwoDigName} accounts for {(roundFormat(topEmpShareTwoDigValue)*100)}% of all jobs in the region. 
-              Within that sector, {topSixDigitEmployedName} has the greatest number of employees.
-            </p>
-            <p>
-              The sector in {name} with the highest number of establishments is {topTwoDigitNumEstabName} with {integerFormatter(topTwoDigitNumEstabValue)} establishments making up {(roundFormat(topTwoDigitNumEstabShareValue) * 100)}% of the total establishments. 
-              Relative to the rest of the nation, {name} has a high concentration of {topTwoDigitEstabQuotZeroName}, {topTwoDigitEstabQuotOneName}, and {topTwoDigitEstabQuotTwoName} establishments.
-            </p> 
-          </div>
-      )
+      <div>
+        <p>
+          In terms of industry sectors, {name} has a high concentration of jobs in {topEmpShareTwoDigName} compared to the national average. 
+          {" " + topEmpShareTwoDigName} accounts for {(roundFormat(topEmpShareTwoDigValue)*100)}% of all jobs in the region. 
+        </p>
+        <p>
+          The sector in {name} with the highest number of establishments is {topTwoDigitNumEstabName} with {integerFormatter(topTwoDigitNumEstabValue)} establishments making up {(roundFormat(topTwoDigitNumEstabShareValue) * 100)}% of the total establishments. 
+          Relative to the rest of the nation, {name} has a high concentration of {topTwoDigitEstabQuotZeroName}, {topTwoDigitEstabQuotOneName}, and {topTwoDigitEstabQuotTwoName} establishments.
+        </p> 
+      </div>
+    )      
   }
 
-
   render () {
-
-
-
     var metroId = this.props.metroId;
 
     if(!this.props.metros || 
@@ -338,9 +325,10 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       !this.props.combinedcomposite || 
       !this.props.naicsKeys || 
       !this.props.qcewData || 
+      !this.props.qcewData[this.props.metroId] ||
       !Object.keys(this.props.qcewData[this.props.metroId]).length){
       console.log("not")
-         var naics = (<span>Loading Naics</span>) 
+      var naics = (<span>Loading Naics</span>) 
     }
     else{
       var naics = this._renderNaics()
@@ -378,5 +366,5 @@ export default connect((mapStateToProps), {
   loadMetroScores: (currentMetro) => loadMetroScores (currentMetro),
   getcombinedcomposite: () => loadCombinedComposite(), 
   loadNaicsKeys: () => loadNaicsKeys(),
-  loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes)
+  //loadQcewDataYear : (msaId, year, codes) => loadMetroDataYear(msaId, year, codes)
 })(MetroParagraph)

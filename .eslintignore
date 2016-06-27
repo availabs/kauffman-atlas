@@ -4,3 +4,9 @@ node_modules/**
 dist/**
 *.spec.js
 src/index.html
+tests/
+config/
+bin/
+blueprints/
+build/
+interfaces/

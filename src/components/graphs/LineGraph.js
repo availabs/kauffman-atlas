@@ -3,7 +3,6 @@ import React from 'react'
 import d3 from 'd3'
 import { connect } from 'react-redux'
 import classes from '../../components/maps/NationalMap.scss'
-import { withRouter } from 'react-router'
 
 
 export class LineGraph extends React.Component<void, Props, void> {
@@ -236,7 +235,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
     //For each city
     //Draws two lines, to create a colored line with a black border
-    filteredData.forEach(function(b,i){
+    filteredData.forEach(function(b){
         svg.append("g")
             .append("path")
             .attr("d",function(){b.border = this; return line(b.values)})
@@ -328,7 +327,7 @@ export class LineGraph extends React.Component<void, Props, void> {
       .style("text-anchor", "end")
       .attr("dx", "-.6em")
       .attr("dy", ".15em")
-      .attr("transform", function(d) {
+      .attr("transform", function() {
           return "rotate(-65)" 
       })
 
@@ -655,7 +654,6 @@ export class LineGraph extends React.Component<void, Props, void> {
 
   render () {
     var scope = this;
-    //console.log('linegraph render')
 
     return (
         <div className={classes['graphContainer']}>

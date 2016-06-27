@@ -1,8 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { loadMetroGdp, loadMetroGdpPerCapita } from 'redux/modules/metroGdpData'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
-import MetroMap from 'components/maps/MetroMap'
 import classes from 'styles/sitewide/index.scss'
 import LineGraph from 'components/graphs/SimpleLineGraph'
 import ReactTooltip from 'react-tooltip'
@@ -10,7 +9,7 @@ import CategoryText from 'components/misc/categoryText'
 
 
 export class MetroScoresOverview extends React.Component<void, Props, void> {
-  constructor (props) {
+  constructor () {
     super()
     this.state = {
       displayYear:0
@@ -35,7 +34,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     this._fetchData ()
   }
   
-  componentWillReceiveProps (nextProps){
+  componentWillReceiveProps (){
     this._fetchData ()
   }
 
@@ -53,7 +52,10 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       color: color,
       values: data
         //.filter(d => { return d.x >= 2001})
-        .map((d,i) => {
+        .filter(d => {
+          return d.y != null
+        })
+        .map((d) => {
         return {
           key: d.x,
           values:{
@@ -80,7 +82,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
   render () {
     if (!this.hasData()) return <span />
-    //console.log('got data', this.props.metroScores[this.props.metroId])
+    console.log('got data', this.props.metroScores[this.props.metroId])
 
     let year = 2013
     let scores = this.props.metroScores[this.props.metroId];
@@ -97,6 +99,15 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityShareEmpGraph = this.formatData(scores.density.shareEmp.relative.values)
+    let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
+    let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values)
+    let densityExceptAccom = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === year })[0] || {}
+    let densityExceptAccomSelected = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values)
+
+
+
 
     let fluidityComposite = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityCompositeSelected = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
@@ -114,6 +125,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let fluidityTotalMigrationSelected = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values)
     
+
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [])
@@ -121,6 +133,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let diversityForeignBornSelected =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x=== this.state.displayYear })[0] || null
     let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [])
     
+    let diversityEmpVariance = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === year })[0] || {}
+    let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values)
+    
+
+
+
+
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
 
@@ -153,12 +173,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{combined.y.toLocaleString()}</h4>
+                <h4>{((combined && combined.y) || '').toLocaleString()}</h4>
                 Rank {combined.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{combinedSelected ? combinedSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((combinedSelected && combinedSelected.y) || '').toLocaleString()}</h4>
                 {combinedSelected ? "Rank " + combinedSelected.rank : ""}   
                 <div>{combinedSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -190,12 +210,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{densityComposite.y.toLocaleString()}</h4>
+                <h4>{((densityComposite && densityComposite.y) || '').toLocaleString()}</h4>
                 Rank {densityComposite.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityCompositeSelected ? densityCompositeSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((densityCompositeSelected && densityCompositeSelected.y) || '').toLocaleString()}</h4>
                 {densityCompositeSelected ? "Rank " + densityCompositeSelected.rank : ""}   
                 <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -206,7 +226,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
             </div>
           </div>
-           <div className='col-xs-4' style={graphBox}>
+           <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="newFirms" className={"pull-right " + classes['info']}>?</span>New Firms / 1k pop</h4>
             <ReactTooltip 
               id="newFirms" 
@@ -222,12 +242,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{densityNewFirms.y.toLocaleString()}</h4>
+                <h4>{((densityNewFirms && densityNewFirms.y) || '').toLocaleString()}</h4>
                 Rank {densityNewFirms.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityNewFirmsSelected ? densityNewFirmsSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((densityNewFirmsSelected && densityNewFirmsSelected.y) || '').toLocaleString()}</h4>
                 {densityNewFirmsSelected ? "Rank " + densityNewFirmsSelected.rank : ""}   
                 <div>{densityNewFirmsSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -238,14 +258,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityNewFrirmsGraph[0].values[densityNewFrirmsGraph[0].values.length-1].key}</span>
             </div>
           </div>
-            <div className='col-xs-4'>
+          <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="shareEmp" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Firms</h4>
             <ReactTooltip 
               id="shareEmp" 
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{left:300}}
+              offset={{}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}
@@ -254,12 +274,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{(densityShareEmp.y).toLocaleString()}%</h4>
+                <h4>{(densityShareEmp && densityShareEmp.y) ? 
+                      `${densityShareEmp.y.toLocaleString()}%` : ''}
+                </h4>
                 Rank {densityShareEmp.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{densityShareEmpSelected ? (densityShareEmpSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{(densityShareEmpSelected && densityShareEmpSelected.y) ? 
+                      `${densityShareEmpSelected.y.toLocaleString()}%` : ''}
+                </h4>
                 {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
                 <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -270,6 +294,76 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
             </div>
           </div>
+          <div className='col-xs-2' style={graphBox}>
+            <h4><span data-tip data-for="highTech" className={"pull-right " + classes['info']}>?</span>Share of Employment in High Tech Firms</h4>
+            <ReactTooltip 
+              id="highTech" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:100}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.shareEmpHighTech}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(densityHighTech && densityHighTech.y) ? 
+                      `${densityHighTech.y.toLocaleString()}%` : ''}
+                </h4>
+                Rank {densityHighTech.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
+                      `${densityHighTechSelected.y.toLocaleString()}%` : ''}
+                </h4>
+                {densityHighTechSelected ? "Rank " + densityHighTechSelected.rank : ""}   
+                <div>{densityHighTechSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={densityHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+              <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
+            </div>
+          </div>
+          <div className='col-xs-2'>
+            <h4><span data-tip data-for="exceptAccom" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Traded</h4>
+            <ReactTooltip 
+              id="exceptAccom" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:300}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.shareEmpNoAccRet}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{((densityExceptAccom && densityExceptAccom.y) || '').toLocaleString()}%</h4>
+                Rank {densityExceptAccom.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
+                        `${densityExceptAccomSelected.toLocaleString()}%` : ''}
+                </h4>
+                {densityExceptAccomSelected ? "Rank " + densityExceptAccomSelected.rank : ""}   
+                <div>{densityExceptAccomSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={densityExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+              <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
+            </div>
+          </div>        
         </div>
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
@@ -289,12 +383,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{fluidityComposite.y.toLocaleString()}</h4>
+                <h4>{((fluidityComposite && fluidityComposite.y) || '').toLocaleString()}</h4>
                 Rank {fluidityComposite.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityCompositeSelected ? fluidityCompositeSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((fluidityCompositeSelected && fluidityCompositeSelected.y) || '').toLocaleString()}</h4>
                 {fluidityCompositeSelected ? "Rank " + fluidityCompositeSelected.rank : ""}   
                 <div>{fluidityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -309,12 +403,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <h4> High Growth Firms / Total Firms </h4>
             <div>
               <div className='pull-left'>
-                <h4>{fluidityHighGrowth.y.toLocaleString()}</h4>
+                <h4>{((fluidityHighGrowth && fluidityHighGrowth.y) || '').toLocaleString()}</h4>
                 Rank {fluidityHighGrowth.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityHighGrowthSelected ? fluidityHighGrowthSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((fluidityHighGrowthSelected && fluidityHighGrowthSelected.y) || '').toLocaleString()}</h4>
                 {fluidityHighGrowthSelected ? "Rank " + fluidityHighGrowthSelected.rank : ""}   
                 <div>{fluidityHighGrowthSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -341,12 +435,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{fluidityHighRaw.y.toLocaleString()}</h4>
+                <h4>{((fluidityHighRaw && fluidityHighRaw.y) || '').toLocaleString()}</h4>
                 Rank {fluidityHighRaw.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityHighRawSelected ? fluidityHighRawSelected.y ? fluidityHighRawSelected.y.toLocaleString() : "" : ""}</h4>
+                <h4>{((fluidityHighRawSelected && fluidityHighRawSelected.y) || '').toLocaleString()}</h4>
                 {fluidityHighRawSelected ? fluidityHighRawSelected.y ? "Rank " + fluidityHighRawSelected.rank : "" : ""}   
                 <div>{fluidityHighRawSelected ? fluidityHighRawSelected.y ? this.state.displayYear : "" : ""}</div>
               </div>         
@@ -374,12 +468,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <small> (inflow - outflow) </small>
             <div>
               <div className='pull-left'>
-                <h4>{(fluidityNetMigration.y).toLocaleString()}%</h4>
+               <h4>{(fluidityNetMigration && fluidityNetMigration.y) ? 
+                        `${fluidityNetMigration.toLocaleString()}%` : ''}
+               </h4>
                 Rank {fluidityNetMigration.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityNetMigrationSelected ? (fluidityNetMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
+               <h4>{(fluidityNetMigrationSelected && fluidityNetMigrationSelected.y) ? 
+                        `${fluidityNetMigrationSelected.toLocaleString()}%` : ''}
+               </h4>
                 {fluidityNetMigrationSelected ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
                 <div>{fluidityNetMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -407,12 +505,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <small> (inflow + outflow) </small>
             <div>
               <div className='pull-left'>
-                <h4>{(fluidityTotalMigration.y).toLocaleString()}%</h4>
+               <h4>{(fluidityTotalMigration && fluidityTotalMigration.y) ? 
+                        `${fluidityTotalMigration.toLocaleString()}%` : ''}
+               </h4>
                 Rank {fluidityTotalMigration.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{fluidityTotalMigrationSelected ? (fluidityTotalMigrationSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{(fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.y) ? 
+                        `${fluidityTotalMigrationSelected.y.toLocaleString()}%` : ''}
+                </h4>
                 {fluidityTotalMigrationSelected ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
                 <div>{fluidityTotalMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -442,12 +544,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{diversityComposite.y.toLocaleString()}</h4>
+                <h4>{((diversityComposite && diversityComposite.y) || '').toLocaleString()}</h4>
                 Rank {diversityComposite.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{diversityCompositeSelected ? diversityCompositeSelected.y.toLocaleString() : ""}</h4>
+                <h4>{((diversityCompositeSelected && diversityCompositeSelected.y) || '').toLocaleString()}</h4>
                 {diversityCompositeSelected ? "Rank " + diversityCompositeSelected.rank : ""}   
                 <div>{diversityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -458,7 +560,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
             </div>
           </div>
-           <div className='col-xs-4' style={graphBox}>
+          <div className='col-xs-2' style={graphBox}>
             <h4><span data-tip data-for="foreignborn" className={"pull-right " + classes['info']}>?</span>% Foreign Born</h4>
             <ReactTooltip 
               id="foreignborn" 
@@ -474,12 +576,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{(diversityForeignBorn.y).toLocaleString()}%</h4>
+                <h4>{(diversityForeignBorn && diversityForeignBorn.y) ? 
+                      `diversityForeignBorn.y.toLocaleString()%` : ''}
+                </h4>
                 Rank {diversityForeignBorn.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{diversityForeignBornSelected ? (diversityForeignBornSelected.y).toLocaleString() + "%" : ""}</h4>
+                <h4>{(diversityForeignBornSelected && diversityForeignBornSelected.y) ? 
+                      `${diversityForeignBornSelected.y.toLocaleString()}%` : ""}
+                </h4>
                 {diversityForeignBornSelected ? "Rank " + diversityForeignBornSelected.rank : ""}   
                 <div>{diversityForeignBornSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -491,8 +597,44 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className='col-xs-2' style={graphBox}>
+            <h4><span data-tip data-for="empVariance" className={"pull-right " + classes['info']}>?</span>Economic Diversity</h4>
+            <ReactTooltip 
+              id="empVariance" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.emplqvariance}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(diversityEmpVariance && diversityEmpVariance.y) ? 
+                      `${diversityEmpVariance.y.toLocaleString()}%` : ''}
+                </h4>
+                Rank {diversityEmpVariance.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{(diversityEmpVarianceSelected && diversityEmpVarianceSelected.y) ? 
+                        `${diversityEmpVarianceSelected.y.toLocaleString()}%` : ""}
+                </h4>
+                {diversityEmpVarianceSelected ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
+                <div>{diversityEmpVarianceSelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
+              <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
+            </div>
+          </div>          
+          <div className='col-xs-2' style={graphBox}>
             <h4> Opportunity for Low Income Children </h4>
-            <h4>{(diversityOppLow.y).toLocaleString()}</h4> 
+            <h4>{((diversityOppLow  && diversityOppLow.y) || '').toLocaleString()}</h4> 
             Rank {diversityOppLow.rank}
           </div>
           <div className='col-xs-2'>
@@ -509,7 +651,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               >
               <span>{CategoryText.opportunity}</span>
             </ReactTooltip>
-            <h4>{(diversityOppHigh.y).toLocaleString()}</h4> 
+            <h4>{((diversityOppHigh && diversityOppHigh.y) || '').toLocaleString()}</h4> 
             Rank {diversityOppHigh.rank}
           </div>
         </div>

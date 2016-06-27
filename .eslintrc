@@ -1,14 +1,11 @@
 {
   "parser"  : "babel-eslint",
   "extends" : [
-    "standard",
     "standard-react"
   ],
-  "plugins" : [
-    "flow-vars"
-  ],
   "env"     : {
-    "browser" : true
+    "browser" : true,
+    "es6": true
   },
   "globals" : {
     "Action"       : false,
@@ -16,12 +13,22 @@
     "__PROD__"     : false,
     "__DEBUG__"    : false,
     "__DEBUG_NEW_WINDOW__" : false,
-    "__BASENAME__" : false
+    "__BASENAME__" : false,
+    "d3": false,
+    "Props": false
   },
   "rules": {
-    "semi" : [2, "never"],
-    "max-len": [2, 120, 2],
-    "flow-vars/define-flow-type": 1,
-    "flow-vars/use-flow-type": 1
+    "indent": 0,
+    "no-undef": 2,
+    "no-unused-vars": 1,
+    "linebreak-style": [ 2, "unix" ],
+    "react/jsx-no-bind": 0,
+    "react/jsx-indent": 0,
+    "react/jsx-indent-props": 0,
+    "react/jsx-space-before-closing": 0,
+    "react/jsx-equals-spacing": 0,
+    "react/jsx-curly-spacing": 0,
+    "react/jsx-boolean-value": 0,
+    "react/prop-types": 0
   }
 }

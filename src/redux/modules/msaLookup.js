@@ -49,7 +49,6 @@ const ACTION_HANDLERS = {
 		  return
 	      newState.naicsLookup.addString(key)
 	  })
-      console.log(action.payload)
       return newState;
   }
 }
