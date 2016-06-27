@@ -246,6 +246,7 @@ function insertDataIntoTreeNode (node, data, transformers) {
 
       let lkv = lastKnownValues[elemPath.slice(2)]
 
+      val = val || NaN // 0 === 'No Data'
       if (Number.isFinite(lkv) && !Number.isFinite(val)) {
         val = lkv
         dataElement.filledValue = true
