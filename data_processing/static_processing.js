@@ -688,9 +688,8 @@ function _processComposite(newFirms,share,highTech,noAccomRetail){
       var compositeValue = (
         shareScale(yearCityFilteredShare[i].values[j].y) +      
         newFirmsScale(newFirmObj[curYear]) +
-        highTechScale(highTechObj[curYear]) +
-        noAccomRetailScale(noAccomRetailObj[curYear])
-            )/4
+        highTechScale(highTechObj[curYear])
+            )/3
 
       resultValues.push({x:curYear,y:compositeValue})      
     }
