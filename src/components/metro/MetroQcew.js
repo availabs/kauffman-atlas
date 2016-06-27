@@ -88,7 +88,7 @@ const renderVisualizations = (props) => (
             <span><b>{`${props.selectedParentNaicsTitle}`}</b></span>
           </div>
 
-          <div className='col-xs-4 button-group text-right' role="group">
+          <div className='col-xs-8 button-group text-right' role="group">
             <strong style={_.merge({ paddingTop: '1px', 
                                      paddingBottom: '1px', 
                                      paddingLeft: '2px', 
@@ -123,56 +123,63 @@ const renderVisualizations = (props) => (
 
 
 
-      <div className='row' style={{overflow:'hidden'}} >
+        <StickyContainer>    
+          <div className='row' style={{overflow:'hidden', position: 'relative'}} >
 
-        <div className='col-xs-8'>
-          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'rawData-lineGraph')}
-               style={{margin:0, padding:0}}>
+            <div className='col-xs-8'>
+              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'rawData-lineGraph')}
+                   style={{margin:0, padding:0}}>
 
-            <LineGraph data={props.lineGraphRawData}
-                       key='rawData-lineGraph'
-                       uniq='rawData-lineGraph'
-                       yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
-                       xScaleType={'time'}
-                       yAxis={true}
-                       margin={graphMargin}
-                       tooltip={true}
-                       quarterChangeListener={props.selectedQuarterChange} />
+                <LineGraph data={props.lineGraphRawData}
+                           key='rawData-lineGraph'
+                           uniq='rawData-lineGraph'
+                           yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
+                           xScaleType={'time'}
+                           yAxis={true}
+                           margin={graphMargin}
+                           tooltip={true}
+                           title={props.lineGraphRawTitle}
+                           quarterChangeListener={props.selectedQuarterChange} />
+              </div>
+
+              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'lqData-lineGraph')}
+                   style={{margin:0, padding:0}}>
+
+                <LineGraph data={props.lineGraphLQData}
+                           key='lqData-lineGraph'
+                           uniq='lqData-lineGraph'
+                           xScaleType={'time'}
+                           xAxis={true}
+                           xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                           yAxis={true}
+                           yFormat={floatFormatter}
+                           margin={graphMargin}
+                           tooltip={true}
+                           title={props.lineGraphLQTitle}
+                           quarterChangeListener={props.selectedQuarterChange} />
+              </div>
+            </div>
+
+
+            <div className='col-xs-4'>
+              <Sticky>
+                  <TooltipTable data={props.tooltipData}
+                                measureIsCurrency={
+                                  (props.focusedLineGraph === 'rawData-lineGraph') && props.measureIsCurrency
+                                }
+                                onMouseEnter={props.mouseEnteredTooltipCell}
+                                onMouseLeave={props.mouseLeftTooltipCell}
+                                hoveredRowKey={props.tooltipHoveredNaicsLabel}
+                                uniq={props.field} />
+              </Sticky>
+            </div>
           </div>
-
-          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'lqData-lineGraph')}
-               style={{margin:0, padding:0}}>
-
-            <LineGraph data={props.lineGraphLQData}
-                       key='lqData-lineGraph'
-                       uniq='lqData-lineGraph'
-                       xScaleType={'time'}
-                       xAxis={true}
-                       xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
-                       yAxis={true}
-                       yFormat={floatFormatter}
-                       margin={graphMargin}
-                       tooltip={true}
-                       quarterChangeListener={props.selectedQuarterChange} />
-          </div>
-        </div>
-
-        <div className='col-xs-4'>
-            <TooltipTable data={props.tooltipData}
-                          measureIsCurrency={
-                            (props.focusedLineGraph === 'rawData-lineGraph') && props.measureIsCurrency
-                          }
-                          onMouseEnter={props.mouseEnteredTooltipCell}
-                          onMouseLeave={props.mouseLeftTooltipCell}
-                          hoveredRowKey={props.tooltipHoveredNaicsLabel}
-                          uniq={props.field} />
-        </div>
-      </div>
+        </StickyContainer >
 
       <div className='row' style={{overflow:'hidden', zIndex: 10}} >
         <div className='col-xs-5'>
           <strong>
-            {`Share of ${props.measure} by industry for firms`}
+            {`Share of ${props.lineGraphRawTitle} by Industry`}
           </strong>
           {
             (!props.shareRadarChartData) ? (<div/>) : 
@@ -184,7 +191,7 @@ const renderVisualizations = (props) => (
 
         <div className='col-xs-5'>
           <strong>
-            {`Share of by ${props.measure} by industry across firmages.`}
+            {`${props.lineGraphRawTitle} Location Quotient by Industry`}
           </strong>
           {
             (!props.lqRadarChartData) ? (<div/>) : 
@@ -230,12 +237,19 @@ class MetroQcew extends React.Component<void, Props, void> {
 
 
 const mapStateToProps = (state) => ({
+  lineGraphRawTitle        : state.metroQcewData.lineGraphs.rawGraphTitle,
   lineGraphRawData         : state.metroQcewData.lineGraphs.rawGraphData,
+
+  lineGraphLQTitle         : state.metroQcewData.lineGraphs.lqGraphTitle,
   lineGraphLQData          : state.metroQcewData.lineGraphs.lqGraphData,
+
   tooltipData              : state.metroQcewData.tooltipTable.data,
+
   shareRadarChartData      : [state.metroQcewData.shareRadarChartData],
   lqRadarChartData         : [state.metroQcewData.lqRadarChartData],
+
   overviewTableData        : state.metroQcewData.overviewTable.data,
+
   selectedQuarter          : state.metroQcewData.selectedQuarter,
   measureIsCurrency        : state.metroQcewData.measureIsCurrency,
   focusedLineGraph         : state.metroQcewData.lineGraphs.focused,

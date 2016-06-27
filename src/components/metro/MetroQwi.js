@@ -133,52 +133,58 @@ const renderVisualizations = (props) => (
 
 
 
-      <div className='row' style={{overflow:'hidden'}} >
+      <StickyContainer>    
+        <div className='row' style={{overflow:'hidden'}} >
 
-        <div className='col-xs-8'>
-          <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'rawData-lineGraph')}>
+          <div className='col-xs-8'>
+            <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'rawData-lineGraph')}>
 
-            <LineGraph data={props.lineGraphRawData}
-                       key='rawData-lineGraph'
-                       uniq='rawData-lineGraph'
-                       yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
-                       xScaleType={'time'}
-                       yAxis={true}
-                       margin={graphMargin}
-                       tooltip={true}
-                       quarterChangeListener={props.selectedQuarterChange} />
+              <LineGraph data={props.lineGraphRawData}
+                         key='rawData-lineGraph'
+                         uniq='rawData-lineGraph'
+                         yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
+                         xScaleType={'time'}
+                         yAxis={true}
+                         margin={graphMargin}
+                         tooltip={true}
+                         title={props.lineGraphRawTitle}
+                         quarterChangeListener={props.selectedQuarterChange} />
+            </div>
+
+            {
+              (!props.lineGraphLQData || (firmageLabels[props.selectedFirmage] === 'All Firm Ages')) ? <div/> : (
+                <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'lqData-lineGraph')}>
+
+                  <LineGraph data={props.lineGraphLQData}
+                             key='lqData-lineGraph'
+                             uniq='lqData-lineGraph'
+                             xScaleType={'time'}
+                             xAxis={true}
+                             xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
+                             yAxis={true}
+                             yFormat={floatFormatter}
+                             margin={graphMargin}
+                             tooltip={true}
+                             title={props.lineGraphLQTitle}
+                             quarterChangeListener={props.selectedQuarterChange} />
+                </div>)
+            }
           </div>
 
-          {
-            (!props.lineGraphLQData || (firmageLabels[props.selectedFirmage] === 'All Firm Ages')) ? <div/> : (
-              <div onMouseEnter={props.lineGraphFocusChange.bind(null, 'lqData-lineGraph')}>
-
-                <LineGraph data={props.lineGraphLQData}
-                           key='lqData-lineGraph'
-                           uniq='lqData-lineGraph'
-                           xScaleType={'time'}
-                           xAxis={true}
-                           xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
-                           yAxis={true}
-                           yFormat={floatFormatter}
-                           margin={graphMargin}
-                           tooltip={true}
-                           quarterChangeListener={props.selectedQuarterChange} />
-              </div>)
-          }
+          <div className='col-xs-4'>
+            <Sticky>
+              <TooltipTable data={props.tooltipData}
+                            measureIsCurrency={
+                              (props.focusedLineGraph === 'rawData-lineGraph') && props.measureIsCurrency
+                            }
+                            onMouseEnter={props.mouseEnteredTooltipCell}
+                            onMouseLeave={props.mouseLeftTooltipCell}
+                            hoveredRowKey={props.tooltipHoveredNaicsLabel}
+                            uniq={props.field} />
+            </Sticky>
+          </div>
         </div>
-
-        <div className='col-xs-4'>
-            <TooltipTable data={props.tooltipData}
-                          measureIsCurrency={
-                            (props.focusedLineGraph === 'rawData-lineGraph') && props.measureIsCurrency
-                          }
-                          onMouseEnter={props.mouseEnteredTooltipCell}
-                          onMouseLeave={props.mouseLeftTooltipCell}
-                          hoveredRowKey={props.tooltipHoveredNaicsLabel}
-                          uniq={props.field} />
-        </div>
-      </div>
+      </StickyContainer>
 
       <div className='row' style={{overflow:'hidden', zIndex: 10}} >
         <div className='col-xs-5'>
@@ -240,7 +246,9 @@ class MetroQwi extends React.Component<void, Props, void> {
 
 
 const mapStateToProps = (state) => ({
+  lineGraphRawTitle               : state.metroQwiData.lineGraphs.rawGraphTitle,
   lineGraphRawData                : state.metroQwiData.lineGraphs.rawGraphData,
+  lineGraphLQTitle                : state.metroQwiData.lineGraphs.lqGraphTitle,
   lineGraphLQData                 : state.metroQwiData.lineGraphs.lqGraphData,
   tooltipData                     : state.metroQwiData.tooltipTable.data,
   shareByIndustryRadarGraphData   : [state.metroQwiData.selectedFirmageRadarChartData],

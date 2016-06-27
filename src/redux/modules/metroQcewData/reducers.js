@@ -10,7 +10,7 @@ import { updateFirstAndLastQuarterWithData,
 
 import NaicsTree from '../../../support/NaicsTree'
 
-import { currencyMeasures } from '../../../support/qcew'
+import { currencyMeasures, measureToRouteSegmentName } from '../../../support/qcew'
 
 
 
@@ -109,7 +109,11 @@ const initialState = {
 
   lineGraphs: {
     focused: 'rawData-lineGraph',
+
+    rawGraphTitle: null,
     rawGraphData : null,
+
+    lqGraphTitle : null,
     lqGraphData  : null,
   },
 
@@ -609,8 +613,12 @@ function updateAllVisualizationsData (state) {
   state.selectedParentNaicsTitle = (_.last(state.naicsDrilldownHistory) === null) ?  'All Industries' : 
       _.get(state.naicsInfoTable, [_.last(state.naicsDrilldownHistory), 'title'], 'Unrecognized Naics Code')
 
+  let measure = state.measure
 
+  state.lineGraphs.rawGraphTitle = `Quarterly ${measureToRouteSegmentName[measure]}`
   state.lineGraphs.rawGraphData = getRawLineGraphData(state)
+
+  state.lineGraphs.lqGraphTitle = `LQ Quarterly ${measureToRouteSegmentName[measure]}`
   state.lineGraphs.lqGraphData =  getLQLineGraphData(state)
 
   state.selectedQuarter = state.lastQuarterWithData

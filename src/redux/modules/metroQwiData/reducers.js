@@ -5,6 +5,7 @@ import NaicsTree from '../../../support/NaicsTree'
 
 import { currencyMeasures, 
          firmageLabels, 
+         measureLabels,
          requestedRatioMeasures, 
          requestedRawMeasures } from '../../../support/qwi'
 
@@ -82,8 +83,12 @@ const initialState = {
 
   lineGraphs: {
     focused: 'rawData-lineGraph',
-    rawGraphData : null,
-    lqGraphData  : null,
+
+    rawGraphTitle : null,
+    rawGraphData  : null,
+
+    lqGraphTitle  : null,
+    lqGraphData   : null,
   },
 
   tooltipTable: {
@@ -625,10 +630,19 @@ function updateAllVisualizationsData (state) {
 
   resetFirstAndLastQuarterWithData(state)
 
+  let measure = state.measure
+  let measureName = measureLabels[measure] 
+
+  state.lineGraphs.rawGraphTitle = 
+      `${measureName.match(/Quarterly/) ? '' : 'Quarterly '}${measureName.replace(/:.*| -.*/, '')}`
   state.lineGraphs.rawGraphData = getRawLineGraphData(state)
+
+  state.lineGraphs.lqGraphTitle =
+      `LQ ${measureName.match(/Quarterly/) ? '' : 'Quarterly '}${measureName.replace(/:.*| -.*/, '')}`
   state.lineGraphs.lqGraphData =  getLQLineGraphData(state)
 
   state.selectedQuarter = state.lastQuarterWithData
+
 
   updateQuarterTrackingVisualizationsData(state)
 }
