@@ -18,14 +18,27 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
   }
 
   render () {
-    
+    let names = {
+      'composite': 'Composite',
+      'new firms': 'New Firms / 1k' ,
+      'share of employment in new firms' : '% Employment in New Firms',
+      'shareEmpNoAccRet' : '% Employment in Traded New Firms',
+      'shareEmpHighTech' : '% Employment in High Tech New Firms',
+      'income based on childhood' : 'Equality of Opportunity',
+      'percentage of foriegn born population' : '% Foriegn Born',
+      'employment location quotient variance' : 'Economic Diversity',
+      'high growth firms' : 'High Growth Firms',
+      'net migration' : 'Net Migration',
+      'total migration' : 'Population Flux',
+      'annual churn' : 'Employment Churn'
+    }
+
     var bucketDisplay = [];
-    console.log(this.props.activeComponent)
     if(this.props.activeComponent == "combined"){
       var components = []      
     }
     if(this.props.activeComponent == "density"){
-      var components = ['composite','new firms','share of employment in new firms','shareEmpNoAccRet','shareEmpHighTech' ]      
+      var components = ['composite', 'new firms','share of employment in new firms','shareEmpNoAccRet','shareEmpHighTech' ] 
     }
     if(this.props.activeComponent == "diversity"){
       var components = ['composite','income based on childhood','percentage of foriegn born population','employment location quotient variance']      
@@ -42,7 +55,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
             type="button" 
             className={"btn btn-default " + (v == this.props.metric ? classes["active"] : '')}
           >
-            { v }
+            { names[v] }
           </a>
         )   
     })

@@ -10,7 +10,9 @@ export class Footer extends React.Component {
   render () {
     return (
         <div className={classes['footer']}>
-          Its the footer ....
+          	<h4 style={{textAlign: 'center', color: '#efefef'}}>
+           	<small style={{textAlign: 'center', color: '#efefef'}}>Availabs | Kauffman Foundation</small>
+           	</h4>
         </div>
     )
   }
