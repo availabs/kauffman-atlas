@@ -1,11 +1,10 @@
 /* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { loadDensityComposite } from 'redux/modules/densityData'
 import { loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityComposite } from 'redux/modules/diversityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-import classes from 'styles/sitewide/index.scss'
 let roundFormat = d3.format(".2f")
 
 export class RankBoxes extends React.Component<void, Props, void> {
@@ -38,7 +37,8 @@ export class RankBoxes extends React.Component<void, Props, void> {
     return (
       this.props.densitycomposite &&
       this.props.fluiditycomposite &&
-      this.props.diversitycomposite
+      this.props.diversitycomposite && 
+      this.props.combinedcomposite
     )
   }
 
@@ -85,7 +85,7 @@ export class RankBoxes extends React.Component<void, Props, void> {
     return currentData.filter((msa) => {
       return this._inBucket(msa.key)
     })
-    .filter((d,i) => { return d.values.filter(e => { return e.x === year })[0] })
+    .filter((d) => { return d.values.filter(e => { return e.x === year })[0] })
     .filter((d,i) => { return i < length  })
     .map((metro,i) => {
       var topValue = metro.values.filter(d => { return d.x === year })[0].y

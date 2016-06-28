@@ -82,7 +82,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
   render () {
     if (!this.hasData()) return <span />
-    console.log('got data', this.props.metroScores[this.props.metroId])
+    //console.log('got data', this.props.metroScores[this.props.metroId])
 
     let year = 2013
     let scores = this.props.metroScores[this.props.metroId];
