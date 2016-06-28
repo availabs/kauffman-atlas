@@ -6,6 +6,7 @@ import { loadFluidityComposite } from 'redux/modules/fluidityData'
 import { loadDiversityComposite } from 'redux/modules/diversityData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".2f")
+import CategoryNames from 'components/misc/categoryNames'
 
 export class RankBoxes extends React.Component<void, Props, void> {
    constructor () {
@@ -125,7 +126,7 @@ export class RankBoxes extends React.Component<void, Props, void> {
       <div className='row' style={{margin:0, marginTop:10, backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5', borderRadius: 3}}>
         <div className='col-xs-12' >
           <h4 style={{textAlign: 'center'}}><small style={{color:'#f5f5f5'}}>Top 5 Metro Areas</small></h4>
-          <h4 style={{textAlign: 'center'}}><small style={{color:'#f5f5f5'}}>{year}</small></h4>
+          <h4 style={{textAlign: 'center'}}><small style={{color:'#f5f5f5'}}>{CategoryNames[this.props.activeComponent + "composite"]} - {year}</small></h4>
            <table className='table'>
           <thead>
             <tr>
