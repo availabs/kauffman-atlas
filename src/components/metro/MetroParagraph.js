@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import classes from 'styles/sitewide/index.scss'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-import { loadData as loadQcewData } from '../../redux/modules/metroQcewData/actions'
+import { loadData } from '../../redux/modules/metroQcewData/actions'
 //import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroQcewData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import _ from 'lodash'
@@ -32,21 +32,26 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
   _fetchData () {
     if(!(this.props.qcewData && this.props.qcewData[this.props.metroId])) {
-      return loadQcewData(this.props.metroId)
+      console.log("loading qcewdata",this.props.qcewData)
+      this.props.loadData(this.props.metroId)
     }
     if(!this.props.metroScores[this.props.metroId]){
-      return this.props.loadMetroScores(this.props.metroId)
+      this.props.loadMetroScores(this.props.metroId)
     }
     if(!this.props.combinedcomposite){
-      return this.props.getcombinedcomposite();
+      this.props.getcombinedcomposite();
     }
     if(!this.props.naicsKeys){
-      return this.props.loadNaicsKeys()
+      this.props.loadNaicsKeys()
     }
   }
 
   componentDidMount() {
     this._fetchData ()
+  }
+
+  componentWillMount(){
+    this._fetchData () 
   }
   
   componentWillReceiveProps (){
@@ -169,6 +174,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var metroId = this.props.metroId;
     var name = this.props.metros[metroId].name;
 
+
     let d = _.get(this.props.qcewData, [metroId, 2013])
 
     if (!d) {
@@ -181,14 +187,14 @@ export class MetroParagraph extends React.Component<void, Props, void> {
           In terms of industry sectors, {name} has a high concentration of jobs in 
           {d.topEmpName} compared to the national average. 
           {" " + d.topEmpShareName} accounts for 
-          {(roundFormat(d.topEmpShareValue)*100)}% of all jobs in the region. 
+          {" " + (roundFormat(d.topEmpShareValue)*100) + " "}% of all jobs in the region. 
         </p>
         <p>
-          The sector in {name} with the highest number of establishments is {d.topEstName} 
+          The sector in {name} with the highest number of establishments is {d.topEstName + " "} 
           with {integerFormatter(d.topEstValue)} establishments making up  
-          {(roundFormat(d.topEstShareValue) * 100)}% of the total establishments. 
+          {" " + (roundFormat(d.topEstShareValue) * 100)}% of the total establishments. 
           Relative to the rest of the nation, {name} has a high concentration of {d.topLQEst_0_Name}, 
-          {d.topLQEst_1_Name}, and {d.topLQEst_2_Name} establishments.
+          {" " + d.topLQEst_1_Name}, and {d.topLQEst_2_Name} establishments.
         </p> 
       </div>
     )      
@@ -207,12 +213,15 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     }
 
     if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
-      console.log("not")
       var naics = (<span>Loading Naics</span>) 
     }
     else{
       var naics = this._renderNaics()
     }
+
+    let d = _.get(this.props.qcewData, [metroId, 2013])
+
+    console.log(metroId,this.props.qcewData)
 
 
     return (
@@ -239,11 +248,12 @@ const mapStateToProps = (state) => ({
   combinedcomposite : state.combinedData.combinedcomposite,
   naicsKeys : state.metros.naicsKeys,
   naicsTable: state.metros.naicsLookup,
-  qcewData  : state.metroQcewData.metroParagraphData,
+  qcewData  : state.metroQcewData.metroParagraphData
 })
 
 export default connect((mapStateToProps), {  
   loadMetroScores: (currentMetro) => loadMetroScores (currentMetro),
   getcombinedcomposite: () => loadCombinedComposite(), 
   loadNaicsKeys: () => loadNaicsKeys(),
+  loadData: (currentMetro) => loadData(currentMetro)
 })(MetroParagraph)

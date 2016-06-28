@@ -320,8 +320,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
                       `${densityHighTechSelected.y.toLocaleString()}%` : ''}
                 </h4>
-                {densityHighTechSelected ? "Rank " + densityHighTechSelected.rank : ""}   
-                <div>{densityHighTechSelected ? this.state.displayYear : ""}</div>
+                {densityHighTechSelected && densityHighTechSelected.y ? "Rank " + densityHighTechSelected.rank : ""}   
+                <div>{densityHighTechSelected && densityHighTechSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
@@ -354,8 +354,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
                         `${densityExceptAccomSelected.y.toLocaleString()}%` : ''}
                 </h4>
-                {densityExceptAccomSelected ? "Rank " + densityExceptAccomSelected.rank : ""}   
-                <div>{densityExceptAccomSelected ? this.state.displayYear : ""}</div>
+                {densityExceptAccomSelected  && densityExceptAccomSelected.y ? "Rank " + densityExceptAccomSelected.rank : ""}   
+                <div>{densityExceptAccomSelected  && densityExceptAccomSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
