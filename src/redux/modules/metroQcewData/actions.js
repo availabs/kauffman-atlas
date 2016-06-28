@@ -216,7 +216,7 @@ function requestTheData (dispatch, getState, msa, parentNaics) {
   fetch(requestURL)
     .then(handleFetchErrors)
     .then(response => response.json())
-    .then((data) => restructureData(data[0].values))
+    .then(reformatApiResponse)
     .then(data => dispatch(dataReceived(msa, parentNaics, data)))
     .catch(err => dispatch(qcewActionError(err)))
 
@@ -236,11 +236,16 @@ function getYearQuarterObjFromDateObj (dateObj) {
 
 function buildRequestURL (msa, naicsCodes) {
 
-  return `${apiServerAddress}data/fipsC${msa.slice(0, 4)}/` + 
+  let fipsCodes = (msa !== '31080') ? `C${msa.slice(0,4)}` : `C3108C3110`
+
+  return `${apiServerAddress}data/fips${fipsCodes}/` + 
          `ind${naicsCodes.map(code => _.padStart(code, 6, '0')).join('')}/` +
          `yr${years.join('')}/qtr1234?${reqFieldsString}`
 }
 
+function reformatApiResponse (data) {
+  return _(data).mapValues((dataForMSA) => restructureData(dataForMSA.values)).values().reduce(_.defaultsDeep)
+}
 
 function restructureData (data) {
   return data.reduce((acc, val) => {

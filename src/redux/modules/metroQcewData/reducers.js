@@ -731,15 +731,12 @@ function updateMetroParagraphData (state, msa) {
 
 
       acc[year] = {
-        topEmpShare,
         topEmpShareName : industryTitles[topEmpShare],
         topEmpShareValue : yearlyEmpShares[topEmpShare][year],
 
-        topEst,
         topEstName : industryTitles[topEst],
         topEstValue : yearlyRawEstData[topEst][year],
 
-        topEstShare,
         topEstShareName : industryTitles[topEstShare],
         topEstShareValue : yearlyEstShares[topEstShare][year],
 
