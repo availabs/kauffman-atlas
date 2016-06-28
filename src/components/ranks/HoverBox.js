@@ -10,6 +10,7 @@ import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMi
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import CategoryNames from 'components/misc/categoryNames'
+import CategoryUnits from 'components/misc/categoryUnits'
 
 let roundFormat = d3.format(".2f")
 
@@ -65,11 +66,13 @@ export class HoverBox extends React.Component<void, Props, void> {
           { return d.x === year })[0] || {}        
       }
 
+
+
       return (
         <tr>
           <td>{CategoryNames[cat]}</td>
-          <td>{score.rank ? score.rank : "N/A"}</td>
-          <td>{score.y ? roundFormat(score.y) : "N/A"}</td>
+          <td style={{textAlign: 'center'}}>{score.rank ? score.rank : "N/A"}</td>
+          <td style={{textAlign: 'center'}}>{score.y ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "N/A"}</td>
         </tr>
       )
     }) 
@@ -99,7 +102,7 @@ export class HoverBox extends React.Component<void, Props, void> {
             <tr>
               <th />
               <th>Rank</th>
-              <th>Score</th>
+              <th>Score/Value</th>
             </tr>
           </thead>
           <tbody>
