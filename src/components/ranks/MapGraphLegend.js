@@ -8,7 +8,7 @@ import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadS
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-let roundFormat = d3.format(".2f")
+let roundFormat = d3.format(".1f")
 
 export class MapGraphLegend extends React.Component<void, Props, void> {
   constructor () {
@@ -105,9 +105,10 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .attr("dy", ".35em")
       .text( 'Score')
 
+
     let legendCells = legend
       .selectAll('.legendCells')
-      .data(color.quantiles())
+      .data(color.domain())
       .enter()
       
     legendCells
