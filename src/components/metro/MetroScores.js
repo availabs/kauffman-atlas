@@ -311,9 +311,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                 <h4>{(densityHighTech && densityHighTech.y) ? 
-                      `${densityHighTech.y.toLocaleString()}%` : 'N/A'}
+                      `${densityHighTech.y.toLocaleString()}%` : ''}
                 </h4>
-                Rank {densityHighTech.y ? densityHighTech.rank : 'N/A'}
+                Rank {densityHighTech.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
@@ -326,8 +326,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
             <div>
               <LineGraph hover={this.hover} data={densityHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityHighTechGraph[0].values[0] ? densityHighTechGraph[0].values[0].key : ''}</span>
-              <span className='pull-right'>{densityHighTechGraph[0].values[0] ? densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key : ''}</span>
+              <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
             </div>
           </div>
           <div className='col-xs-2'>

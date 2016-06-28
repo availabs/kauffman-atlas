@@ -550,33 +550,36 @@ function _sortMsaCities(){
 }
 function _processComposite(newFirms,share,highTech,noAccomRetail){
 
-  var filteredShare = share.map(metroArea => {
+  var filteredShare = share.filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return yearValue.y >= 0;
     })
-    return metroArea
+    return (metroArea.values.length > 0)
   })
 
-  var filteredNewFirms = newFirms.map(metroArea => {
+  var filteredNewFirms = newFirms.filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return yearValue.y >= 0;
     })
-    return metroArea;
+    return (metroArea.values.length > 0);
   })
 
-  var filteredHighTech = highTech.map(metroArea => {
+  var filteredHighTech = highTech.filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return yearValue.y >= 0;
     })
-    return metroArea;
+    return (metroArea.values.length > 0);
   })
 
-  var filteredNoAccomRetail = noAccomRetail.map(metroArea => {
+  var filteredNoAccomRetail = noAccomRetail.filter(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
       return yearValue.y >= 0;
     })
-    return metroArea;
+    return (metroArea.values.length > 0);
   })
+
+
+
 
   var cityFilteredShare = [],
       cityFilteredNewFirms = [],
@@ -755,7 +758,7 @@ function _convertToCoordinateArray(data,dataset){
         else if (dataset == "qwiDensity"){
           years.forEach(year => {
               var curYear = year-1;
-              if(typeof +data[msaId][year] == "number"){
+              if(typeof +data[msaId][year] == "number" && +data[msaId][year] > 0){
                 valueArray.push( {x:+curYear,y:(+data[msaId][year] * 100)});                  
               }
           })
@@ -830,6 +833,7 @@ function _processGeneral(data,dataset){
 
     var rankedData = _rankCities(finalData);
     var polishedData = _polishData(rankedData,dataset);
+
     var graphRawData = polishedData;
 
     var graphRelativeData = [];
@@ -949,7 +953,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   .domain(      [d3.min(yearCityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
                 d3.max(yearCityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
-  console.log(yearCityFilteredForiegnBorn.length,yearCityFilteredEmpVariance.length,cityFilteredOpp.length)
+  
   cityFilteredOpp.sort(_sortMsaCities());
   cityFilteredForeignborn.sort(_sortMsaCities());
   cityFilteredEmpVariance.sort(_sortMsaCities());
