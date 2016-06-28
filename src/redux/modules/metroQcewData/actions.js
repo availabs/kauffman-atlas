@@ -134,8 +134,8 @@ export const mouseLeftTooltipCell = () => ({
 })
 
 
-export const loadData = (msa, parentNaics, retryNumber) => (dispatch, getState) => {
-  requestTheData(dispatch, getState, msa, parentNaics, retryNumber)
+export const loadData = (msa, parentNaics) => (dispatch, getState) => {
+  requestTheData(dispatch, getState, msa, parentNaics)
 }
 
 export const drilldownIntoNaicsSubindustry = (parentNaics) => (dispatch, getState) => {
@@ -174,10 +174,12 @@ export const naicsRootReturn = () => (dispatch, getState) => {
 }
 
 
-function requestTheData (dispatch, getState, msa, parentNaics, retryNumber) {
+
+function requestTheData (dispatch, getState, msa, parentNaics) {
 
   let state = getState().metroQcewData
   parentNaics = parentNaics || null
+
 
   msa = msa || state.msa
 
@@ -185,22 +187,18 @@ function requestTheData (dispatch, getState, msa, parentNaics, retryNumber) {
 
   if (_.has(state.inventory, [msa, parentNaics])) { return dispatch(nullAction()) }
 
-  console.log('Making the QCEW data request.')
+  console.log(`Making the QCEW data request for MSA ${msa}, NAICS ${parentNaics}.`)
 
   let metrosState = getState().metros
 
   let naicsInfoTable = metrosState.naicsKeys
   let naicsLookup = metrosState.naicsLookup
 
-  retryNumber = retryNumber || 1
-
   if (!naicsLookup || !naicsInfoTable) {
-    loadNaicsKeys() 
+    dispatch(loadNaicsKeys())
+    dispatch(nullAction())
 
-    //if (parentNaics) {
-      dispatch(nullAction())
-      return setTimeout(loadData.bind(null, dispatch, getState, msa, parentNaics, ++retryNumber), 500)
-    //}
+    return setTimeout(requestTheData.bind(null, dispatch, getState, msa, parentNaics), 5000)
   } 
 
   if (naicsInfoTable && naicsLookup && !(state.naicsInfoTable && state.naicsLookup)) {

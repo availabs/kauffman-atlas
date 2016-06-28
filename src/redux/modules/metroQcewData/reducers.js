@@ -12,6 +12,8 @@ import NaicsTree from '../../../support/NaicsTree'
 
 import { currencyMeasures, measureToRouteSegmentName } from '../../../support/qcew'
 
+import { industryTitles } from '../../../support/industryTitles'
+
 
 
 import { 
@@ -100,6 +102,8 @@ const initialState = {
   selectedParentNaicsTitle: null,
 
   selectedQuarter: endQuarter,
+
+  metroParagraphData : {}, 
 
   naicsInfoTable: null,
 
@@ -264,12 +268,13 @@ const handleInventoryUpdate = (inventoryStatus, state, action) => {
 
 const handleDataReceived = (state, action) => {
 
-  console.log("==> QCEW Data Received")
   let newState = handleInventoryUpdate('RECEIVED', state, action)
 
   if (state === newState) { return state }
   
   let msa = action.payload.msa
+
+  console.log(`==> QCEW Data Received for MSA ${msa}, NAICS ${action.payload.parentNaics}`)
 
   let naicsTree = newState.byMsaNaicsTrees[msa] || 
                   (newState.byMsaNaicsTrees[msa] = new NaicsTree(startQuarter, endQuarter))
@@ -277,6 +282,10 @@ const handleDataReceived = (state, action) => {
   naicsTree.insertData(action.payload.data, transformers)
 
   updateAllVisualizationsData(newState)
+
+  if (action.payload.parentNaics === null) {
+    updateMetroParagraphData(newState, msa)
+  }
 
   return newState
 }
@@ -656,6 +665,96 @@ function updateQuarterTrackingVisualizationsData (state) {
   }
 }
 
+
+function updateMetroParagraphData (state, msa) {
+//debugger
+    let rawEmpData = state.byMsaNaicsTrees[msa]
+                          .queryMeasureDataForSubindustries({ naics: null, measure: 'emplvl', })
+
+    let rawEstData = state.byMsaNaicsTrees[msa]
+                          .queryMeasureDataForSubindustries({ naics: null, measure: 'qtrly_estabs_count', })
+
+    let lqEstData  = state.byMsaNaicsTrees[msa]
+                          .queryMeasureDataForSubindustries({ naics: null, measure: 'lq_qtrly_estabs_count', })
+
+
+    let years = {}
+    let toYearlyAverages = (data) =>  data && _(data.reduce((acc, d) => { 
+                                         years[d.year] = true;
+
+                                         (acc[d.year] || (acc[d.year] = [])).push(d.value)
+
+                                         return acc
+                                       }, {})).mapValues((qrtly) => _(qrtly).filter().mean()).value()
+
+    let yearlyRawEmpData = _.mapValues(rawEmpData, toYearlyAverages)
+
+    let yearlyRawEstData = _.mapValues(rawEstData, toYearlyAverages)
+    let yearlyLQEstData = _.mapValues(lqEstData, toYearlyAverages)
+
+    years = Object.keys(years).sort()
+
+
+    let yearlyEmpTotals = years.reduce((acc, year) => _.set(acc, year, _(yearlyRawEmpData).values().sumBy(year)), {})
+
+    let yearlyEmpShares = _.mapValues(yearlyRawEmpData, (indByYearEmp) => 
+                            _.mapValues(indByYearEmp, (val, yr) => (val / yearlyEmpTotals[yr])))
+
+
+    let yearlyEstTotals = years.reduce((acc, year) => _.set(acc, year, _(yearlyRawEstData).values().sumBy(year)), {})
+
+    let yearlyEstShares = _.mapValues(yearlyRawEstData, (indByYearEst) => 
+                            _.mapValues(indByYearEst, (val, yr) => (val / yearlyEstTotals[yr])))
+
+    let getter = (d,k,yr) => ((d[k] && d[k][yr]) || Number.NEGATIVE_INFINITY)
+
+    state.metroParagraphData[msa] = years.reduce( (acc, year) => {
+      
+      let naicsCodes = Object.keys(yearlyEmpShares)
+
+      let topEmpShare = 
+        _.tail(naicsCodes).reduce((acc, code) => 
+          (getter(yearlyEmpShares, acc, year) < getter(yearlyEmpShares, code, year)) ? code : acc, _.head(naicsCodes))
+
+      let topEst = 
+        _.tail(naicsCodes).reduce((acc, code) => 
+          (getter(yearlyRawEstData,acc,year) < getter(yearlyRawEstData,code,year)) ? code : acc, _.head(naicsCodes))
+
+      let topEstShare = 
+        _.tail(naicsCodes).reduce((acc, code) => 
+          (getter(yearlyEstShares,acc,year) < getter(yearlyEstShares,code,year)) ? code : acc, _.head(naicsCodes))
+
+      let descSortedLQEstNaicsCodes = naicsCodes.slice().sort( (naicsA, naicsB) => 
+          (getter(yearlyLQEstData,naicsB,year) - getter(yearlyLQEstData,naicsA,year)))
+
+
+      acc[year] = {
+        topEmpShare,
+        topEmpShareName : industryTitles[topEmpShare],
+        topEmpShareValue : yearlyEmpShares[topEmpShare][year],
+
+        topEst,
+        topEstName : industryTitles[topEst],
+        topEstValue : yearlyRawEstData[topEst][year],
+
+        topEstShare,
+        topEstShareName : industryTitles[topEstShare],
+        topEstShareValue : yearlyEstShares[topEstShare][year],
+
+        topLQEst_0: descSortedLQEstNaicsCodes[0],
+        topLQEst_0_Name: industryTitles[descSortedLQEstNaicsCodes[0]],
+
+        topLQEst_1: descSortedLQEstNaicsCodes[1],
+        topLQEst_1_Name: industryTitles[descSortedLQEstNaicsCodes[1]],
+
+        topLQEst_2: descSortedLQEstNaicsCodes[2],
+        topLQEst_2_Name: industryTitles[descSortedLQEstNaicsCodes[2]],
+      }
+
+      return acc
+        
+    }, {})
+}
 
 
 function resetAllVisualizationsData (state) {
