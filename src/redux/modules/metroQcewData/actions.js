@@ -187,7 +187,7 @@ function requestTheData (dispatch, getState, msa, parentNaics) {
 
   if (_.has(state.inventory, [msa, parentNaics])) { return dispatch(nullAction()) }
 
-  console.log(`Making the QCEW data request for MSA ${msa}, NAICS ${parentNaics}.`)
+  //console.log(`Making the QCEW data request for MSA ${msa}, NAICS ${parentNaics}.`)
 
   let metrosState = getState().metros
 

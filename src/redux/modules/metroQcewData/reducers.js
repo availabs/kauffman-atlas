@@ -274,7 +274,7 @@ const handleDataReceived = (state, action) => {
   
   let msa = action.payload.msa
 
-  console.log(`==> QCEW Data Received for MSA ${msa}, NAICS ${action.payload.parentNaics}`)
+  //console.log(`==> QCEW Data Received for MSA ${msa}, NAICS ${action.payload.parentNaics}`)
 
   let naicsTree = newState.byMsaNaicsTrees[msa] || 
                   (newState.byMsaNaicsTrees[msa] = new NaicsTree(startQuarter, endQuarter))
