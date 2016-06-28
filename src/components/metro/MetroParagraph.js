@@ -24,15 +24,16 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   constructor () {
     super()
     this.state = {
-      display: 'combined'
+      display: 'combined',
     }
+
     this._renderEei = this._renderEei.bind(this)
     this._renderNaics = this._renderNaics.bind(this)
   }
 
   _fetchData () {
-    if(!(this.props.qcewData && this.props.qcewData[this.props.metroId])) {
-      console.log("loading qcewdata",this.props.qcewData)
+    if(!(this.props.qcewData && this.props.qcewData.metroParagraphData[this.props.metroId])) {
+      console.log("loading qcewdata",this.props.qcewData.metroParagraphData)
       this.props.loadData(this.props.metroId)
     }
     if(!this.props.metroScores[this.props.metroId]){
@@ -175,7 +176,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var name = this.props.metros[metroId].name;
 
 
-    let d = _.get(this.props.qcewData, [metroId, 2013])
+    let d = _.get(this.props.qcewData.metroParagraphData, [metroId, 2013])
 
     if (!d) {
       return (<span>Loading Naics...</span>)
@@ -212,7 +213,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       var eei = this._renderEei()
     }
 
-    if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
+    if(!this.props.qcewData || !this.props.qcewData.metroParagraphData[this.props.metroId]){
       var naics = (<span>Loading Naics</span>) 
     }
     else{
@@ -221,7 +222,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     let d = _.get(this.props.qcewData, [metroId, 2013])
 
-    console.log(metroId,this.props.qcewData)
+    console.log(metroId,this.props.qcewData.metroParagraphData)
 
 
     return (
@@ -248,7 +249,7 @@ const mapStateToProps = (state) => ({
   combinedcomposite : state.combinedData.combinedcomposite,
   naicsKeys : state.metros.naicsKeys,
   naicsTable: state.metros.naicsLookup,
-  qcewData  : state.metroQcewData.metroParagraphData
+  qcewData  : state.metroQcewData
 })
 
 export default connect((mapStateToProps), {  
