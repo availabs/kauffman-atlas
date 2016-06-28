@@ -32,8 +32,8 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   }
 
   _fetchData () {
-    if(!(this.props.qcewData && this.props.qcewData.metroParagraphData[this.props.metroId])) {
-      console.log("loading qcewdata",this.props.qcewData.metroParagraphData)
+    if(!(this.props.qcewData && this.props.qcewData[this.props.metroId])) {
+      console.log("loading qcewdata",this.props.qcewData)
       this.props.loadData(this.props.metroId)
     }
     if(!this.props.metroScores[this.props.metroId]){
@@ -176,7 +176,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     var name = this.props.metros[metroId].name;
 
 
-    let d = _.get(this.props.qcewData.metroParagraphData, [metroId, 2013])
+    let d = _.get(this.props.qcewData, [metroId, 2013])
 
     if (!d) {
       return (<span>Loading Naics...</span>)
@@ -197,12 +197,12 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         </p> 
         <p>
           Relative to the rest of the nation, {name} has a high concentration of establishments in:
-          <ul>
-            <li>{d.topLQEst_0_Name}</li>
-            <li>{d.topLQEst_1_Name}</li>
-            <li>{d.topLQEst_2_Name}</li>
-          </ul>
         </p>
+        <ul>
+          <li>{d.topLQEst_0_Name}</li>
+          <li>{d.topLQEst_1_Name}</li>
+          <li>{d.topLQEst_2_Name}</li>
+        </ul>
       </div>
     )      
   }
@@ -219,7 +219,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       var eei = this._renderEei()
     }
 
-    if(!this.props.qcewData || !this.props.qcewData.metroParagraphData[this.props.metroId]){
+    if(!this.props.qcewData || !this.props.qcewData[this.props.metroId]){
       var naics = (<span>Loading Naics</span>) 
     }
     else{
@@ -228,7 +228,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     let d = _.get(this.props.qcewData, [metroId, 2013])
 
-    console.log(metroId,this.props.qcewData.metroParagraphData)
+    console.log(metroId,this.props.qcewData)
 
 
     return (
@@ -255,7 +255,7 @@ const mapStateToProps = (state) => ({
   combinedcomposite : state.combinedData.combinedcomposite,
   naicsKeys : state.metros.naicsKeys,
   naicsTable: state.metros.naicsLookup,
-  qcewData  : state.metroQcewData
+  qcewData  : state.metroQcewData.metroParagraphData
 })
 
 export default connect((mapStateToProps), {  
