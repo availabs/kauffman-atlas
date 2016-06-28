@@ -80,9 +80,19 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
      }
     })
 
-    var color = d3.scale.quantile()
-      .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
-      .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse()) 
+    if(props.activeComponent == "diversityemploymentlocationquotientvariance"){
+      var color = d3.scale.quantile()
+          .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
+          .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]))
+          
+    }
+    else{
+      var color = d3.scale.quantile()
+        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
+        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse()) 
+
+    }
+
 
     let legend = svg.append("g")
       .attr("transform", "translate(" + -40 + "," + 0 + ")")

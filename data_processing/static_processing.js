@@ -439,7 +439,7 @@ function _polishData(data,dataset){
           values:null,
           name: name,
           key:data[metroArea].key,
-          color:_colorFunction(data[metroArea],dataset)
+          color:_colorFunction(data[metroArea],data,dataset)
         }
 
         city.values = data[metroArea].values.map(i => {
@@ -449,8 +449,7 @@ function _polishData(data,dataset){
               x:i.x,
               y:(i.y * 100),
               rank:i.rank,
-              raw:i.raw,
-              color:_colorFunction(i,dataset)
+              raw:i.raw
             }
           }
           else{
@@ -458,8 +457,7 @@ function _polishData(data,dataset){
               x:i.x,
               y:i.y,
               rank:i.rank,
-              raw:i.raw,
-              color:_colorFunction(i,dataset)
+              raw:i.raw
             }            
           }
              
@@ -469,7 +467,7 @@ function _polishData(data,dataset){
   });
   return newData;
 }
-function _colorFunction(params,dataset){
+function _colorFunction(params,data,dataset){
     var cityColor;
 
     if(params){
@@ -479,20 +477,37 @@ function _colorFunction(params,dataset){
         }
         else if(params.values && params.values.length > 0){
             var valueLength = params.values.length;
-            var curRank = params.values[valueLength-1].rank
-            var color = _colorGroup();
+            var curRank = params.values[valueLength-1].y
+            var color = _colorGroup(data,dataset);
             cityColor = color(curRank);   
         }
     }  
 
     return cityColor;
 }
-function _colorGroup(){
-    var _colorGroup = d3.scale.quantile()
-        .domain(d3.range(1,366,(366/9)))
-        .range(["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]) 
-    
-    return _colorGroup;
+function _colorGroup(data,dataset){
+  let valueArray = [];
+
+  data.forEach(metro => {
+    if(metro.values[metro.values.length-1]){
+     valueArray.push(metro.values[metro.values.length-1].y)       
+   }
+  })
+
+  if(dataset=="empVariance"){
+    var _colorGroupScale = d3.scale.quantile()
+        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
+        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]))      
+  }
+  else{
+    var _colorGroupScale = d3.scale.quantile()
+        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
+        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse())      
+  }
+
+
+
+  return _colorGroupScale;
 }
 function _colorOppGroup(group){
     if(group == "lowIncome"){
@@ -796,7 +811,7 @@ function _convertToCoordinateArray(data,dataset){
 function _relativeAgainstPopulation(graphRawData){
   var maxYear = d3.max(graphRawData, function(c) { return d3.max(c.values, function(v) { return v.x }); })
   
-  var years = d3.range(1990,2015);
+  var years = d3.range(1990,(maxYear+1));
 
   var graphRelativeData = graphRawData.map(metroArea => {
       var newValues = [];
