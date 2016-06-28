@@ -708,6 +708,8 @@ function updateMetroParagraphData (state, msa) {
 
     let getter = (d,k,yr) => ((d[k] && d[k][yr]) || Number.NEGATIVE_INFINITY)
 
+    state.metroParagraphData = Object.assign({}, state.metroParagraphData)
+
     state.metroParagraphData[msa] = years.reduce( (acc, year) => {
       
       let naicsCodes = Object.keys(yearlyEmpShares)
