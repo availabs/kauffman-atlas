@@ -108,7 +108,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
     let legendCells = legend
       .selectAll('.legendCells')
-      .data(color.domain())
+      .data(color.quantiles())
       .enter()
       
     legendCells
