@@ -100,7 +100,7 @@ export class NationalMap extends React.Component<void, Props, void> {
       console.log("loading active", nextProps.activeComponent);
       nextProps[('get'+nextProps.activeComponent)]()
     }
-    if(this.props.activeComponent !== nextProps.activeComponent){
+    if(this.props.activeComponent !== nextProps.activeComponent || this.props.activeColor !== nextProps.activeColor){
       if(nextProps.loaded){
         this._colorMetros(nextProps);        
       }      
@@ -140,7 +140,12 @@ export class NationalMap extends React.Component<void, Props, void> {
       else{
         data.forEach(metroArea => {
           if(metroArea.key == metro.id.substring(3)){
-            metro.style.fill = metroArea.color;
+            if(props.activeColor == "ranks"){
+              metro.style.fill = metroArea.color;              
+            }
+            else{
+              metro.style.fill = metroArea.scoreColor;  
+            }
           }
         })
       }
@@ -162,7 +167,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -225,7 +235,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -234,8 +249,6 @@ export class NationalMap extends React.Component<void, Props, void> {
       .on("mouseover", this._mouseover)
       .on("mouseout", this._mouseout)
       .on('click',this._msaClick);
-
-
   }
 
   _drawGraph (props) {
@@ -312,7 +325,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -348,7 +366,12 @@ export class NationalMap extends React.Component<void, Props, void> {
       var color = "chartreuse"  
       data.forEach(metroArea => {
         if(metroArea.key == d.id){
-          color = metroArea.color;
+          if(scope.props.activeColor == "ranks"){
+            color = metroArea.color;              
+          }
+          else{
+            color = metroArea.scoreColor;  
+          }
         }
       })
       return color;

@@ -65,6 +65,9 @@ const ACTION_HANDLERS = {
     if(pageState.hoverYear){
       newState.hoverYear = pageState.hoverYear
     }      
+    if(pageState.activeColor){
+      newState.activeColor = pageState.activeColor
+    }
     
     return newState;
   }
@@ -79,7 +82,8 @@ const initialState = {
       activeMapGraph:'map',
       metric:'composite',
       hoverMetro: null,
-      hoverYear:2013
+      hoverYear:2013,
+      activeColor:'ranks'
 }
 export default function homeDataReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]

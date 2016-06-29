@@ -19,7 +19,7 @@ export class LineGraph extends React.Component<void, Props, void> {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros)){
+    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros) || this.props.activeColor !== nextProps.activeColor){
       this._renderGraph(nextProps);
     }
   }
@@ -71,9 +71,15 @@ export class LineGraph extends React.Component<void, Props, void> {
     var cityData = data.map(metroArea => {
       var city = {
         name:metroArea.name,
-        color:metroArea.color,
         key:metroArea.key,
         values:null
+      }
+
+      if(props.activeColor == "ranks"){
+        city.color = metroArea.color;
+      }
+      else{
+        city.color = metroArea.scoreColor;
       }
 
       city.values = metroArea.values.map(yearValue => {

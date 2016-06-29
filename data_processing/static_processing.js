@@ -439,7 +439,8 @@ function _polishData(data,dataset){
           values:null,
           name: name,
           key:data[metroArea].key,
-          color:_colorFunction(data[metroArea],data,dataset)
+          color:_colorFunction(data[metroArea],data,dataset),
+          scoreColor:_colorFunction(data[metroArea],data,dataset,"score")
         }
 
         city.values = data[metroArea].values.map(i => {
@@ -467,7 +468,7 @@ function _polishData(data,dataset){
   });
   return newData;
 }
-function _colorFunction(params,data,dataset){
+function _colorFunction(params,data,dataset,type){
     var cityColor;
 
     if(params){
@@ -476,33 +477,46 @@ function _colorFunction(params,data,dataset){
             cityColor = color(params.y);                             
         }
         else if(params.values && params.values.length > 0){
-            var valueLength = params.values.length;
-            var curRank = params.values[valueLength-1].y
-            var color = _colorGroup(data,dataset);
-            cityColor = color(curRank);   
+
+            var curValue = params.values.filter(yearValue => yearValue.x == 2013)[0]
+            var curY = curValue ? curValue.y : null
+            var color = _colorGroup(data,dataset,type);
+            cityColor = color(curY);   
         }
     }  
 
     return cityColor;
 }
-function _colorGroup(data,dataset){
+function _colorGroup(data,dataset,type){
   let valueArray = [];
 
   data.forEach(metro => {
-    if(metro.values[metro.values.length-1]){
-     valueArray.push(metro.values[metro.values.length-1].y)       
-   }
+    metro.values.forEach(yearValue => {
+      if(yearValue.x == 2013){
+        valueArray.push(yearValue.y)          
+      }
+    })
   })
+
+
+  if(type != "score"){
+    var colorDomain = valueArray;
+    var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]    
+  }
+  else{
+    var colorDomain = d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9))
+    var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]        
+  }
 
   if(dataset=="empVariance"){
     var _colorGroupScale = d3.scale.quantile()
-        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
-        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]))      
+        .domain(colorDomain)
+        .range((colorRange))      
   }
   else{
     var _colorGroupScale = d3.scale.quantile()
-        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
-        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse())      
+        .domain(colorDomain)
+        .range((colorRange).reverse())      
   }
 
 
