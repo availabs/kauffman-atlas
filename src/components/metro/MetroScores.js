@@ -403,12 +403,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <h4> High Growth Firms / Total Firms </h4>
             <div>
               <div className='pull-left'>
-                <h4>{((fluidityHighGrowth && fluidityHighGrowth.y) || '').toLocaleString()}</h4>
+                <h4>{(fluidityHighGrowth ? ((fluidityHighGrowth.y || fluidityHighGrowth.y === 0) ? fluidityHighGrowth.y : '') : '').toLocaleString()}</h4>
                 Rank {fluidityHighGrowth.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((fluidityHighGrowthSelected && fluidityHighGrowthSelected.y) || '').toLocaleString()}</h4>
+                <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? fluidityHighGrowthSelected.y : '') : '').toLocaleString()}</h4>
                 {fluidityHighGrowthSelected ? "Rank " + fluidityHighGrowthSelected.rank : ""}   
                 <div>{fluidityHighGrowthSelected ? this.state.displayYear : ""}</div>
               </div>         
@@ -435,14 +435,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{((fluidityHighRaw && fluidityHighRaw.y) || '').toLocaleString()}</h4>
+                <h4>{(fluidityHighRaw ? ((fluidityHighRaw.y || fluidityHighRaw.y === 0) ? fluidityHighRaw.y : '') : '').toLocaleString()}</h4>
                 Rank {fluidityHighRaw.rank}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((fluidityHighRawSelected && fluidityHighRawSelected.y) || '').toLocaleString()}</h4>
-                {fluidityHighRawSelected ? fluidityHighRawSelected.y ? "Rank " + fluidityHighRawSelected.rank : "" : ""}   
-                <div>{fluidityHighRawSelected ? fluidityHighRawSelected.y ? this.state.displayYear : "" : ""}</div>
+                <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? fluidityHighRawSelected.y : '') : '').toLocaleString()}</h4>
+                {(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? "Rank " + fluidityHighRawSelected.rank : '') : '')}   
+                <div>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? this.state.displayYear : '') : '')}</div>
               </div>         
             </div>
             <div>
