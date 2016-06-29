@@ -33,7 +33,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
   _fetchData () {
     if(!(this.props.qcewData && this.props.qcewData[this.props.metroId])) {
-      console.log("loading qcewdata",this.props.qcewData)
       this.props.loadData(this.props.metroId)
     }
     if(!this.props.metroScores[this.props.metroId]){
@@ -228,7 +227,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     let d = _.get(this.props.qcewData, [metroId, 2013])
 
-    console.log(metroId,this.props.qcewData)
 
 
     return (
