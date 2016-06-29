@@ -79,7 +79,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
     data.forEach(metro => {
       metro.values.forEach(yearValue => {
-        if(yearValue.x == 2013){
+        if(yearValue.x == 2013 || (props.activeComponent=="diversityincomebasedonchildhood" && yearValue.x =="combined")){
           valueArray.push(yearValue.y)           
         }
       })

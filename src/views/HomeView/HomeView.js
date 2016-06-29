@@ -230,7 +230,7 @@ export class HomeView extends React.Component<void, Props, void> {
             </div>
             <div id="mapDiv" className='col-md-9' >
 
-                <div className='col-md-9' style={{paddingTop:20}}>
+                <div className='col-md-9' style={{padding:20}}>
                   <SubGraphButtons
                     metric={this.props.homeState.metric}
                     onComponentChange={this._setMetric} 
@@ -241,8 +241,6 @@ export class HomeView extends React.Component<void, Props, void> {
                   mapGraph={this.props.homeState.activeMapGraph}
                   onComponentChange={this._setMapGraph} 
                 />
-
-
                 <ColorButtons
                   colorButton={this.props.homeState.activeColor}
                   onComponentChange={this._setActiveColor} 

@@ -472,9 +472,11 @@ function _colorFunction(params,data,dataset,type){
     var cityColor;
 
     if(params){
-        if(dataset == "opportunity" && params.x && (params.x == "lowIncome" || params.x == "highIncome")){
-            var color = _colorOppGroup(params.x);    
-            cityColor = color(params.y);                             
+        if(dataset == "opportunity" ){
+            var curValue = params.values.filter(yearValue => yearValue.x == 'combined')[0]
+            var curY = curValue ? curValue.y : null
+            var color = _colorGroup(data,dataset,type);
+            cityColor = color(curY);                              
         }
         else if(params.values && params.values.length > 0){
 
@@ -492,11 +494,13 @@ function _colorGroup(data,dataset,type){
 
   data.forEach(metro => {
     metro.values.forEach(yearValue => {
-      if(yearValue.x == 2013){
+      if(yearValue.x == 2013 || (dataset=="opportunity" && yearValue.x =="combined")){
         valueArray.push(yearValue.y)          
       }
     })
   })
+
+
 
 
   if(type != "score"){

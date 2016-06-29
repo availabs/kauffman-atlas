@@ -135,7 +135,7 @@ export class NationalMap extends React.Component<void, Props, void> {
 
     d3.selectAll("."+classes['msa'])[0].forEach(metro => {
       if(metro.style.fill == hexToRgb(props.legendHover)){   
-        metro.style.fill = shadeRGBColor(hexToRgb(props.legendHover),-.3)  
+        metro.style.fill = shadeRGBColor(hexToRgb(props.legendHover),-.4)  
       }
       else{
         data.forEach(metroArea => {
