@@ -11,9 +11,9 @@ import _ from 'lodash'
 import { qcewApi as apiServerAddress } from '../../src/AppConfig'
 
 
-const outputFilePath = path.join(__dirname, '../../src/static/data/empLocationQuotientVarianceAcrossSubsectors_subset.json') 
+const outputFilePath = path.join(__dirname, '../../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json') 
 
-const msaIds = _.take(Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json'))), 30)
+const msaIds = Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
 
 const allNaicsCodes = Object.keys(JSON.parse(fs.readFileSync('../../src/static/data/naicsKeys.json'))) 
 const sixDigitNAICS = allNaicsCodes.filter(c => (c.length === 6))
