@@ -238,7 +238,7 @@ function buildRequestURL (msa, naicsCodes) {
 
   let fipsCodes = (msa !== '31080') ? `C${msa.slice(0,4)}` : `C3108C3110`
 
-  return `${apiServerAddress}data/fips${fipsCodes}/` + 
+  return `${apiServerAddress}/data/fips${fipsCodes}/` + 
          `ind${naicsCodes.map(code => _.padStart(code, 6, '0')).join('')}/` +
          `yr${years.join('')}/qtr1234?${reqFieldsString}`
 }
