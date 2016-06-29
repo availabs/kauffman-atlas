@@ -4,7 +4,6 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 var fs = require('fs');
-var colorbrewer = require('colorbrewer');
 var d3 = require('d3');
 var _ = require('lodash')
 
@@ -43,7 +42,7 @@ var foreignbornData = JSON.parse(fs.readFileSync('../src/static/data/foreignborn
 var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json'));
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
-var specialization = _.mapValues(empVarianceData, (dataByYear) => _.mapValues(dataByYear, indices => indices.hhi_2))
+var specialization = _.mapValues(empVarianceData, dataByYear => _(dataByYear).pick(_.range(2002, 2017)).mapValues(index => index.hhi_2 * 100).value())
 var processedEmpVariance = processGeneral2(specialization, true);
 var coloredEmpVariance = _polishData(processedEmpVariance['raw'],"empVariance");
 var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn,coloredEmpVariance);
@@ -94,9 +93,6 @@ fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.strin
 //Each object will have its own file
 //One object per MSA
 
-var msaArray = [];
-
-var thrice = 0;
 Object.keys(msaPop).forEach(msaId => {
 
   var curMsaObj = {};
@@ -660,10 +656,10 @@ function _processComposite(newFirms,share,highTech,noAccomRetail){
     .domain([d3.min(yearCityFilteredHighTech, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
             d3.max(yearCityFilteredHighTech, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
 
-  var noAccomRetailScale = d3.scale.linear()
-    .range([0,100])
-    .domain([d3.min(yearCityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-            d3.max(yearCityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
+  //var noAccomRetailScale = d3.scale.linear()
+    //.range([0,100])
+    //.domain([d3.min(yearCityFilteredNoAccomRetail, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+            //d3.max(yearCityFilteredNoAccomRetail, function(c) { return d3.max(c.values, function(v) { return v.y }); })])
 
 
 
@@ -1091,8 +1087,7 @@ function _processinc5000(data,newFirms){
 }
 
 function _processdetailMigration(data,dataset){
-  var reducedData = {},
-      finalData = [];
+  var finalData = [];
 
   Object.keys(data).forEach(msaId => {
       var valueArray = [];
@@ -1160,7 +1155,8 @@ function _processdetailMigration(data,dataset){
 }
 
 function _processFluidityComposite(inc5000,irsNet,totalMigration,annualChurn){
-  var filteredRawInc = inc5000.raw.filter(metroArea => {
+  // ???
+  var filteredRawInc = inc5000.raw.filter((/*metroArea*/) => {
     return true;
   })
 
@@ -1356,7 +1352,7 @@ function processGeneral2 (data, sortNondescending) {
 
   // For each year, create a table of MSA -> rank.
   const getMSAByYearRankingTables = byYearRankings => 
-    _.mapValues(byYearRankings, (sortedMeasureForYear, year) => {
+    _.mapValues(byYearRankings, (sortedMeasureForYear) => {
 
       let h = _.head(sortedMeasureForYear)
       let previousMeasureValue = h.value
