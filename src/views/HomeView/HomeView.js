@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
+import mapClasses from 'components/maps/NationalMap.scss'
 import d3 from 'd3'
 import NationalMap from 'components/maps/NationalMap'
 import RankBox from 'components/ranks/RankBox'
@@ -27,6 +28,10 @@ export class HomeView extends React.Component<void, Props, void> {
    constructor () {
     super()
 
+    this.state = {
+      legendHoverColor:null
+    }
+
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
@@ -34,6 +39,8 @@ export class HomeView extends React.Component<void, Props, void> {
     this._setMapGraph = this._setMapGraph.bind(this)
     this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
+    this.legendHover = this.legendHover.bind(this)
+    this.legendHoverOut = this.legendHoverOut.bind(this)
   }
   componentWillMount () {    
     this._initGraph();    
@@ -100,6 +107,14 @@ export class HomeView extends React.Component<void, Props, void> {
     })
   }
 
+  legendHover(quantileColorScale,curQuantile){
+    this.setState({legendHoverColor:quantileColorScale(curQuantile)})
+
+  }
+  legendHoverOut(){
+    this.setState({legendHoverColor:null})
+  }
+
   renderMapGraph (metrosInBucket) {
     if(!this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]){
       this.props["get" + this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]()
@@ -111,6 +126,7 @@ export class HomeView extends React.Component<void, Props, void> {
           metros={metrosInBucket} 
           activeComponent={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')}
           onMouseover={this.onMouseover}
+          legendHover={this.state.legendHoverColor}
         />
       )
     }else if((this.props.homeState.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
@@ -219,6 +235,8 @@ export class HomeView extends React.Component<void, Props, void> {
               <MapGraphLegend 
                 mapGraph={this.props.homeState.activeMapGraph}
                 activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
+                legendHover={this.legendHover}
+                legendHoverOut={this.legendHoverOut}
               />   
               {this.renderMapGraph(metrosInBucket)}       
             </div>

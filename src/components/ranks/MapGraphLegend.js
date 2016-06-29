@@ -117,6 +117,8 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .attr("width", 30)
       .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",24)" })
       .attr('fill', function(d) {return color(d)} )
+      .on('mouseover',this.props.legendHover.bind(null,color))
+      .on('mouseout',this.props.legendHoverOut)
       
     legendCells
       .append('text')
@@ -127,6 +129,8 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .text(function(d) {
         return roundFormat(d);
       })
+      .on('mouseover',this.props.legendHover.bind(null,color))
+      .on('mouseout',this.props.legendHoverOut)
   }
 
 
