@@ -12,7 +12,7 @@ let categoryNames = {
   densityshareempqwi_hightech: "% emp in high tech sector",
   diversityincomebasedonchildhood: 'Equality of Opportunity',
   diversityopportunity: 'Equality of Opportunity',
-  diversitypercentageofforiegnbornpopulation: '% Foreign Born',
+  diversitypercentageofforeignbornpopulation: '% Foreign Born',
   diversityforeignborn: '% Foreign Born',
   diversityemploymentlocationquotientvariance: 'Variance of Emp Location Quotient',
   diversityemplqvariance: 'Variance of Emp Location Quotient',

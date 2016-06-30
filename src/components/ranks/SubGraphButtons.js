@@ -25,7 +25,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       'shareEmpNoAccRet' : '% Employment in Traded New Firms',
       'shareEmpHighTech' : '% Employment in High Tech New Firms',
       'income based on childhood' : 'Equality of Opportunity',
-      'percentage of foriegn born population' : '% Foriegn Born',
+      'percentage of foreign born population' : '% Foreign Born',
       'employment location quotient variance' : 'Economic Diversity',
       'high growth firms' : 'High Growth Firms',
       'net migration' : 'Net Migration',
@@ -41,7 +41,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       var components = ['composite', 'new firms','share of employment in new firms','shareEmpNoAccRet','shareEmpHighTech' ] 
     }
     if(this.props.activeComponent == "diversity"){
-      var components = ['composite','income based on childhood','percentage of foriegn born population','employment location quotient variance']      
+      var components = ['composite','income based on childhood','percentage of foreign born population','employment location quotient variance']      
     }
     if(this.props.activeComponent == "fluidity"){
       var components = ['composite','high growth firms','net migration','total migration','annual churn']      
