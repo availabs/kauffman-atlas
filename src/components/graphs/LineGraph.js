@@ -567,13 +567,13 @@ export class LineGraph extends React.Component<void, Props, void> {
           return "Metro Area Ranking for composite fluidity score by year" 
       }          
     }
-    else if(props.title == "diversitypercentageofforiegnbornpopulation"){
+    else if(props.title == "diversitypercentageofforeignbornpopulation"){
       if(props.plot == "value"){
         if(props.dataType == "raw"){
           return "Number of foreign born current residents by year"
         }
         else{
-          return "Percentage of foriegn-born residents by year"
+          return "Percentage of foreign-born residents by year"
         }             
       }
       else{

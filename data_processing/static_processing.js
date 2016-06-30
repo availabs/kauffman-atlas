@@ -949,7 +949,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   })
 
 
-  var foriegnBornyearRange = ([d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+  var foreignBornyearRange = ([d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
                     d3.max(cityFilteredForeignborn, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
   var empVarianceyearRange = ([d3.min(cityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
                     d3.max(cityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
@@ -958,10 +958,10 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
 
 
 
-  var minYear = d3.max([foriegnBornyearRange[0],empVarianceyearRange[0]])
-  var maxYear = d3.min([foriegnBornyearRange[1],empVarianceyearRange[1]])
+  var minYear = d3.max([foreignBornyearRange[0],empVarianceyearRange[0]])
+  var maxYear = d3.min([foreignBornyearRange[1],empVarianceyearRange[1]])
 
-  var yearCityFilteredForiegnBorn = _trimYears(([minYear,maxYear]),cityFilteredForeignborn);
+  var yearCityFilteredForeignBorn = _trimYears(([minYear,maxYear]),cityFilteredForeignborn);
   var yearCityFilteredEmpVariance = _trimYears(([minYear,maxYear]),cityFilteredEmpVariance);
 
 
@@ -974,8 +974,8 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
                   )
   var foreignBornScale = d3.scale.linear()
   .range([0,100])
-  .domain(      [d3.min(yearCityFilteredForiegnBorn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
-                d3.max(yearCityFilteredForiegnBorn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+  .domain(      [d3.min(yearCityFilteredForeignBorn, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredForeignBorn, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
 
   var empVarianceScale = d3.scale.linear()
@@ -988,12 +988,12 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   cityFilteredForeignborn.sort(_sortMsaCities());
   cityFilteredEmpVariance.sort(_sortMsaCities());
 
-  for(var i=0; i<yearCityFilteredForiegnBorn.length;i++){
+  for(var i=0; i<yearCityFilteredForeignBorn.length;i++){
     var resultValues = [],
       empVarObj= {};
 
-    for(var j=0; j<yearCityFilteredForiegnBorn[i]['values'].length; j++){
-      var curYear = yearCityFilteredForiegnBorn[i]['values'][j].x
+    for(var j=0; j<yearCityFilteredForeignBorn[i]['values'].length; j++){
+      var curYear = yearCityFilteredForeignBorn[i]['values'][j].x
 
       for(var k = 0; k<yearCityFilteredEmpVariance[i]['values'].length; k++){
         if(yearCityFilteredEmpVariance[i]['values'][k].x == curYear){
@@ -1005,14 +1005,14 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
       }
 
       var compositeValue = (
-        foreignBornScale(yearCityFilteredForiegnBorn[i].values[j].y) +      
+        foreignBornScale(yearCityFilteredForeignBorn[i].values[j].y) +      
         oppScale(cityFilteredOpp[i].values[0].y) +
         empVarianceScale(empVarObj[curYear]) 
             )/3
 
       resultValues.push({x:curYear,y:compositeValue})      
     }
-    compositeCityRanks.push({key:yearCityFilteredForiegnBorn[i]['key'],values:resultValues})          
+    compositeCityRanks.push({key:yearCityFilteredForeignBorn[i]['key'],values:resultValues})          
   }
 
   var filteredCityRanks = compositeCityRanks.filter(metro => {

@@ -427,7 +427,7 @@ const mapStateToProps = (state) => ({
   fluidityannualchurn:state.fluidityData.annualChurn,
   diversitycomposite : state.diversityData.diversitycomposite,    
   diversityincomebasedonchildhood:state.diversityData.opportunity,
-  diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
+  diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
   combinedcomposite : state.combinedData.combinedcomposite,
 })
@@ -446,7 +446,7 @@ export default connect((mapStateToProps), {
   getfluidityannualchurn:() => loadAnnualChurn(),
   getdiversitycomposite: () => loadDiversityComposite(),    
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
-  getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
+  getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getcombinedcomposite: () => loadCombinedComposite(),
   changeHomeState: (state) => changeHomeState(state)

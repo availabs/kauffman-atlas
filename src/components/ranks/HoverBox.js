@@ -17,7 +17,7 @@ let roundFormat = d3.format(".2f")
 let categories = {
   combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
   density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms','densityshareEmpNoAccRet','densityshareEmpHighTech'],
-  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforiegnbornpopulation','diversityemploymentlocationquotientvariance'],
+  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforeignbornpopulation','diversityemploymentlocationquotientvariance'],
   fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn'],
   qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
 }
@@ -127,7 +127,7 @@ const mapStateToProps = (state) => ({
   fluidityannualchurn:state.fluidityData.annualChurn,
   diversitycomposite : state.diversityData.diversitycomposite,    
   diversityincomebasedonchildhood:state.diversityData.opportunity,
-  diversitypercentageofforiegnbornpopulation:state.diversityData.foreignborn,
+  diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros,
@@ -146,7 +146,7 @@ export default connect((mapStateToProps), {
   getfluidityannualchurn:() => loadAnnualChurn(),
   getdiversitycomposite: () => loadDiversityComposite(),    
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
-  getdiversitypercentageofforiegnbornpopulation: () => loadForeignBornData(),
+  getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getcombinedcomposite: () => loadCombinedComposite(),
   changeHomeState: (state) => changeHomeState(state)

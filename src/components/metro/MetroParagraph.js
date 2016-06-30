@@ -12,6 +12,7 @@ import _ from 'lodash'
 let roundFormat = d3.format(".3f")
 import CategoryNames from 'components/misc/categoryNames'
 import CategoryUnits from 'components/misc/categoryUnits'
+import CategoryHoverParagraph from 'components/misc/categoryHoverParagraph'
 import { kmgtFormatter } from '../misc/numberFormatters'
 
 const integerFormatter = kmgtFormatter.bind(null, 0)
@@ -33,7 +34,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
   _fetchData () {
     if(!(this.props.qcewData && this.props.qcewData[this.props.metroId])) {
-      console.log("loading qcewdata",this.props.qcewData)
       this.props.loadData(this.props.metroId)
     }
     if(!this.props.metroScores[this.props.metroId]){
@@ -164,7 +164,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
           The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}, which measures [hovertext for {topScore.sub.metric}], where it ranks {this.ordinal_suffix_of(topScore.sub.value.rank)} nationally at {roundFormat(topScore.sub.value.y)}{CategoryUnits[topScore.sub.metric]}.
         </p>
         <p>
-          {name} scores lowest in the {bottomScore.metric.metric} category which measures [hovertext for {bottomScore.metric.metric}]. 
+          {name} scores lowest in the {bottomScore.metric.metric} category which {CategoryHoverParagraph[bottomScore.metric.metric]} 
           It ranks {this.ordinal_suffix_of(bottomScore.sub.value.rank)} in {bottomScore.sub.metric} and {this.ordinal_suffix_of(bottomScore.metric.value.rank)} in {bottomScore.metric.metric}.
         </p>
       </div>
@@ -228,7 +228,6 @@ export class MetroParagraph extends React.Component<void, Props, void> {
 
     let d = _.get(this.props.qcewData, [metroId, 2013])
 
-    console.log(metroId,this.props.qcewData)
 
 
     return (

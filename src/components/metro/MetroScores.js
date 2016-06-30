@@ -311,9 +311,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                 <h4>{(densityHighTech && densityHighTech.y) ? 
-                      `${densityHighTech.y.toLocaleString()}%` : ''}
+                      `${densityHighTech.y.toLocaleString()}%` : 'N/A'}
                 </h4>
-                Rank {densityHighTech.rank}
+                {(densityHighTech && densityHighTech.y) ? "Rank " + densityHighTech.rank : "Rank N/A"}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
