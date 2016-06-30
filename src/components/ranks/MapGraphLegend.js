@@ -52,6 +52,9 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
     else if (this.props.mapGraph !== nextProps.mapGraph){
       return true
     }
+    else if (this.props.activeColor !== nextProps.activeColor){
+      return true
+    }
     else if(this.props.activeComponent === nextProps.activeComponent){
       return false;             
     }
@@ -75,21 +78,34 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
     }
 
     data.forEach(metro => {
-      if(metro.values[metro.values.length-1]){
-       valueArray.push(metro.values[metro.values.length-1].y)       
-     }
+      metro.values.forEach(yearValue => {
+        if(yearValue.x == 2013 || (props.activeComponent=="diversityincomebasedonchildhood" && yearValue.x =="combined")){
+          valueArray.push(yearValue.y)           
+        }
+      })
     })
+
+
+    if(this.props.activeColor == "ranks"){
+      var colorDomain = valueArray;
+      var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]    
+    }
+    else{
+      var colorDomain = d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9))
+      var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]        
+    }
+
 
     if(props.activeComponent == "diversityemploymentlocationquotientvariance"){
       var color = d3.scale.quantile()
-          .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
-          .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]))
+          .domain(colorDomain)
+          .range((colorRange))
           
     }
     else{
       var color = d3.scale.quantile()
-        .domain(d3.range(d3.min(valueArray),d3.max(valueArray),((d3.max(valueArray)-d3.min(valueArray))/9)))
-        .range((["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]).reverse()) 
+        .domain(colorDomain)
+        .range((colorRange).reverse()) 
 
     }
 
@@ -117,6 +133,8 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .attr("width", 30)
       .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",24)" })
       .attr('fill', function(d) {return color(d)} )
+      .on('mouseover',this.props.legendHover.bind(null,color))
+      .on('mouseout',this.props.legendHoverOut)
       
     legendCells
       .append('text')
@@ -127,6 +145,8 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .text(function(d) {
         return roundFormat(d);
       })
+      .on('mouseover',this.props.legendHover.bind(null,color))
+      .on('mouseout',this.props.legendHoverOut)
   }
 
 

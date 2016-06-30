@@ -72,7 +72,7 @@ export class HoverBox extends React.Component<void, Props, void> {
         <tr>
           <td>{CategoryNames[cat]}</td>
           <td style={{textAlign: 'center'}}>{score.rank ? score.rank : "N/A"}</td>
-          <td style={{textAlign: 'center'}}>{score.y ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "N/A"}</td>
+          <td style={{textAlign: 'center'}}>{(score.y || score.y === 0) ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "N/A"}</td>
         </tr>
       )
     }) 

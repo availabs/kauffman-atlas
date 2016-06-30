@@ -30,6 +30,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     this._msaClick = this._msaClick.bind(this)
     this._mouseout = this._mouseout.bind(this)
     this._mouseover = this._mouseover.bind(this)
+    this._legendColor = this._legendColor.bind(this)
   }
 
   _initGraph () {
@@ -99,11 +100,56 @@ export class NationalMap extends React.Component<void, Props, void> {
       console.log("loading active", nextProps.activeComponent);
       nextProps[('get'+nextProps.activeComponent)]()
     }
-    if(this.props.activeComponent !== nextProps.activeComponent){
+    if(this.props.activeComponent !== nextProps.activeComponent || this.props.activeColor !== nextProps.activeColor){
       if(nextProps.loaded){
         this._colorMetros(nextProps);        
       }      
     }
+    if(this.props.legendHover !== nextProps.legendHover){
+      if(nextProps.loaded){
+        this._legendColor(nextProps);        
+      }      
+    }
+  }
+
+
+  _legendColor(props){
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? "rgb("+(parseInt(result[1], 16))+", "+(parseInt(result[2], 16))+", "+parseInt(result[3], 16)+")" : null
+    }
+    function shadeRGBColor(color, percent) {
+        var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+        return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
+    }                            
+
+
+    var scope = this;
+
+    if(!Array.isArray(props[(props.activeComponent)])){
+      var data = props[(props.activeComponent)]['relative']
+    }
+    else{
+      var data = props[(props.activeComponent)]
+    }
+
+    d3.selectAll("."+classes['msa'])[0].forEach(metro => {
+      if(metro.style.fill == hexToRgb(props.legendHover)){   
+        metro.style.fill = shadeRGBColor(hexToRgb(props.legendHover),-.4)  
+      }
+      else{
+        data.forEach(metroArea => {
+          if(metroArea.key == metro.id.substring(3)){
+            if(props.activeColor == "ranks"){
+              metro.style.fill = metroArea.color;              
+            }
+            else{
+              metro.style.fill = metroArea.scoreColor;  
+            }
+          }
+        })
+      }
+    })
   }
 
   _colorMetros(props){
@@ -121,7 +167,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -184,7 +235,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -193,8 +249,6 @@ export class NationalMap extends React.Component<void, Props, void> {
       .on("mouseover", this._mouseover)
       .on("mouseout", this._mouseout)
       .on('click',this._msaClick);
-
-
   }
 
   _drawGraph (props) {
@@ -271,7 +325,12 @@ export class NationalMap extends React.Component<void, Props, void> {
         var color = "chartreuse"  
         data.forEach(metroArea => {
           if(metroArea.key == d.id){
-            color = metroArea.color;
+            if(props.activeColor == "ranks"){
+              color = metroArea.color;              
+            }
+            else{
+              color = metroArea.scoreColor;  
+            }
           }
         })
         return color;
@@ -307,7 +366,12 @@ export class NationalMap extends React.Component<void, Props, void> {
       var color = "chartreuse"  
       data.forEach(metroArea => {
         if(metroArea.key == d.id){
-          color = metroArea.color;
+          if(scope.props.activeColor == "ranks"){
+            color = metroArea.color;              
+          }
+          else{
+            color = metroArea.scoreColor;  
+          }
         }
       })
       return color;

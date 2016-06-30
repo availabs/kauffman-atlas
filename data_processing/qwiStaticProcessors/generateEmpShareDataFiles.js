@@ -7,14 +7,10 @@ import _ from 'lodash'
 
 import {qwiAPIServer} from '../../src/AppConfig'
 
-import { industryTitles, msaToFips } from '../../src/support/qwi'
+import { industryTitles } from '../../src/support/industryTitles'
+import { msaToFips } from '../../src/support/qwi'
 
 const msaCodes = Object.keys(msaToFips)
-
-const projectRoot = path.join(__dirname, '../../')
-
-const qwiGeographiesByFipsCode = 
-        JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/data/qwiGeographiesByFipsCode.json')))
 
 const allQwiIndustryCodes = Object.keys(industryTitles).concat(['00000']).map(code => _.padStart(code, 5, '0')).sort()
 

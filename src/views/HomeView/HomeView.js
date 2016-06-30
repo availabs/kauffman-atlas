@@ -4,12 +4,14 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
+import mapClasses from 'components/maps/NationalMap.scss'
 import d3 from 'd3'
 import NationalMap from 'components/maps/NationalMap'
 import RankBox from 'components/ranks/RankBox'
 import PopBuckets from 'components/ranks/PopBuckets'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import MapGraphButtons from 'components/ranks/MapGraphButtons'
+import ColorButtons from 'components/ranks/ColorButtons'
 import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
 import BarChart from 'components/graphs/BarChart.js'
@@ -27,6 +29,10 @@ export class HomeView extends React.Component<void, Props, void> {
    constructor () {
     super()
 
+    this.state = {
+      legendHoverColor:null
+    }
+
     this._isActive = this._isActive.bind(this)
     this._linkIsActive = this._linkIsActive.bind(this)
     this._setActiveComponent = this._setActiveComponent.bind(this)
@@ -34,6 +40,9 @@ export class HomeView extends React.Component<void, Props, void> {
     this._setMapGraph = this._setMapGraph.bind(this)
     this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
+    this.legendHover = this.legendHover.bind(this)
+    this.legendHoverOut = this.legendHoverOut.bind(this)
+    this._setActiveColor = this._setActiveColor.bind(this)
   }
   componentWillMount () {    
     this._initGraph();    
@@ -82,6 +91,9 @@ export class HomeView extends React.Component<void, Props, void> {
   _setActiveBucket (bucket) {
     this.props.changeHomeState({'bucket':bucket});
   }   
+  _setActiveColor (color) {
+    this.props.changeHomeState({'activeColor':color});
+  }   
 
   _isActive(type){
     return type === this.props.homeState.activeComponent ? classes['active'] : ''
@@ -100,6 +112,14 @@ export class HomeView extends React.Component<void, Props, void> {
     })
   }
 
+  legendHover(quantileColorScale,curQuantile){
+    this.setState({legendHoverColor:quantileColorScale(curQuantile)})
+
+  }
+  legendHoverOut(){
+    this.setState({legendHoverColor:null})
+  }
+
   renderMapGraph (metrosInBucket) {
     if(!this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]){
       this.props["get" + this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]()
@@ -109,8 +129,10 @@ export class HomeView extends React.Component<void, Props, void> {
       return (
         <NationalMap 
           metros={metrosInBucket} 
+          activeColor={this.props.homeState.activeColor}
           activeComponent={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')}
           onMouseover={this.onMouseover}
+          legendHover={this.state.legendHoverColor}
         />
       )
     }else if((this.props.homeState.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
@@ -127,6 +149,7 @@ export class HomeView extends React.Component<void, Props, void> {
       return (
         <LineGraph    
           metros={metrosInBucket} 
+          activeColor={this.props.homeState.activeColor}
           data={this.props[this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')]} 
           plot="value" dataType="relative" title={this.props.homeState.activeComponent + (this.props.homeState.metric).replace(/ /g,'')} 
           graph={this.props.homeState.activeComponent + "composite"}
@@ -205,21 +228,31 @@ export class HomeView extends React.Component<void, Props, void> {
               />
               <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
             </div>
-            <div id="mapDiv" className='col-md-9' style={{padding:15}}>
-              <SubGraphButtons
-                metric={this.props.homeState.metric}
-                onComponentChange={this._setMetric} 
-                activeComponent={this.props.homeState.activeComponent}
-              />
-              <MapGraphButtons
-                 mapGraph={this.props.homeState.activeMapGraph}
-                onComponentChange={this._setMapGraph} 
-                activeComponent={this.props.homeState.activeMapGraph}
-              />
-              <MapGraphLegend 
-                mapGraph={this.props.homeState.activeMapGraph}
-                activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
-              />   
+            <div id="mapDiv" className='col-md-9' >
+
+                <div className='col-md-9' style={{padding:20}}>
+                  <SubGraphButtons
+                    metric={this.props.homeState.metric}
+                    onComponentChange={this._setMetric} 
+                    activeComponent={this.props.homeState.activeComponent}
+                  />
+                </div>
+                <MapGraphButtons
+                  mapGraph={this.props.homeState.activeMapGraph}
+                  onComponentChange={this._setMapGraph} 
+                />
+                <ColorButtons
+                  colorButton={this.props.homeState.activeColor}
+                  onComponentChange={this._setActiveColor} 
+                />
+                <MapGraphLegend 
+                  mapGraph={this.props.homeState.activeMapGraph}
+                  activeColor={this.props.homeState.activeColor}
+                  activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
+                  legendHover={this.legendHover}
+                  legendHoverOut={this.legendHoverOut}
+                />  
+
               {this.renderMapGraph(metrosInBucket)}       
             </div>
           </div>
