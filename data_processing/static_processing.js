@@ -42,7 +42,7 @@ var foreignbornData = JSON.parse(fs.readFileSync('../src/static/data/foreignborn
 var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json'));
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
-var specialization = _.mapValues(empVarianceData, dataByYear => _(dataByYear).pick(_.range(2002, 2017)).mapValues(index => index.hhi_2 * 100).value())
+var specialization = _.mapValues(empVarianceData, dataByYear => _(dataByYear).pick(_.range(2002, 2017)).mapValues(index => index.hhi_2 * 50).value())
 var processedEmpVariance = processGeneral2(specialization, true);
 var coloredEmpVariance = _polishData(processedEmpVariance['raw'],"empVariance");
 var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn,coloredEmpVariance);
