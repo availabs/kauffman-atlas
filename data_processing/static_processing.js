@@ -503,7 +503,7 @@ function _polishData(data,dataset){
     else{
       var dataScale = d3.scale.linear()
         .range([0,100])
-        .domain([0,
+        .domain([dataMin,
                 dataMean])    
     }
 
