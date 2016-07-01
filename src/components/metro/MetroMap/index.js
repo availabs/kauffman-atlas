@@ -31,6 +31,7 @@ export class MetroZbp extends React.Component {
     this._fecthData = this._fecthData.bind(this)
     this._renderBubbles = this._renderBubbles.bind(this)
     this._setFilter = this._setFilter.bind(this)
+    this.setMode = this.setMode.bind(this)
   }
   
   _fecthData () {
@@ -100,6 +101,15 @@ export class MetroZbp extends React.Component {
     })
   }
 
+  setMode(mode) {
+    let newOptions = this.state.options
+    newOptions.mode = mode
+    this.setState({
+      options: newOptions,
+      bubbleLoaded: false
+    })
+  }
+
   hasData () {
     return this.props.zbpData[this.props.year] && 
       this.props.zbpData.data[this.props.year][this.props.currentMetro] &&
@@ -111,25 +121,24 @@ export class MetroZbp extends React.Component {
   renderControls() {
 
         let zipcodeCount = "",
+            currentData = bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys)
             estCounts = {},
             estEmps = {},
             cluster =  this.state.options.mode === "cluster" ? " active" : "",
             zips =  this.state.options.mode === "zips" ? " active" : "";
 
+
         if(this.state.data.length > 0){
             zipcodeCount = this.state.geo.features.length - 1;
-            estCounts[this.state.year] = this.state.data.length;
-            estEmps[this.state.year] = this.state.data.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
-            estCounts[this.state.year2] = this.state.data2.length;
-            estEmps[this.state.year2] = this.state.data2.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
+            estCounts[this.state.year] = currentData.length;
+            estEmps[this.state.year] = currentData.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
+            //estCounts[this.state.year2] = this.state.data2.length;
+            //estEmps[this.state.year2] = this.state.data2.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
             /*estCount = this.state.data.length,
             estEmp = this.state.data.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0)
             console.log("empEst", estEmp)*/
         }
-        else {
-            estCounts[this.state.year] = 0;
-            estCounts[this.state.year2] = 0;
-        }
+        
 
         let style14 = {textAlign:"center",padding:6,fontSize:14 }
         return (
@@ -156,19 +165,6 @@ export class MetroZbp extends React.Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-xs-12" style={style14}>
-                        <table className="table">
-                            <caption><strong>Employment</strong></caption>
-                            <tr><th>{this.state.year2}</th><th>{this.state.year}</th><th>Change</th></tr>
-                            <tr>
-                                <td>{nf.format(estEmps[this.state.year2])}</td>
-                                <td>{nf.format(estEmps[this.state.year])}</td>
-                                <td>{nf.format(estEmps[this.state.year] - estEmps[this.state.year2])}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div className="row">
                     <div className="col-xs-4" style={{textAlign:"center",padding:6,fontSize:16}}>
                         <strong>Display:</strong>
                     </div>
@@ -181,7 +177,7 @@ export class MetroZbp extends React.Component {
                 </div>
             </div>
         )
-    }
+  }
 
   render () {
     //if (!this.hasData()) return <span />
@@ -192,7 +188,10 @@ export class MetroZbp extends React.Component {
       <div className='container'>
         <h4>Metro Map</h4>
         <div className='row'>
-          <div className='col-sm-10'>
+          <div className='col-sm-3'>
+            {this.renderControls()}
+          </div>
+          <div className='col-sm-9'>
             <svg id="circles" style={{width:600, height:600}} >
               <g id="circle_group" />
               <g id="zip_group" />
