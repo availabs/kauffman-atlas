@@ -96,18 +96,12 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
     }
 
 
-    if(props.activeComponent == "diversityemploymentlocationquotientvariance"){
-      var color = d3.scale.quantile()
-          .domain(colorDomain)
-          .range((colorRange))
-          
-    }
-    else{
-      var color = d3.scale.quantile()
-        .domain(colorDomain)
-        .range((colorRange).reverse()) 
 
-    }
+    var color = d3.scale.quantile()
+      .domain(colorDomain)
+      .range((colorRange).reverse()) 
+
+  
 
 
     let legend = svg.append("g")
