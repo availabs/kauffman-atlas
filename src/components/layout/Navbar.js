@@ -63,8 +63,6 @@ export class Navbar extends React.Component {
                   <li><Link to="/about">About</Link></li>
                   <li><Link to="/eei">Entrepreneurial Ecosystem Index</Link></li>
                   <li><Link to="/datasources">Data Sources</Link></li>
-                  <li><Link to="/apis">APIs</Link></li>
-                  
                 </ul>
               </li>
       

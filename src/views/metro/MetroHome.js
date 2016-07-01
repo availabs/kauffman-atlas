@@ -9,6 +9,7 @@ import MetroQcew from 'components/metro/MetroQcew'
 import MetroQwi from 'components/metro/MetroQwi'
 import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroParagraph from 'components/metro/MetroParagraph'
+import MetroMap from 'components/metro/MetroMap'
 import classes from 'styles/sitewide/index.scss'
 import { withRouter } from 'react-router'
 
@@ -115,7 +116,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 			    )
 		    case 'workforce':
 			    return (
-					<span></span>
+					<MetroMap currentMetro={metroId} year={year} />
 			    )
 		    default: 
 			    return (

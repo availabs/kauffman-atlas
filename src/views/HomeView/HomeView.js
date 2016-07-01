@@ -187,18 +187,6 @@ export class HomeView extends React.Component<void, Props, void> {
 
     return (
       <div> 
-        <div className='container-fluid' style={{backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5'}}>
-          <div className='container'>
-            <div className='row'>
-              <div className={'col-xs-12 ' + classes['text-div']}>
-                <p>The <strong>  Entrepreneurial Ecosystem Atlas </strong>  is a set of interactive tools designed to provide a visual understanding of the economic indicators of entrepreneurial ecosystems in the United States.  The Entrepreneurial Ecosystems Index combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The index is broken down into three major categories: Density, Diversity and Fluidity. </p>
-                <p>In defining Density, Diversity and Fluidity we’ve taken guidance from a report by Dane Stangler and Jordan Bell-Masterson, and published by the Kauffman Foundation, entitled “Measuring an Entrepreneurial Ecosystem.”</p>
-                <p>This page begins with a view of the overall index, the Entrepreneurial Ecosystem Index (EEI). You can toggle between the EEI, Density, Diversity and Fluidity. Additionally you can toggle between viewing the data in the form of a map or a graph and you can filter the visualizations by population.</p>
-                <p>Clicking on a metropolitan area will take you to a page full of additional analytics and visualizations for that metropolitan area.</p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className='container'>
            <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
@@ -254,6 +242,18 @@ export class HomeView extends React.Component<void, Props, void> {
                 />  
 
               {this.renderMapGraph(metrosInBucket)}       
+            </div>
+          </div>
+        </div>
+        <div className='container-fluid' style={{backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5'}}>
+          <div className='container'>
+            <div className='row'>
+              <div className={'col-xs-12 ' + classes['text-div']}>
+                <p>The <strong>  Entrepreneurial Ecosystem Atlas </strong>  is a set of interactive tools designed to provide a visual understanding of the economic indicators of entrepreneurial ecosystems in the United States.  The Entrepreneurial Ecosystems Index combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The index is broken down into three major categories: Density, Diversity and Fluidity. </p>
+                <p>In defining Density, Diversity and Fluidity we’ve taken guidance from a report by Dane Stangler and Jordan Bell-Masterson, and published by the Kauffman Foundation, entitled “Measuring an Entrepreneurial Ecosystem.”</p>
+                <p>This page begins with a view of the overall index, the Entrepreneurial Ecosystem Index (EEI). You can toggle between the EEI, Density, Diversity and Fluidity. Additionally you can toggle between viewing the data in the form of a map or a graph and you can filter the visualizations by population.</p>
+                <p>Clicking on a metropolitan area will take you to a page full of additional analytics and visualizations for that metropolitan area.</p>
+              </div>
             </div>
           </div>
         </div>
