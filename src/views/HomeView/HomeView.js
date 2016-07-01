@@ -207,7 +207,7 @@ export class HomeView extends React.Component<void, Props, void> {
         </div>
         <div className='container'>
           <div className='row'>
-            <div className='col-md-3' style={{padding:15}}>
+            <div className='col-md-4' style={{padding:15}}>
               <RankBox 
                 activeComponent={this.props.homeState.activeComponent} 
                 popScale={popScale}
@@ -216,7 +216,7 @@ export class HomeView extends React.Component<void, Props, void> {
               />
               <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
             </div>
-            <div id="mapDiv" className='col-md-9' >
+            <div id="mapDiv" className='col-md-8' >
 
                 <div className='col-md-9' style={{padding:20}}>
                   <SubGraphButtons

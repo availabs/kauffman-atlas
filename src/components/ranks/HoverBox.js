@@ -66,14 +66,14 @@ export class HoverBox extends React.Component<void, Props, void> {
           { return d.x === year })[0] || {}        
       }
 
-
+      console.log()
 
       return (
         <tr>
           <td>{CategoryNames[cat]}</td>
           <td style={{textAlign: 'center'}}>{score.rank ? score.rank : "N/A"}</td>
           <td style={{textAlign: 'center'}}>{(score.score || score.score === 0) ? roundFormat(score.score) : "N/A"}</td>
-          <td style={{textAlign: 'center'}}>{(score.y || score.y === 0) ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "N/A"}</td>
+          <td style={{textAlign: 'center'}}>{CategoryNames[cat].split(' ').length > 1 ? (score.y || score.y === 0) ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "N/A" : "N/A"}</td>
         </tr>
       )
     }) 
