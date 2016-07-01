@@ -489,11 +489,16 @@ function _polishData(data,dataset){
 
 
     if(dataset == "empVariance"){
-      console.log(dataMax)
       var dataScale = d3.scale.linear()
         .range([100,0])
         .domain([dataMean,
                 dataMax])    
+    }
+    else if(dataset == "opportunity"){
+      var dataScale = d3.scale.linear()
+        .range([0,100])
+        .domain([dataMin,
+                dataMean]) 
     }
     else{
       var dataScale = d3.scale.linear()
@@ -501,6 +506,13 @@ function _polishData(data,dataset){
         .domain([0,
                 dataMean])    
     }
+
+
+    if(dataset == "opportunity"){
+      console.log(dataScale(dataMin),dataScale(dataMax))
+    }
+
+
     var dataWithScore = newData.map(metro => {
       var newValues = metro.values.map(yearValue => {
         yearValue.score = dataScale(yearValue.y);
