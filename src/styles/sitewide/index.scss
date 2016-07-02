@@ -105,10 +105,9 @@
   text-decoration: none;
 }
 
-//.whitelink:focus {
-// color: white;
-// text-decoration: none;
-//}
+.whitelink:focus {
+  color: darken(#db9a36, 5%)!important;
+}
 
 .bluelink {
   text-decoration: none;
