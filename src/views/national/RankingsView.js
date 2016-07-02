@@ -26,16 +26,21 @@ export class RankingsView extends React.Component<void, Props, void> {
       active:'combinedcomposite',
       category:'combined',
       year:2013,
+      clickMetro:null,
       hoverMetro:null
     }
 
+    this._onClick = this._onClick.bind(this);
     this._onHover = this._onHover.bind(this);
-
   }
   componentWillMount () {    
     this._initGraph();    
   }   
   
+
+  _onClick(feature){ 
+    this.setState({clickMetro:feature});
+  }
 
   _onHover(feature){ 
     this.setState({hoverMetro:feature});
@@ -128,9 +133,9 @@ export class RankingsView extends React.Component<void, Props, void> {
           {metricOptions.filter(d => d.value.metric == this.state.active)[0].label}
         </h3>
         <StickyContainer>
-          <div className='container' style={{paddingTop:"20px"}}>
+          <div className='container' style={{paddingTop:"5px"}}>
             <Sticky style={{paddingTop:"5px"}}>
-              <div id="rankingsTableSelect" className="col-md-4">
+              <div id="rankingsTableSelect" className="col-md-5">
                 <div style={{float:"left",width:"33%",padding:"5px"}}>
                   <Select 
                   className={classes['Select']}
@@ -151,20 +156,26 @@ export class RankingsView extends React.Component<void, Props, void> {
                   clearable={false}
                   />  
                 </div>
-                <div style={{marginTop:"250px"}}>
+                <div style={{marginTop:"165px"}}>
                   <HoverBox 
-                    metroId={this.state.hoverMetro ? this.state.hoverMetro : data[0].key} 
+                    metroId={this.state.clickMetro ? this.state.clickMetro : data[0].key} 
+                    year={this.state.year} 
+                    activeComponent={this.state.category} 
+                  />
+                  <HoverBox 
+                    metroId={this.state.hoverMetro ? this.state.hoverMetro : data[1].key} 
                     year={this.state.year} 
                     activeComponent={this.state.category} 
                   />
                 </div> 
               </div>
             </Sticky>
-            <div className="col-md-8" style={{float:"right"}}>
+            <div className="col-md-7" style={{float:"right"}}>
               <RankingsTable 
                 data={data}
                 active={this.state.active} 
                 year={this.state.year} 
+                onClick={this._onClick}
                 onHover={this._onHover}
               />
             </div>

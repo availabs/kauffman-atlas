@@ -111,16 +111,6 @@ export class RankingsTable extends React.Component<void, Props, void> {
                 <span className="caret"></span>
               </span>
             </td>          
-            <td id="MetroId"className={classes['rankingsTableHeader']}>
-              <a
-                 onClick={this._sortTableChange.bind(null,"MetroId")}>
-                  MetroId
-              </a>
-              <span className={classes['rankingsCaret']}>
-                <span className={classes['upCaret']}></span>
-                <span className="caret"></span>
-              </span>
-            </td>
             <td id="Name" className={classes['rankingsTableHeader']}>
               <a
                  onClick={this._sortTableChange.bind(null,"Name")}>
@@ -148,9 +138,8 @@ export class RankingsTable extends React.Component<void, Props, void> {
             data.map((metro) => {
                 var curYearValue = metro.values.filter(d => d.x==this.props.year)[0]
                 return (
-                  <tr id={metro.key} onMouseOver={this.props.onHover.bind(null,metro.key)}>   
+                  <tr id={metro.key} onClick={this.props.onClick.bind(null,metro.key)} onMouseOver={this.props.onHover.bind(null,metro.key)}>   
                     <td>{curYearValue ? curYearValue.rank : "N/A"}</td>      
-                    <td>{metro.key}</td>
                     <td>{metro.name}</td>
                     <td>{curYearValue ? roundFormat(curYearValue.y) : "N/A"}</td>        
                   </tr>
