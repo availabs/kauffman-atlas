@@ -1,0 +1,55 @@
+#rankingsTableSelect .Select{
+  max-width:100%;
+}
+
+#rankingsTableSelect .Select-placeholder{
+  color:#f7f7f7;
+}
+
+#rankingsTableSelect .Select-value span{
+  max-width:33%;
+  color:#f7f7f7;
+}
+
+#rankingsTableSelect .Select-control {
+  background-color:#7D8FAF;
+  border-color: #5d5d5d;
+}
+
+#rankingsTableSelect .Select-control:hover {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+#rankingsTableSelect .Select-menu {
+  background-color:#f7f7f7;
+}
+
+#rankingsTableSelect .Select-option.is-focused {
+  background-color:#7D8FAF;
+  color:#f7f7f7;
+}
+
+#rankingsTableSelect .Select-menu-outer{
+  border: 1px solid #f7f7f7;
+}
+
+#rankingsTableSelect .Select-clear-zone{
+  color:#f7f7f7;
+}
+
+#rankingsTableSelect .Select-clear-zone:hover > .Select-clear {
+  color: #DEDEDE;
+}
+
+#rankingsTableSelect .Select-arrow {
+  border-color: #f7f7f7 transparent transparent;
+  border-style: solid;
+  border-width: 5px 5px 2.5px;
+  display: inline-block;
+  height: 0;
+  width: 0;
+}
+
+#rankingsTableSelect .Select-arrow-zone:hover > .Select-arrow {
+  border-top-color: #DEDEDE;
+}

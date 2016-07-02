@@ -113,7 +113,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .append('text')
       .attr("dx", 0)
       .attr("dy", ".35em")
-      .text( 'Value')
+      .text( 'Score/Value')
 
 
     let legendCells = legend

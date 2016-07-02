@@ -12,6 +12,7 @@ import DensityView from 'views/national/DensityView'
 import DiversityView from 'views/national/DiversityView'
 import FluidityView from 'views/national/FluidityView'
 import CombinedView from 'views/national/CombinedView'
+import RankingsView from 'views/national/RankingsView'
 import MetroHome from 'views/metro/MetroHome'
 import About from 'views/info/About'
 import Apis from 'views/info/Apis'
@@ -34,6 +35,7 @@ export default (store) => (
     <Route path='/diversity' component={DiversityView} />
     <Route path='/fluidity' component={FluidityView} />
   	<Route path='/combined' component={CombinedView} />
+    <Route path='/rankings' component={RankingsView} />
   	<Route path='/metro/:geoid' component={MetroHome} />
   	<Route path='/metro/:geoid/:pageid' component={MetroHome} />
   	<Route path='/metro/:geoid/:pageid/:naics_code' component={MetroHome} />

@@ -53,6 +53,9 @@ export class Navbar extends React.Component {
            
             <ul className='nav navbar-nav navbar-right'>
               <li>
+                <Link to='/rankings' className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Rankings</Link>
+              </li>
+              <li>
                 <Link to='/research' className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Research</Link>
               </li>
               <li className={'dropdown' + open} onClick={this._toggleDropdown}>

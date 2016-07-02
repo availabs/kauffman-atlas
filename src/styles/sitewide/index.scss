@@ -175,3 +175,37 @@
   color: darken(#db9a36, 5%)!important;
   background-color: darken(#5d5d5d, 5%)!important;
 }
+
+.rankingsTableHeader{
+  color:#7D8FAF;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rankingsTableHeader:hover{
+  color: darken(#7D8FAF, 5%)!important;
+}
+
+.rankingsCaret{
+  display:inline-block;
+  float:right;
+}
+
+.upCaret {
+  display: block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: top;
+  border-bottom: 4px solid;
+  border-left: 4px solid transparent;
+  border-top: 0 dotted;
+  border-right: 4px solid transparent;
+  content: "";
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #7D8FAF;
+  color:#f7f7f7;
+}
