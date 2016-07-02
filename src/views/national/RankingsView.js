@@ -127,49 +127,49 @@ export class RankingsView extends React.Component<void, Props, void> {
         <h3 style={{textAlign:"center"}}>
           {metricOptions.filter(d => d.value.metric == this.state.active)[0].label}
         </h3>
-        <div className='container' style={{paddingTop:"20px"}}>
         <StickyContainer>
-          <Sticky>
-            <div id="rankingsTableSelect" className="col-md-4">
-              <div className="pull-left col-md-4" style={{padding:"5px"}}>
-                <Select 
-                className={classes['Select']}
-                name="yearSelect"
-                value={yearOptions.filter(d => { return d.value == this.state.year })[0]}
-                options={yearOptions}
-                onChange={yearSelectChange} 
-                clearable={false}
-                />  
+          <div className='container' style={{paddingTop:"20px"}}>
+            <Sticky style={{paddingTop:"5px"}}>
+              <div id="rankingsTableSelect" className="col-md-4">
+                <div style={{float:"left",width:"33%",padding:"5px"}}>
+                  <Select 
+                  className={classes['Select']}
+                  name="yearSelect"
+                  value={yearOptions.filter(d => { return d.value == this.state.year })[0]}
+                  options={yearOptions}
+                  onChange={yearSelectChange} 
+                  clearable={false}
+                  />  
+                </div>
+                <div style={{float:"left",width:"67%",padding:"5px"}}> 
+                  <Select 
+                  className={classes['Select']}
+                  name="metricSelect"
+                  value={metricOptions.filter(d => { return d.value.metric == this.state.active })[0]}
+                  options={metricOptions}
+                  onChange={metricSelectChange} 
+                  clearable={false}
+                  />  
+                </div>
+                <div style={{marginTop:"250px"}}>
+                  <HoverBox 
+                    metroId={this.state.hoverMetro ? this.state.hoverMetro : data[0].key} 
+                    year={this.state.year} 
+                    activeComponent={this.state.category} 
+                  />
+                </div> 
               </div>
-              <div className="pull-left col-md-8" style={{padding:"5px"}}> 
-                <Select 
-                className={classes['Select']}
-                name="metricSelect"
-                value={metricOptions.filter(d => { return d.value.metric == this.state.active })[0]}
-                options={metricOptions}
-                onChange={metricSelectChange} 
-                clearable={false}
-                />  
-              </div>
-              <div style={{marginTop:"250px"}}>
-                <HoverBox 
-                  metroId={this.state.hoverMetro ? this.state.hoverMetro : data[0].key} 
-                  year={this.state.year} 
-                  activeComponent={this.state.category} 
-                />
-              </div> 
+            </Sticky>
+            <div className="col-md-8" style={{float:"right"}}>
+              <RankingsTable 
+                data={data}
+                active={this.state.active} 
+                year={this.state.year} 
+                onHover={this._onHover}
+              />
             </div>
-          </Sticky>
-        </StickyContainer>
-          <div className="col-md-8">
-            <RankingsTable 
-              data={data}
-              active={this.state.active} 
-              year={this.state.year} 
-              onHover={this._onHover}
-            />
           </div>
-        </div>
+        </StickyContainer>
       </div>
     )
   }
