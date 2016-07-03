@@ -139,7 +139,7 @@ const aggregateDispersionMeasuresByYear = (dispMeasuresByQtrByYear) =>
     })
   )
 
-const tapLog = (d) => { console.log(JSON.stringify(d, null, 4)); return d }
+//const tapLog = (d) => { console.log(JSON.stringify(d, null, 4)); return d }
 
 const getDispersionStatistics = (acc, msa, cb) => {
   
@@ -151,7 +151,6 @@ const getDispersionStatistics = (acc, msa, cb) => {
     .then(response => response.json())
     .then(reformatApiResponse)
     .then(forwardFill)
-    .then(tapLog)
     .then(getMonthlyAveragesByQuarterByYear)
     .then(computeDispersionMeasuresByQuarterByYear)
     .then(aggregateDispersionMeasuresByYear)
