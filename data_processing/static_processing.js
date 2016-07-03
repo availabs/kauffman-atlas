@@ -39,13 +39,17 @@ var processedDensityComposite = _processComposite(processedNewFirms['relative'],
 //Diversity Data
 var opportunityData = JSON.parse(fs.readFileSync('../src/static/data/opportunity.json')); 
 var foreignbornData = JSON.parse(fs.readFileSync('../src/static/data/foreignborn.json')); 
-var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json'));
+var empVarianceData = JSON.parse(fs.readFileSync('../src/static/data/economySpecializationStatistics.json'));
 var processedOpportunity = _processequalOpp(opportunityData)
 var processedForeignborn = _processGeneral(foreignbornData,"foreignborn");
-var specialization = _.mapValues(empVarianceData, dataByYear => _(dataByYear).pick(_.range(2002, 2017)).mapValues(index => index.hhi_2 * 10000).value())
-var processedEmpVariance = processGeneral2(specialization, true);
+var empVariances = _.mapValues(empVarianceData, dataByYear => _.mapValues(dataByYear, index => index.lqEmpVariance))
+var processedEmpVariance = processGeneral2(empVariances, true);
 var coloredEmpVariance = _polishData(processedEmpVariance['raw'],"empVariance");
-var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn,coloredEmpVariance);
+var empHHIValues =  _.mapValues(empVarianceData, dataByYear => _.mapValues(dataByYear, index => (index.hhi_2 * 10000)))
+var processedEmpHHI = processGeneral2(empHHIValues, true);
+var coloredEmpHHI = _polishData(processedEmpHHI['raw'],"empHHI");
+var processedDiversityComposite = _processDiversityComposite(processedOpportunity,processedForeignborn,coloredEmpVariance,coloredEmpHHI);
+
 
 //Fluidity Data
 var fluidityIrsData = JSON.parse(fs.readFileSync('../src/static/data/irsMigration.json')); 
@@ -74,6 +78,7 @@ fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.string
 fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
 fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
 fs.writeFileSync("../src/static/data/processedEmpVariance.json",JSON.stringify(coloredEmpVariance));
+fs.writeFileSync("../src/static/data/processedEmpHHI.json",JSON.stringify(coloredEmpHHI));
 fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
 
 //Fluidity
@@ -159,6 +164,7 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['diversity']['opportunity'];
   curMsaObj['diversity']['foreignborn'] = {};
   curMsaObj['diversity']['empLQVariance'] = {};
+  curMsaObj['diversity']['empHHI'] = {};
   curMsaObj['diversity']['composite'];
 
   processedOpportunity.forEach(metro => {
@@ -179,6 +185,11 @@ Object.keys(msaPop).forEach(msaId => {
   processedEmpVariance['raw'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['diversity']['empLQVariance']['raw'] = metro;        
+    }
+  })
+  processedEmpHHI['raw'].forEach(metro => {
+    if(metro.key == msaId){
+      curMsaObj['diversity']['empHHI']['raw'] = metro;        
     }
   })
   processedDiversityComposite.forEach(metro => {
@@ -509,7 +520,7 @@ function _colorGroup(data,dataset,type){
     var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]        
   }
 
-  if(dataset=="empVariance"){
+  if(dataset=="empVariance" || dataset==='empHHI'){
     var _colorGroupScale = d3.scale.quantile()
         .domain(colorDomain)
         .range((colorRange))      
@@ -524,20 +535,20 @@ function _colorGroup(data,dataset,type){
 
   return _colorGroupScale;
 }
-function _colorOppGroup(group){
-    if(group == "lowIncome"){
-        var colorGroup = d3.scale.linear()
-            .domain([-.2,.2])
-            .range(['red','green']);
-    }
-    if(group == "highIncome"){
-        var colorGroup = d3.scale.linear()
-           .domain([-.1,.1])
-           .range(['red','green']);           
-    }
+//function _colorOppGroup(group){
+    //if(group == "lowIncome"){
+        //var colorGroup = d3.scale.linear()
+            //.domain([-.2,.2])
+            //.range(['red','green']);
+    //}
+    //if(group == "highIncome"){
+        //var colorGroup = d3.scale.linear()
+           //.domain([-.1,.1])
+           //.range(['red','green']);           
+    //}
 
-    return colorGroup;
-}
+    //return colorGroup;
+//}
 function _sortCities(year){
 
     return (a,b) => {
@@ -903,7 +914,7 @@ function _trimYears(years,cities){
   return filteredCities;
 }
 
-function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
+function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHHI){
 
   var foreignborn = foreignbornObj['relative'];
 
@@ -923,7 +934,9 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
 
   var cityFilteredOpp = [],
       cityFilteredForeignborn = [],
-      cityFilteredEmpVariance = [];
+      cityFilteredEmpVariance = [],
+      cityFilteredEmpHHI = [];
+
   var compositeCityRanks = [];
 
   for(var i=0; i<opp.length; i++){
@@ -931,16 +944,22 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
       if(opp[i].key == foreignborn[j].key){
         for(var k=0; k< empVariance.length; k++){
           if(empVariance[k].key == opp[i].key){
-            cityFilteredOpp.push(opp[i]); 
-            cityFilteredForeignborn.push(foreignborn[j])
-            cityFilteredEmpVariance.push(empVariance[k])
+            for(var m=0; m < empHHI.length; m++){
+              if(empHHI[m].key == opp[i].key){
+                cityFilteredOpp.push(opp[i]); 
+                cityFilteredForeignborn.push(foreignborn[j])
+                cityFilteredEmpVariance.push(empVariance[k])
+                cityFilteredEmpHHI.push(empHHI[m])
+                break
+              }
+            }
+          break
           }
-        }
-      }      
+        }      
+        break
+      }
     }
   }
-
-
 
   cityFilteredForeignborn.forEach(metroArea => {
     metroArea.values = metroArea.values.filter(yearValue => {
@@ -948,23 +967,20 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
     })
   })
 
-
   var foreignBornyearRange = ([d3.min(cityFilteredForeignborn, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
                     d3.max(cityFilteredForeignborn, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
   var empVarianceyearRange = ([d3.min(cityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
                     d3.max(cityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
+  var empHHIRange = ([d3.min(cityFilteredEmpHHI, function(c) { return d3.min(c.values, function(v) { return v.x }); }),
+                    d3.max(cityFilteredEmpHHI, function(c) { return d3.max(c.values, function(v) { return v.x }); })])
 
 
-
-
-
-  var minYear = d3.max([foreignBornyearRange[0],empVarianceyearRange[0]])
-  var maxYear = d3.min([foreignBornyearRange[1],empVarianceyearRange[1]])
+  var minYear = d3.max([foreignBornyearRange[0],empVarianceyearRange[0], empHHIRange[0]])
+  var maxYear = d3.min([foreignBornyearRange[1],empVarianceyearRange[1], empHHIRange[1]])
 
   var yearCityFilteredForeignBorn = _trimYears(([minYear,maxYear]),cityFilteredForeignborn);
   var yearCityFilteredEmpVariance = _trimYears(([minYear,maxYear]),cityFilteredEmpVariance);
-
-
+  var yearCityFilteredEmpHHI = _trimYears(([minYear,maxYear]),cityFilteredEmpHHI);
 
 
   var oppScale = d3.scale.linear()
@@ -983,14 +999,21 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   .domain(      [d3.min(yearCityFilteredEmpVariance, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
                 d3.max(yearCityFilteredEmpVariance, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
                 )  
+  var empHHIScale = d3.scale.linear()
+  .range([100,0])
+  .domain(      [d3.min(yearCityFilteredEmpHHI, function(c) { return d3.min(c.values, function(v) { return v.y }); }),
+                d3.max(yearCityFilteredEmpHHI, function(c) { return d3.max(c.values, function(v) { return v.y }); })]
+                )  
   
   cityFilteredOpp.sort(_sortMsaCities());
   cityFilteredForeignborn.sort(_sortMsaCities());
   cityFilteredEmpVariance.sort(_sortMsaCities());
+  cityFilteredEmpHHI.sort(_sortMsaCities());
 
   for(var i=0; i<yearCityFilteredForeignBorn.length;i++){
     var resultValues = [],
-      empVarObj= {};
+      empVarObj= {},
+      empHHIObj = {};
 
     for(var j=0; j<yearCityFilteredForeignBorn[i]['values'].length; j++){
       var curYear = yearCityFilteredForeignBorn[i]['values'][j].x
@@ -1004,11 +1027,22 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
         empVarObj[curYear] = 0;
       }
 
+      for(var m = 0; k<yearCityFilteredEmpHHI[i]['values'].length; m++){
+        if(yearCityFilteredEmpHHI[i]['values'][m].x == curYear){
+          empHHIObj[curYear] = yearCityFilteredEmpHHI[i]['values'][m].y
+          break
+        }
+      }
+      if(!empHHIObj[curYear]){
+        empHHIObj[curYear] = 0;
+      }
+
       var compositeValue = (
         foreignBornScale(yearCityFilteredForeignBorn[i].values[j].y) +      
         oppScale(cityFilteredOpp[i].values[0].y) +
-        empVarianceScale(empVarObj[curYear]) 
-            )/3
+        empVarianceScale(empVarObj[curYear]) +
+        (empHHIScale(empHHIObj[curYear])/600*8)
+            )/4
 
       resultValues.push({x:curYear,y:compositeValue})      
     }
@@ -1025,11 +1059,8 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance){
   })
 
 
-
   compositeCityRanks = _rankCities(filteredCityRanks);
   var graphData = _polishData(compositeCityRanks,"diversityComposite");
-
-
 
   return graphData;
 }
@@ -1393,7 +1424,7 @@ function processGeneral2 (data, sortNondescending) {
 
 
   const rankingsByYear = getRankingsByYear(data)
-
+    
   const msaByYearRankingTables = getMSAByYearRankingTables(rankingsByYear)
 
   // We order the metros in the output file by their ranking in the last year with data.
@@ -1403,9 +1434,9 @@ function processGeneral2 (data, sortNondescending) {
     raw : _.map(lastYearRankings, msa => ({
               key : msa,
               name: msaName[msa],
-              values: _.sortBy(_.map(data[msa], (tovr, yr) => ({
+              values: _.sortBy(_.map(data[msa], (val, yr) => ({
                 x: +yr, 
-                y: tovr, 
+                y: val, 
                 rank: msaByYearRankingTables[yr][msa],
               })),'x')
           }))

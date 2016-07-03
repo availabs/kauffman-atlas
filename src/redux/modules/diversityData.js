@@ -1,6 +1,5 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
-import d3 from 'd3'
 
 // ------------------------------------
 // Constants
@@ -9,6 +8,7 @@ import d3 from 'd3'
 export const RECEIVE_OPPORTUNITY_DATA = 'RECEIVE_OPPORTUNITY_DATA'
 export const RECEIVE_FOREIGNBORN_DATA = 'RECEIVE_FOREIGNBORN_DATA'
 export const RECEIVE_EMPVARIANCE_DATA = 'RECEIVE_EMPVARIANCE_DATA'
+export const RECEIVE_EMPHHI_DATA = 'RECEIVE_EMPHHI_DATA'
 export const RECEIVE_DIVERSITYCOMPOSITE_DATA = 'RECEIVE_DIVERSITYCOMPOSITE_DATA'
 
 export function receiveOpportunityData (value) {
@@ -28,6 +28,13 @@ export function receiveForeignBornData (value) {
 export function receiveEmpVarianceData (value) {
   return {
     type: RECEIVE_EMPVARIANCE_DATA,
+    payload: value
+  }
+}
+
+export function receiveEmpHHIData (value) {
+  return {
+    type: RECEIVE_EMPHHI_DATA,
     payload: value
   }
 }
@@ -65,6 +72,15 @@ export const loadEmpVarianceData = () => {
 }
 
 
+export const loadEmpHHIData = () => {
+  return (dispatch) => {
+    return fetch('/data/processedEmpHHI.json')
+      .then(response => response.json())
+      .then(json => dispatch(receiveEmpHHIData(json)))
+  }
+}
+
+
 export const loadDiversityComposite = () => {
   return (dispatch) => {
     return fetch('/data/processedDiversityComposite.json')
@@ -78,10 +94,12 @@ export const actions = {
   receiveOpportunityData,
   receiveForeignBornData,
   receiveEmpVarianceData,
+  receiveEmpHHIData,
   receiveDiversityComposite,
   loadOpportunityData,
   loadForeignBornData,
   loadEmpVarianceData,
+  loadEmpHHIData,
   loadDiversityComposite
 }
 
@@ -107,6 +125,13 @@ const ACTION_HANDLERS = {
     var newState = Object.assign({},state);
 
     newState.empVariance = action.payload;
+
+    return newState;
+  },
+  [RECEIVE_EMPHHI_DATA]: (state,action) => {
+    var newState = Object.assign({},state);
+
+    newState.empHHI = action.payload;
 
     return newState;
   },

@@ -11,7 +11,7 @@ import _ from 'lodash'
 import { qcewApi as apiServerAddress } from '../../src/AppConfig'
 
 
-const outputFilePath = path.join(__dirname, '../../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json') 
+const outputFilePath = path.join(__dirname, '../../src/static/data/economySpecializationStatistics.json') 
 
 const msaIds = Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
 
@@ -106,8 +106,11 @@ const computeDispersionMeasuresByQuarterByYear = (lqEmpAvgsByQtrByYear) =>
         _.mapValues(lqEmpAvgsByQtrByYear, lqEmpAvgsByByQtr =>
           _.mapValues(lqEmpAvgsByByQtr, monthlyAvgsForQtr => {
 
-            let topEmp = _.takeRight(monthlyAvgsForQtr.emp.sort(), 100)
-            let topLQEmp = _.takeRight(monthlyAvgsForQtr.lqEmp.sort(), 100)
+            //let topEmp = _.takeRight(monthlyAvgsForQtr.emp.sort(), 100)
+            //let topLQEmp = _.takeRight(monthlyAvgsForQtr.lqEmp.sort(), 100)
+
+            let topEmp = monthlyAvgsForQtr.emp
+            let topLQEmp = monthlyAvgsForQtr.lqEmp
 
             let total = _.sum(topEmp)
             let topEmpShares = topEmp.map(empAvg => (empAvg/total))

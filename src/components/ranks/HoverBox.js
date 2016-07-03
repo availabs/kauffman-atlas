@@ -7,7 +7,7 @@ import classes from 'styles/sitewide/index.scss'
 import d3 from 'd3'
 import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
-import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import CategoryNames from 'components/misc/categoryNames'
 import CategoryUnits from 'components/misc/categoryUnits'
@@ -17,7 +17,7 @@ let roundFormat = d3.format(".2f")
 let categories = {
   combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
   density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms','densityshareEmpNoAccRet','densityshareEmpHighTech'],
-  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforeignbornpopulation','diversityemploymentlocationquotientvariance'],
+  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforeignbornpopulation','diversityemploymentlocationquotientvariance','diversityemploymenthhi'],
   fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn'],
   qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
 }
@@ -129,6 +129,7 @@ const mapStateToProps = (state) => ({
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
+  diversityemploymenthhi:state.diversityData.empHHI,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros,
 })
@@ -148,6 +149,7 @@ export default connect((mapStateToProps), {
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
+  getdiversityemploymenthhi: () => loadEmpHHIData(),
   getcombinedcomposite: () => loadCombinedComposite(),
   changeHomeState: (state) => changeHomeState(state)
 })(HoverBox)

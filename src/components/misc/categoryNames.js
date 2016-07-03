@@ -16,6 +16,8 @@ let categoryNames = {
   diversityforeignborn: '% Foreign Born',
   diversityemploymentlocationquotientvariance: 'Variance of Emp Location Quotient',
   diversityemplqvariance: 'Variance of Emp Location Quotient',
+  diversityemploymenthhi: 'Employment Hirschman-Herfindahl Index',
+  diversityemphhi: 'Employment Hirschman-Herfindahl Index',
   fluidityhighgrowthfirms: 'High Growth Firms',
   fluidityhighgrowth: 'High Growth Firms',
   fluiditynetmigration: 'Net Migration',
