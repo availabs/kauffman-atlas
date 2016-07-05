@@ -131,12 +131,14 @@ export class RankingsTable extends React.Component<void, Props, void> {
       data[indexingColumn].sort(_sortProp("name"))
     }
     else{
-      if(this.state.sortColumn == "diversityincomebasedonchildhood"){
+      if(this.state.sortColumn == "diversityincomebasedonchildhood" && this.props.active != "diversityincomebasedonchildhood"){
         data[indexingColumn].sort(_sortValues("combined"))        
       }
+      else if(this.state.sortColumn != "diversityincomebasedonchildhood" && this.props.active == "diversityincomebasedonchildhood"){
+        data[indexingColumn].sort(_sortValues(2013)) 
+      }
       else{
-        var sortYear = typeof this.props.year != "number" ? 2013 : this.props.year
-        data[indexingColumn].sort(_sortValues(sortYear))       
+        data[indexingColumn].sort(_sortValues(this.props.year)) 
       }
 
     }
@@ -190,11 +192,11 @@ export class RankingsTable extends React.Component<void, Props, void> {
             data[indexingColumn].map(metro => {
               //Go through each metric in the dataset.
               var metroCells = Object.keys(data).map(catName => {
-                if(catName == "diversityincomebasedonchildhood"){
+                if(catName == "diversityincomebasedonchildhood" && this.props.active != "diversityincomebasedonchildhood"){
                   var singleMetroYearValue = data[catName].filter(d => d.key == metro.key)[0] ? data[catName].filter(d => d.key == metro.key)[0].values.filter(d => d.x == "combined")[0] : null
                 }
                 else{
-                  if(typeof this.props.year != "number"){
+                  if(catName !== "diversityincomebasedonchildhood" && typeof this.props.year != "number"){
                     var singleMetroYearValue = data[catName].filter(d => d.key == metro.key)[0] ? data[catName].filter(d => d.key == metro.key)[0].values.filter(d => d.x == 2013)[0] : null                                      
                   }
                   else{
@@ -206,7 +208,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
 
                 return (<td>{singleMetroYearValue ? roundFormat(singleMetroYearValue.y) : ""}</td>)
               })
-              if(this.props.active == "diversityincomebasedonchildhood"){
+              if(this.state.sortColumn == "diversityincomebasedonchildhood" && this.props.active != "diversityincomebasedonchildhood"){
                 var rankCellData = data[this.props.active].filter(d => d.key == metro.key)[0] ? data[this.props.active].filter(d => d.key == metro.key)[0].values.filter(d => d.x == "combined")[0] : null
               }
               else{
