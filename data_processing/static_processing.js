@@ -409,6 +409,10 @@ function _rankCities(cities,dataset){
         );    
   }
 
+  if(dataset == "qwiDensity"){
+    console.log("qwiDensity")
+  }
+
   years.forEach(year => {
       var rank = 1;
       //Sort cities according to each year
@@ -934,7 +938,7 @@ function _relativeAgainstPopulation(graphRawData){
 function _processGeneral(data,dataset){
     var finalData = _convertToCoordinateArray(data,dataset);
 
-    var rankedData = _rankCities(finalData);
+    var rankedData = _rankCities(finalData,dataset);
     var polishedData = _polishData(rankedData,dataset);
 
     var graphRawData = polishedData;
@@ -943,7 +947,7 @@ function _processGeneral(data,dataset){
     graphRelativeData = _relativeAgainstPopulation(graphRawData);
 
     if(graphRelativeData && graphRelativeData.length > 0){
-        var rankedData2 = _rankCities(graphRelativeData);
+        var rankedData2 = _rankCities(graphRelativeData,dataset);
         var polishedData2 = _polishData(rankedData2,("relative"+dataset));
 
         var graphData = {};

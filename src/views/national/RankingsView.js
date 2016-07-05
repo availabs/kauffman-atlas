@@ -18,6 +18,14 @@ import 'react-select/dist/react-select.css';
 
 let roundFormat = d3.format(".2f")
 
+let categories = {
+  combined: ['combinedcomposite', 'densitycomposite', 'fluiditycomposite', 'diversitycomposite'],
+  density: ['densitycomposite','densitynewfirms', 'densityshareofemploymentinnewfirms','densityshareEmpNoAccRet','densityshareEmpHighTech'],
+  diversity: ['diversitycomposite','diversityincomebasedonchildhood','diversitypercentageofforeignbornpopulation','diversityemploymentlocationquotientvariance'],
+  fluidity: ['fluiditycomposite','fluidityhighgrowthfirms','fluiditynetmigration','fluiditytotalmigration','fluidityannualchurn'],
+  qwiDensity: ['qwiDensityshareEmpAll','qwiDensityshareEmpInfo','qwiDensityshareEmpPro']      
+}
+
 export class RankingsView extends React.Component<void, Props, void> {
    constructor () {
     super()
@@ -32,6 +40,8 @@ export class RankingsView extends React.Component<void, Props, void> {
 
     this._onClick = this._onClick.bind(this);
     this._onHover = this._onHover.bind(this);
+    this._checkData = this._checkData.bind(this);
+    this._formatData = this._formatData.bind(this)
   }
   componentWillMount () {    
     this._initGraph();    
@@ -61,15 +71,39 @@ export class RankingsView extends React.Component<void, Props, void> {
     }           
   }
 
+  _checkData (type) {         
+    let hasdata = true;
+    categories[type].forEach((cat) => {
+      if(!this.props[cat]){
+        this.props['get'+cat]()
+        hasdata = false
+      }
+    })
+    return hasdata
+  }
+
+  _formatData(){
+    var category = this.state.category
+    var orderedData = {};
+
+    categories[category].forEach((cat) => {
+      var data = Array.isArray(this.props[cat]) ? this.props[cat] : this.props[cat]['relative'] ? this.props[cat]['relative'] : this.props[cat]['raw'] 
+      orderedData[cat] = data;
+    })   
+
+
+    return orderedData;
+  }
+
 
   render () {
     var scope = this;
-    if(!this.props[this.state.active]){
-      this.props['get'+this.state.active]()
-      return <div>Loading...</div>
+    if(!this._checkData(this.state.category)){
+      return (<tr />)
     }
 
 
+    var data2 = this._formatData();
     var data = Array.isArray(this.props[this.state.active]) ? this.props[this.state.active] : this.props[this.state.active]['relative'] ? this.props[this.state.active]['relative'] : this.props[this.state.active]['raw'] 
 
 
@@ -135,7 +169,7 @@ export class RankingsView extends React.Component<void, Props, void> {
         <StickyContainer>
           <div className='container' style={{paddingTop:"5px"}}>
             <Sticky style={{paddingTop:"5px"}}>
-              <div id="rankingsTableSelect" className="col-md-5">
+              <div id="rankingsTableSelect" className="col-md-4">
                 <div style={{float:"left",width:"33%",padding:"5px"}}>
                   <Select 
                   className={classes['Select']}
@@ -156,23 +190,19 @@ export class RankingsView extends React.Component<void, Props, void> {
                   clearable={false}
                   />  
                 </div>
-                <div style={{marginTop:"165px"}}>
+                <div style={{marginTop:"200px"}}>
                   <HoverBox 
                     metroId={this.state.clickMetro ? this.state.clickMetro : data[0].key} 
-                    year={this.state.year} 
-                    activeComponent={this.state.category} 
-                  />
-                  <HoverBox 
-                    metroId={this.state.hoverMetro ? this.state.hoverMetro : data[1].key} 
-                    year={this.state.year} 
+                    year={typeof this.state.year != "number" ? 2013 : this.state.year} 
                     activeComponent={this.state.category} 
                   />
                 </div> 
               </div>
             </Sticky>
-            <div className="col-md-7" style={{float:"right"}}>
+            <div className="col-md-8" style={{float:"right"}}>
               <RankingsTable 
                 data={data}
+                data2={data2}
                 active={this.state.active} 
                 year={this.state.year} 
                 onClick={this._onClick}

@@ -184,7 +184,7 @@ export class HomeView extends React.Component<void, Props, void> {
         )
       )
     })
-
+console.log(this.props)
     return (
       <div> 
         <div className='container'>
