@@ -4,6 +4,7 @@ import d3 from 'd3'
 import { connect } from 'react-redux'
 import { loadMetroData, loadMetroDataYear } from 'redux/modules/metroZbpData'
 import clusterLib from 'static/data/clusterLib'
+import Loading from 'react-loading'
 import NetworkGraph from 'components/vis/NetworkGraph/NetworkGraph'
 
 
@@ -212,7 +213,13 @@ export class MetroZbpCluster extends React.Component<void, Props, void> {
   }
 
   render () {
-    if (!this.hasData()) return (<div className='container'> Loading ... </div>)
+    let loading = (
+      <div style={{position:"relative",top:"50%",left:"50%", marginTop: 50}}>
+        <Loading type="balls" color="rgb(125, 143, 175)"  /><br />
+        Loading...
+      </div>
+    )
+    if (!this.hasData()) return (<div className='container'> {loading} </div>)
     let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
     return (
       <div className='container'>

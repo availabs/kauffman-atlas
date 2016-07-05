@@ -3,11 +3,12 @@ import React from 'react'
 import d3 from 'd3'
 import map from './renderGeography'
 import bubble from './BubbleChart'
+import sunburst from './SunburstChart'
+import Loading from 'react-loading'
 import { connect } from 'react-redux'
 import { loadZipData, loadMetroGeo,loadMetroZipsGeo } from 'redux/modules/metroZbpData'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 //import naicsLib from 'static/data/naicsKeys'
-import RadarChart from 'components/vis/RadarChart/RadarChart'
 import classes from 'styles/sitewide/index.scss'
 
 
@@ -21,7 +22,7 @@ export class MetroZbp extends React.Component {
       mapHeight: 600,
       sort: 'emp_quot',
       options: {
-        mode: "cluster",
+        mode: "zips",
         naics: {
           depth: 0,
           code: null
@@ -32,6 +33,7 @@ export class MetroZbp extends React.Component {
     this._renderBubbles = this._renderBubbles.bind(this)
     this._setFilter = this._setFilter.bind(this)
     this.setMode = this.setMode.bind(this)
+    this.setNaics = this.setNaics.bind(this)
   }
   
   _fecthData () {
@@ -56,10 +58,14 @@ export class MetroZbp extends React.Component {
 
   componentDidMount() {
     this._fecthData()
+    let width = document.getElementById('zbpDisplay').offsetWidth
+    this.setState({
+      mapWidth:width,
+      mapHeight: width * 1.2
+    })
   }
   
   componentWillReceiveProps (nextProps){
-    this._fecthData ()
     console.log('draw map', !this.state.mapLoaded  , nextProps.zbpData.geo[this.props.currentMetro] , nextProps.zbpData.zip[this.props.currentMetro] ,  d3.select('#zip_group')[0][0])
     if(!this.state.mapLoaded  && nextProps.zbpData.geo[this.props.currentMetro] && nextProps.zbpData.zip[this.props.currentMetro] &&  d3.select('#zip_group')[0][0]){
       let fipsData = nextProps.zbpData.geo[this.props.currentMetro]
@@ -69,17 +75,30 @@ export class MetroZbp extends React.Component {
       map.renderGeography(zipsData, this.state.mapWidth, this.state.mapHeight)
       this.setState({mapLoaded: true})
     }
+    if(this.props.currentMetro !== nextProps.currentMetro) {
+      this.setState({
+        mapLoaded: false,
+        bubbleLoaded: false,
+        loadingData: false,
+        loadingMap: false
+      })
+    }
   }
 
   _renderBubbles () {
     if(this.state.mapLoaded && !this.state.bubbleLoaded && this.props.naicsKeys && this.props.zbpData.geo[this.props.currentMetro] && this.props.zbpData.zip[this.props.currentMetro] &&  d3.select('#zip_group')[0][0] && this.props.zbpData.data[this.props.year] && this.props.zbpData.data[this.props.year][this.props.currentMetro]){
-      console.log('naicsKeys', this.props.naicsKeys)
       bubble.renderBubbleChart(
         this.props.zbpData.data[this.props.year][this.props.currentMetro],
         this.state.mapWidth,
         this.state.mapHeight,
         map.centroids,
         this.state.options,
+        this.props.naicsKeys
+      )
+      sunburst.renderSunburst(
+        bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys),
+        this.setNaics,
+        null,null, 
         this.props.naicsKeys
       )
       this.setState({bubbleLoaded: true})
@@ -101,6 +120,21 @@ export class MetroZbp extends React.Component {
     })
   }
 
+  setNaics(d) {
+    if(d.naics !== this.state.options.naics.code) {
+        let newOptions = this.state.options;
+        newOptions.naics = {
+            code: d.naics,
+            name: d.name,
+            depth: d.depth
+        };
+        this.setState({
+            options: newOptions,
+            bubbleLoaded: false
+        });
+    }
+  }
+
   setMode(mode) {
     let newOptions = this.state.options
     newOptions.mode = mode
@@ -111,24 +145,24 @@ export class MetroZbp extends React.Component {
   }
 
   hasData () {
-    return this.props.zbpData[this.props.year] && 
+    return (this.props.zbpData.data[this.props.year] &&
       this.props.zbpData.data[this.props.year][this.props.currentMetro] &&
-      this.props.zbpData.geo[this.props.currentMetro]
-      this.props.zbpData.zip[this.props.currentMetro]
-      this.props.naicsKeys
+      this.props.zbpData.geo[this.props.currentMetro] &&
+      this.props.zbpData.zip[this.props.currentMetro] &&
+      this.props.naicsKeys)
   }
 
   renderControls() {
 
-        let zipcodeCount = "",
-            currentData = bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys)
+        var zipcodeCount = "",
+            currentData = this.props.zbpData.data[this.props.year] && this.props.zbpData.data[this.props.year][this.props.currentMetro] ? bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys) : [],
             estCounts = {},
             estEmps = {},
             cluster =  this.state.options.mode === "cluster" ? " active" : "",
             zips =  this.state.options.mode === "zips" ? " active" : "";
 
 
-        if(this.state.data.length > 0){
+        if(currentData > 0){
             zipcodeCount = this.state.geo.features.length - 1;
             estCounts[this.state.year] = currentData.length;
             estEmps[this.state.year] = currentData.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
@@ -138,7 +172,10 @@ export class MetroZbp extends React.Component {
             estEmp = this.state.data.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0)
             console.log("empEst", estEmp)*/
         }
-        
+        else {
+            estCounts[this.state.year] = 0;
+            //estCounts[this.state.year2] = 0;
+        }
 
         let style14 = {textAlign:"center",padding:6,fontSize:14 }
         return (
@@ -157,9 +194,8 @@ export class MetroZbp extends React.Component {
                             <caption><strong>Establishments</strong></caption>
                             <tr><th>{this.state.year2}</th><th>{this.state.year}</th><th>Change</th></tr>
                             <tr>
-                                <td>{nf.format(estCounts[this.state.year2])}</td>
-                                <td>{nf.format(estCounts[this.state.year])}</td>
-                                <td>{nf.format(estCounts[this.state.year] - estCounts[this.state.year2])}</td>
+                                <td>{estCounts[this.state.year]}</td>
+                                <td></td>
                             </tr>
                         </table>
                     </div>
@@ -180,22 +216,43 @@ export class MetroZbp extends React.Component {
   }
 
   render () {
-    //if (!this.hasData()) return <span />
+    this._fecthData()
+    let loading = (
+            <div style={{position:"relative",top:"50%",left:"50%"}}>
+             <Loading type="balls" color="rgb(125, 143, 175)"  /><br />
+             Loading...
+
+            </div>
+        )
+
+        if(this.hasData()){
+            loading = <span />
+        }
+    
     let naicsLib = this.props.naicsKeys
     let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
+    let name = !this.state.options.naics.name || this.state.options.naics.name === "zbp" ? "All Industries" : this.state.options.naics.code+" - "+this.state.options.naics.name;
+
     this._renderBubbles()
     return (
       <div className='container'>
         <h4>Metro Map</h4>
         <div className='row'>
-          <div className='col-sm-3'>
+          <div className='col-sm-2'>
             {this.renderControls()}
+            
+            <h4>{name}</h4>
+            <svg id="sunburst" style={{width:"300px",height:"300px", zIndex:999}} />
+                
+           
           </div>
-          <div className='col-sm-9'>
-            <svg id="circles" style={{width:600, height:600}} >
+          <div className='col-sm-10' id='zbpDisplay' >
+            {loading}
+            <svg id="circles" style={{width:this.state.mapWidth, height:this.state.mapHeight, marginTop: 0}} >
               <g id="circle_group" />
               <g id="zip_group" />
             </svg>
+            {loading}
             <div id="nytg-tooltip">
               <div id="nytg-tooltipContainer">
                 <div className="nytg-department"></div>

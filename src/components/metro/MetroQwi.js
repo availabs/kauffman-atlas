@@ -3,6 +3,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import {StickyContainer, Sticky} from 'react-sticky'
+import Loading from 'react-loading'
 import _ from 'lodash'
 
 import * as metroQwiActions from '../../redux/modules/metroQwiData/actions'
@@ -239,8 +240,13 @@ class MetroQwi extends React.Component<void, Props, void> {
   }
 
   render () {
+    let loading = (
+      <div style={{position:"relative",top:"50%",left:"50%"}}>
+        <Loading type="balls" color="rgb(125, 143, 175)"  />
+      </div>
+    )
     return (this.props.lineGraphRawData) ? 
-              renderVisualizations(this.props) : (<div className='container'>Loading...</div>)
+              renderVisualizations(this.props) : (<div className='container'>{loading}</div>)
   }
 }
 

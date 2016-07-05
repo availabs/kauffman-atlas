@@ -246,7 +246,6 @@ export class MetroHome extends React.Component<void, Props, void> {
     render () {
 	let metroId = this.props.params.geoid
 	var scope = this;
-
 	
 	function selectChange(msaId){
 		scope.context.router.push('/metro/'+msaId+'/'+scope.props.params.pageid)
@@ -274,7 +273,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 			    </div>
 			    {this.renderNav()}
 			    {this.subNav()}
-			    <div style={{marginTop: 15, minHeight: 500}}>
+			    <div style={{marginTop: 15, minHeight: 500, marginBottom: 30}}>
 				{this.renderDisplay()}
 			    </div>   
 			</div>

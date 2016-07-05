@@ -193,7 +193,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         <p>
           The sector in {name} with the highest number of establishments is {d.topEstName + " "} 
           with {integerFormatter(d.topEstValue)} establishments making up  
-          {" " + (roundFormat(d.topEstShareValue) * 100)}% of the total establishments. 
+          {" " + (d.topEstShareValue * 100).toLocaleString() }% of the total establishments. 
         </p> 
         <p>
           Relative to the rest of the nation, {name} has a high concentration of establishments in:
