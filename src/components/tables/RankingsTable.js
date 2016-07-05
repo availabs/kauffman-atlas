@@ -135,7 +135,8 @@ export class RankingsTable extends React.Component<void, Props, void> {
         data[indexingColumn].sort(_sortValues("combined"))        
       }
       else{
-        data[indexingColumn].sort(_sortValues(this.props.year))       
+        var sortYear = typeof this.props.year != "number" ? 2013 : this.props.year
+        data[indexingColumn].sort(_sortValues(sortYear))       
       }
 
     }
