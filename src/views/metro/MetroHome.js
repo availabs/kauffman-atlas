@@ -1,5 +1,5 @@
 /* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import MetroHeader from 'components/metro/MetroHeader'
@@ -11,7 +11,6 @@ import MetroZbpCluster from 'components/metro/MetroZbpCluster'
 import MetroParagraph from 'components/metro/MetroParagraph'
 import MetroMap from 'components/metro/MetroMap'
 import classes from 'styles/sitewide/index.scss'
-import { withRouter } from 'react-router'
 
 
 type Props = {
@@ -133,9 +132,9 @@ export class MetroHome extends React.Component<void, Props, void> {
 		    marginBottom: 0
 		    //borderTop: '1px solid #efefef'
 		}
-		let linkStyle = {
-		    color: '#efefef'
-		}
+		//let linkStyle = {
+				//color: '#efefef'
+		//}
 		let metroId = this.props.params.geoid
 		let year = this.props.params.year
 		let naics_code = this.props.params.naics_code

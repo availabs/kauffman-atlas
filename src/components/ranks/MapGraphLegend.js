@@ -1,12 +1,11 @@
 //* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
 import classes from 'components/maps/NationalMap.scss'
 import d3 from 'd3'
 import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'    
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
-import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 let roundFormat = d3.format(".1f")
 
@@ -43,7 +42,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
   }
 
   //Returning true triggers render(_drawLegend)
-  shouldComponentUpdate(nextProps,nextState){
+  shouldComponentUpdate(nextProps){
     //If there are no drawn metro areas, we need to update the map
 
     if(d3.selectAll(".legend")[0].length == 0){
@@ -95,14 +94,18 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       var colorRange = ["#996b25", "#c58a30", "#dea44a", "#e2ae5e", "#b1bbcf", "#97a5bf", "#7d8faf", "#64728c", "#3e4757"]        
     }
 
+    if(props.activeComponent.match(/.*locationquotientvariance|.*employmenthhi/)){
+      var color = d3.scale.quantile()
+          .domain(colorDomain)
+          .range((colorRange))
+          
+    }
+    else{
+      var color = d3.scale.quantile()
+        .domain(colorDomain)
+        .range((colorRange).reverse()) 
 
-
-    var color = d3.scale.quantile()
-      .domain(colorDomain)
-      .range((colorRange).reverse()) 
-
-  
-
+    }
 
     let legend = svg.append("g")
       .attr("transform", "translate(" + -40 + "," + 0 + ")")
@@ -178,6 +181,7 @@ const mapStateToProps = (state) => ({
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
+  diversityemploymenthhi:state.diversityData.empHHI,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros,
 })
@@ -197,8 +201,8 @@ export default connect((mapStateToProps), {
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
+  getdiversityemploymenthhi: () => loadEmpHHIData(),
   getcombinedcomposite: () => loadCombinedComposite(),
-  changeHomeState: (state) => changeHomeState(state)
 })(MapGraphLegend)
   
 

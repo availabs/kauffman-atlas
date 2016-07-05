@@ -1,5 +1,5 @@
 /* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import classes from './nationalView.scss'
 import DiversityGraph from '../../components/graphs/DiversityGraph.js'
@@ -81,10 +81,10 @@ export class DiversityView extends React.Component<void, Props, void> {
 
     console.log(this.state);
     
-    const sectionStyle = {
-      height: 200,
-      border: '1px solid orangered'
-    }
+    //const sectionStyle = {
+      //height: 200,
+      //border: '1px solid orangered'
+    //}
 
 
       var buttons = (
@@ -133,6 +133,6 @@ export class DiversityView extends React.Component<void, Props, void> {
   }
 }
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = () => ({})
 
 export default connect((mapStateToProps), {})(DiversityView)

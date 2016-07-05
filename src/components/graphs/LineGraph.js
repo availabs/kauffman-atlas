@@ -603,6 +603,24 @@ export class LineGraph extends React.Component<void, Props, void> {
         }                  
       }          
     } 
+    else if(props.title == "diversityemploymenthhi"){
+      if(props.plot == "value"){
+        if(props.dataType == "raw"){
+          return ""
+        }
+        else{
+          return "Herfindahl-Hirschman Index (HHI) by year"
+        }             
+      }
+      else{
+        if(props.dataType == "raw"){
+          return "Metro Area Ranking for Herfindahl-Hirschman Index (HHI) by year"
+        }
+        else{
+          return ""
+        }                  
+      }          
+    } 
     else if(props.title == "densityshareEmpNoAccRet"){
       if(props.plot == "value"){
         if(props.dataType == "raw"){

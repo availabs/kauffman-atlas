@@ -5,12 +5,12 @@ import { connect } from 'react-redux'
 import { loadNationalData } from 'redux/modules/geoData'
 import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
-import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
-import topojson from 'topojson'
+//import topojson from 'topojson'
 import classes from './NationalMap.scss'
-import { withRouter } from 'react-router'
-let roundFormat = d3.format(".2f")
+//import { withRouter } from 'react-router'
+//let roundFormat = d3.format(".2f")
 
 export class NationalMap extends React.Component<void, Props, void> {
 
@@ -62,7 +62,7 @@ export class NationalMap extends React.Component<void, Props, void> {
   }
 
   //Returning true triggers render(_initGraph)
-  shouldComponentUpdate(nextProps,nextState){
+  shouldComponentUpdate(nextProps){
     //If there are no drawn metro areas, we need to update the map
     if(d3.selectAll("."+classes['msa'])[0].length == 0){
       return true
@@ -124,7 +124,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     }                            
 
 
-    var scope = this;
+    //var scope = this;
 
     if(!Array.isArray(props[(props.activeComponent)])){
       var data = props[(props.activeComponent)]['relative']
@@ -353,7 +353,7 @@ export class NationalMap extends React.Component<void, Props, void> {
     var focus = d3.select(".focus")                             
     focus.attr("transform", "translate(-100,-100)");
 
-    var oldColor = d3.select(d.shape).style("fill")
+    //var oldColor = d3.select(d.shape).style("fill")
 
     if(!Array.isArray(this.props[(this.props.activeComponent)])){
       var data = this.props[(this.props.activeComponent)]['relative']
@@ -429,6 +429,7 @@ const mapStateToProps = (state) => ({
   diversityincomebasedonchildhood:state.diversityData.opportunity,
   diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
   diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
+  diversityemploymenthhi:state.diversityData.empHHI,
   combinedcomposite : state.combinedData.combinedcomposite,
 })
 
@@ -448,6 +449,7 @@ export default connect((mapStateToProps), {
   getdiversityincomebasedonchildhood: () => loadOpportunityData(),
   getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
+  getdiversityemploymenthhi: () => loadEmpHHIData(),
   getcombinedcomposite: () => loadCombinedComposite(),
-  changeHomeState: (state) => changeHomeState(state)
+  //changeHomeState: (state) => changeHomeState(state)
 })(NationalMap)

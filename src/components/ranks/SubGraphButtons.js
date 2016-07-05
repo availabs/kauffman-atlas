@@ -1,7 +1,6 @@
 /* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
 import classes from 'styles/sitewide/index.scss'
 // import DensityView from 'views/'
 
@@ -27,6 +26,7 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       'income based on childhood' : 'Equality of Opportunity',
       'percentage of foreign born population' : '% Foreign Born',
       'employment location quotient variance' : 'Economic Diversity',
+      'employment hhi' : 'HHI',
       'high growth firms' : 'High Growth Firms',
       'net migration' : 'Net Migration',
       'total migration' : 'Population Flux',
@@ -41,13 +41,13 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       var components = ['composite', 'new firms','share of employment in new firms','shareEmpNoAccRet','shareEmpHighTech' ] 
     }
     if(this.props.activeComponent == "diversity"){
-      var components = ['composite','income based on childhood','percentage of foreign born population','employment location quotient variance']      
+      var components = ['composite','income based on childhood','percentage of foreign born population','employment location quotient variance', 'employment hhi']      
     }
     if(this.props.activeComponent == "fluidity"){
       var components = ['composite','high growth firms','net migration','total migration','annual churn']      
     }
 
-    components.forEach((v,i) => {
+    components.forEach((v) => {
         bucketDisplay.push (
           <a 
             id={v}

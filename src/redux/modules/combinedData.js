@@ -1,7 +1,7 @@
 /* @flow */
 import fetch from 'isomorphic-fetch'
-import colorbrewer from 'colorbrewer'
-import d3 from 'd3'
+//import colorbrewer from 'colorbrewer'
+//import d3 from 'd3'
 // ------------------------------------
 // Constants
 // ------------------------------------

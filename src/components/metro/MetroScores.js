@@ -137,6 +137,10 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values)
     
+    let diversityEmpHHI = scores.diversity.empHHI.raw.values.filter(d => { return d.x === year })[0] || {}
+    let diversityEmpHHISelected = scores.diversity.empHHI.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
+    let diversityEmpHHIGraph = this.formatData(scores.diversity.empHHI.raw.values)
+    
 
 
 
@@ -630,6 +634,38 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
+            </div>
+          </div>          
+          <div className='col-xs-2' style={graphBox}>
+            <h4><span data-tip data-for="empHHI" className={"pull-right " + classes['info']}>?</span>Hirschman-Herfindahl Index</h4>
+            <ReactTooltip 
+              id="empHHI" 
+              place="top" 
+              type="dark" 
+              effect="solid"
+              offset={{left:0}}
+              class={classes['tooltip']}
+              delayShow={350}
+              delayHide={200}
+              >
+              <span>{CategoryText.emphhi}</span>
+            </ReactTooltip>
+            <div>
+              <div className='pull-left'>
+                <h4>{(diversityEmpHHI && diversityEmpHHI.y && diversityEmpHHI.y.toFixed(2)) || 'No data'}</h4>
+                Rank {diversityEmpHHI.rank}
+                <div>2013</div>
+              </div>
+              <div className='pull-right'>
+                <h4>{(diversityEmpHHISelected && diversityEmpHHISelected.y && diversityEmpHHISelected.y.toFixed(2)) || 'No data'}</h4>
+                {diversityEmpHHISelected ? "Rank " + diversityEmpHHISelected.rank : ""}   
+                <div>{diversityEmpHHISelected ? this.state.displayYear : ""}</div>
+              </div>         
+            </div>
+            <div>
+              <LineGraph hover={this.hover} data={diversityEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
+              <span className='pull-left'>{diversityEmpHHIGraph[0].values[0].key}</span>
+              <span className='pull-right'>{diversityEmpHHIGraph[0].values[diversityEmpHHIGraph[0].values.length-1].key}</span>
             </div>
           </div>          
           <div className='col-xs-2' style={graphBox}>

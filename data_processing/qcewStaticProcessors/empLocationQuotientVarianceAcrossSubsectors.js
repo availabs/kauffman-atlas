@@ -1,125 +1,172 @@
-#!/usr/bin/env node
+#!/usr/bin/env babel-node
 
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
-const fetch = require('isomorphic-fetch')
-const _ = require('lodash')
+import fs from 'fs'
+import path from 'path'
+import fetch from 'isomorphic-fetch'
+import async from 'async'
+import _ from 'lodash'
+
+import { qcewApi as apiServerAddress } from '../../src/AppConfig'
 
 
-//http://qcew.availabs.org/data/fipsC4106/ind000022/yr20012012/qtr1234/?fields[]=month1_emplvl&fields[]=month2_emplvl&fields[]=month3_emplvl
-const msaIds = 
-        Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
+const outputFilePath = path.join(__dirname, '../../src/static/data/economySpecializationStatistics.json') 
 
-const sixDigitNAICsCodes = 
-        Object.keys(JSON.parse(fs.readFileSync('../../src/static/data/naicsKeys.json'))).filter(c => (c.length === 6))
+const msaIds = Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
+
+
+const allNaicsCodes = Object.keys(JSON.parse(fs.readFileSync('../../src/static/data/naicsKeys.json')))
+const fourDigitNaics = allNaicsCodes.filter(c => (c.split('-')[0].length === 4))
+
+
+const empFields = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl']
+const lqEmpFields = empFields.map(field => `lq_${field}`)
 
 
 const years = _.range(2001, 2017)
 
 
-const errorHandler = (msa, err) => {
+const handleFetchErrors = (response) => {
+  if (!response.ok) { throw new Error(`Fetch response statusText:\n${response.statusText}`) }
+
+  return response
 }
 
-const computeYearlyByEmpVariance = (data) => {
+
+const buildRequestURL = (msa) => 
+  `${apiServerAddress}/data/` + 
+  `fips${(msa !== '31080') ? `C${msa.slice(0,4)}` : `C3108C3110`}/` +
+  `yr${years.join('')}/qtr1234/` + 
+  `ind${fourDigitNaics.map(c => _.padStart(c, 6, '0')).join('')}/` + 
+  `?${_.union(empFields, lqEmpFields).map(field => `fields[]=${field}`).join('&')}`
 
 
-  let msa = data[0].key
-  let byYear = data[0].values
+// This function restructures the key/values style API response into a standard JS object keyed by 'key'.
+const restructureData = d => 
+  d.reduce((acc,v)=>(v.key && v.values) ? _.set(acc,v.key,restructureData(v.values)) : v,{})
 
-  let variances = {}
+// Restructures the response and merges the data for Los Angeles' two distinct MSAs.
+const reformatApiResponse = (data) => 
+  _(data).mapValues((dataForMSA) => restructureData(dataForMSA.values)).values().reduce(_.defaultsDeep)
 
-  byYear.forEach(yearData => {
-    let year = yearData.key
 
-    let monthlyVariances = []
+//NOTE: Format of d is { <year>: { <quarter>: <naics>: { <month_X_measure>: <value> } } }
+//
+// In this function, we forward fill the data. 
+//
+//returns { <year>: { <quarter>: { <naics>: <avg monthly value of measure> } } }
+const forwardFill = (d) => {
+  
+  let lastKnowValues = fourDigitNaics.reduce((acc, naics) => _.set(acc, naics, {emp: 0, lqEmp: 0}), {})
 
-    let byQuarter = yearData.values
+  return _.mapValues(d, (byQuarter) =>
+            _.mapValues(byQuarter, (byNaics) => 
+              fourDigitNaics.reduce((acc, naics) => {
 
-    byQuarter.forEach(quarterData => {
-      let quarter = quarterData.key
+                let monthlyEmp = empFields.map(field => +_.get(byNaics, [naics, field])).filter(Number.isFinite)
 
-      let bySubsector = quarterData.values
+                if (monthlyEmp.length) {
+                  lastKnowValues[naics].emp = _.mean(monthlyEmp)
+                }
 
-      let lq_month1_emplvl_Arr = []
-      let lq_month2_emplvl_Arr = []
-      let lq_month3_emplvl_Arr = []
+                let monthlyLQEmp = lqEmpFields.map(field => +_.get(byNaics, [naics, field])).filter(Number.isFinite)
 
-      bySubsector.forEach(subsectorData => {
-        let subsector = subsectorData.key
+                if (monthlyLQEmp.length) {
+                  lastKnowValues[naics].lqEmp = _.mean(monthlyLQEmp)
+                }
 
-        let lqEmpData = subsectorData.values[0]         
+                acc[naics] = {
+                  emp   : lastKnowValues[naics].emp,
+                  lqEmp : lastKnowValues[naics].lqEmp,
+                }
 
-        lq_month1_emplvl_Arr.push(+lqEmpData.lq_month1_emplvl)
-        lq_month2_emplvl_Arr.push(+lqEmpData.lq_month2_emplvl)
-        lq_month3_emplvl_Arr.push(+lqEmpData.lq_month3_emplvl)
-      })
+                return acc
+              }, {})
+            )
+          )
+}
 
-      lq_month1_emplvl_Arr = lq_month1_emplvl_Arr.filter(Number.isFinite)
-      lq_month2_emplvl_Arr = lq_month2_emplvl_Arr.filter(Number.isFinite)
-      lq_month3_emplvl_Arr = lq_month3_emplvl_Arr.filter(Number.isFinite)
 
-      let avg_1 = _.mean(lq_month1_emplvl_Arr)
-      let avg_2 = _.mean(lq_month2_emplvl_Arr)
-      let avg_3 = _.mean(lq_month3_emplvl_Arr)
+// Aggregate the byNaics object values into arrays.
+const getMonthlyAveragesByQuarterByYear = (byYear) => 
+  _.mapValues(byYear, byQtr => 
+    _.mapValues(byQtr, byNaicsForQtr => 
+      _.reduce(byNaicsForQtr, (acc, forNaics) => { 
+        acc.emp.push(forNaics.emp)
+        acc.lqEmp.push(forNaics.lqEmp)
+        return acc
+      }, { emp: [], lqEmp: [] })
+    )
+  )
 
-      let variance_1 = _.meanBy(lq_month1_emplvl_Arr, (lqEmp) => ((lqEmp - avg_1)*(lqEmp - avg_1)))
-      let variance_2 = _.meanBy(lq_month2_emplvl_Arr, (lqEmp) => ((lqEmp - avg_2)*(lqEmp - avg_2)))
-      let variance_3 = _.meanBy(lq_month3_emplvl_Arr, (lqEmp) => ((lqEmp - avg_3)*(lqEmp - avg_3)))
 
-      monthlyVariances.push(variance_1)
-      monthlyVariances.push(variance_2)
-      monthlyVariances.push(variance_3)
+// Returns an object, keyed by year, with values representing 
+// the variance in lq_emplvl across all months and all 6-digit NAICS. 
+const computeDispersionMeasuresByQuarterByYear = (lqEmpAvgsByQtrByYear) => 
+        _.mapValues(lqEmpAvgsByQtrByYear, lqEmpAvgsByByQtr =>
+          _.mapValues(lqEmpAvgsByByQtr, monthlyAvgsForQtr => {
+
+            let emp = monthlyAvgsForQtr.emp
+            let lqEmp = monthlyAvgsForQtr.lqEmp
+
+            let empTotal = _.sum(emp)
+            let empShares = emp.map(empAvg => (empAvg/empTotal))
+
+            let lqEmpMean = _.mean(lqEmp)
+            let lqEmpVariance = _.meanBy(lqEmp, forNaics => ((forNaics-lqEmpMean)*(forNaics-lqEmpMean)))
+
+            let enoughData = (empShares.filter(x=>x).length > 10)
+
+            return {
+              hhi_2: (enoughData) ? _(empShares).map(share => (share*share)).sum() : null,
+              hhi_3: (enoughData) ? _(empShares).map(share => (share*share*share)).sum() : null,
+              hhi_4: (enoughData) ? _(empShares).map(share => (share*share*share*share)).sum() : null,
+
+              shannon: (empShares.length > 25) ? 
+                          (-1 * _(empShares).filter().map(share => (share * Math.log(share))).sum()) : null,
+
+              lqEmpVariance,
+            }
+          })
+       )
+
+
+const aggregateDispersionMeasuresByYear = (dispMeasuresByQtrByYear) => 
+  _.mapValues(dispMeasuresByQtrByYear, (dispMeasuresByQtr) => ({
+      hhi_2: _(dispMeasuresByQtr).map(dispMeasures => dispMeasures.hhi_2).mean(),
+      hhi_3: _(dispMeasuresByQtr).map(dispMeasures => dispMeasures.hhi_3).mean(),
+      hhi_4: _(dispMeasuresByQtr).map(dispMeasures => dispMeasures.hhi_4).mean(),
+      shannon: _(dispMeasuresByQtr).map(dispMeasures => dispMeasures.shannon).mean(),
+      lqEmpVariance: _(dispMeasuresByQtr).map(dispMeasures => dispMeasures.lqEmpVariance).mean(),
     })
+  )
 
-    variances[year] = _.mean(monthlyVariances)
-  })
+//const tapLog = (d) => { console.log(JSON.stringify(d, null, 4)); return d }
 
-  return variances
-}
+const getDispersionStatistics = (acc, msa, cb) => {
+  
+  console.time(msa)
+  let stopTimer = (d) => { console.timeEnd(msa); return d }
 
-
-
-const getYearlyEmpVarianceForMSA = (msa, cb) => {
-
-  let reqURL = `http://qcew.availabs.org/data/` +
-                    `fips${`C${msa.slice(0,4)}`}/` +
-                    `yr${years.join('')}/qtr1234/` + 
-                    `/ind${sixDigitNAICsCodes.join('')}/` + 
-                    `?fields[]=lq_month1_emplvl&fields[]=lq_month2_emplvl&fields[]=lq_month3_emplvl`
-
-  fetch(reqURL)
+  fetch(buildRequestURL(msa))
+    .then(handleFetchErrors)
     .then(response => response.json())
-    .then(computeYearlyByEmpVariance)
-    .then(cb.bind(null, null))
+    .then(reformatApiResponse)
+    .then(forwardFill)
+    .then(getMonthlyAveragesByQuarterByYear)
+    .then(computeDispersionMeasuresByQuarterByYear)
+    .then(aggregateDispersionMeasuresByYear)
+    .then(stopTimer)
+    .then((d) => cb(null, _.set(acc, msa, d)))
     .catch(cb)
 }
 
 
-const worker = (i, variancesByMSAs) => {
-  
-  if (i === msaIds.length) {
-    let outputFilePath = path.join(__dirname, '../../src/static/data/empLocationQuotientVarianceAcrossSubsectors.json') 
+async.reduce(msaIds, {}, getDispersionStatistics, (err, yearlyEmpVarianceByMSA) => {
 
-    return fs.writeFileSync(outputFilePath, JSON.stringify(variancesByMSAs))
-  }
+  if (err) { return console.error(err) }
 
-  let msa = msaIds[i]
-
-  console.time(msa)
-  getYearlyEmpVarianceForMSA(msa, (err, yearlyVariances) => {
-    console.timeEnd(msa)
-    if (err) {
-      console.error(`Error processing data for ${msa}.`)
-      console.error(err.stack || err)
-    } else {
-      variancesByMSAs[msa] = yearlyVariances 
-    }
-
-    worker(++i, variancesByMSAs)
-  })
-}
-
-
-worker(0, {})
+  //return console.log(JSON.stringify(yearlyEmpVarianceByMSA, null, 4))
+  return fs.writeFileSync(outputFilePath, JSON.stringify(yearlyEmpVarianceByMSA))
+})
