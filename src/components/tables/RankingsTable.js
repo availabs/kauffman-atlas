@@ -148,7 +148,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
       <table id="rankingsTable" className={'table ' + classes['table-hover']}>
         <thead>
           <tr>      
-            <td id="rank" className={classes['rankingsTableHeader']}>
+            <td id="rank" className={classes['rankingsTableHeader'] + " col-md-1"}>
                 <a
                    onClick={this._sortTableChange.bind(null,"rank")}>
                       Rank
@@ -158,7 +158,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
                   <span className="caret"></span>
                 </span>
             </td>  
-            <td id="Name" className={classes['rankingsTableHeader']}>
+            <td id="Name" className={classes['rankingsTableHeader'] + " col-md-4"}>
               <a
                  onClick={this._sortTableChange.bind(null,"Name")}>
                     Name
@@ -170,8 +170,10 @@ export class RankingsTable extends React.Component<void, Props, void> {
             </td>
             {
               Object.keys(data).map(cat => {
+                console.log(Object.keys(data).length)
+                var colWidth = Math.floor((Object.keys(data).length)/8)
                 return (
-                  <td id={cat} className={classes['rankingsTableHeader']}>
+                  <td id={cat} className={classes['rankingsTableHeader'] + " col-md-"+colWidth}>
                     <a
                        onClick={this._sortTableChange.bind(null,cat)}>
                           {CategoryNames[cat]}
@@ -204,10 +206,6 @@ export class RankingsTable extends React.Component<void, Props, void> {
                     }
                 
                 }
-
-
-
-
                 return (<td>{singleMetroYearValue ? roundFormat(singleMetroYearValue.y) : ""}</td>)
               })
               if(this.state.sortColumn == "diversityincomebasedonchildhood" && this.props.active != "diversityincomebasedonchildhood"){
