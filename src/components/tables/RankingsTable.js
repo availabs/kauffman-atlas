@@ -51,11 +51,27 @@ export class RankingsTable extends React.Component<void, Props, void> {
     this.setState({sortColumn:this.props.active})
   }
 
+
+  checkMetroBuckets(thisMetros,nextMetros){
+    if(thisMetros.length == nextMetros.length){
+      //Check to see if they are the same
+      for(var i=0; i<thisMetros.length; i++){
+        if(thisMetros[i] != nextMetros[i]){
+          return true;
+        }
+      }
+      //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
+      return false; 
+    }
+    return true;
+  }
+
    shouldComponentUpdate(nextProps,nextState){
     if(this.props.active != nextProps.active ||
       this.state.sortColumn != nextState.sortColumn ||
       this.state.sortDirection != nextState.sortDirection ||
-      this.props.year != nextProps.year){
+      this.props.year != nextProps.year || 
+      this.checkMetroBuckets(this.props.metrosInBucket,nextProps.metrosInBucket)){
       return true
     }
     else{
@@ -126,6 +142,22 @@ export class RankingsTable extends React.Component<void, Props, void> {
     //Otherwise, use the desired metric
     var indexingColumn = this.state.sortColumn == "Name" ? this.props.active : this.state.sortColumn
 
+    if(this.props.metrosInBucket){
+      Object.keys(data).forEach(catName => {
+        data[catName] = data[catName].filter(d => {
+          var inBucket = false;
+          this.props.metrosInBucket.forEach(msaId => {
+            if(d.key == msaId){
+              inBucket = true;
+            } 
+          })
+          return inBucket;
+        }) 
+      })
+    }
+
+
+
     //Sort by desired metric OR name
     if(this.state.sortColumn == "Name"){
       data[indexingColumn].sort(_sortProp("name"))
@@ -170,7 +202,6 @@ export class RankingsTable extends React.Component<void, Props, void> {
             </td>
             {
               Object.keys(data).map(cat => {
-                console.log(Object.keys(data).length)
                 var colWidth = Math.floor((Object.keys(data).length)/8)
                 return (
                   <td id={cat} className={classes['rankingsTableHeader'] + " col-md-"+colWidth}>
@@ -225,7 +256,6 @@ export class RankingsTable extends React.Component<void, Props, void> {
                 rankDelta = null;
               }
               
-
               if(rankDelta>0){
                 var deltaCell = (
                     <span>  
@@ -284,6 +314,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
 
 
   render() {
+    console.log(this.props)
     return (
      <div>
       {this._renderTable(this.props.data2)}

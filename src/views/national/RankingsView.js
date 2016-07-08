@@ -10,6 +10,7 @@ import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMi
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import RankingsTable from 'components/tables/RankingsTable'
+import PopBuckets from 'components/ranks/PopBuckets'
 import HoverBox from 'components/ranks/HoverBox'
 import CategoryNames from 'components/misc/categoryNames'
 import Select from 'react-select'
@@ -35,13 +36,15 @@ export class RankingsView extends React.Component<void, Props, void> {
       category:'combined',
       year:2013,
       clickMetro:null,
-      hoverMetro:null
+      hoverMetro:null,
+      bucket:'all'
     }
 
     this._onClick = this._onClick.bind(this);
     this._onHover = this._onHover.bind(this);
     this._checkData = this._checkData.bind(this);
     this._formatData = this._formatData.bind(this)
+    this._setActiveBucket = this._setActiveBucket.bind(this);
   }
   componentWillMount () {    
     this._initGraph();    
@@ -55,6 +58,10 @@ export class RankingsView extends React.Component<void, Props, void> {
   _onHover(feature){ 
     this.setState({hoverMetro:feature});
   }
+
+  _setActiveBucket (bucket) {
+    this.setState({'bucket':bucket});
+  }   
 
   _initGraph () {   
     if(!this.props['densitycomposite']){    
@@ -160,12 +167,38 @@ export class RankingsView extends React.Component<void, Props, void> {
       scope.setState({year:value.value})
     }
 
+    var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
+      if(this.props.metros[msaId].pop){
+        if(this.props.metros[msaId].pop[2014]){
+          popDomain.push(this.props.metros[msaId].pop[2014]);          
+        }
+      }
+      return popDomain;
+    },[])
 
+    var popScale = d3.scale.quantile()
+        .domain(popDomain)
+        .range([0,1,2,3])
+
+    var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
+      return (
+          this.state.bucket === 'all' ||
+        (
+          this.props.metros[msaId] && 
+          this.props.metros[msaId].pop && 
+          this.props.metros[msaId].pop[2014] && 
+          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
+        )
+      )
+    })
+    console.log(metrosInBucket[0])
     return (
       <div> 
-        <h3 style={{textAlign:"center"}}>
-          {metricOptions.filter(d => d.value.metric == this.state.active)[0].label}
-        </h3>
+        <div>
+          <h3 style={{textAlign:"center"}}>
+            {metricOptions.filter(d => d.value.metric == this.state.active)[0].label}
+          </h3>
+        </div>
         <StickyContainer>
           <div className='container' style={{paddingTop:"5px"}}>
             <Sticky style={{paddingTop:"5px"}}>
@@ -180,7 +213,7 @@ export class RankingsView extends React.Component<void, Props, void> {
                   clearable={false}
                   />  
                 </div>
-                <div style={{float:"left",width:"67%",padding:"5px"}}> 
+                <div style={{float:"left",width:"67%",padding:"5px",marginBottom:"200px"}}> 
                   <Select 
                   className={classes['Select']}
                   name="metricSelect"
@@ -190,7 +223,13 @@ export class RankingsView extends React.Component<void, Props, void> {
                   clearable={false}
                   />  
                 </div>
-                <div style={{marginTop:"200px"}}>
+                <PopBuckets 
+                  popScale={popScale} 
+                  onBucketChange={this._setActiveBucket} 
+                  bucket={this.state.bucket}
+                />
+
+                <div style={{marginTop:"325px"}}>
                   <HoverBox 
                     metroId={this.state.clickMetro ? this.state.clickMetro : data[0].key} 
                     year={typeof this.state.year != "number" ? 2013 : this.state.year} 
@@ -200,7 +239,8 @@ export class RankingsView extends React.Component<void, Props, void> {
               </div>
             </Sticky>
             <div className="col-md-8" style={{float:"right"}}>
-              <RankingsTable 
+              <RankingsTable
+                metrosInBucket={metrosInBucket}  
                 data={data}
                 data2={data2}
                 active={this.state.active} 
