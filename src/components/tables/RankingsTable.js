@@ -142,7 +142,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
       }
 
     }
-    console.log(typeof (this.props.year) == "number")
+
     this.state.sortDirection == "rev" ? data[indexingColumn].reverse() : null
     return (
       <table id="rankingsTable" className={'table ' + classes['table-hover']}>
@@ -201,10 +201,12 @@ export class RankingsTable extends React.Component<void, Props, void> {
                   }
                   else{
                     var singleMetroYearValue = data[catName].filter(d => d.key == metro.key)[0] ? data[catName].filter(d => d.key == metro.key)[0].values.filter(d => d.x == this.props.year)[0] : null                  
-                  }
+                    }
                 
                 }
-                
+
+
+
 
                 return (<td>{singleMetroYearValue ? roundFormat(singleMetroYearValue.y) : ""}</td>)
               })
@@ -213,9 +215,61 @@ export class RankingsTable extends React.Component<void, Props, void> {
               }
               else{
                 var rankCellData = data[this.props.active].filter(d => d.key == metro.key)[0] ? data[this.props.active].filter(d => d.key == metro.key)[0].values.filter(d => d.x == this.props.year)[0] : null
+                var rankCellDataPrior = data[this.props.active].filter(d => d.key == metro.key)[0] ? data[this.props.active].filter(d => d.key == metro.key)[0].values.filter(d => d.x == (this.props.year-1))[0] : null
+                  
               }
+
+              if(rankCellData && rankCellDataPrior){
+                var rankDelta = rankCellDataPrior.rank - rankCellData.rank;
+                    
+              }
+              else{
+                rankDelta = null;
+              }
+              
+
+              if(rankDelta>0){
+                var deltaCell = (
+                    <span>  
+                      <div style={{float:"right",paddingLeft:"3px"}}>
+                        {rankDelta}
+                      </div>                  
+                      <span className={classes['rankingsCaret']}>
+                        <span style={{color:'green'}} className={classes['upCaret']}></span>
+                      </span>  
+                    </span>
+                    )
+              }
+              else if(rankDelta<0){
+                var deltaCell = (  
+                    <span>   
+                      <div style={{float:"right",paddingLeft:"3px"}}>
+                        {rankDelta}
+                      </div>              
+                      <span className={classes['rankingsCaret']}>
+                        <span style={{color:'red'}} className="caret"></span>
+                      </span>  
+                    </span>
+                    )
+              }
+              else{
+                var deltaCell = (                    
+                    <span>
+                      <div style={{float:"right",paddingLeft:"3px"}}>
+                        {rankDelta}
+                      </div>
+                      <span className={classes['rankingsCaret']}>
+                        <span className={classes['upCaret']}></span>
+                        <span className="caret"></span>
+                      </span>  
+                    </span>
+                    ) 
+              }
+
+
+
               var rankCellData = data[this.props.active].filter(d => d.key == metro.key)[0] ? data[this.props.active].filter(d => d.key == metro.key)[0].values.filter(d => d.x == this.props.year)[0] : null
-              var rankCell = (<td>{rankCellData ? rankCellData.rank : ""}</td>) 
+              var rankCell = (<td>{rankCellData ? rankCellData.rank : ""}{deltaCell}</td>) 
               return (
                   <tr id={metro.key} onClick={this.props.onClick.bind(null,metro.key)} onMouseOver={this.props.onHover.bind(null,metro.key)}>      
                     {rankCell}
