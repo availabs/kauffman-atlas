@@ -8,7 +8,7 @@ export const RECIEVE_METROZBP_ZIP_DATA = 'RECIEVE_METROZBP_ZIP_DATA'
 export const RECIEVE_METROZBP_GEO_DATA = 'RECIEVE_METROZBP_GEO_DATA'
 export const RECIEVE_METROZBP_GEO_ZIP_DATA = 'RECIEVE_METROZBP_GEO_ZIP_DATA'
 export const RECIEVE_METROZBP_DATA_WITH_YEAR = 'RECIEVE_METROZBP_DATA_WITH_YEAR'
-const location = 'http://localhost:1337/' //'http://zbp.availabs.org/'
+const location = 'http://zbp.availabs.org/'
   
 
 // ------------------------------------

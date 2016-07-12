@@ -60,13 +60,13 @@ export class MetroZbp extends React.Component {
     this._fecthData()
     let width = document.getElementById('zbpDisplay').offsetWidth
     this.setState({
-      mapWidth:width,
-      mapHeight: width * 1.2
+      mapWidth:width *0.8,
+      mapHeight: width
     })
   }
   
   componentWillReceiveProps (nextProps){
-    console.log('draw map', !this.state.mapLoaded  , nextProps.zbpData.geo[this.props.currentMetro] , nextProps.zbpData.zip[this.props.currentMetro] ,  d3.select('#zip_group')[0][0])
+    // console.log('draw map', !this.state.mapLoaded  , nextProps.zbpData.geo[this.props.currentMetro] , nextProps.zbpData.zip[this.props.currentMetro] ,  d3.select('#zip_group')[0][0])
     if(!this.state.mapLoaded  && nextProps.zbpData.geo[this.props.currentMetro] && nextProps.zbpData.zip[this.props.currentMetro] &&  d3.select('#zip_group')[0][0]){
       let fipsData = nextProps.zbpData.geo[this.props.currentMetro]
       let zipsData = nextProps.zbpData.zip[this.props.currentMetro]
@@ -122,16 +122,16 @@ export class MetroZbp extends React.Component {
 
   setNaics(d) {
     if(d.naics !== this.state.options.naics.code) {
-        let newOptions = this.state.options;
-        newOptions.naics = {
-            code: d.naics,
-            name: d.name,
-            depth: d.depth
-        };
-        this.setState({
-            options: newOptions,
-            bubbleLoaded: false
-        });
+      let newOptions = this.state.options;
+      newOptions.naics = {
+          code: d.naics,
+          name: d.name,
+          depth: d.depth
+      };
+      this.setState({
+          options: newOptions,
+          bubbleLoaded: false
+      });
     }
   }
 
@@ -235,10 +235,10 @@ export class MetroZbp extends React.Component {
 
     this._renderBubbles()
     return (
-      <div className='container'>
+      <div className='container-fluid'>
         <h4>Metro Map</h4>
         <div className='row'>
-          <div className='col-sm-2'>
+          <div className='col-sm-3'>
             {this.renderControls()}
             
             <h4>{name}</h4>
@@ -246,7 +246,7 @@ export class MetroZbp extends React.Component {
                 
            
           </div>
-          <div className='col-sm-10' id='zbpDisplay' >
+          <div className='col-sm-9' id='zbpDisplay' >
             {loading}
             <svg id="circles" style={{width:this.state.mapWidth, height:this.state.mapHeight, marginTop: 0}} >
               <g id="circle_group" />
