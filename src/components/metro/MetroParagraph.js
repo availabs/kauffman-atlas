@@ -9,7 +9,7 @@ import { loadData } from '../../redux/modules/metroQcewData/actions'
 import { loadNaicsKeys } from 'redux/modules/msaLookup'
 import _ from 'lodash'
 
-let roundFormat = d3.format(".3f")
+let roundFormat = d3.format(".2f")
 import CategoryNames from 'components/misc/categoryNames'
 import CategoryUnits from 'components/misc/categoryUnits'
 import CategoryHoverParagraph from 'components/misc/categoryHoverParagraph'
@@ -193,7 +193,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         <p>
           The sector in {name} with the highest number of establishments is {d.topEstName + " "} 
           with {integerFormatter(d.topEstValue)} establishments making up  
-          {" " + (d.topEstShareValue * 100).toLocaleString() }% of the total establishments. 
+          {" " + roundFormat(d.topEstShareValue * 100).toLocaleString() }% of the total establishments. 
         </p> 
         <p>
           Relative to the rest of the nation, {name} has a high concentration of establishments in:
