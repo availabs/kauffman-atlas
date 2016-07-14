@@ -160,31 +160,53 @@ export class HomeView extends React.Component<void, Props, void> {
   }
 
   render () {
-    var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
-      if(this.props.metros[msaId].pop){
-        if(this.props.metros[msaId].pop[2014]){
-          popDomain.push(this.props.metros[msaId].pop[2014]);          
+
+    function _sortProp(){
+      return (a,b) => {
+        var aValue,
+        bValue;
+
+        aValue = a['data']["pop"];
+        bValue = b['data']["pop"];
+
+        if(aValue){
+          aValue = aValue[2014];
         }
+
+        if(bValue){
+          bValue = bValue[2014];
+        }
+
+        if(aValue >= bValue){
+          return -1;
+        }
+        if(bValue > aValue){
+          return 1
+        }
+
+
       }
-      return popDomain;
-    },[])
+    }
 
-    var popScale = d3.scale.quantile()
-        .domain(popDomain)
-        .range([0,1,2,3])
+    var sortedMetros = [];
 
-    var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
-      return (
-          this.props.homeState.bucket === 'all' ||
-        (
-          this.props.metros[msaId] && 
-          this.props.metros[msaId].pop && 
-          this.props.metros[msaId].pop[2014] && 
-          popScale(this.props.metros[msaId].pop[2014]) == this.props.homeState.bucket
-        )
+    var metroArray = Object.keys(this.props.metros).map(msaId => ({key:msaId, data:this.props.metros[msaId]}) );
+
+    sortedMetros = metroArray.sort(_sortProp())
+
+    var range = [400,250,150,50]
+    var nextBucket = +this.props.homeState.bucket + 1;
+
+    var metrosInBucket = sortedMetros.filter((d,i) => { 
+      return (this.props.homeState.bucket === 'all') ||
+      (
+        (this.props.homeState.bucket) == 3 && i < (range[(this.props.homeState.bucket)])
+      ) || 
+      (
+        i < (range[(this.props.homeState.bucket)]) && i >= (range[(nextBucket)])
       )
-    })
-console.log(this.props)
+    }).map(metro => metro.key)
+
     return (
       <div> 
         <div className='container'>
@@ -199,7 +221,7 @@ console.log(this.props)
               activeComponent={this.props.homeState.activeComponent}
             />
             <PopBuckets 
-              popScale={popScale} 
+              popScale={range} 
               onBucketChange={this._setActiveBucket} 
               bucket={this.props.homeState.bucket}
             />
@@ -210,8 +232,7 @@ console.log(this.props)
             <div className='col-md-4' style={{padding:15}}>
               <RankBox 
                 activeComponent={this.props.homeState.activeComponent} 
-                popScale={popScale}
-                bucket={this.props.homeState.bucket}
+                metrosInBucket={metrosInBucket}
                 year={this.props.homeState.hoverYear}
               />
               <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
