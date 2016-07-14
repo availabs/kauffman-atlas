@@ -201,15 +201,15 @@ export class RankingsView extends React.Component<void, Props, void> {
     sortedMetros = metroArray.sort(_sortProp())
 
     var range = [400,250,150,50]
-    var nextBucket = +this.props.homeState.bucket + 1;
+    var nextBucket = +this.state.bucket + 1;
 
     var metrosInBucket = sortedMetros.filter((d,i) => { 
-      return (this.props.homeState.bucket === 'all') ||
+      return (this.state.bucket === 'all') ||
       (
-        (this.props.homeState.bucket) == 3 && i < (range[(this.props.homeState.bucket)])
+        (this.state.bucket) == 3 && i < (range[(this.state.bucket)])
       ) || 
       (
-        i < (range[(this.props.homeState.bucket)]) && i >= (range[(nextBucket)])
+        i < (range[(this.state.bucket)]) && i >= (range[(nextBucket)])
       )
     }).map(metro => metro.key)
 
