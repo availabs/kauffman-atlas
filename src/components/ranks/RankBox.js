@@ -45,11 +45,7 @@ export class RankBoxes extends React.Component<void, Props, void> {
 
   
   _inBucket(msaId) {
-    return (this.props.bucket === 'all' ||
-        (this.props.metros[msaId] && 
-        this.props.metros[msaId].pop && 
-        this.props.metros[msaId].pop[2014] && 
-        this.props.popScale(this.props.metros[msaId].pop[2014]) == this.props.bucket))
+    return (this.props.metrosInBucket.indexOf(msaId) >= 0)
   }
 
   _sortCities(year){

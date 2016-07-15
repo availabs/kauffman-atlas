@@ -167,31 +167,54 @@ export class RankingsView extends React.Component<void, Props, void> {
       scope.setState({year:value.value})
     }
 
-    var popDomain = Object.keys(this.props.metros).reduce((popDomain,msaId) => {
-      if(this.props.metros[msaId].pop){
-        if(this.props.metros[msaId].pop[2014]){
-          popDomain.push(this.props.metros[msaId].pop[2014]);          
+    function _sortProp(){
+      return (a,b) => {
+        var aValue,
+        bValue;
+
+        aValue = a['data']["pop"];
+        bValue = b['data']["pop"];
+
+        if(aValue){
+          aValue = aValue[2014];
         }
+
+        if(bValue){
+          bValue = bValue[2014];
+        }
+
+        if(aValue >= bValue){
+          return -1;
+        }
+        if(bValue > aValue){
+          return 1
+        }
+
+
       }
-      return popDomain;
-    },[])
+    }
 
-    var popScale = d3.scale.quantile()
-        .domain(popDomain)
-        .range([0,1,2,3])
+    var sortedMetros = [];
 
-    var metrosInBucket = Object.keys(this.props.metros).filter(msaId => {
-      return (
-          this.state.bucket === 'all' ||
-        (
-          this.props.metros[msaId] && 
-          this.props.metros[msaId].pop && 
-          this.props.metros[msaId].pop[2014] && 
-          popScale(this.props.metros[msaId].pop[2014]) == this.state.bucket
-        )
+    var metroArray = Object.keys(this.props.metros).map(msaId => ({key:msaId, data:this.props.metros[msaId]}) );
+
+    sortedMetros = metroArray.sort(_sortProp())
+
+    var range = [400,250,150,50]
+    var nextBucket = +this.state.bucket + 1;
+
+    var metrosInBucket = sortedMetros.filter((d,i) => { 
+      return (this.state.bucket === 'all') ||
+      (
+        (this.state.bucket) == 3 && i < (range[(this.state.bucket)])
+      ) || 
+      (
+        i < (range[(this.state.bucket)]) && i >= (range[(nextBucket)])
       )
-    })
-    console.log(metrosInBucket[0])
+    }).map(metro => metro.key)
+
+
+
     return (
       <div> 
         <div>
@@ -224,7 +247,7 @@ export class RankingsView extends React.Component<void, Props, void> {
                   />  
                 </div>
                 <PopBuckets 
-                  popScale={popScale} 
+                  popScale={range} 
                   onBucketChange={this._setActiveBucket} 
                   bucket={this.state.bucket}
                 />
