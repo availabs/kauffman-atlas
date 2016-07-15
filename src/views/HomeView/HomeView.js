@@ -205,7 +205,7 @@ console.log(this.props)
             />
           </div>
         </div>
-        <div className='container'>
+        <div className='container' style={{minHeight: 693}}>
           <div className='row'>
             <div className='col-md-4' style={{padding:15}}>
               <RankBox 
