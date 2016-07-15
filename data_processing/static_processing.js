@@ -67,36 +67,85 @@ var processedFluidityComposite = _processFluidityComposite(processedInc5000,proc
 //Combined
 var processedCombinedComposite = _processCombinedComposite(processedDensityComposite,processedDiversityComposite,processedFluidityComposite);
 
-//Density
-fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
-fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(coloredShareEmpNewFirmsQWI_All));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_HighTech.json",JSON.stringify(coloredShareEmpNewFirmsQWI_HighTech));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_ExceptAccomAndRetail.json",JSON.stringify(coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail));
-fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
+// //Density
+// fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
+// fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(coloredShareEmpNewFirmsQWI_All));
+// fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_HighTech.json",JSON.stringify(coloredShareEmpNewFirmsQWI_HighTech));
+// fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_ExceptAccomAndRetail.json",JSON.stringify(coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail));
+// fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
 
-//Diversity
-fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
-fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
-fs.writeFileSync("../src/static/data/processedEmpVariance.json",JSON.stringify(coloredEmpVariance));
-fs.writeFileSync("../src/static/data/processedEmpHHI.json",JSON.stringify(coloredEmpHHI));
-fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
+// //Diversity
+// fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
+// fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
+// fs.writeFileSync("../src/static/data/processedEmpVariance.json",JSON.stringify(coloredEmpVariance));
+// fs.writeFileSync("../src/static/data/processedEmpHHI.json",JSON.stringify(coloredEmpHHI));
+// fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
 
-//Fluidity
-fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
-fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
-fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
-fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
-fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(coloredAnnualChurn));
-fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
+// //Fluidity
+// fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
+// fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
+// fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
+// fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
+// fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
+// fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(coloredAnnualChurn));
+// fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
 
-//Combined
-fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
+// //Combined
+// fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
 
 
 //Want to build an array of objects
 //Each object will have its own file
 //One object per MSA
+
+var natObj = {};
+
+natObj['density'] = {};
+natObj['density']['newFirms'] = {};
+natObj['density']['newFirms']['raw'] = {};
+natObj['density']['newFirms']['relative'] = {};
+natObj['density']['shareEmp'] = {};
+natObj['density']['shareEmp']['relative'] = {};
+natObj['density']['shareEmpQWI_HighTech'] = {};
+natObj['density']['shareEmpQWI_HighTech']['raw'] = {};
+natObj['density']['shareEmpQWI_ExceptAccomAndRetail'] = {};
+natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = {};
+natObj['density']['composite'] = {};
+
+natObj['diversity'] = {};
+natObj['diversity']['opportunity'] = {};
+natObj['diversity']['foreignborn'] = {};
+natObj['diversity']['foreignborn']['raw'] = {};
+natObj['diversity']['foreignborn']['relative'] = {};
+natObj['diversity']['empLQVariance'] = {};
+natObj['diversity']['empLQVariance']['raw'] = {};
+natObj['diversity']['empHHI'] = {};
+natObj['diversity']['empHHI']['raw'] = {};
+natObj['diversity']['composite'] = {};
+
+natObj['fluidity'] = {};
+natObj['fluidity']['highGrowth'] = {};
+natObj['fluidity']['highGrowth']['raw'] = {};
+natObj['fluidity']['highGrowth']['relative'] = {};
+natObj['fluidity']['netMigration'] = {};
+natObj['fluidity']['netMigration']['raw'] = {};
+natObj['fluidity']['netMigration']['relative'] = {};
+natObj['fluidity']['totalMigration'] = {};
+natObj['fluidity']['totalMigration']['raw'] = {};
+natObj['fluidity']['totalMigration']['relative'] = {};
+natObj['fluidity']['inflowMigration'] = {};
+natObj['fluidity']['inflowMigration']['raw'] = {};
+natObj['fluidity']['inflowMigration']['relative'] = {};
+natObj['fluidity']['outflowMigration'] = {};
+natObj['fluidity']['outflowMigration']['raw'] = {};
+natObj['fluidity']['outflowMigration']['relative'] = {};
+natObj['fluidity']['churn'] = {};
+natObj['fluidity']['churn']['raw'] = {};
+natObj['fluidity']['composite'] = {};
+
+natObj['combined'] = {};
+natObj['combined']['composite'] ={};
+
 
 Object.keys(msaPop).forEach(msaId => {
 
@@ -128,32 +177,104 @@ Object.keys(msaPop).forEach(msaId => {
 
   processedNewFirms['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['density']['newFirms']['raw'] = metro;        
+      curMsaObj['density']['newFirms']['raw'] = metro;   
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['density']['newFirms']['raw'][yearVal.x]){
+          natObj['density']['newFirms']['raw'][yearVal.x] = {};
+          natObj['density']['newFirms']['raw'][yearVal.x]["y"] = 0;
+          natObj['density']['newFirms']['raw'][yearVal.x]["score"] = 0;
+          natObj['density']['newFirms']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['density']['newFirms']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['density']['newFirms']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['density']['newFirms']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedNewFirms['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['density']['newFirms']['relative'] = metro;        
+      curMsaObj['density']['newFirms']['relative'] = metro;  
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['density']['newFirms']['relative'][yearVal.x]){
+          natObj['density']['newFirms']['relative'][yearVal.x] = {};
+          natObj['density']['newFirms']['relative'][yearVal.x]["y"] = 0;
+          natObj['density']['newFirms']['relative'][yearVal.x]["score"] = 0;
+          natObj['density']['newFirms']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['density']['newFirms']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['density']['newFirms']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['density']['newFirms']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   coloredShareEmpNewFirmsQWI_All.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['shareEmp']['relative'] = metro;        
+
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['density']['shareEmp']['relative'][yearVal.x]){
+          natObj['density']['shareEmp']['relative'][yearVal.x] = {};
+          natObj['density']['shareEmp']['relative'][yearVal.x]["y"] = 0;
+          natObj['density']['shareEmp']['relative'][yearVal.x]["score"] = 0;
+          natObj['density']['shareEmp']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['density']['shareEmp']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['density']['shareEmp']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['density']['shareEmp']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedShareEmpNewFirmsQWI_HighTech['raw'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['shareEmpQWI_HighTech']['raw'] = metro;        
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]){
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x] = {};
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["y"] = 0;
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["score"] = 0;
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['density']['shareEmpQWI_HighTech']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = metro;        
+      curMsaObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'] = metro;      
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]){
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x] = {};
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["y"] = 0;
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["score"] = 0;
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedDensityComposite.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['density']['composite'] = metro;        
+    metro.values.forEach(yearVal => {
+      if(!natObj['density']['composite'][yearVal.x]){
+        natObj['density']['composite'][yearVal.x] = {};
+        natObj['density']['composite'][yearVal.x]["y"] = 0;
+        natObj['density']['composite'][yearVal.x]["score"] = 0;
+        natObj['density']['composite'][yearVal.x]["count"] = 0;
+      }
+        natObj['density']['composite'][yearVal.x]["y"] += yearVal.y;
+        natObj['density']['composite'][yearVal.x]["score"] += yearVal.score;
+        natObj['density']['composite'][yearVal.x]["count"] += 1;
+    })
     }
   })
   //End of density data
@@ -169,32 +290,113 @@ Object.keys(msaPop).forEach(msaId => {
 
   processedOpportunity.forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['opportunity'] = metro;        
+      curMsaObj['diversity']['opportunity'] = metro;   
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['opportunity'][yearVal.x]){
+          natObj['diversity']['opportunity'][yearVal.x] = {};
+          natObj['diversity']['opportunity'][yearVal.x]["y"] = 0;
+          natObj['diversity']['opportunity'][yearVal.x]["score"] = 0;
+          natObj['diversity']['opportunity'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['opportunity'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['opportunity'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['opportunity'][yearVal.x]["count"] += 1;
+      })
+
+
     }
   })
   processedForeignborn['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['foreignborn']['raw'] = metro;        
+      curMsaObj['diversity']['foreignborn']['raw'] = metro;   
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['foreignborn']['raw'][yearVal.x]){
+          natObj['diversity']['foreignborn']['raw'][yearVal.x] = {};
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["y"] = 0;
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["score"] = 0;
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['foreignborn']['raw'][yearVal.x]["count"] += 1;
+      })
+
+
     }
   })
   processedForeignborn['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['foreignborn']['relative'] = metro;        
+      curMsaObj['diversity']['foreignborn']['relative'] = metro;      
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['foreignborn']['relative'][yearVal.x]){
+          natObj['diversity']['foreignborn']['relative'][yearVal.x] = {};
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["y"] = 0;
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["score"] = 0;
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['foreignborn']['relative'][yearVal.x]["count"] += 1;
+      })
+
     }
   })
   processedEmpVariance['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['empLQVariance']['raw'] = metro;        
+      curMsaObj['diversity']['empLQVariance']['raw'] = metro; 
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['empLQVariance']['raw'][yearVal.x]){
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x] = {};
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["y"] = 0;
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["score"] = 0;
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['empLQVariance']['raw'][yearVal.x]["count"] += 1;
+
+      })
+
     }
   })
   processedEmpHHI['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['empHHI']['raw'] = metro;        
+      curMsaObj['diversity']['empHHI']['raw'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['empHHI']['raw'][yearVal.x]){
+          natObj['diversity']['empHHI']['raw'][yearVal.x] = {};
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["y"] = 0;
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["score"] = 0;
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['empHHI']['raw'][yearVal.x]["count"] += 1;
+      })
+
     }
   })
   processedDiversityComposite.forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['diversity']['composite'] = metro;        
+      curMsaObj['diversity']['composite'] = metro;      
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['diversity']['composite'][yearVal.x]){
+          natObj['diversity']['composite'][yearVal.x] = {};
+          natObj['diversity']['composite'][yearVal.x]["y"] = 0;
+          natObj['diversity']['composite'][yearVal.x]["score"] = 0;
+          natObj['diversity']['composite'][yearVal.x]["count"] = 0;
+        }
+          natObj['diversity']['composite'][yearVal.x]["y"] += yearVal.y;
+          natObj['diversity']['composite'][yearVal.x]["score"] += yearVal.score;
+          natObj['diversity']['composite'][yearVal.x]["count"] += 1;
+      })
+
     }
   })
   //End of Diversity Data
@@ -211,63 +413,209 @@ Object.keys(msaPop).forEach(msaId => {
 
   processedInc5000['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['highGrowth']['raw'] = metro;        
+      curMsaObj['fluidity']['highGrowth']['raw'] = metro;     
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['highGrowth']['raw'][yearVal.x]){
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x] = {};
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['highGrowth']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedInc5000['relative'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['highGrowth']['relative'] = metro;        
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['highGrowth']['relative'][yearVal.x]){
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x] = {};
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['highGrowth']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedNetMigration['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['netMigration']['raw'] = metro;        
+      curMsaObj['fluidity']['netMigration']['raw'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['netMigration']['raw'][yearVal.x]){
+          natObj['fluidity']['netMigration']['raw'][yearVal.x] = {};
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['netMigration']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedNetMigration['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['netMigration']['relative'] = metro;        
+      curMsaObj['fluidity']['netMigration']['relative'] = metro;   
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['netMigration']['relative'][yearVal.x]){
+          natObj['fluidity']['netMigration']['relative'][yearVal.x] = {};
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['netMigration']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedTotalMigration['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['totalMigration']['raw'] = metro;        
+      curMsaObj['fluidity']['totalMigration']['raw'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['totalMigration']['raw'][yearVal.x]){
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x] = {};
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['totalMigration']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedTotalMigration['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['totalMigration']['relative'] = metro;        
+      curMsaObj['fluidity']['totalMigration']['relative'] = metro;      
+
+            metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['totalMigration']['relative'][yearVal.x]){
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x] = {};
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['totalMigration']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedInflowMigration['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['inflowMigration']['raw'] = metro;        
+      curMsaObj['fluidity']['inflowMigration']['raw'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['inflowMigration']['raw'][yearVal.x]){
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x] = {};
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['inflowMigration']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedInflowMigration['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['inflowMigration']['relative'] = metro;        
+      curMsaObj['fluidity']['inflowMigration']['relative'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['inflowMigration']['relative'][yearVal.x]){
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x] = {};
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['inflowMigration']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedOutflowMigration['raw'].forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['outflowMigration']['raw'] = metro;        
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['outflowMigration']['raw'][yearVal.x]){
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x] = {};
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['outflowMigration']['raw'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedOutflowMigration['relative'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['outflowMigration']['relative'] = metro;        
+      curMsaObj['fluidity']['outflowMigration']['relative'] = metro;    
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['outflowMigration']['relative'][yearVal.x]){
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x] = {};
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['outflowMigration']['relative'][yearVal.x]["count"] += 1;
+      })
     }
   })
   processedAnnualChurn['raw'].forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['fluidity']['churn']['raw'] = metro;        
+      curMsaObj['fluidity']['churn']['raw'] = metro;   
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['churn']['raw'][yearVal.x]){
+          natObj['fluidity']['churn']['raw'][yearVal.x] = {};
+          natObj['fluidity']['churn']['raw'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['churn']['raw'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['churn']['raw'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['churn']['raw'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['churn']['raw'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['churn']['raw'][yearVal.x]["count"] += 1;
+      })
+
     }
   })
 
   processedFluidityComposite.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['fluidity']['composite'] = metro;        
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['fluidity']['composite'][yearVal.x]){
+          natObj['fluidity']['composite'][yearVal.x] = {};
+          natObj['fluidity']['composite'][yearVal.x]["y"] = 0;
+          natObj['fluidity']['composite'][yearVal.x]["score"] = 0;
+          natObj['fluidity']['composite'][yearVal.x]["count"] = 0;
+        }
+          natObj['fluidity']['composite'][yearVal.x]["y"] += yearVal.y;
+          natObj['fluidity']['composite'][yearVal.x]["score"] += yearVal.score;
+          natObj['fluidity']['composite'][yearVal.x]["count"] += 1;
+      })
+
     }
   })
   //End of Fluidity Data
@@ -277,7 +625,21 @@ Object.keys(msaPop).forEach(msaId => {
   curMsaObj['combined']['composite'];
   processedCombinedComposite.forEach(metro => {
     if(metro.key == msaId){
-      curMsaObj['combined']['composite'] = metro;        
+      curMsaObj['combined']['composite'] = metro;     
+
+      metro.values.forEach(yearVal => {
+        if(!natObj['combined']['composite'][yearVal.x]){
+          natObj['combined']['composite'][yearVal.x] = {};
+          natObj['combined']['composite'][yearVal.x]["y"] = 0;
+          natObj['combined']['composite'][yearVal.x]["score"] = 0;
+          natObj['combined']['composite'][yearVal.x]["count"] = 0;
+        }
+          natObj['combined']['composite'][yearVal.x]["y"] += yearVal.y;
+          natObj['combined']['composite'][yearVal.x]["score"] += yearVal.score;
+          natObj['combined']['composite'][yearVal.x]["count"] += 1;
+      })
+
+
     }
   })
   //End of Combined
@@ -285,12 +647,117 @@ Object.keys(msaPop).forEach(msaId => {
 
 
   //Writing to File
-  fs.writeFileSync("../src/static/data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
+  //fs.writeFileSync("../src/static/data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
 
 
 })
+console.log(natObj['fluidity']['composite']);
 
 
+Object.keys(natObj['density']['newFirms']['raw']).forEach(yearX => {
+  natObj['density']['newFirms']['raw'][yearX]["y"]=natObj['density']['newFirms']['raw'][yearX]["y"]/natObj['density']['newFirms']['raw'][yearX]["count"];
+  natObj['density']['newFirms']['raw'][yearX]["score"]=natObj['density']['newFirms']['raw'][yearX]["score"]/natObj['density']['newFirms']['raw'][yearX]["count"];
+})
+Object.keys(natObj['density']['newFirms']['relative']).forEach(yearX => {
+  natObj['density']['newFirms']['relative'][yearX]["y"]=natObj['density']['newFirms']['relative'][yearX]["y"]/natObj['density']['newFirms']['relative'][yearX]["count"];
+  natObj['density']['newFirms']['relative'][yearX]["score"]=natObj['density']['newFirms']['relative'][yearX]["score"]/natObj['density']['newFirms']['relative'][yearX]["count"];
+})
+Object.keys(natObj['density']['shareEmp']['relative']).forEach(yearX => {
+  natObj['density']['shareEmp']['relative'][yearX]["y"]=natObj['density']['shareEmp']['relative'][yearX]["y"]/natObj['density']['shareEmp']['relative'][yearX]["count"];
+  natObj['density']['shareEmp']['relative'][yearX]["score"]=natObj['density']['shareEmp']['relative'][yearX]["score"]/natObj['density']['shareEmp']['relative'][yearX]["count"];
+})
+Object.keys(natObj['density']['shareEmpQWI_HighTech']['raw']).forEach(yearX => {
+  natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["y"]=natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["y"]/natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["count"];
+  natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["score"]=natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["score"]/natObj['density']['shareEmpQWI_HighTech']['raw'][yearX]["count"];
+})
+Object.keys(natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw']).forEach(yearX => {
+  natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["y"]=natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["y"]/natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["count"];
+  natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["score"]=natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["score"]/natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'][yearX]["count"];
+})
+Object.keys(natObj['density']['composite']).forEach(yearX => {
+  natObj['density']['composite'][yearX]["y"]=natObj['density']['composite'][yearX]["y"]/natObj['density']['composite'][yearX]["count"];
+  natObj['density']['composite'][yearX]["score"]=natObj['density']['composite'][yearX]["score"]/natObj['density']['composite'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['opportunity']).forEach(yearX => {
+  natObj['diversity']['opportunity'][yearX]["y"]=natObj['diversity']['opportunity'][yearX]["y"]/natObj['diversity']['opportunity'][yearX]["count"];
+  natObj['diversity']['opportunity'][yearX]["score"]=natObj['diversity']['opportunity'][yearX]["score"]/natObj['diversity']['opportunity'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['foreignborn']['raw']).forEach(yearX => {
+  natObj['diversity']['foreignborn']['raw'][yearX]["y"]=natObj['diversity']['foreignborn']['raw'][yearX]["y"]/natObj['diversity']['foreignborn']['raw'][yearX]["count"];
+  natObj['diversity']['foreignborn']['raw'][yearX]["score"]=natObj['diversity']['foreignborn']['raw'][yearX]["score"]/natObj['diversity']['foreignborn']['raw'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['foreignborn']['relative']).forEach(yearX => {
+  natObj['diversity']['foreignborn']['relative'][yearX]["y"]=natObj['diversity']['foreignborn']['relative'][yearX]["y"]/natObj['diversity']['foreignborn']['relative'][yearX]["count"];
+  natObj['diversity']['foreignborn']['relative'][yearX]["score"]=natObj['diversity']['foreignborn']['relative'][yearX]["score"]/natObj['diversity']['foreignborn']['relative'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['empLQVariance']['raw']).forEach(yearX => {
+  natObj['diversity']['empLQVariance']['raw'][yearX]["y"]=natObj['diversity']['empLQVariance']['raw'][yearX]["y"]/natObj['diversity']['empLQVariance']['raw'][yearX]["count"];
+  natObj['diversity']['empLQVariance']['raw'][yearX]["score"]=natObj['diversity']['empLQVariance']['raw'][yearX]["score"]/natObj['diversity']['empLQVariance']['raw'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['empHHI']['raw']).forEach(yearX => {
+  natObj['diversity']['empHHI']['raw'][yearX]["y"]=natObj['diversity']['empHHI']['raw'][yearX]["y"]/natObj['diversity']['empHHI']['raw'][yearX]["count"];
+  natObj['diversity']['empHHI']['raw'][yearX]["score"]=natObj['diversity']['empHHI']['raw'][yearX]["score"]/natObj['diversity']['empHHI']['raw'][yearX]["count"];
+})
+Object.keys(natObj['diversity']['composite']).forEach(yearX => {
+  natObj['diversity']['composite'][yearX]["y"]=natObj['diversity']['composite'][yearX]["y"]/natObj['diversity']['composite'][yearX]["count"];
+  natObj['diversity']['composite'][yearX]["score"]=natObj['diversity']['composite'][yearX]["score"]/natObj['diversity']['composite'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['highGrowth']['raw']).forEach(yearX => {
+  natObj['fluidity']['highGrowth']['raw'][yearX]["y"]=natObj['fluidity']['highGrowth']['raw'][yearX]["y"]/natObj['fluidity']['highGrowth']['raw'][yearX]["count"];
+  natObj['fluidity']['highGrowth']['raw'][yearX]["score"]=natObj['fluidity']['highGrowth']['raw'][yearX]["score"]/natObj['fluidity']['highGrowth']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['highGrowth']['relative']).forEach(yearX => {
+  natObj['fluidity']['highGrowth']['relative'][yearX]["y"]=natObj['fluidity']['highGrowth']['relative'][yearX]["y"]/natObj['fluidity']['highGrowth']['relative'][yearX]["count"];
+  natObj['fluidity']['highGrowth']['relative'][yearX]["score"]=natObj['fluidity']['highGrowth']['relative'][yearX]["score"]/natObj['fluidity']['highGrowth']['relative'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['netMigration']['raw']).forEach(yearX => {
+  natObj['fluidity']['netMigration']['raw'][yearX]["y"]=natObj['fluidity']['netMigration']['raw'][yearX]["y"]/natObj['fluidity']['netMigration']['raw'][yearX]["count"];
+  natObj['fluidity']['netMigration']['raw'][yearX]["score"]=natObj['fluidity']['netMigration']['raw'][yearX]["score"]/natObj['fluidity']['netMigration']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['netMigration']['relative']).forEach(yearX => {
+  natObj['fluidity']['netMigration']['relative'][yearX]["y"]=natObj['fluidity']['netMigration']['relative'][yearX]["y"]/natObj['fluidity']['netMigration']['relative'][yearX]["count"];
+  natObj['fluidity']['netMigration']['relative'][yearX]["score"]=natObj['fluidity']['netMigration']['relative'][yearX]["score"]/natObj['fluidity']['netMigration']['relative'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['totalMigration']['raw']).forEach(yearX => {
+  natObj['fluidity']['totalMigration']['raw'][yearX]["y"]=natObj['fluidity']['totalMigration']['raw'][yearX]["y"]/natObj['fluidity']['totalMigration']['raw'][yearX]["count"];
+  natObj['fluidity']['totalMigration']['raw'][yearX]["score"]=natObj['fluidity']['totalMigration']['raw'][yearX]["score"]/natObj['fluidity']['totalMigration']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['totalMigration']['relative']).forEach(yearX => {
+  natObj['fluidity']['totalMigration']['relative'][yearX]["y"]=natObj['fluidity']['totalMigration']['relative'][yearX]["y"]/natObj['fluidity']['totalMigration']['relative'][yearX]["count"];
+  natObj['fluidity']['totalMigration']['relative'][yearX]["score"]=natObj['fluidity']['totalMigration']['relative'][yearX]["score"]/natObj['fluidity']['totalMigration']['relative'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['inflowMigration']['raw']).forEach(yearX => {
+  natObj['fluidity']['inflowMigration']['raw'][yearX]["y"]=natObj['fluidity']['inflowMigration']['raw'][yearX]["y"]/natObj['fluidity']['inflowMigration']['raw'][yearX]["count"];
+  natObj['fluidity']['inflowMigration']['raw'][yearX]["score"]=natObj['fluidity']['inflowMigration']['raw'][yearX]["score"]/natObj['fluidity']['inflowMigration']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['inflowMigration']['relative']).forEach(yearX => {
+  natObj['fluidity']['inflowMigration']['relative'][yearX]["y"]=natObj['fluidity']['inflowMigration']['relative'][yearX]["y"]/natObj['fluidity']['inflowMigration']['relative'][yearX]["count"];
+  natObj['fluidity']['inflowMigration']['relative'][yearX]["score"]=natObj['fluidity']['inflowMigration']['relative'][yearX]["score"]/natObj['fluidity']['inflowMigration']['relative'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['outflowMigration']['raw']).forEach(yearX => {
+  natObj['fluidity']['outflowMigration']['raw'][yearX]["y"]=natObj['fluidity']['outflowMigration']['raw'][yearX]["y"]/natObj['fluidity']['outflowMigration']['raw'][yearX]["count"];
+  natObj['fluidity']['outflowMigration']['raw'][yearX]["score"]=natObj['fluidity']['outflowMigration']['raw'][yearX]["score"]/natObj['fluidity']['outflowMigration']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['outflowMigration']['relative']).forEach(yearX => {
+  natObj['fluidity']['outflowMigration']['relative'][yearX]["y"]=natObj['fluidity']['outflowMigration']['relative'][yearX]["y"]/natObj['fluidity']['outflowMigration']['relative'][yearX]["count"];
+  natObj['fluidity']['outflowMigration']['relative'][yearX]["score"]=natObj['fluidity']['outflowMigration']['relative'][yearX]["score"]/natObj['fluidity']['outflowMigration']['relative'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['churn']['raw']).forEach(yearX => {
+  natObj['fluidity']['churn']['raw'][yearX]["y"]=natObj['fluidity']['churn']['raw'][yearX]["y"]/natObj['fluidity']['churn']['raw'][yearX]["count"];
+  natObj['fluidity']['churn']['raw'][yearX]["score"]=natObj['fluidity']['churn']['raw'][yearX]["score"]/natObj['fluidity']['churn']['raw'][yearX]["count"];
+})
+Object.keys(natObj['fluidity']['composite']).forEach(yearX => {
+  natObj['fluidity']['composite'][yearX]["y"]=natObj['fluidity']['composite'][yearX]["y"]/natObj['fluidity']['composite'][yearX]["count"];
+  natObj['fluidity']['composite'][yearX]["score"]=natObj['fluidity']['composite'][yearX]["score"]/natObj['fluidity']['composite'][yearX]["count"];
+})
+Object.keys(natObj['combined']['composite']).forEach(yearX => {
+  natObj['combined']['composite'][yearX]["y"]=natObj['combined']['composite'][yearX]["y"]/natObj['combined']['composite'][yearX]["count"];
+  natObj['combined']['composite'][yearX]["score"]=natObj['combined']['composite'][yearX]["score"]/natObj['combined']['composite'][yearX]["count"];
+})
+
+
+
+fs.writeFileSync("../src/static/data/natEei.json",JSON.stringify(natObj));  
 //Processing Functions
 
 function _processData(props) {
