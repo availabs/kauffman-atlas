@@ -10,12 +10,10 @@ export class LineGraph extends React.Component<void, Props, void> {
   constructor () {
     super()
 
-
-
-
     this._renderGraph = this._renderGraph.bind(this)
     this._labelFunction = this._labelFunction.bind(this)
     this._msaClick = this._msaClick.bind(this)
+    this._resetBrush = this._resetBrush.bind(this)
   }
 
   _filterData (props){
@@ -25,7 +23,7 @@ export class LineGraph extends React.Component<void, Props, void> {
     else{
         var data = props.data[props.dataType];
     }
-    console.log(data);
+
     if(props.metros){
       data = data.filter(d => {
         var inBucket = false;
@@ -99,6 +97,16 @@ export class LineGraph extends React.Component<void, Props, void> {
     return filteredData;
   }
 
+  componentWillMount(){
+    var newData = this._filterData(this.props);
+
+    var newProps = Object.assign({},this.props);
+    newProps.data = newData;
+
+    var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+    this.setState({extent:extent})    
+  }
+
   componentDidMount () {
     var newData = this._filterData(this.props);
 
@@ -113,6 +121,20 @@ export class LineGraph extends React.Component<void, Props, void> {
       var newData = this._filterData(nextProps);
 
       var newProps = Object.assign({},nextProps);
+      newProps.data = newData;
+
+      var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+      this.setState({extent:extent})
+
+      this._renderGraph(newProps);
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.extent !== this.state.extent){
+      var newData = this._filterData(this.props);
+
+      var newProps = Object.assign({},this.props);
       newProps.data = newData;
 
       this._renderGraph(newProps);
@@ -139,12 +161,25 @@ export class LineGraph extends React.Component<void, Props, void> {
   }
 
   _renderGraph (props) {
+    console.log("Render Graph");
     var percFormat = d3.format(".3%"),
         axisPercFormat = d3.format("%"),
         commaFormat = d3.format(","),
         scope = this;
 
-    var filteredData = props.data;
+
+    var filteredData = props.data.filter(metroArea => {
+      var withinBounds = true;
+
+        console.log(scope.state.extent)
+        metroArea.values.forEach(yearValue => {
+          if(!(yearValue.y >= scope.state.extent[0]) || !(yearValue.y <= scope.state.extent[1])){
+            withinBounds = false;
+          }
+        })        
+
+      return withinBounds;
+    })
 
     var margin = {top: 10, right: 10, bottom: 10, left: 10}
     let width = document.getElementById("mapDiv").offsetWidth
@@ -162,7 +197,14 @@ export class LineGraph extends React.Component<void, Props, void> {
         var y = d3.scale.linear()
             .range([paddedHeight,0]);
 
-        y.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
+        //y.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
+        y.domain(scope.state.extent);
+
+        var yBrush = d3.scale.linear()
+            .range([paddedHeight,0]);
+
+        yBrush.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
+
 
         var x = d3.scale.ordinal()
             .domain(d3.range(
@@ -207,7 +249,16 @@ export class LineGraph extends React.Component<void, Props, void> {
         var y = d3.scale.linear()
         .range([paddedHeight,0]);
 
-        y.domain([d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
+        //y.domain([d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
+        y.domain(scope.state.extent);
+
+        var yBrush = d3.scale.linear()
+        .range([paddedHeight,0]);
+
+        yBrush.domain([d3.min(props.data, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(props.data, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
+
+
+
 
         var x = d3.scale.linear()
             .range([0, paddedWidth]);
@@ -235,6 +286,10 @@ export class LineGraph extends React.Component<void, Props, void> {
         .scale(y)
         .outerTickSize([3])
         .orient("left");
+
+    var yAxisBrush = d3.svg.axis()
+        .scale(yBrush)
+        .orient("right");
 
     if(props.plot != 'rank'){
       if(props.dataType != "raw" && props.graph != "newValues" && (props.graph.substr(-9)) != "composite" && props.graph != "inc"){
@@ -383,14 +438,24 @@ export class LineGraph extends React.Component<void, Props, void> {
         }
       });
 
-    var extent = [d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
-    
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform","translate("+paddedWidth+",0)")
+      .call(yAxisBrush)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", "-5em")
+      .attr("dy", "2em")
+      .attr("x","-15em") 
+
+
     var brush = d3.svg.brush()
-        .y(y)
-        .extent(extent)
+        .y(yBrush)
+        .extent(scope.state.extent)
         .on("brushstart", brushstart)
         .on("brush", brushmove)
         .on("brushend", brushend);
+
 
     var arc = d3.svg.arc()
         .outerRadius(15)
@@ -400,7 +465,9 @@ export class LineGraph extends React.Component<void, Props, void> {
     var brushg = svg.append("g")
         .attr("class", "brush")
         .attr("transform", "translate("+(paddedWidth + 17)+",0)")
-        .call(brush);
+        .call(brush)
+        .style("opacity",".4");  
+
 
     brushg.selectAll(".resize").append("path")
         .attr("transform", "translate("+(paddedHeight / 4) + ",0)")
@@ -427,7 +494,8 @@ function brushmove() {
 }
 
 function brushend() {
-
+                var s = brush.extent();
+                scope.setState({extent:[s[0],s[1]]})
 }
 
     function mouseover(d) {
@@ -742,6 +810,13 @@ function brushend() {
     }
   }
 
+  _resetBrush(){
+    var newData = this._filterData(this.props);
+
+    var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+    this.setState({extent:extent}) 
+  }
+
 
   render () {
     var scope = this;
@@ -751,6 +826,9 @@ function brushend() {
             <div className={classes['title']}>
               <h4>{scope._labelFunction(this.props)}</h4>
             </div>
+            <a onClick={this._resetBrush} type="button" className="btn btn-default pull-right">
+            Reset Brush
+            </a>
             <div id="line" className={classes['svg-container']}>
               <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
             </div>
