@@ -708,7 +708,7 @@ Object.keys(msaPop).forEach(msaId => {
   fs.writeFileSync("../src/static/data/metros/" + msaId + ".json",JSON.stringify(curMsaObj));   
 })
 
-console.log(natObj['pop'])
+
 Object.keys(natObj['pop']).forEach(year => {
   natObj['pop'][year] = natObj['pop'][year]/natObj['count']
 })
@@ -1083,7 +1083,7 @@ function _polishData(data,dataset){
     var dataMean = d3.mean(valueArray)
 
 
-    if(dataset == "empVariance"){
+    if(dataset == "empVariance" || dataset == "empHHI"){
       var dataScale = d3.scale.linear()
         .range([100,0])
         .domain([dataMean,
@@ -1660,9 +1660,11 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
                                           d3.min(yearCityFilteredEmpHHI, c => d3.min(c.values, v => v.score ))])
   
   cityFilteredOpp.sort(_sortMsaCities());
-  cityFilteredForeignborn.sort(_sortMsaCities());
-  cityFilteredEmpVariance.sort(_sortMsaCities());
-  cityFilteredEmpHHI.sort(_sortMsaCities());
+  yearCityFilteredForeignBorn.sort(_sortMsaCities());
+  yearCityFilteredEmpVariance.sort(_sortMsaCities());
+  yearCityFilteredEmpHHI.sort(_sortMsaCities());
+
+  console.log(cityFilteredOpp.length,yearCityFilteredForeignBorn.length,yearCityFilteredEmpVariance.length,yearCityFilteredEmpHHI.length)
 
   for(var i=0; i<yearCityFilteredForeignBorn.length;i++){
     var resultValues = [],
@@ -1696,7 +1698,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
         foreignBornScale(yearCityFilteredForeignBorn[i].values[j].y) +      
         oppScale(cityFilteredOpp[i].values[0].y) +
         empVarianceScale(empVarObj[curYear]) +
-        (empHHIScale(empHHIObj[curYear])/600*8)
+        (empHHIScale(empHHIObj[curYear]))
         )/4
 
 
