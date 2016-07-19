@@ -10,45 +10,15 @@ export class LineGraph extends React.Component<void, Props, void> {
   constructor () {
     super()
 
+
+
+
     this._renderGraph = this._renderGraph.bind(this)
     this._labelFunction = this._labelFunction.bind(this)
     this._msaClick = this._msaClick.bind(this)
   }
-  componentDidMount () {
-      this._renderGraph(this.props);
-  }
 
-  componentWillReceiveProps (nextProps) {
-    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros) || this.props.activeColor !== nextProps.activeColor){
-      this._renderGraph(nextProps);
-    }
-  }
-
-  _metroChange (oldMetros,newMetros){
-    if(oldMetros.length == newMetros.length){
-      //Check to see if they are
-      for(var i=0; i<oldMetros.length; i++){
-        if(oldMetros[i] != newMetros[i]){
-          return true;
-        }
-      }
-      //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
-      return false; 
-    }
-      return true;
-  }
-
-  _msaClick (d) {
-    console.log(d.key);
-    this.context.router.push('/metro/'+d.key+'/combined');   
-  }
-
-  _renderGraph (props) {
-    var percFormat = d3.format(".3%"),
-        axisPercFormat = d3.format("%"),
-        commaFormat = d3.format(","),
-        scope = this;
-
+  _filterData (props){
     if(Array.isArray(props.data)){
         var data = props.data;
     }
@@ -85,7 +55,7 @@ export class LineGraph extends React.Component<void, Props, void> {
       city.values = metroArea.values.map(yearValue => {
         return {x:yearValue.x, y:yearValue.y, city:city, rank:yearValue.rank}
       }).filter(yearValue => {
-        if(this.props.graph == "inc"){
+        if(props.graph == "inc"){
           if(yearValue.y <= 0){
             return false;
           }
@@ -93,7 +63,7 @@ export class LineGraph extends React.Component<void, Props, void> {
             return true;
           }  
         }
-        if(this.props.graph == "foreignBorn"){
+        if(props.graph == "foreignBorn"){
           if(yearValue.y < 0){
             return false;
           }
@@ -126,11 +96,61 @@ export class LineGraph extends React.Component<void, Props, void> {
       }
     })
 
+    return filteredData;
+  }
+
+  componentDidMount () {
+    var newData = this._filterData(this.props);
+
+    var newProps = Object.assign({},this.props);
+    newProps.data = newData;
+
+    this._renderGraph(newProps);
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if(this.props.title !== nextProps.title || this.props.graph !== nextProps.graph || this._metroChange(this.props.metros,nextProps.metros) || this.props.activeColor !== nextProps.activeColor){
+      var newData = this._filterData(nextProps);
+
+      var newProps = Object.assign({},nextProps);
+      newProps.data = newData;
+
+      this._renderGraph(newProps);
+    }
+  }
+
+  _metroChange (oldMetros,newMetros){
+    if(oldMetros.length == newMetros.length){
+      //Check to see if they are
+      for(var i=0; i<oldMetros.length; i++){
+        if(oldMetros[i] != newMetros[i]){
+          return true;
+        }
+      }
+      //If we never find a mismatch, the list of metros is the same, we don't need to redraw anything.
+      return false; 
+    }
+      return true;
+  }
+
+  _msaClick (d) {
+    console.log(d.key);
+    this.context.router.push('/metro/'+d.key+'/combined');   
+  }
+
+  _renderGraph (props) {
+    var percFormat = d3.format(".3%"),
+        axisPercFormat = d3.format("%"),
+        commaFormat = d3.format(","),
+        scope = this;
+
+    var filteredData = props.data;
+
     var margin = {top: 10, right: 10, bottom: 10, left: 10}
     let width = document.getElementById("mapDiv").offsetWidth
     let height = width  * 0.6
 
-    let paddedWidth = width-100;
+    let paddedWidth = width-130;
     let paddedHeight = height-100;
 
     if(props.plot == "rank"){
@@ -362,6 +382,53 @@ export class LineGraph extends React.Component<void, Props, void> {
          return "Ranking"               
         }
       });
+
+    var extent = [d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+    
+    var brush = d3.svg.brush()
+        .y(y)
+        .extent(extent)
+        .on("brushstart", brushstart)
+        .on("brush", brushmove)
+        .on("brushend", brushend);
+
+    var arc = d3.svg.arc()
+        .outerRadius(15)
+        .startAngle(0)
+        .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
+
+    var brushg = svg.append("g")
+        .attr("class", "brush")
+        .attr("transform", "translate("+(paddedWidth + 17)+",0)")
+        .call(brush);
+
+    brushg.selectAll(".resize").append("path")
+        .attr("transform", "translate("+(paddedHeight / 4) + ",0)")
+        .attr("transform", "rotate(-90)")
+        .attr("d", arc);
+
+    brushg.selectAll(".resize").append("path")
+        .attr("transform", "rotate(-90)")
+        .attr("d", arc);
+
+    brushg.selectAll("rect")
+        .attr("transform","translate(-15,0)")
+        .attr("width", (30));
+
+brushstart();
+brushmove();
+
+function brushstart() {
+
+}
+
+function brushmove() {
+
+}
+
+function brushend() {
+
+}
 
     function mouseover(d) {
         props.onMouseover({id: d.city.key,year:d.x})

@@ -871,32 +871,6 @@ natObj['combined']['composite']['values'].forEach(yearObj => {
 })
 processedCombinedComposite.push(natObj['combined']['composite'])
 
-//Density
-fs.writeFileSync("../src/static/data/processedNewFirms.json",JSON.stringify(processedNewFirms));
-fs.writeFileSync("../src/static/data/processedShareEmp.json",JSON.stringify(coloredShareEmpNewFirmsQWI_All));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_HighTech.json",JSON.stringify(coloredShareEmpNewFirmsQWI_HighTech));
-fs.writeFileSync("../src/static/data/processedShareEmpNewFirmsQWI_ExceptAccomAndRetail.json",JSON.stringify(coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail));
-fs.writeFileSync("../src/static/data/processedDensityComposite.json",JSON.stringify(processedDensityComposite));
-
-//Diversity
-fs.writeFileSync("../src/static/data/processedOpportunity.json",JSON.stringify(processedOpportunity));
-fs.writeFileSync("../src/static/data/processedForeignborn.json",JSON.stringify(processedForeignborn));
-fs.writeFileSync("../src/static/data/processedEmpVariance.json",JSON.stringify(coloredEmpVariance));
-fs.writeFileSync("../src/static/data/processedEmpHHI.json",JSON.stringify(coloredEmpHHI));
-fs.writeFileSync("../src/static/data/processedDiversityComposite.json",JSON.stringify(processedDiversityComposite));
-
-//Fluidity
-fs.writeFileSync("../src/static/data/processedInc5000.json",JSON.stringify(processedInc5000));
-fs.writeFileSync("../src/static/data/processedNetMigration.json",JSON.stringify(processedNetMigration));
-fs.writeFileSync("../src/static/data/processedTotalMigration.json",JSON.stringify(processedTotalMigration));
-fs.writeFileSync("../src/static/data/processedInflowMigration.json",JSON.stringify(processedInflowMigration));
-fs.writeFileSync("../src/static/data/processedOutflowMigration.json",JSON.stringify(processedOutflowMigration));
-fs.writeFileSync("../src/static/data/processedAnnualChurn.json",JSON.stringify(coloredAnnualChurn));
-fs.writeFileSync("../src/static/data/processedFluidityComposite.json",JSON.stringify(processedFluidityComposite));
-
-//Combined
-fs.writeFileSync("../src/static/data/processedCombinedComposite.json",JSON.stringify(processedCombinedComposite));
-
 
 
 fs.writeFileSync("../src/static/data/metros/national.json",JSON.stringify(natObj));  
