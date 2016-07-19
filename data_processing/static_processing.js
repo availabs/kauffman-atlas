@@ -1650,14 +1650,14 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
                 )  
 
   var empVarianceScale = d3.scale.linear()
-                                 .range([100,0])
-                                 .domain([d3.max(yearCityFilteredEmpVariance, c => d3.max(c.values, v => v.score )), 
-                                          d3.min(yearCityFilteredEmpVariance, c => d3.min(c.values, v => v.score ))])
+                           .range([100,0])
+                           .domain([d3.max(yearCityFilteredEmpVariance, c => d3.max(c.values, v => v.score )), 
+                                    d3.min(yearCityFilteredEmpVariance, c => d3.min(c.values, v => v.score ))])
 
-  var empHHIScale =      d3.scale.linear()
-                                 .range([100,0])
-                                 .domain([d3.max(yearCityFilteredEmpHHI, c => d3.max(c.values, v => v.score )), 
-                                          d3.min(yearCityFilteredEmpHHI, c => d3.min(c.values, v => v.score ))])
+  var empHHIScale = d3.scale.linear()
+                           .range([100,0])
+                           .domain([d3.max(yearCityFilteredEmpHHI, c => d3.max(c.values, v => v.score )), 
+                                    d3.min(yearCityFilteredEmpHHI, c => d3.min(c.values, v => v.score ))])
   
   cityFilteredOpp.sort(_sortMsaCities());
   yearCityFilteredForeignBorn.sort(_sortMsaCities());
@@ -1685,7 +1685,7 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
 
       for(var m = 0; k<yearCityFilteredEmpHHI[i]['values'].length; m++){
         if(yearCityFilteredEmpHHI[i]['values'][m].x == curYear){
-          empHHIObj[curYear] = yearCityFilteredEmpHHI[i]['values'][m].y
+          empHHIObj[curYear] = yearCityFilteredEmpHHI[i]['values'][m].score
           break
         }
       }
@@ -1695,8 +1695,8 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
 
 
       var compositeValue = (
-        foreignBornScale(yearCityFilteredForeignBorn[i].values[j].y) +      
-        oppScale(cityFilteredOpp[i].values[0].y) +
+        foreignBornScale(yearCityFilteredForeignBorn[i].values[j].score) +      
+        oppScale(cityFilteredOpp[i].values[0].score) +
         empVarianceScale(empVarObj[curYear]) +
         (empHHIScale(empHHIObj[curYear]))
         )/4
