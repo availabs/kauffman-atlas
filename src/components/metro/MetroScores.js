@@ -19,12 +19,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
 
   _fetchData () {
-    if(!this.props.gdpData[this.props.metroId] || !this.props.gdpData[this.props.metroId].gdp){
-      return this.props.loadGdpData(this.props.metroId)
-    }
-    if(!this.props.gdpData[this.props.metroId] || !this.props.gdpData[this.props.metroId].gdp_per_capita){
-      return this.props.loadGdpPerCapita(this.props.metroId)
-    }
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
     }
@@ -39,10 +33,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
   }
 
   hasData () {
-    return this.props.gdpData[this.props.metroId] &&
-      this.props.gdpData[this.props.metroId].gdp &&
-      this.props.gdpData[this.props.metroId].gdp_per_capita &&
-      this.props.metroScores[this.props.metroId]      
+    return this.props.metroScores[this.props.metroId]      
   }
 
   formatData (data, color='#7d8faf') {

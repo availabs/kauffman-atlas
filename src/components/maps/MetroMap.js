@@ -36,6 +36,7 @@ export class MetroMap extends React.Component<void, Props, void> {
     let metrosGeo = Object.assign({},props.metrosGeo);
     let statesGeo = Object.assign({},props.statesGeo);
 
+
     metrosGeo.features = metrosGeo.features.filter(d => {
       return d.id == props.currentMetro;
     })
@@ -48,7 +49,7 @@ export class MetroMap extends React.Component<void, Props, void> {
         }
       }) 
       return match;
-    })
+    })      
 
     d3.selectAll("."+classes['state']).remove()
     d3.selectAll("."+classes['singleMsa']).remove()
