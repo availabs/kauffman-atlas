@@ -1677,30 +1677,28 @@ function _processDiversityComposite(opportunity,foreignbornObj,empVariance,empHH
       for(var k = 0; k<yearCityFilteredEmpVariance[i]['values'].length; k++){
         if(yearCityFilteredEmpVariance[i]['values'][k].x == curYear){
           empVarObj[curYear] = yearCityFilteredEmpVariance[i]['values'][k].score
+          break
         }
       }
-      if(!empVarObj[curYear]){
-        empVarObj[curYear] = 0;
-      }
 
-      for(var m = 0; k<yearCityFilteredEmpHHI[i]['values'].length; m++){
+      for(var m = 0; m<yearCityFilteredEmpHHI[i]['values'].length; m++){
         if(yearCityFilteredEmpHHI[i]['values'][m].x == curYear){
           empHHIObj[curYear] = yearCityFilteredEmpHHI[i]['values'][m].score
           break
         }
       }
-      if(!empHHIObj[curYear]){
-        empHHIObj[curYear] = 0;
+
+      var compositeValue
+      if (Number.isFinite(parseFloat(empVarObj[curYear])) && Number.isFinite(parseFloat(empHHIObj[curYear]))) {
+        compositeValue = (
+                          foreignBornScale(yearCityFilteredForeignBorn[i].values[j].score) +      
+                          oppScale(cityFilteredOpp[i].values[0].score) +
+                          empVarianceScale(empVarObj[curYear]) +
+                          empHHIScale(empHHIObj[curYear]) 
+                         ) /4 
+      } else {
+        compositeValue = null
       }
-
-
-      var compositeValue = (
-        foreignBornScale(yearCityFilteredForeignBorn[i].values[j].score) +      
-        oppScale(cityFilteredOpp[i].values[0].score) +
-        empVarianceScale(empVarObj[curYear]) +
-        (empHHIScale(empHHIObj[curYear]))
-        )/4
-
 
       resultValues.push({x:curYear,y:compositeValue,score:compositeValue})      
     }
