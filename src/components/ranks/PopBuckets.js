@@ -16,12 +16,13 @@ export class HomeView extends React.Component<void, Props, void> {
       bucketDiv.className = "btn btn-default popBucket";
     })
 
-    //d.target.className = "btn btn-default popBucket " + classes["active"];
 
     if(this.props.onBucketChange){
       this.props.onBucketChange(d.target.id)
     }
   }
+
+
 
   render () {    
     var bucketDisplay = [];
@@ -33,8 +34,11 @@ export class HomeView extends React.Component<void, Props, void> {
             type="button" 
             className={"btn btn-default " + (i == this.props.bucket ? classes["active"] : '')}
           >
-            { ((this.props.popScale[i])).toLocaleString()  +  (this.props.popScale[(i+1)] ? " - " + this.props.popScale[(i+1)] : "")}
-            <sup>th</sup>
+            {this.props.popScale[i].toLocaleString()}<sup>th</sup> 
+             {
+              (this.props.popScale[(i+1)]) ? (<span>{" - " + this.props.popScale[(i+1)]}<sup>th</sup></span>) : ""
+             }            
+
           </a>
         )   
     })

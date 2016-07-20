@@ -252,7 +252,7 @@ export class RankingsView extends React.Component<void, Props, void> {
                   bucket={this.state.bucket}
                 />
 
-                <div style={{marginTop:"325px"}}>
+                <div style={{marginTop:"375px"}}>
                   <HoverBox 
                     metroId={this.state.clickMetro ? this.state.clickMetro : data[0].key} 
                     year={typeof this.state.year != "number" ? 2013 : this.state.year} 
