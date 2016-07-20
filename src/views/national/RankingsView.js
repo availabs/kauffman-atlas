@@ -251,7 +251,6 @@ export class RankingsView extends React.Component<void, Props, void> {
                   onBucketChange={this._setActiveBucket} 
                   bucket={this.state.bucket}
                 />
-
                 <div style={{marginTop:"375px"}}>
                   <HoverBox 
                     metroId={this.state.clickMetro ? this.state.clickMetro : data[0].key} 

@@ -231,6 +231,33 @@ natObj['fluidity']['composite']['name'] = "National"
 natObj['combined']['composite']['name'] = "National";
 
 
+natObj['density']['newFirms']['raw']['color'] = "#000";
+natObj['density']['newFirms']['relative']['color'] = "#000"
+natObj['density']['shareEmp']['relative']['color'] = "#000"
+natObj['density']['shareEmpQWI_HighTech']['raw']['color'] = "#000"
+natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw']['color'] = "#000"
+natObj['density']['composite']['color'] = "#000"
+natObj['diversity']['opportunity']['color'] = "#000"
+natObj['diversity']['foreignborn']['raw']['color'] = "#000"
+natObj['diversity']['foreignborn']['relative']['color'] = "#000"
+natObj['diversity']['empLQVariance']['raw']['color'] = "#000"
+natObj['diversity']['empHHI']['raw']['color'] = "#000"
+natObj['diversity']['composite']['color'] = "#000"
+natObj['fluidity']['highGrowth']['raw']['color'] = "#000"
+natObj['fluidity']['highGrowth']['relative']['color'] = "#000"
+natObj['fluidity']['netMigration']['raw']['color'] = "#000"
+natObj['fluidity']['netMigration']['relative']['color'] = "#000"
+natObj['fluidity']['totalMigration']['raw']['color'] = "#000"
+natObj['fluidity']['totalMigration']['relative']['color'] = "#000"
+natObj['fluidity']['inflowMigration']['raw']['color'] = "#000"
+natObj['fluidity']['inflowMigration']['relative']['color'] = "#000"
+natObj['fluidity']['outflowMigration']['raw']['color'] = "#000"
+natObj['fluidity']['outflowMigration']['relative']['color'] = "#000"
+natObj['fluidity']['churn']['raw']['color'] = "#000"
+natObj['fluidity']['composite']['color'] = "#000"
+natObj['combined']['composite']['color'] = "#000";
+
+
 Object.keys(msaPop).forEach(msaId => {
 
   var curMsaObj = {};
@@ -397,13 +424,15 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['diversity']['foreignborn']['raw'] = metro;   
 
       metro.values.forEach(yearVal => {
-        if(!natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]){
-          natObj['diversity']['foreignborn']['raw']['values'].push({x:yearVal.x,y:yearVal.y,score:yearVal.score,count:1});
-        }
-        else{
-          natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["y"] += yearVal.y;
-          natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["score"] += yearVal.score;
-          natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["count"] += 1;
+        if(typeof yearVal.y == "number"){
+          if(!natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]){
+            natObj['diversity']['foreignborn']['raw']['values'].push({x:yearVal.x,y:yearVal.y,score:yearVal.score,count:1});
+          }
+          else{
+            natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["y"] += yearVal.y;
+            natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["score"] += yearVal.score;
+            natObj['diversity']['foreignborn']['raw']['values'].filter(d => d.x == yearVal.x)[0]["count"] += 1;
+          }      
         }
       })
     }
@@ -413,13 +442,15 @@ Object.keys(msaPop).forEach(msaId => {
       curMsaObj['diversity']['foreignborn']['relative'] = metro;      
 
       metro.values.forEach(yearVal => {
-        if(!natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]){
-          natObj['diversity']['foreignborn']['relative']['values'].push({x:yearVal.x,y:yearVal.y,score:yearVal.score,count:1});
-        }
-        else{
-          natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["y"] += yearVal.y;
-          natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["score"] += yearVal.score;
-          natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["count"] += 1;
+        if(typeof yearVal.y == "number"){
+          if(!natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]){
+            natObj['diversity']['foreignborn']['relative']['values'].push({x:yearVal.x,y:yearVal.y,score:yearVal.score,count:1});
+          }
+          else{
+            natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["y"] += yearVal.y;
+            natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["score"] += yearVal.score;
+            natObj['diversity']['foreignborn']['relative']['values'].filter(d => d.x == yearVal.x)[0]["count"] += 1;
+          }
         }
       })
     }
