@@ -158,6 +158,10 @@ module.exports = function () {
       return d3.extent(getValues(d).filter(line.defined()), function (d, i) { return yAccessor(d, i) })
     })))
 
+    if(yScale.domain()[0] == 0){
+      yScale.range([hght, 0])
+            .domain([extent[0] - extent[0] * 0.05, extent[1] + extent[0] * 0.05])
+    }
 
     if (showX) {
       if (transitionTime) {

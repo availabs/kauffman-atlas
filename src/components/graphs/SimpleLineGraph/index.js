@@ -97,7 +97,7 @@ class LineGraph extends React.Component {
 
       var tempHeight = this.props.options && this.props.options.height || 215
 
-tempHeight =  tempHeight - 30;
+      tempHeight =  tempHeight - 30;
 
       newScale.range([tempHeight,0])
       this.state.graph.yScale(newScale)
