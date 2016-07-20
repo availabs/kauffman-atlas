@@ -87,7 +87,11 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let combinedSelected = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let combinedGraph = this.formatData(scores.combined.composite ? scores.combined.composite.values : [],scores.combined.composite.scoreColor)
     let combinedNatGraph = this.formatData(natScores.combined.composite ? natScores.combined.composite.values : [],natScores.combined.composite.color)
-
+    let combinedGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.combined.composite.values, function(v) { return v.y }),d3.min(scores.combined.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.combined.composite.values, function(v) { return v.y }),d3.max(scores.combined.composite.values, function(v) { return v.y })])
+    combinedGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+    //console.log(combinedGraphYScale.domain());
 
     let densityComposite = scores.density.composite.values.filter(d => { return d.x === year })[0] || {}
     let densityCompositeSelected = scores.density.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null
@@ -207,7 +211,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           </div>
           <div className='col-xs-6'>
             <div>
-              <LineGraph hover={this.hover} data={combinedGraph} data2={combinedNatGraph} uniq='compGraph' options={{height: 100}} />
+              <LineGraph hover={this.hover} yScale={combinedGraphYScale} data={combinedGraph} data2={combinedNatGraph} uniq='compGraph' options={{height: 100}} />
               <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
               <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>

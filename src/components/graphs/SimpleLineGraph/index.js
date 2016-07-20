@@ -48,7 +48,14 @@ class LineGraph extends React.Component {
           this.state.graph2.mouseListener({ml:this._mouseListener})
       if(this.props.hover)
         this.state.graph2.mouseListener({ml:this.props.hover})
+      if(this.props.yScale){
+        var newScale = this.props.yScale;
 
+        var tempHeight = this.props.options && this.props.options.height || 215
+        tempHeight =  tempHeight - 30;
+        newScale.range([tempHeight,0])
+        this.state.graph2.yScale(newScale)
+      }
       d3.select('#lineGraph' + this.props.uniq)
         .append('svg')
         .call(this.state.graph2)
@@ -85,6 +92,16 @@ class LineGraph extends React.Component {
         this.state.graph.mouseListener({ml:this._mouseListener})
     if(this.props.hover)
       this.state.graph.mouseListener({ml:this.props.hover})
+    if(this.props.yScale){
+      var newScale = this.props.yScale;
+
+      var tempHeight = this.props.options && this.props.options.height || 215
+
+tempHeight =  tempHeight - 30;
+
+      newScale.range([tempHeight,0])
+      this.state.graph.yScale(newScale)
+    }
 
     if(this.props.data2){
       d3.select('#lineGraph' + this.props.uniq).select("svg")
