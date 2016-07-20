@@ -161,7 +161,6 @@ export class LineGraph extends React.Component<void, Props, void> {
   }
 
   _renderGraph (props) {
-    console.log("Render Graph");
     var percFormat = d3.format(".3%"),
         axisPercFormat = d3.format("%"),
         commaFormat = d3.format(","),
@@ -171,7 +170,6 @@ export class LineGraph extends React.Component<void, Props, void> {
     var filteredData = props.data.filter(metroArea => {
       var withinBounds = true;
 
-        console.log(scope.state.extent)
         metroArea.values.forEach(yearValue => {
           if(!(yearValue.y >= scope.state.extent[0]) || !(yearValue.y <= scope.state.extent[1])){
             withinBounds = false;
@@ -289,6 +287,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
     var yAxisBrush = d3.svg.axis()
         .scale(yBrush)
+        .outerTickSize([3])
         .orient("right");
 
     if(props.plot != 'rank'){
