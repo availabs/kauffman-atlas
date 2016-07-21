@@ -744,162 +744,262 @@ Object.keys(natObj['pop']).forEach(year => {
   natObj['pop'][year] = natObj['pop'][year]/natObj['count']
 })
 
-natObj['density']['newFirms']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['newFirms']['raw']['values'] = natObj['density']['newFirms']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedNewFirms['raw'].push(natObj['density']['newFirms']['raw'])
 
-natObj['density']['newFirms']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['newFirms']['relative']['values'] = natObj['density']['newFirms']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedNewFirms['relative'].push(natObj['density']['newFirms']['relative']);
 
-natObj['density']['shareEmp']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['shareEmp']['relative']['values'] = natObj['density']['shareEmp']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredShareEmpNewFirmsQWI_All.push(natObj['density']['shareEmp']['relative'])
 
-natObj['density']['shareEmpQWI_HighTech']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['shareEmpQWI_HighTech']['raw']['values'] = natObj['density']['shareEmpQWI_HighTech']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredShareEmpNewFirmsQWI_HighTech.push(natObj['density']['shareEmpQWI_HighTech']['raw'])
 
-natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw']['values'] = natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail.push(natObj['density']['shareEmpQWI_ExceptAccomAndRetail']['raw'])
 
-natObj['density']['composite']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['density']['composite']['values'] = natObj['density']['composite']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedDensityComposite.push(natObj['density']['composite'])
 
 
 
-natObj['diversity']['opportunity']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['opportunity']['values'] = natObj['diversity']['opportunity']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedOpportunity.push(natObj['diversity']['opportunity'])
 
-natObj['diversity']['foreignborn']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['foreignborn']['raw']['values'] = natObj['diversity']['foreignborn']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedForeignborn['raw'].push(natObj['diversity']['foreignborn']['raw'])
 
-natObj['diversity']['foreignborn']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['foreignborn']['relative']['values'] = natObj['diversity']['foreignborn']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedForeignborn['relative'].push(natObj['diversity']['foreignborn']['relative'])
 
-natObj['diversity']['empLQVariance']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['empLQVariance']['raw']['values'] = natObj['diversity']['empLQVariance']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredEmpVariance.push(natObj['diversity']['empLQVariance']['raw'])
 
-natObj['diversity']['empHHI']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['empHHI']['raw']['values'] = natObj['diversity']['empHHI']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredEmpHHI.push(natObj['diversity']['empHHI']['raw'])
 
-natObj['diversity']['composite']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['diversity']['composite']['values'] = natObj['diversity']['composite']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedDiversityComposite.push(natObj['diversity']['composite'])
 
 
 
 
-natObj['fluidity']['highGrowth']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['highGrowth']['raw']['values'] = natObj['fluidity']['highGrowth']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedInc5000['raw'].push(natObj['fluidity']['highGrowth']['raw']);
 
-natObj['fluidity']['highGrowth']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['highGrowth']['relative']['values'] = natObj['fluidity']['highGrowth']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedInc5000['relative'].push(natObj['fluidity']['highGrowth']['relative']);
 
-natObj['fluidity']['netMigration']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['netMigration']['raw']['values'] = natObj['fluidity']['netMigration']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedNetMigration['raw'].push(natObj['fluidity']['netMigration']['raw'])
 
-natObj['fluidity']['netMigration']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['netMigration']['relative']['values'] = natObj['fluidity']['netMigration']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedNetMigration['relative'].push(natObj['fluidity']['netMigration']['relative'])
 
-natObj['fluidity']['totalMigration']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['totalMigration']['raw']['values'] = natObj['fluidity']['totalMigration']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedTotalMigration['raw'].push(natObj['fluidity']['totalMigration']['raw'])
 
-natObj['fluidity']['totalMigration']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['totalMigration']['relative']['values'] = natObj['fluidity']['totalMigration']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedTotalMigration['relative'].push(natObj['fluidity']['totalMigration']['relative'])
 
-natObj['fluidity']['inflowMigration']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['inflowMigration']['raw']['values'] = natObj['fluidity']['inflowMigration']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedInflowMigration['raw'].push(natObj['fluidity']['inflowMigration']['raw'])
 
-natObj['fluidity']['inflowMigration']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['inflowMigration']['relative']['values'] = natObj['fluidity']['inflowMigration']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedInflowMigration['relative'].push(natObj['fluidity']['inflowMigration']['relative'])
 
-natObj['fluidity']['outflowMigration']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['outflowMigration']['raw']['values'] = natObj['fluidity']['outflowMigration']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedOutflowMigration['raw'].push(natObj['fluidity']['outflowMigration']['raw'])
 
-natObj['fluidity']['outflowMigration']['relative']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['outflowMigration']['relative']['values'] = natObj['fluidity']['outflowMigration']['relative']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedOutflowMigration['relative'].push(natObj['fluidity']['outflowMigration']['relative'])
 
-natObj['fluidity']['churn']['raw']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['churn']['raw']['values'] = natObj['fluidity']['churn']['raw']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 coloredAnnualChurn.push(natObj['fluidity']['churn']['raw'])
 
-natObj['fluidity']['composite']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['fluidity']['composite']['values'] = natObj['fluidity']['composite']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedFluidityComposite.push(natObj['fluidity']['composite'])
 
 
 
 
-natObj['combined']['composite']['values'].forEach(yearObj => {
-  yearObj["y"]=yearObj["y"]/yearObj["count"];
-  yearObj["score"]=yearObj["score"]/yearObj["count"];
-})
+natObj['combined']['composite']['values'] = natObj['combined']['composite']['values'].sort((a,b) => {
+    return a.x - b.x
+  }).map(yearObj => {
+    yearObj["y"]=yearObj["y"]/yearObj["count"];
+    yearObj["score"]=yearObj["score"]/yearObj["count"];
+
+    return yearObj
+  })
 processedCombinedComposite.push(natObj['combined']['composite'])
 
 

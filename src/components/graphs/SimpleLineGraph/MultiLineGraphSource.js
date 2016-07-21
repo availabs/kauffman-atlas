@@ -527,7 +527,6 @@ module.exports = function () {
       return yScale
     }
     yScale = scale
-    console.log(scale.range(),yScale.range())
     return yScale
   }
   // obj should be an object with key: value pairs
