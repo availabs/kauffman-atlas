@@ -19,6 +19,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
 
   _fetchData () {
+    if(!this.props.metroScores["national"]){
+      return this.props.loadMetroScores("national")
+    }
     if(!this.props.metroScores[this.props.metroId]){
       return this.props.loadMetroScores(this.props.metroId)
     }
@@ -36,7 +39,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     return this.props.metroScores[this.props.metroId]      
   }
 
-  formatData (data, color='#7d8faf') {
+  formatData (data, color) {
       let output = [{
       key:'',
       strokeWidth: 2,
@@ -56,7 +59,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         }
       })
     }]
-    if(output[0].values[0]){
+
+    if(output[0].values[0] && !color){
       let first = output[0].values[0].values.y
       let last = output[0].values[output[0].values.length-1].values.y
       let graphcolor = first > last ? '#db9a36' : '#7d8faf'
@@ -77,64 +81,90 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
     let year = 2013
     let scores = this.props.metroScores[this.props.metroId];
+    let natScores = this.props.metroScores["national"];
+
     let combined = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let combinedSelected = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
-    let combinedGraph = this.formatData(scores.combined.composite ? scores.combined.composite.values : [])
+    let combinedGraph = this.formatData(scores.combined.composite ? scores.combined.composite.values : [],scores.combined.composite.scoreColor)
+    let combinedNatGraph = this.formatData(natScores.combined.composite ? natScores.combined.composite.values : [],natScores.combined.composite.color)
+    let combinedGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.combined.composite.values, function(v) { return v.y }),d3.min(scores.combined.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.combined.composite.values, function(v) { return v.y }),d3.max(scores.combined.composite.values, function(v) { return v.y })])
+    combinedGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+    //console.log(combinedGraphYScale.domain());
 
     let densityComposite = scores.density.composite.values.filter(d => { return d.x === year })[0] || {}
     let densityCompositeSelected = scores.density.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let densityCompositeGraph = this.formatData(scores.density.composite.values)
+    let densityCompositeGraph = this.formatData(scores.density.composite.values,scores.density.composite.scoreColor)
+    let densityNatCompositeGraph = this.formatData(natScores.density.composite.values,natScores.density.composite.color)
+
+
     let densityNewFirms = scores.density.newFirms.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityNewFirmsSelected = scores.density.newFirms.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let densityNewFrirmsGraph = this.formatData(scores.density.newFirms.relative.values)
+    let densityNewFirmsGraph = this.formatData(scores.density.newFirms.relative.values,scores.density.newFirms.relative.scoreColor)
+    let densityNatNewFirmsGraph = this.formatData(natScores.density.newFirms.relative.values,natScores.density.newFirms.relative.color)    
+
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let densityShareEmpGraph = this.formatData(scores.density.shareEmp.relative.values)
+    let densityShareEmpGraph = this.formatData(scores.density.shareEmp.relative.values,scores.density.shareEmp.relative.scoreColor)
+    let densityNatShareEmpGraph = this.formatData(natScores.density.shareEmp.relative.values,natScores.density.shareEmp.relative.color)
+
     let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values)
+    let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values,scores.density.shareEmpQWI_HighTech.raw.scoreColor)
+    let densityNatHighTechGraph = this.formatData(natScores.density.shareEmpQWI_HighTech.raw.values,natScores.density.shareEmpQWI_HighTech.raw.color)
+
     let densityExceptAccom = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityExceptAccomSelected = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values)
-
-
+    let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.scoreColor)
+    let densityNatExceptAccomGraph = this.formatData(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.color)
 
 
     let fluidityComposite = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityCompositeSelected = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
-    let fluidityCompositeGraph = this.formatData(scores.fluidity.composite ? scores.fluidity.composite.values : [])
+    let fluidityCompositeGraph = this.formatData(scores.fluidity.composite ? scores.fluidity.composite.values : [],scores.fluidity.composite.scoreColor)
+    let fluidityNatCompositeGraph = this.formatData(natScores.fluidity.composite ? natScores.fluidity.composite.values : [],natScores.fluidity.composite.color)
+
     let fluidityHighRaw = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighRawSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
-    let fluidityHighRawGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [])
+    let fluidityHighRawGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.raw.scoreColor)
+    let fluidityNatHighRawGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.raw.color)    
+
     let fluidityHighGrowth = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighGrowthSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
-    let fluidityHighGrowthGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [])
+    let fluidityHighGrowthGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.relative.scoreColor)
+    let fluidityNatHighGrowthGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.relative.color)    
+
     let fluidityNetMigration = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityNetMigrationSelected = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let fluidityNetMigrationGraph = this.formatData(scores.fluidity.netMigration.relative.values)
+    let fluidityNetMigrationGraph = this.formatData(scores.fluidity.netMigration.relative.values,scores.fluidity.netMigration.relative.scoreColor)
+    let fluidityNatNetMigrationGraph = this.formatData(natScores.fluidity.netMigration.relative.values,natScores.fluidity.netMigration.relative.color)
+    
     let fluidityTotalMigration = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityTotalMigrationSelected = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values)
+    let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values,scores.fluidity.totalMigration.relative.scoreColor)
+    let fluidityNatTotalMigrationGraph = this.formatData(natScores.fluidity.totalMigration.relative.values,natScores.fluidity.totalMigration.relative.color)
     
 
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
-    let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [])
+    let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [],scores.diversity.composite.scoreColor)
+    let diversityNatCompositeGraph = this.formatData(natScores.diversity.composite ? natScores.diversity.composite.values : [],natScores.diversity.composite.color)
+
     let diversityForeignBorn =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x === year })[0] || {}
     let diversityForeignBornSelected =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x=== this.state.displayYear })[0] || null
-    let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [])
+    let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [],scores.diversity.foreignborn.relative.scoreColor)
+    let diversityNatForeignBornGraph = this.formatData(natScores.diversity.foreignborn ? natScores.diversity.foreignborn.relative.values : [],natScores.diversity.foreignborn.relative.color)
     
     let diversityEmpVariance = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values)
-    
+    let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values,scores.diversity.empLQVariance.raw.scoreColor)
+    let diversityNatEmpVarianceGraph = this.formatData(natScores.diversity.empLQVariance.raw.values,natScores.diversity.empLQVariance.raw.color)    
+
     let diversityEmpHHI = scores.diversity.empHHI.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpHHISelected = scores.diversity.empHHI.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
-    let diversityEmpHHIGraph = this.formatData(scores.diversity.empHHI.raw.values)
-    
-
-
-
+    let diversityEmpHHIGraph = this.formatData(scores.diversity.empHHI.raw.values,scores.diversity.empHHI.raw.scoreColor)
+    let diversityNatEmpHHIGraph = this.formatData(natScores.diversity.empHHI.raw.values,natScores.diversity.empHHI.raw.color)    
 
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
@@ -181,7 +211,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           </div>
           <div className='col-xs-6'>
             <div>
-              <LineGraph hover={this.hover} data={combinedGraph} uniq='compGraph' options={{height: 100}} />
+              <LineGraph hover={this.hover} yScale={combinedGraphYScale} data={combinedGraph} data2={combinedNatGraph} uniq='compGraph' options={{height: 100}} />
               <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
               <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
@@ -216,7 +246,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
               <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
             </div>
@@ -248,9 +278,9 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityNewFrirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityNewFrirmsGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityNewFrirmsGraph[0].values[densityNewFrirmsGraph[0].values.length-1].key}</span>
+              <LineGraph hover={this.hover} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
+              <span className='pull-left'>{densityNewFirmsGraph[0].values[0].key}</span>
+              <span className='pull-right'>{densityNewFirmsGraph[0].values[densityNewFirmsGraph[0].values.length-1].key}</span>
             </div>
           </div>
           <div className='col-xs-2' style={graphBox}>
@@ -284,7 +314,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
               <span className='pull-left'>{densityShareEmpGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
             </div>
@@ -320,7 +350,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
               <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
             </div>
@@ -354,7 +384,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
               <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
             </div>
@@ -389,7 +419,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityCompositeGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityCompositeGraph[0].values[fluidityCompositeGraph[0].values.length-1].key}</span>
             </div>
@@ -409,7 +439,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
             </div>           
@@ -441,7 +471,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
             </div>
@@ -478,7 +508,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityNetMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityNetMigrationGraph[0].values[fluidityNetMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -515,7 +545,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityTotalMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityTotalMigrationGraph[0].values[fluidityTotalMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -550,7 +580,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[0].key : ''}</span>
               <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
             </div>
@@ -586,7 +616,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityForeignBornGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityForeignBornGraph[0].values[diversityForeignBornGraph[0].values.length-1].key}</span>
             </div>
@@ -622,7 +652,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
             </div>
@@ -654,7 +684,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpHHIGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpHHIGraph[0].values[diversityEmpHHIGraph[0].values.length-1].key}</span>
             </div>

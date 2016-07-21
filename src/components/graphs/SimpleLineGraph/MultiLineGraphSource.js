@@ -158,8 +158,10 @@ module.exports = function () {
       return d3.extent(getValues(d).filter(line.defined()), function (d, i) { return yAccessor(d, i) })
     })))
 
-    yScale.range([hght, 0])
-      .domain([extent[0] - extent[0] * 0.05, extent[1] + extent[0] * 0.05])
+    if(yScale.domain()[0] == 0){
+      yScale.range([hght, 0])
+            .domain([extent[0] - extent[0] * 0.05, extent[1] + extent[0] * 0.05])
+    }
 
     if (showX) {
       if (transitionTime) {
@@ -513,10 +515,19 @@ module.exports = function () {
     click = c
     return graph
   }
-  graph.xScale = function () {
+  graph.xScale = function (scale) {
+    if (!arguments.length) {
+      return xScale
+    }
+    xScale = scale
     return xScale
   }
-  graph.yScale = function () {
+  graph.yScale = function (scale) {
+    if (!arguments.length) {
+      return yScale
+    }
+    yScale = scale
+    console.log(scale.range(),yScale.range())
     return yScale
   }
   // obj should be an object with key: value pairs
