@@ -37,7 +37,6 @@ export class HomeView extends React.Component<void, Props, void> {
     
     return (
       <div className='pull-left'>
-        <small>Entrepreneurial Ecosystem Index</small><br />
         <div className="btn-group" role="group">
           {bucketDisplay}
         </div>

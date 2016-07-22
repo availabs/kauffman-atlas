@@ -47,22 +47,30 @@ export class SubGraphButtons extends React.Component<void, Props, void> {
       var components = ['composite','high growth firms','net migration','total migration','annual churn']      
     }
 
+    if(this.props.pull && this.props.pull == "right"){
+      var className = "pull-right"
+    }
+    else{
+      var className = "pull-left"
+    }
+
     components.forEach((v) => {
         bucketDisplay.push (
           <a 
             id={v}
             onClick={this._bucketClick} 
             type="button" 
-            className={"btn btn-default " + (v == this.props.metric ? classes["active"] : '')}
+            className={"btn btn-default " + "pull-left" + " " + (v == this.props.metric ? classes["active"] : '')}
           >
             { names[v] }
           </a>
         )   
     })
     
+
     return (
-      <div className='pull-left'>
-        <div className="btn-group" role="group">
+      <div className="pull-right">
+        <div className={"btn-group " + className} role="group">
           {bucketDisplay}
         </div>
       </div>

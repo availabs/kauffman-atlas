@@ -4,7 +4,7 @@ import classes from 'styles/sitewide/index.scss'
 import { browserHistory } from 'react-router'
 
 
-export default class Atlas extends React.Component {
+export default class DataSources extends React.Component {
   render () {
     return (
       <div>
