@@ -39,6 +39,30 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     return this.props.metroScores[this.props.metroId]      
   }
 
+  _trimYears(years,cities){
+
+    var filteredCities = cities.map(city => {
+      var newValues = []
+
+      city.values.forEach(yearValue => {
+        if(yearValue.x >= years[0] && yearValue.x <= years[1]){
+          newValues.push(yearValue);
+        }
+      })
+      var newCity = {
+        color:city.color,
+        key:city.key,
+        name:city.name,
+        values:newValues
+      }
+      return newCity;
+    })
+
+
+    return filteredCities;
+  }
+
+
   formatData (data, color) {
       let output = [{
       key:'',
