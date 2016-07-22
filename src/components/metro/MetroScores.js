@@ -6,7 +6,7 @@ import classes from 'styles/sitewide/index.scss'
 import LineGraph from 'components/graphs/SimpleLineGraph'
 import ReactTooltip from 'react-tooltip'
 import CategoryText from 'components/misc/categoryText'
-
+import d3 from 'd3'
 
 export class MetroScoresOverview extends React.Component<void, Props, void> {
   constructor () {
@@ -15,6 +15,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       displayYear:0
     }
     this.hover = this.hover.bind(this)
+    this.alignYears = this.alignYears.bind(this)
    }
 
 
@@ -39,27 +40,22 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     return this.props.metroScores[this.props.metroId]      
   }
 
-  _trimYears(years,cities){
+  _trimYears(years,city){
+    var newValues = []
 
-    var filteredCities = cities.map(city => {
-      var newValues = []
-
-      city.values.forEach(yearValue => {
-        if(yearValue.x >= years[0] && yearValue.x <= years[1]){
-          newValues.push(yearValue);
-        }
-      })
-      var newCity = {
-        color:city.color,
-        key:city.key,
-        name:city.name,
-        values:newValues
+    city.values.forEach(yearValue => {
+      if(yearValue.x >= years[0] && yearValue.x <= years[1]){
+        newValues.push(yearValue);
       }
-      return newCity;
     })
-
-
-    return filteredCities;
+    var newCity = {
+      color:city.color,
+      scoreColor:city.scoreColor,
+      key:city.key,
+      name:city.name,
+      values:newValues
+    }
+    return newCity;
   }
 
 
@@ -91,8 +87,79 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       output[0].color = graphcolor
     }
     
-    
     return output;
+  }
+
+  alignYears(returnType){
+    var metroScores = this.props.metroScores[this.props.metroId],
+        natScores = this.props.metroScores["national"];
+
+    var alignedMetro = {},
+        alignedNat = {}
+
+    Object.keys(metroScores).forEach(metric => {
+      if(typeof metroScores[metric] == "object"){
+        if(!alignedMetro[metric]){
+          alignedMetro[metric] = {}
+        }
+        if(!alignedNat[metric]){
+          alignedNat[metric] = {}
+        }
+
+        Object.keys(metroScores[metric]).forEach(subMetric =>{
+          if(typeof metroScores[metric][subMetric] == "object"){
+            if(!alignedMetro[metric][subMetric]){
+              alignedMetro[metric][subMetric] = {}
+            }
+            if(!alignedNat[metric][subMetric]){
+              alignedNat[metric][subMetric] = {}
+            }
+
+            if(Object.keys(metroScores[metric][subMetric]).length <= 2){
+              Object.keys(metroScores[metric][subMetric]).forEach(dataset => {
+                if(!alignedMetro[metric][subMetric][dataset]){
+                  alignedMetro[metric][subMetric][dataset] = {}
+                }
+                if(!alignedNat[metric][subMetric][dataset]){
+                  alignedNat[metric][subMetric][dataset] = {}
+                }
+
+                var metroYearRange = ([d3.min(metroScores[metric][subMetric][dataset]['values'],function(c) {return c.x}),
+                                    d3.max(metroScores[metric][subMetric][dataset]['values'],function(c) {return c.x})])
+                var natYearRange = ([d3.min(natScores[metric][subMetric][dataset]['values'],function(c) {return c.x}),
+                                    d3.max(natScores[metric][subMetric][dataset]['values'],function(c) {return c.x})])
+
+                var minYear = d3.max([metroYearRange[0],natYearRange[0]])
+                var maxYear = d3.min([metroYearRange[1],natYearRange[1]])
+
+                alignedMetro[metric][subMetric][dataset] = this._trimYears(([minYear,maxYear]),metroScores[metric][subMetric][dataset]);
+                alignedNat[metric][subMetric][dataset] = this._trimYears(([minYear,maxYear]),natScores[metric][subMetric][dataset]);
+              })             
+            }
+            else{
+              var metroYearRange = ([d3.min(metroScores[metric][subMetric]['values'],function(c) {return c.x}),
+                                  d3.max(metroScores[metric][subMetric]['values'],function(c) {return c.x})])
+              var natYearRange = ([d3.min(natScores[metric][subMetric]['values'],function(c) {return c.x}),
+                                  d3.max(natScores[metric][subMetric]['values'],function(c) {return c.x})])
+
+              var minYear = d3.max([metroYearRange[0],natYearRange[0]])
+              var maxYear = d3.min([metroYearRange[1],natYearRange[1]])
+
+              alignedMetro[metric][subMetric] = this._trimYears(([minYear,maxYear]),metroScores[metric][subMetric]);
+              alignedNat[metric][subMetric] = this._trimYears(([minYear,maxYear]),natScores[metric][subMetric]);
+            }        
+          }
+        })
+      }
+    })
+
+
+    if(returnType == "metro"){
+      return alignedMetro;
+    }
+    else{
+      return alignedNat;
+    }
   }
 
   hover(d){
@@ -102,10 +169,10 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
   render () {
     if (!this.hasData()) return <span />
     //console.log('got data', this.props.metroScores[this.props.metroId])
-
+    //console.log(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw)
     let year = 2013
-    let scores = this.props.metroScores[this.props.metroId];
-    let natScores = this.props.metroScores["national"];
+    let scores = this.alignYears("metro");
+    let natScores = this.alignYears("national");
 
     let combined = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let combinedSelected = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
@@ -116,7 +183,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.combined.composite.values, function(v) { return v.y }),d3.max(scores.combined.composite.values, function(v) { return v.y })])
     combinedGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
-
     let densityComposite = scores.density.composite.values.filter(d => { return d.x === year })[0] || {}
     let densityCompositeSelected = scores.density.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityCompositeGraph = this.formatData(scores.density.composite.values,scores.density.composite.scoreColor)
@@ -126,8 +192,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.density.composite.values, function(v) { return v.y }),d3.max(scores.density.composite.values, function(v) { return v.y })])
     densityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
-
-
     let densityNewFirms = scores.density.newFirms.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityNewFirmsSelected = scores.density.newFirms.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityNewFirmsGraph = this.formatData(scores.density.newFirms.relative.values,scores.density.newFirms.relative.scoreColor)
@@ -136,9 +200,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainLow = d3.min([d3.min(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.min(scores.density.newFirms.relative.values, function(v) { return v.y })])
     var domainHigh = d3.max([d3.max(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.max(scores.density.newFirms.relative.values, function(v) { return v.y })])
     densityNewFirmsGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
-    console.log("national",natScores.density.newFirms.relative.values)
-    console.log("local",scores.density.newFirms.relative.values)
-
 
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
@@ -149,63 +210,107 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.density.shareEmp.relative.values, function(v) { return v.y }),d3.max(scores.density.shareEmp.relative.values, function(v) { return v.y })])
     densityShareEmpGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
-
     let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values,scores.density.shareEmpQWI_HighTech.raw.scoreColor)
     let densityNatHighTechGraph = this.formatData(natScores.density.shareEmpQWI_HighTech.raw.values,natScores.density.shareEmpQWI_HighTech.raw.color)
+    let densityHighTechGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y }),d3.min(scores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y }),d3.max(scores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y })])
+    densityHighTechGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let densityExceptAccom = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityExceptAccomSelected = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.scoreColor)
     let densityNatExceptAccomGraph = this.formatData(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.color)
+    let densityExceptAccomGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y }),d3.min(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y }),d3.max(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y })])
+    densityExceptAccomGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
 
     let fluidityComposite = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityCompositeSelected = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityCompositeGraph = this.formatData(scores.fluidity.composite ? scores.fluidity.composite.values : [],scores.fluidity.composite.scoreColor)
     let fluidityNatCompositeGraph = this.formatData(natScores.fluidity.composite ? natScores.fluidity.composite.values : [],natScores.fluidity.composite.color)
+    let fluidityCompositeGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.composite.values, function(v) { return v.y }),d3.min(scores.fluidity.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.composite.values, function(v) { return v.y }),d3.max(scores.fluidity.composite.values, function(v) { return v.y })])
+    fluidityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityHighRaw = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighRawSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityHighRawGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.raw.scoreColor)
     let fluidityNatHighRawGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.raw.color)    
+    let fluidityHighRawGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.highGrowth.raw.values, function(v) { return v.y }),d3.min(scores.fluidity.highGrowth.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.highGrowth.raw.values, function(v) { return v.y }),d3.max(scores.fluidity.highGrowth.raw.values, function(v) { return v.y })])
+    fluidityHighRawGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityHighGrowth = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighGrowthSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityHighGrowthGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.relative.scoreColor)
     let fluidityNatHighGrowthGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.relative.color)    
+    let fluidityHighGrowthGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.highGrowth.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.highGrowth.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.highGrowth.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.highGrowth.relative.values, function(v) { return v.y })])
+    fluidityHighGrowthGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityNetMigration = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityNetMigrationSelected = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityNetMigrationGraph = this.formatData(scores.fluidity.netMigration.relative.values,scores.fluidity.netMigration.relative.scoreColor)
     let fluidityNatNetMigrationGraph = this.formatData(natScores.fluidity.netMigration.relative.values,natScores.fluidity.netMigration.relative.color)
-    
+    let fluidityNetMigrationGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.netMigration.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.netMigration.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.netMigration.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.netMigration.relative.values, function(v) { return v.y })])
+    fluidityNetMigrationGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
     let fluidityTotalMigration = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityTotalMigrationSelected = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values,scores.fluidity.totalMigration.relative.scoreColor)
     let fluidityNatTotalMigrationGraph = this.formatData(natScores.fluidity.totalMigration.relative.values,natScores.fluidity.totalMigration.relative.color)
+    let fluidityTotalMigrationGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.totalMigration.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.totalMigration.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.totalMigration.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.totalMigration.relative.values, function(v) { return v.y })])
+    fluidityTotalMigrationGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
     
-
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [],scores.diversity.composite.scoreColor)
     let diversityNatCompositeGraph = this.formatData(natScores.diversity.composite ? natScores.diversity.composite.values : [],natScores.diversity.composite.color)
+    let diversityCompositeGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.composite.values, function(v) { return v.y }),d3.min(scores.diversity.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.composite.values, function(v) { return v.y }),d3.max(scores.diversity.composite.values, function(v) { return v.y })])
+    diversityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let diversityForeignBorn =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x === year })[0] || {}
     let diversityForeignBornSelected =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x=== this.state.displayYear })[0] || null
     let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [],scores.diversity.foreignborn.relative.scoreColor)
     let diversityNatForeignBornGraph = this.formatData(natScores.diversity.foreignborn ? natScores.diversity.foreignborn.relative.values : [],natScores.diversity.foreignborn.relative.color)
-    
+    let diversityForeignBornGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.foreignborn.relative.values, function(v) { return v.y }),d3.min(scores.diversity.foreignborn.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.foreignborn.relative.values, function(v) { return v.y }),d3.max(scores.diversity.foreignborn.relative.values, function(v) { return v.y })])
+    diversityForeignBornGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
     let diversityEmpVariance = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values,scores.diversity.empLQVariance.raw.scoreColor)
     let diversityNatEmpVarianceGraph = this.formatData(natScores.diversity.empLQVariance.raw.values,natScores.diversity.empLQVariance.raw.color)    
+    let diversityEmpVarianceGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.min(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.max(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
+    diversityEmpVarianceGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
 
     let diversityEmpHHI = scores.diversity.empHHI.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpHHISelected = scores.diversity.empHHI.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let diversityEmpHHIGraph = this.formatData(scores.diversity.empHHI.raw.values,scores.diversity.empHHI.raw.scoreColor)
-    let diversityNatEmpHHIGraph = this.formatData(natScores.diversity.empHHI.raw.values,natScores.diversity.empHHI.raw.color)    
+    let diversityNatEmpHHIGraph = this.formatData(natScores.diversity.empHHI.raw.values,natScores.diversity.empHHI.raw.color) 
+    let diversityEmpHHIGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.empHHI.raw.values, function(v) { return v.y }),d3.min(scores.diversity.empHHI.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.empHHI.raw.values, function(v) { return v.y }),d3.max(scores.diversity.empHHI.raw.values, function(v) { return v.y })])
+    diversityEmpHHIGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
 
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
@@ -256,6 +361,10 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
               <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
+          </div>
+          <div className='col-xs-2' style={{textAlign:"right",marginTop:"10px"}}>
+            <div className="row" style={{marginBottom:"15px"}}><small>Colored lines represents current metro over time</small></div>
+            <div className="row"><small>Black lines represents national average over time</small></div>
           </div>
         </div>
         <div className='row' style={rowStyle}>
@@ -391,7 +500,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
               <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
             </div>
@@ -425,7 +534,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
               <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
             </div>
@@ -460,7 +569,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityCompositeGraphYScale} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityCompositeGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityCompositeGraph[0].values[fluidityCompositeGraph[0].values.length-1].key}</span>
             </div>
@@ -480,7 +589,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover}  yScale={fluidityHighGrowthGraphYScale} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
             </div>           
@@ -512,7 +621,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityHighRawGraphYScale} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
             </div>
@@ -549,7 +658,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityNetMigrationGraphYScale} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityNetMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityNetMigrationGraph[0].values[fluidityNetMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -586,7 +695,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityTotalMigrationGraphYScale} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityTotalMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityTotalMigrationGraph[0].values[fluidityTotalMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -621,7 +730,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityCompositeGraphYScale} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[0].key : ''}</span>
               <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
             </div>
@@ -657,7 +766,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityForeignBornGraphYScale} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityForeignBornGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityForeignBornGraph[0].values[diversityForeignBornGraph[0].values.length-1].key}</span>
             </div>
@@ -693,7 +802,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpVarianceGraphYScale} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
             </div>
@@ -725,7 +834,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpHHIGraphYScale} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpHHIGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpHHIGraph[0].values[diversityEmpHHIGraph[0].values.length-1].key}</span>
             </div>
