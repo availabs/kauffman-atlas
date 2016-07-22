@@ -1,13 +1,100 @@
 /* @flow */
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 import classes from 'styles/sitewide/index.scss'
 import { browserHistory } from 'react-router'
+import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
+import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
+import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
+import { loadCombinedComposite } from 'redux/modules/combinedData'
+import ComponentButtons from 'components/ranks/ComponentButtons'
+import SubGraphButtons from 'components/ranks/SubGraphButtons'
+import LineGraph from 'components/graphs/LineGraph.js'
 
 
-export default class About extends React.Component {
+
+export default class Research extends React.Component {
+
+  constructor () {
+    super()
+    this.state = {
+      activeComponent:'combined',
+      bucket:'all',
+      metric:'composite'
+    }
+
+    this._setActiveComponent = this._setActiveComponent.bind(this)
+    this._setMetric = this._setMetric.bind(this)
+    this.onMouseover = this.onMouseover.bind(this)
+   }
+
+  _setActiveComponent (type) {
+    if(type == "qwiDensity"){
+      this.setState({activeComponent:type,metric:"shareEmpAll"})      
+    }else{
+      this.setState({activeComponent:type,metric:"composite"})      
+    }
+  }
+
+  _setMetric (type) {
+    this.setState({metric:type})
+  }
+
+  onMouseover(feature){
+    let curFeature = feature.city ? feature.city.key : feature.id  
+  }
+
+  _renderMapGraph(){
+    if(!this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
+      this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
+      return <span />
+    }
+    else{
+      return (
+        <LineGraph  
+          activeColor="ranks"  
+          onMouseover={this.onMouseover}
+          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+          plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+          graph={this.state.activeComponent + "composite"}
+        />
+      )      
+    }
+
+
+
+
+  }
+
+
+
   render () {
     return (
       <div className='container-fluid'>
+        <div className="row">
+          <div className={'col-xs-12'} style={{padding:"10px"}}>
+            <div style={{width:"35%",float:"left"}}>
+              <ComponentButtons
+                onComponentChange={this._setActiveComponent} 
+                activeComponent={this.state.activeComponent}
+              />
+            </div>
+            <div style={{width:"65%",float:"right"}}>
+              <SubGraphButtons
+                pull="right"
+                metric={this.state.metric}
+                onComponentChange={this._setMetric} 
+                activeComponent={this.state.activeComponent}
+              />
+            </div>
+          </div>   
+        </div>
+        <div className='row'>
+            <div id="mapDiv" className={'col-xs-12 '}>
+              {this._renderMapGraph()}
+            </div>
+        </div>
+
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
             <h4>About This Project</h4>
@@ -58,3 +145,45 @@ The Entrepreneurial Ecosystem Atlas advances the cause of Entrepreneurial Ecosys
 }
 
 
+
+
+
+const mapStateToProps = (state) => ({
+  densitycomposite:state.densityData.compositeData,    
+  densitynewfirms:state.densityData.newValuesData,
+  densityshareofemploymentinnewfirms:state.densityData.shareData,
+  densityshareEmpNoAccRet:state.densityData.shareEmpNoAccRet,
+  densityshareEmpHighTech:state.densityData.shareEmpHighTech,
+  fluiditycomposite:state.fluidityData.compositeData,   
+  fluidityhighgrowthfirms:state.fluidityData.inc5000,
+  fluiditynetmigration:state.fluidityData.irsNet,
+  fluiditytotalmigration:state.fluidityData.totalMigrationFlow,
+  fluidityannualchurn:state.fluidityData.annualChurn,
+  diversitycomposite : state.diversityData.diversitycomposite,    
+  diversityincomebasedonchildhood:state.diversityData.opportunity,
+  diversitypercentageofforeignbornpopulation:state.diversityData.foreignborn,
+  diversityemploymentlocationquotientvariance:state.diversityData.empVariance,
+  diversityemploymenthhi:state.diversityData.empHHI,
+  combinedcomposite : state.combinedData.combinedcomposite,
+  metros : state.metros,
+})
+
+export default connect((mapStateToProps), {
+  getdensitycomposite: () => loadDensityComposite(),
+  getdensitynewfirms: () => loadNewValues(),
+  getdensityshareofemploymentinnewfirms: () => loadShare(),  
+  getdensityshareEmpNoAccRet: () => loadShareEmpNoAccRet(),
+  getdensityshareEmpHighTech: () => loadShareEmpHighTech(),     
+  getfluiditycomposite: () => loadFluidityComposite(),    
+  getfluidityhighgrowthfirms: () => loadInc5000Data(),
+  getfluiditynetmigration: () => loadNetMigrationIrs(),
+  getfluiditytotalmigration: () => loadTotalMigration(),
+  getfluidityannualchurn:() => loadAnnualChurn(),
+  getdiversitycomposite: () => loadDiversityComposite(),    
+  getdiversityincomebasedonchildhood: () => loadOpportunityData(),
+  getdiversitypercentageofforeignbornpopulation: () => loadForeignBornData(),
+  getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
+  getdiversityemploymenthhi: () => loadEmpHHIData(),
+  getcombinedcomposite: () => loadCombinedComposite(),
+  changeHomeState: (state) => changeHomeState(state)
+})(Research)

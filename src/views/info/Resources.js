@@ -1,5 +1,6 @@
 /* @flow */
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 import classes from 'styles/sitewide/index.scss'
 import { Link } from 'react-router'
 import {StickyContainer, Sticky} from 'react-sticky'
@@ -9,7 +10,8 @@ import Atlas from './Atlas'
 import Research from './Research'
 import styles from  './Resources.scss'
 
-export default class Apis extends React.Component {
+
+export default class Resources extends React.Component {
   
   renderContent () {
     var page = this.props.params['resource']
@@ -40,6 +42,11 @@ export default class Apis extends React.Component {
       //color
       
     }
+
+
+
+
+
 
     var color = '#5d5d5d'
     return (
@@ -103,5 +110,3 @@ export default class Apis extends React.Component {
     )
   }
 }
-
-

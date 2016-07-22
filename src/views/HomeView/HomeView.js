@@ -70,7 +70,6 @@ export class HomeView extends React.Component<void, Props, void> {
     }else{
       this.props.changeHomeState({activeComponent:type,metric:"composite"})      
     }
-
   }
 
   _setMapGraph (type) {
@@ -80,7 +79,6 @@ export class HomeView extends React.Component<void, Props, void> {
     else{
       this.props.changeHomeState({activeMapGraph:type})      
     }
-
   }
 
   _setMetric (type) {
@@ -216,10 +214,13 @@ export class HomeView extends React.Component<void, Props, void> {
             </div>
           </div>
           <div className='row' style={{padding:15}} >
-            <ComponentButtons
-              onComponentChange={this._setActiveComponent} 
-              activeComponent={this.props.homeState.activeComponent}
-            />
+            <div>
+              <small>Entrepreneurial Ecosystem Index</small><br />
+              <ComponentButtons
+                onComponentChange={this._setActiveComponent} 
+                activeComponent={this.props.homeState.activeComponent}
+              />
+            </div>
             <PopBuckets 
               popScale={range} 
               onBucketChange={this._setActiveBucket} 

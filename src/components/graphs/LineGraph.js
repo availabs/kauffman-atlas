@@ -50,35 +50,36 @@ export class LineGraph extends React.Component<void, Props, void> {
         city.color = metroArea.scoreColor;
       }
 
-      city.values = metroArea.values.map(yearValue => {
-        return {x:yearValue.x, y:yearValue.y, city:city, rank:yearValue.rank}
-      }).filter(yearValue => {
-        if(props.graph == "inc"){
-          if(yearValue.y <= 0){
-            return false;
-          }
-          else{
-            return true;
-          }  
-        }
-        if(props.graph == "foreignBorn"){
-          if(yearValue.y < 0){
-            return false;
-          }
-          else{
-            return true;
-          }  
-        }
-        else{
-          if(yearValue.y == null){
-            return false;
-          }
-          else{
-            return true;
-          }          
-        }
 
-        })
+        city.values = metroArea.values.map(yearValue => {
+          return {x:yearValue.x, y:yearValue.y, city:city, rank:yearValue.rank}
+        }).filter(yearValue => {
+          if(props.graph == "inc"){
+            if(yearValue.y <= 0){
+              return false;
+            }
+            else{
+              return true;
+            }  
+          }
+          if(props.graph == "foreignBorn"){
+            if(yearValue.y < 0){
+              return false;
+            }
+            else{
+              return true;
+            }  
+          }
+          else{
+            if(yearValue.y == null){
+              return false;
+            }
+            else{
+              return true;
+            }          
+          }
+
+          })        
 
         return city;
       })
@@ -103,7 +104,13 @@ export class LineGraph extends React.Component<void, Props, void> {
     var newProps = Object.assign({},this.props);
     newProps.data = newData;
 
-    var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+    if(this.props.plot == "value"){
+      var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
+    }
+    else{
+      var extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
+    }
+    
     this.setState({extent:extent})    
   }
 
@@ -123,8 +130,12 @@ export class LineGraph extends React.Component<void, Props, void> {
       var newProps = Object.assign({},nextProps);
       newProps.data = newData;
 
-      var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
-      this.setState({extent:extent})
+      if(this.props.plot == "value"){
+        var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
+      }
+      else{
+        var extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
+      }
 
       this._renderGraph(newProps);
     }
@@ -171,13 +182,24 @@ export class LineGraph extends React.Component<void, Props, void> {
       var withinBounds = true;
 
         metroArea.values.forEach(yearValue => {
-          if(!(yearValue.y >= scope.state.extent[0]) || !(yearValue.y <= scope.state.extent[1])){
-            withinBounds = false;
+          if(props.plot == "rank"){
+            if(!(yearValue.rank >= scope.state.extent[0]) || !(yearValue.rank <= scope.state.extent[1])){
+              withinBounds = false;
+            }
           }
+          else{
+            if(!(yearValue.y >= scope.state.extent[0]) || !(yearValue.y <= scope.state.extent[1])){
+              withinBounds = false;
+            }            
+          }
+
         })        
 
       return withinBounds;
     })
+
+
+
 
     var margin = {top: 10, right: 10, bottom: 10, left: 10}
     let width = document.getElementById("mapDiv").offsetWidth
@@ -193,15 +215,14 @@ export class LineGraph extends React.Component<void, Props, void> {
             .clipExtent([[-margin.left, -margin.top], [paddedWidth + margin.right, paddedHeight + margin.bottom]])
 
         var y = d3.scale.linear()
-            .range([paddedHeight,0]);
+            .range([0,paddedHeight]);
 
-        //y.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
         y.domain(scope.state.extent);
 
         var yBrush = d3.scale.linear()
-            .range([paddedHeight,0]);
+            .range([0,paddedHeight]);
 
-        yBrush.domain([d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.rank }); }),0]);
+        yBrush.domain([0,d3.max(props.data, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]);
 
 
         var x = d3.scale.ordinal()
@@ -246,8 +267,7 @@ export class LineGraph extends React.Component<void, Props, void> {
 
         var y = d3.scale.linear()
         .range([paddedHeight,0]);
-
-        //y.domain([d3.min(filteredData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(filteredData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]);
+        
         y.domain(scope.state.extent);
 
         var yBrush = d3.scale.linear()
@@ -493,8 +513,14 @@ function brushmove() {
 }
 
 function brushend() {
-                var s = brush.extent();
-                scope.setState({extent:[s[0],s[1]]})
+    var s = brush.extent();
+    if(scope.state.plot == "rank"){
+        brush.extent([Math.round(s[1]),Math.round(s[0])])(d3.select(this));
+        scope.setState({extent:[Math.round(s[0]),Math.round(s[1])]})                   
+    }
+    else{
+        scope.setState({extent:[s[0],s[1]]})              
+    }
 }
 
     function mouseover(d) {
@@ -812,7 +838,14 @@ function brushend() {
   _resetBrush(){
     var newData = this._filterData(this.props);
 
-    var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]            
+    if(this.props.plot == "rank"){
+      var extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
+    }
+    else{
+      var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
+    }
+
+   
     this.setState({extent:extent}) 
   }
 
