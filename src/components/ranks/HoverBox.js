@@ -70,10 +70,10 @@ export class HoverBox extends React.Component<void, Props, void> {
 
       return (
         <tr>
-          <td>{CategoryNames[cat]}</td>
-          <td style={{textAlign: 'center'}}>{score.rank ? score.rank : ""}</td>
-          <td style={{textAlign: 'center'}}>{(score.score || score.score === 0) ? roundFormat(score.score) : ""}</td>
-          <td style={{textAlign: 'center'}}>{CategoryNames[cat].split(' ').length > 1 ? (score.y || score.y === 0) ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "" : ""}</td>
+          <td style={{fontSize: 10}}>{CategoryNames[cat]}</td>
+          <td style={{textAlign: 'center', fontSize: 12}}>{score.rank ? score.rank : ""}</td>
+          <td style={{textAlign: 'center', fontSize: 12}}>{(score.score || score.score === 0) ? roundFormat(score.score) : ""}</td>
+          <td style={{textAlign: 'center', fontSize: 12}}>{CategoryNames[cat].split(' ').length > 1 ? (score.y || score.y === 0) ? roundFormat(score.y) + ((CategoryUnits[CategoryNames[cat]] == "%") ? "%" : '') : "" : ""}</td>
         </tr>
       )
     }) 
@@ -87,9 +87,9 @@ export class HoverBox extends React.Component<void, Props, void> {
     return (
       <div style={{margin:0, marginTop:10, backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5', borderRadius: 3}}>
         <div className = 'row'>
-          <h4 style={{textAlign: 'center'}}>
+          <h4 style={{textAlign: 'left', paddingLeft: 25, paddingRight: 25}}>
           <small style={{color:'#f5f5f5'}}>
-            {this.props.metros[this.props.metroId] ? this.props.metros[this.props.metroId].name : ''}
+            {this.props.metros[this.props.metroId] ? this.props.metros[this.props.metroId].name.split('-').join(' ') : ''}
           </small>
           </h4>
           <h4 style={{textAlign: 'center'}}>
@@ -102,9 +102,9 @@ export class HoverBox extends React.Component<void, Props, void> {
           <thead>
             <tr>
               <th />
-              <th>Rank</th>
-              <th>Score</th>
-              <th>Value</th>
+              <th style={{fontSize:12}}>Rank</th>
+              <th style={{fontSize:12}}>Score</th>
+              <th style={{fontSize:12}}>Value</th>
             </tr>
           </thead>
           <tbody>

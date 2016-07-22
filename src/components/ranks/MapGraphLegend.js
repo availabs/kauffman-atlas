@@ -35,7 +35,7 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
   componentDidMount (){
     let width = document.getElementById("mapDiv").offsetWidth
-    let height = width  * 0.075
+    let height = width  * 0.105
 
     //Triggers render(_drawLegend)
     this.setState({width:width,height:height})          
@@ -107,6 +107,8 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
 
     }
 
+    let cellWidth = (this.state.width-80) / color.quantiles().length
+
     let legend = svg.append("g")
       .attr("transform", "translate(" + -40 + "," + 0 + ")")
       .attr("class", "legend")
@@ -116,8 +118,10 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .append('text')
       .attr("dx", 0)
       .attr("dy", ".35em")
+      .style('font-size', cellWidth / 5 + 'px')
       .text( 'Score/Value')
 
+    
 
     let legendCells = legend
       .selectAll('.legendCells')
@@ -126,19 +130,19 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       
     legendCells
       .append('rect')
-      .attr("height", 15)
-      .attr("width", 30)
-      .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",24)" })
+      .attr("height", cellWidth / 4  )
+      .attr("width", cellWidth)
+      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",24)" })
       .attr('fill', function(d) {return color(d)} )
       .on('mouseover',this.props.legendHover.bind(null,color))
       .on('mouseout',this.props.legendHoverOut)
       
     legendCells
       .append('text')
-      .attr("transform", function(d,i) {return "translate(" + (i * 30) + ",16)" })
+      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",16)" })
       .attr("dx", 4)
       .attr("dy", ".35em")
-      .style('font-size', '10px')
+      .style('font-size', cellWidth / 5 + 'px')
       .text(function(d) {
         return roundFormat(d);
       })

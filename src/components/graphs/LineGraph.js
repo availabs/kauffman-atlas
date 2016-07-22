@@ -825,9 +825,7 @@ function brushend() {
             <div className={classes['title']}>
               <h4>{scope._labelFunction(this.props)}</h4>
             </div>
-            <a onClick={this._resetBrush} type="button" className="btn btn-default pull-right">
-            Reset Brush
-            </a>
+           
             <div id="line" className={classes['svg-container']}>
               <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
             </div>

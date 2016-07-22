@@ -227,7 +227,7 @@ export class HomeView extends React.Component<void, Props, void> {
             />
           </div>
         </div>
-        <div className='container-fluid' style={{minHeight: 693}}>
+        <div className='container' style={{minHeight: 773}}>
           <div className='row'>
             
           </div>
@@ -241,34 +241,41 @@ export class HomeView extends React.Component<void, Props, void> {
            
               <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
             </div>
-            <div id="mapDiv" className='col-md-9' >
+            <div id="mapDiv" className='col-md-9' style={{paddingLeft: 0}}>
 
-                <div className='col-md-9' style={{padding:20}}>
+                <div className='col-md-12' style={{padding:20}}>
                   <SubGraphButtons
                     metric={this.props.homeState.metric}
                     onComponentChange={this._setMetric} 
                     activeComponent={this.props.homeState.activeComponent}
                   />
                 </div>
-                <MapGraphButtons
-                  mapGraph={this.props.homeState.activeMapGraph}
-                  onComponentChange={this._setMapGraph} 
-                />
-                <ColorButtons
-                  colorButton={this.props.homeState.activeColor}
-                  onComponentChange={this._setActiveColor} 
-                />
+               
                
                   
-              {this.renderMapGraph(metrosInBucket)} 
-
-              <MapGraphLegend 
-                  mapGraph={this.props.homeState.activeMapGraph}
-                  activeColor={this.props.homeState.activeColor}
-                  activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
-                  legendHover={this.legendHover}
-                  legendHoverOut={this.legendHoverOut}
-                />
+              {this.renderMapGraph(metrosInBucket)}
+              <div className='row'>
+                <div className='col-md-8'>
+                  <MapGraphLegend 
+                    style={{position:'absolute'}}
+                    mapGraph={this.props.homeState.activeMapGraph}
+                    activeColor={this.props.homeState.activeColor}
+                    activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
+                    legendHover={this.legendHover}
+                    legendHoverOut={this.legendHoverOut}
+                  /> 
+                </div>
+                <div className='col-md-4'>
+                   <MapGraphButtons
+                      mapGraph={this.props.homeState.activeMapGraph}
+                      onComponentChange={this._setMapGraph} 
+                    />
+                    <ColorButtons
+                      colorButton={this.props.homeState.activeColor}
+                      onComponentChange={this._setActiveColor} 
+                    />
+                </div>
+              </div>
                     
             </div>
           </div>
