@@ -91,23 +91,40 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainLow = d3.min([d3.min(natScores.combined.composite.values, function(v) { return v.y }),d3.min(scores.combined.composite.values, function(v) { return v.y })])
     var domainHigh = d3.max([d3.max(natScores.combined.composite.values, function(v) { return v.y }),d3.max(scores.combined.composite.values, function(v) { return v.y })])
     combinedGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
-    //console.log(combinedGraphYScale.domain());
+
 
     let densityComposite = scores.density.composite.values.filter(d => { return d.x === year })[0] || {}
     let densityCompositeSelected = scores.density.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityCompositeGraph = this.formatData(scores.density.composite.values,scores.density.composite.scoreColor)
     let densityNatCompositeGraph = this.formatData(natScores.density.composite.values,natScores.density.composite.color)
+    let densityCompositeGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.composite.values, function(v) { return v.y }),d3.min(scores.density.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.composite.values, function(v) { return v.y }),d3.max(scores.density.composite.values, function(v) { return v.y })])
+    densityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
 
 
     let densityNewFirms = scores.density.newFirms.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityNewFirmsSelected = scores.density.newFirms.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityNewFirmsGraph = this.formatData(scores.density.newFirms.relative.values,scores.density.newFirms.relative.scoreColor)
     let densityNatNewFirmsGraph = this.formatData(natScores.density.newFirms.relative.values,natScores.density.newFirms.relative.color)    
+    let densityNewFirmsGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.min(scores.density.newFirms.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.max(scores.density.newFirms.relative.values, function(v) { return v.y })])
+    densityNewFirmsGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+    console.log("national",natScores.density.newFirms.relative.values)
+    console.log("local",scores.density.newFirms.relative.values)
+
 
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityShareEmpGraph = this.formatData(scores.density.shareEmp.relative.values,scores.density.shareEmp.relative.scoreColor)
     let densityNatShareEmpGraph = this.formatData(natScores.density.shareEmp.relative.values,natScores.density.shareEmp.relative.color)
+    let densityShareEmpGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.shareEmp.relative.values, function(v) { return v.y }),d3.min(scores.density.shareEmp.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.shareEmp.relative.values, function(v) { return v.y }),d3.max(scores.density.shareEmp.relative.values, function(v) { return v.y })])
+    densityShareEmpGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
 
     let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
@@ -246,7 +263,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityCompositeGraphYScale}  data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
               <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
             </div>
@@ -278,7 +295,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityNewFirmsGraphYScale} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
               <span className='pull-left'>{densityNewFirmsGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityNewFirmsGraph[0].values[densityNewFirmsGraph[0].values.length-1].key}</span>
             </div>
@@ -314,7 +331,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityShareEmpGraphYScale} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
               <span className='pull-left'>{densityShareEmpGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
             </div>
