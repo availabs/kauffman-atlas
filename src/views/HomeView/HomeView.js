@@ -215,6 +215,9 @@ export class HomeView extends React.Component<void, Props, void> {
               <strong>{this.props.homeState.activeComponent.toUpperCase() === 'COMBINED' ? 'Entreprenurial Ecosystem Index' : this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
             </div>
           </div>
+        </div>
+        <div className='container'>
+          
           <div className='row' style={{padding:15}} >
             <ComponentButtons
               onComponentChange={this._setActiveComponent} 
@@ -255,7 +258,7 @@ export class HomeView extends React.Component<void, Props, void> {
                   
               {this.renderMapGraph(metrosInBucket)}
               <div className='row'>
-                <div className='col-md-8'>
+                <div className='col-md-7'>
                   <MapGraphLegend 
                     style={{position:'absolute'}}
                     mapGraph={this.props.homeState.activeMapGraph}
@@ -265,11 +268,13 @@ export class HomeView extends React.Component<void, Props, void> {
                     legendHoverOut={this.legendHoverOut}
                   /> 
                 </div>
-                <div className='col-md-4'>
+                <div className='col-md-5'>
+                  
                    <MapGraphButtons
                       mapGraph={this.props.homeState.activeMapGraph}
                       onComponentChange={this._setMapGraph} 
                     />
+                  
                     <ColorButtons
                       colorButton={this.props.homeState.activeColor}
                       onComponentChange={this._setActiveColor} 

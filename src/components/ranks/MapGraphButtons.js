@@ -37,10 +37,10 @@ export class MapGraphButtons extends React.Component<void, Props, void> {
     
     return (
       <div className='pull-right'>
-        <div className='row' style={{paddingLeft:15}}>
+        <div className='row' style={{paddingLeft:30}}>
           <small> Display:</small>
         </div>
-        <div className="btn-group" role="group">
+        <div className="btn-group" role="group" style={{paddingLeft:15}}>
           {bucketDisplay}
         </div>
       </div>
