@@ -17,20 +17,14 @@ import MetroHome from 'views/metro/MetroHome'
 import About from 'views/info/About'
 import Apis from 'views/info/Apis'
 import DataSources from 'views/info/DataSources'
-import Research from 'views/info/Research'
+import Resources from 'views/info/Resources'
 import Atlas from 'views/info/Atlas'
 
 
 export default (store) => (
   <Route path='/' component={CoreLayout}>
     <IndexRoute component={HomeView} />
-
-    <Route path='/about' component={About} />
-    <Route path='/apis' component={Apis} />
-    <Route path='/datasources' component={DataSources} />
-    <Route path='/research' component={Research} />
-    <Route path='/eei' component={Atlas} />
-
+    <Route path='/resources(/:resource)' component={Resources} />
     <Route path='/density' component={DensityView} />
     <Route path='/diversity' component={DiversityView} />
     <Route path='/fluidity' component={FluidityView} />

@@ -121,6 +121,7 @@
     "react-redux": "^4.0.0",
     "react-router": "^2.0.0",
     "react-router-redux": "^4.0.0",
+    "react-scrollspy": "^2.1.2",
     "react-select": "^1.0.0-beta13",
     "react-sticky": "^5.0.2",
     "react-tooltip": "^2.0.3",

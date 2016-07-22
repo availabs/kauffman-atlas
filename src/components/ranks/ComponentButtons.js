@@ -30,7 +30,7 @@ export class HomeView extends React.Component<void, Props, void> {
             type="button" 
             className={"btn btn-default " + (v == this.props.activeComponent ? classes["active"] : '')}
           >
-            { v }
+            { v === 'combined' ? 'EEI' : v }
           </a>
         )   
     })

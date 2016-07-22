@@ -1,0 +1,41 @@
+//$dark = rgb(125, 143, 175);
+//$light = #efefef;
+
+.is-current {
+    border-right: 2px solid rgb(125, 143, 175);
+   
+}
+
+.is-page > a {
+     border-right: 4px solid rgb(125, 143, 175);
+}
+.text-div {
+    box-shadow: -2px 0px 2px 0px #aaaaaa;
+    box-shadow:  2px 0px -2px 0px #aaaaaa;
+
+}
+
+.kuafnav > li > a:hover {
+    color: rgb(125, 143, 175)!important;
+}
+
+.kuafnav > li > a:focus {
+    color: rgb(125, 143, 175)!important;
+}
+
+.kuafnav > li > a:active {
+    background-color: rgb(125, 143, 175)!important;
+}
+
+.kuafnav > li > a {
+    border-radius: 0px;
+}
+
+
+.kuafnav > li > ul > li > a:hover {
+    color: rgb(125, 143, 175)!important;
+}
+
+.kuafnav > li > ul > li > a {
+    border-radius: 0px;
+}

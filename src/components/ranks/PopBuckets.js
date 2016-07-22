@@ -34,7 +34,8 @@ export class HomeView extends React.Component<void, Props, void> {
             type="button" 
             className={"btn btn-default " + (i == this.props.bucket ? classes["active"] : '')}
           >
-            {this.props.popScale[i].toLocaleString()}<sup>th</sup> 
+            {i === 3 ? 'Top ' :  ''}
+            {this.props.popScale[i].toLocaleString()} {i < 3 ? <sup>th</sup> : ''} 
              {
               (this.props.popScale[(i+1)]) ? (<span>{" - " + this.props.popScale[(i+1)]}<sup>th</sup></span>) : ""
              }            
@@ -55,7 +56,7 @@ export class HomeView extends React.Component<void, Props, void> {
 
     return (
       <div className='pull-right'>
-        <small>Metro Population Percentile</small><br />
+        <small>Metro Population Rank</small><br />
         <div className="btn-group" role="group">
           {bucketDisplay}
         </div>

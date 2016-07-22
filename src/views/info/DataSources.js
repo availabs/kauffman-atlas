@@ -9,7 +9,7 @@ export default class Atlas extends React.Component {
     return (
       <div>
         <div className='conatiner-fluid'>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
               <div className={'col-xs-12 ' + classes['text-div']}>
                 <h4>Datasources</h4>
@@ -22,11 +22,13 @@ export default class Atlas extends React.Component {
             </div>
           </div>
         </div>
-         <div className='conatiner-fluid'>
-          <div className='container'>
+        <a name='computed' />
+         <div className='conatiner-fluid' id='computed'>
+          <div className='container-fluid'>
             <div className='row'>
               <div className={'col-xs-12 ' + classes['text-div']}>
                 <h1>Entreprenurial Ecosystem Atlas Computed Data</h1>
+               
                  <p>
                   Here we provide access to all the data that we have computer to create this website.
 
@@ -187,11 +189,13 @@ export default class Atlas extends React.Component {
             </div>
           </div>
         </div>
-        <div className='conatiner-fluid'>
-          <div className='container'>
+        <a name='apis' />
+        <div className='conatiner-fluid' id='apis'>
+          <div className='container-fluid'>
             <div className='row'>
               <div className={'col-xs-12 ' + classes['text-div']}>
                 <h1>AVAIL API's</h1>
+               
                  <p>
                   For this project we created four different REST API's for large public data sets that aided greatly in our development of the Entrepreneurial Ecosystem Atlas. 
                   We also hope that an easy way to access these data sets will encourage future research and development using them will be possible.
@@ -199,9 +203,9 @@ export default class Atlas extends React.Component {
               </div>
             </div>
           </div>
-        </div>
+        
       <div className='conatiner-fluid' style={{backgroundColor: '#64728c', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
              
               <div className={'col-xs-9 ' + classes['text-div']}>
@@ -232,7 +236,7 @@ export default class Atlas extends React.Component {
             </div>
         </div>
         <div className='conatiner-fluid' style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
             <div className={'col-xs-9 ' + classes['text-div']}>
               <h4>Business Dynamics Statistics (BDS)</h4>
@@ -258,7 +262,7 @@ export default class Atlas extends React.Component {
         </div>
       </div>
       <div className='conatiner-fluid' style={{backgroundColor: '#97a5bf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -288,7 +292,7 @@ export default class Atlas extends React.Component {
         </div>
     </div>
       <div className='conatiner-fluid' style={{backgroundColor: '#b1bbcf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
             <div className={'col-xs-9 ' + classes['text-div']}>
               <h4>Quarterly Census of Employment and Wages (QCEW) </h4>
@@ -310,8 +314,10 @@ export default class Atlas extends React.Component {
           </div>
         </div>
       </div>
-      <div className='conatiner-fluid'>
-        <div className='container'>
+      </div>
+      <a name="other" />
+      <div className='conatiner-fluid' id="other">
+        <div className='container-fluid'>
           <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <h1>Other Data Sources</h1>
@@ -321,9 +327,9 @@ export default class Atlas extends React.Component {
             </div>
           </div>
         </div>
-      </div>
+      
       <div className='conatiner-fluid' style={{backgroundColor: '#996b25', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -351,7 +357,7 @@ export default class Atlas extends React.Component {
         </div>
       </div>
       <div className='conatiner-fluid' style={{backgroundColor: '#c58a30', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -372,7 +378,7 @@ export default class Atlas extends React.Component {
         </div>
       </div>
       <div className='conatiner-fluid' style={{backgroundColor: '#dea44a', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -392,7 +398,7 @@ Today, the list is a distinguished editorial award, a celebration of innovation,
         </div>
       </div>
        <div className='conatiner-fluid' style={{backgroundColor: '#e2ae5e', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -414,7 +420,7 @@ Today, the list is a distinguished editorial award, a celebration of innovation,
         </div>
       </div>
        <div className='conatiner-fluid' style={{backgroundColor: '#dea44a', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+          <div className='container-fluid'>
             <div className='row'>
            
             <div className={'col-xs-9 ' + classes['text-div']}>
@@ -432,6 +438,7 @@ Today, the list is a distinguished editorial award, a celebration of innovation,
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
 

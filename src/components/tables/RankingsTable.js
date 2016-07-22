@@ -185,20 +185,14 @@ export class RankingsTable extends React.Component<void, Props, void> {
                    onClick={this._sortTableChange.bind(null,"rank")}>
                       Rank
                 </a>
-                <span className={classes['rankingsCaret']}>
-                  <span className={classes['upCaret']}></span>
-                  <span className="caret"></span>
-                </span>
+                
             </td>  
             <td id="Name" className={classes['rankingsTableHeader'] + " col-md-4"}>
               <a
                  onClick={this._sortTableChange.bind(null,"Name")}>
                     Name
               </a>
-              <span className={classes['rankingsCaret']}>
-                <span className={classes['upCaret']}></span>
-                <span className="caret"></span>
-              </span>
+              
             </td>
             {
               Object.keys(data).map(cat => {
@@ -209,10 +203,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
                        onClick={this._sortTableChange.bind(null,cat)}>
                           {CategoryNames[cat]}
                     </a>  
-                    <span className={classes['rankingsCaret']}>
-                      <span className={classes['upCaret']}></span>
-                      <span className="caret"></span>
-                    </span>  
+                      
                   </td>
                   )
               })
@@ -263,7 +254,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
                         {rankDelta}
                       </div>                  
                       <span className={classes['rankingsCaret']}>
-                        <span style={{color:'green'}} className={classes['upCaret']}></span>
+                        <span style={{color:'green'}} className={classes['upCaret']} />
                       </span>  
                     </span>
                     )
@@ -286,10 +277,7 @@ export class RankingsTable extends React.Component<void, Props, void> {
                       <div style={{float:"right",paddingLeft:"3px"}}>
                         {rankDelta}
                       </div>
-                      <span className={classes['rankingsCaret']}>
-                        <span className={classes['upCaret']}></span>
-                        <span className="caret"></span>
-                      </span>  
+                        
                     </span>
                     ) 
               }

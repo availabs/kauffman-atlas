@@ -194,7 +194,7 @@ export class HomeView extends React.Component<void, Props, void> {
 
     sortedMetros = metroArray.sort(_sortProp())
 
-    var range = [400,250,150,50]
+    var range = [390,250,150,50]
     var nextBucket = +this.props.homeState.bucket + 1;
 
     var metrosInBucket = sortedMetros.filter((d,i) => { 
@@ -212,7 +212,7 @@ export class HomeView extends React.Component<void, Props, void> {
         <div className='container'>
            <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
-              <strong>{this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
+              <strong>{this.props.homeState.activeComponent.toUpperCase() === 'COMBINED' ? 'Entreprenurial Ecosystem Index' : this.props.homeState.activeComponent.toUpperCase()}</strong> {CategoryText[this.props.homeState.activeComponent].map(d => { return (<p>{d} </p>)})}
             </div>
           </div>
           <div className='row' style={{padding:15}} >
@@ -227,17 +227,21 @@ export class HomeView extends React.Component<void, Props, void> {
             />
           </div>
         </div>
-        <div className='container' style={{minHeight: 693}}>
+        <div className='container-fluid' style={{minHeight: 693}}>
           <div className='row'>
-            <div className='col-md-4' style={{padding:15}}>
+            
+          </div>
+          <div className='row'>
+            <div className='col-md-3'>
               <RankBox 
                 activeComponent={this.props.homeState.activeComponent} 
                 metrosInBucket={metrosInBucket}
                 year={this.props.homeState.hoverYear}
               />
+           
               <HoverBox metroId={this.props.homeState.hoverMetro} year={this.props.homeState.hoverYear} activeComponent={this.props.homeState.activeComponent} />
             </div>
-            <div id="mapDiv" className='col-md-8' >
+            <div id="mapDiv" className='col-md-9' >
 
                 <div className='col-md-9' style={{padding:20}}>
                   <SubGraphButtons
@@ -254,17 +258,21 @@ export class HomeView extends React.Component<void, Props, void> {
                   colorButton={this.props.homeState.activeColor}
                   onComponentChange={this._setActiveColor} 
                 />
-                <MapGraphLegend 
+               
+                  
+              {this.renderMapGraph(metrosInBucket)} 
+
+              <MapGraphLegend 
                   mapGraph={this.props.homeState.activeMapGraph}
                   activeColor={this.props.homeState.activeColor}
                   activeComponent={(this.props.homeState.activeComponent + "" + this.props.homeState.metric).replace(/ /g,'')}            
                   legendHover={this.legendHover}
                   legendHoverOut={this.legendHoverOut}
-                />  
-
-              {this.renderMapGraph(metrosInBucket)}       
+                />
+                    
             </div>
           </div>
+          
         </div>
         <div className='container-fluid' style={{backgroundColor: 'rgb(125, 143, 175)', color:'#f5f5f5'}}>
           <div className='container'>

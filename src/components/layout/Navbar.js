@@ -45,7 +45,7 @@ export class Navbar extends React.Component {
             
             <Link className={classes['kauffman-navbar-brand'] + ' ' + sitewideClasses['whitelink']} to='/'>
               <img src='/images/entrepreneurial-ecosystem-symbol.png' className={classes['kauffman-navbar-logo']} />
-              Entrepreneurial Ecosystem Atlas
+              <span style={{marginLeft: -15, fontWeight: 100}}>Entrepreneurial Ecosystem Atlas</span>
             </Link>
           </div>
 
@@ -53,22 +53,11 @@ export class Navbar extends React.Component {
            
             <ul className='nav navbar-nav navbar-right'>
               <li>
-                <Link to='/rankings' className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Rankings</Link>
+                <Link to='/rankings' className={sitewideClasses['whitelink']} style={{paddingTop:15, paddingBottom:15}}>Rankings</Link>
               </li>
               <li>
-                <Link to='/research' className={sitewideClasses['whitelink']} style={{paddingTop:25, paddingBottom:25}}>Research</Link>
+                <Link to='/resources' className={sitewideClasses['whitelink']} style={{paddingTop:15, paddingBottom:15}}>Resources</Link>
               </li>
-              <li className={'dropdown' + open} onClick={this._toggleDropdown}>
-                <a onClick={this._toggleDropdown} className={ sitewideClasses['whitelink']+' dropdown-toggle' }  style={{paddingTop:25, paddingBottom:25}} href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                  Resources <span className="caret"></span>
-                </a>
-                <ul className="dropdown-menu">
-                  <li><Link to="/about">About</Link></li>
-                  <li><Link to="/eei">Entrepreneurial Ecosystem Index</Link></li>
-                  <li><Link to="/datasources">Data Sources</Link></li>
-                </ul>
-              </li>
-      
             </ul>
           </div>
         </div>
@@ -83,3 +72,4 @@ const mapStateToProps = (state) => ({
 })
 
 export default connect((mapStateToProps), {})(Navbar)
+

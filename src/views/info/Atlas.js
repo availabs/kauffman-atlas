@@ -8,8 +8,8 @@ export default class Atlas extends React.Component {
   render () {
     return (
       <div>
-        <div className='conatiner-fluid'>
-          <div className='container'>
+        <div className='conatiner-fluid' >
+          <div className='container-fluid'>
             <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <h4>Entrepreneurial Ecosystem Index (EEI)</h4>
@@ -20,11 +20,12 @@ export default class Atlas extends React.Component {
           </div>
         </div>
       </div>
-      <div className='conatiner-fluid' style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-          <div className='container'>
+      <div id='density' className='conatiner-fluid' style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
+          <div className='container-fluid'>
             <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <h4>Density</h4>
+              <a name='density' />
               <p><strong>Combined</strong> At the core of any entrepreneurial ecosystem are the entrepreneurs themselves. Density is a measure of the rate entrepreneurs form new firms are in a metropolitan area. The density metric does not measure pure volume, instead it ranks the relative density of new firms, and the percentage of the workforce employed by these young firms. </p>
 
               <p>The Density metric is comprised of three measurements: New and young firms per 1k population, share of employment in new and young firms, and high-tech sector density.</p>
@@ -43,12 +44,13 @@ export default class Atlas extends React.Component {
           </div>
         </div>
     </div>
-     <div className='conatiner-fluid' >
-          <div className='container'>
+     <div id='diversity' className='conatiner-fluid' >
+          <div className='container-fluid'>
             <div className='row'>
             <div className={'col-xs-12 ' + classes['text-div']}>
               <h4>Diversity</h4>
               <p>
+              <a name='diversity' />
                A vibrant entrepreneurial ecosystem requires diversity of industry, population, and sector specializations. An ecosystem that is diverse in these ways tends to be robust and multi-leveled. Diversity of industry, population and sector encourages cross-pollination and mitigates single-sector dependency. Healthy entrepreneurial ecosystems have some industry specialization in order to attract specialized talent but are not over reliant on one industry. Healthy ecosystems also attract and assimilate immigrants. Immigrants are historically highly entrepreneurial, starting businesses at a high rate. Young firms are also a very important element to a diverse and healthy ecosystem. Young firms provide expanded opportunities for young workers to build their resumes and develop their career trajectories. They are also fertile ground for new entrepreneurs to learn what works and what doesn’t. </p>
 
 
@@ -69,11 +71,12 @@ export default class Atlas extends React.Component {
           </div>
         </div>
     </div>
-    <div className='conatiner-fluid' style={{backgroundColor: '#996b25', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
-      <div className='container'>
+    <div id='fluidity' className='conatiner-fluid' style={{backgroundColor: '#996b25', color: '#efefef', paddingTop:20, paddingBottom: 400}}>
+      <div className='container-fluid'>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
             <h4>Fluidity</h4>
+            <a name='fluidity' />
             <p>
              Fluidity is a measure of the health of an entrepreneurial ecosystems that shows how metropolitan areas re-sort, adapt, and react. The fluidity metric measures population growth, population flux, and worker churn. Taken together these measures show the health of worker reallocation which can improve the quality of matches between workers and jobs and is an important element to regional growth. Barriers to worker reallocation can drag down a region’s entrepreneurial vibrancy. </p>
 
