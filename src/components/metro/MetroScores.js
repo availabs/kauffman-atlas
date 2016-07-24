@@ -183,6 +183,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.combined.composite.values, function(v) { return v.y }),d3.max(scores.combined.composite.values, function(v) { return v.y })])
     combinedGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
+
     let densityComposite = scores.density.composite.values.filter(d => { return d.x === year })[0] || {}
     let densityCompositeSelected = scores.density.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityCompositeGraph = this.formatData(scores.density.composite.values,scores.density.composite.scoreColor)
@@ -274,6 +275,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.fluidity.totalMigration.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.totalMigration.relative.values, function(v) { return v.y })])
     fluidityTotalMigrationGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
     
+
+
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [],scores.diversity.composite.scoreColor)
@@ -300,7 +303,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainLow = d3.min([d3.min(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.min(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
     var domainHigh = d3.max([d3.max(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.max(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
     diversityEmpVarianceGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
-
 
     let diversityEmpHHI = scores.diversity.empHHI.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpHHISelected = scores.diversity.empHHI.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
