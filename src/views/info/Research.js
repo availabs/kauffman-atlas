@@ -7,10 +7,11 @@ import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadS
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
+import { loadMetroScores } from 'redux/modules/metroScoresData'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
-
+import MetroScores from 'components/metro/MetroScores'
 
 
 export default class Research extends React.Component {
@@ -27,6 +28,16 @@ export default class Research extends React.Component {
     this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
    }
+
+  // _renderNationalScores()   {
+  //   if(!this.props.metroScores["national"]){
+  //     this.props.loadMetroScores("national")
+  //     return <span />
+  //   }
+  //   else{
+      
+  //   }
+  // }
 
   _setActiveComponent (type) {
     if(type == "qwiDensity"){
@@ -60,13 +71,7 @@ export default class Research extends React.Component {
         />
       )      
     }
-
-
-
-
   }
-
-
 
   render () {
     return (
@@ -94,7 +99,9 @@ export default class Research extends React.Component {
               {this._renderMapGraph()}
             </div>
         </div>
-
+        <div>
+          <MetroScores metroId={"national"} research={"true"}/>  
+        </div>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
             <h4>About This Project</h4>
@@ -166,6 +173,7 @@ const mapStateToProps = (state) => ({
   diversityemploymenthhi:state.diversityData.empHHI,
   combinedcomposite : state.combinedData.combinedcomposite,
   metros : state.metros,
+  metroScores : state.metroScoresData,
 })
 
 export default connect((mapStateToProps), {
@@ -185,5 +193,5 @@ export default connect((mapStateToProps), {
   getdiversityemploymentlocationquotientvariance: () => loadEmpVarianceData(),
   getdiversityemploymenthhi: () => loadEmpHHIData(),
   getcombinedcomposite: () => loadCombinedComposite(),
-  changeHomeState: (state) => changeHomeState(state)
+  loadMetroScores: (currentMetro) => loadMetroScores (currentMetro)  
 })(Research)

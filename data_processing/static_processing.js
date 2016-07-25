@@ -455,7 +455,7 @@ Object.keys(msaPop).forEach(msaId => {
       })
     }
   })
-  processedEmpVariance['raw'].forEach(metro => {
+  coloredEmpVariance.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['diversity']['empLQVariance']['raw'] = metro; 
 
@@ -471,7 +471,7 @@ Object.keys(msaPop).forEach(msaId => {
       })
     }
   })
-  processedEmpHHI['raw'].forEach(metro => {
+  coloredEmpHHI.forEach(metro => {
     if(metro.key == msaId){
       curMsaObj['diversity']['empHHI']['raw'] = metro;    
 
@@ -1320,20 +1320,7 @@ function _colorGroup(data,dataset,type){
 
   return _colorGroupScale;
 }
-//function _colorOppGroup(group){
-    //if(group == "lowIncome"){
-        //var colorGroup = d3.scale.linear()
-            //.domain([-.2,.2])
-            //.range(['red','green']);
-    //}
-    //if(group == "highIncome"){
-        //var colorGroup = d3.scale.linear()
-           //.domain([-.1,.1])
-           //.range(['red','green']);           
-    //}
 
-    //return colorGroup;
-//}
 function _sortCities(year){
 
     return (a,b) => {

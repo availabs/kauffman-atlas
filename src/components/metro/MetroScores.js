@@ -8,6 +8,17 @@ import ReactTooltip from 'react-tooltip'
 import CategoryText from 'components/misc/categoryText'
 import d3 from 'd3'
 
+let roundFormat = function(input){
+  var outFormat = d3.format(".2f");
+  var output = outFormat(input);
+
+  if(output == "-0.00"){
+    output = "0.00";
+  }
+
+  return output;
+}
+
 export class MetroScoresOverview extends React.Component<void, Props, void> {
   constructor () {
     super()
@@ -80,12 +91,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       })
     }]
 
-    if(output[0].values[0] && !color){
-      let first = output[0].values[0].values.y
-      let last = output[0].values[output[0].values.length-1].values.y
-      let graphcolor = first > last ? '#db9a36' : '#7d8faf'
-      output[0].color = graphcolor
-    }
+    // if(output[0].values[0] && !color){
+    //   let first = output[0].values[0].values.y
+    //   let last = output[0].values[output[0].values.length-1].values.y
+    //   let graphcolor = first > last ? '#db9a36' : '#7d8faf'
+    //   output[0].color = graphcolor
+    // }
     
     return output;
   }
@@ -327,8 +338,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let graphBox = {
       borderRight: '1px solid #ccc'
     }
+
+    if(this.props.research){
+      var style = {width:"100%"}
+    }
+    else{
+      var style = {}
+    }
+
     return (
-      <div className='container'> 
+      <div className='container' style={style}> 
         <div className='row' >
           <div className='col-xs-4'>
             <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
@@ -346,13 +365,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{((combined && combined.y) || '').toLocaleString()}</h4>
-                Rank {combined.rank}
+                <h4>{((combined && roundFormat(combined.y)) || '').toLocaleString()}</h4>
+                {combined && combined.rank ? "Rank " + combined.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((combinedSelected && combinedSelected.y) || '').toLocaleString()}</h4>
-                {combinedSelected ? "Rank " + combinedSelected.rank : ""}   
+                <h4>{((combinedSelected && roundFormat(combinedSelected.y)) || '').toLocaleString()}</h4>
+                {combinedSelected && combinedSelected.rank ? "Rank " + combinedSelected.rank : ''}   
                 <div>{combinedSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -386,14 +405,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.density}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityComposite && densityComposite.y) || '').toLocaleString()}</h4>
-                Rank {densityComposite.rank}
+              <div className='pull-left' style={{marginBottom:"15px"}}>
+                <h4>{((densityComposite && roundFormat(densityComposite.y)) || '').toLocaleString()}</h4>
+                {densityComposite && densityComposite.rank ? "Rank " + densityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((densityCompositeSelected && densityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {densityCompositeSelected ? "Rank " + densityCompositeSelected.rank : ""}   
+                <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
                 <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -418,14 +437,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.newfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityNewFirms && densityNewFirms.y) || '').toLocaleString()}</h4>
-                Rank {densityNewFirms.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((densityNewFirms && roundFormat(densityNewFirms.y)) || '').toLocaleString()}</h4>
+                {densityNewFirms && densityNewFirms.rank ? "Rank " + densityNewFirms.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((densityNewFirmsSelected && densityNewFirmsSelected.y) || '').toLocaleString()}</h4>
-                {densityNewFirmsSelected ? "Rank " + densityNewFirmsSelected.rank : ""}   
+                <h4>{((densityNewFirmsSelected && roundFormat(densityNewFirmsSelected.y)) || '').toLocaleString()}</h4>
+                {densityNewFirmsSelected && densityNewFirmsSelected.rank ? "Rank " + densityNewFirmsSelected.rank : ''}   
                 <div>{densityNewFirmsSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -450,18 +469,18 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareofemploymentinnewfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(densityShareEmp && densityShareEmp.y) ? 
-                      `${densityShareEmp.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityShareEmp.y)}%` : ''}
                 </h4>
-                Rank {densityShareEmp.rank}
+                {densityShareEmp && densityShareEmp.rank ? "Rank " + densityShareEmp.rank :''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityShareEmpSelected && densityShareEmpSelected.y) ? 
-                      `${densityShareEmpSelected.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityShareEmpSelected.y)}%` : ''}
                 </h4>
-                {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
+                {densityShareEmpSelected && densityShareEmpSelected.rank ? "Rank " + densityShareEmpSelected.rank : ''}   
                 <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -486,18 +505,18 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareEmpHighTech}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(densityHighTech && densityHighTech.y) ? 
-                      `${densityHighTech.y.toLocaleString()}%` : 'N/A'}
+                      `${roundFormat(densityHighTech.y)}%` : ''}
                 </h4>
-                {(densityHighTech && densityHighTech.y) ? "Rank " + densityHighTech.rank : "Rank N/A"}
+                {(densityHighTech && densityHighTech.rank) ? "Rank " + densityHighTech.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
-                      `${densityHighTechSelected.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityHighTechSelected.y)}%` : ''}
                 </h4>
-                {densityHighTechSelected && densityHighTechSelected.y ? "Rank " + densityHighTechSelected.rank : ""}   
+                {densityHighTechSelected && densityHighTechSelected.rank ? "Rank " + densityHighTechSelected.rank : ''}   
                 <div>{densityHighTechSelected && densityHighTechSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -522,16 +541,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareEmpNoAccRet}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityExceptAccom && densityExceptAccom.y) || '').toLocaleString()}%</h4>
-                Rank {densityExceptAccom.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((densityExceptAccom && roundFormat(densityExceptAccom.y)) || '').toLocaleString()}%</h4>
+                {densityExceptAccom && densityExceptAccom.rank ? "Rank " + densityExceptAccom.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
-                        `${densityExceptAccomSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(densityExceptAccomSelected.y)}%` : ''}
                 </h4>
-                {densityExceptAccomSelected  && densityExceptAccomSelected.y ? "Rank " + densityExceptAccomSelected.rank : ""}   
+                {densityExceptAccomSelected  && densityExceptAccomSelected.rank ? "Rank " + densityExceptAccomSelected.rank : ''}   
                 <div>{densityExceptAccomSelected  && densityExceptAccomSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -559,14 +578,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.fluidity}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((fluidityComposite && fluidityComposite.y) || '').toLocaleString()}</h4>
-                Rank {fluidityComposite.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((fluidityComposite && roundFormat(fluidityComposite.y)) || '').toLocaleString()}</h4>
+                {fluidityComposite && fluidityComposite.rank ? "Rank " + fluidityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((fluidityCompositeSelected && fluidityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {fluidityCompositeSelected ? "Rank " + fluidityCompositeSelected.rank : ""}   
+                <h4>{((fluidityCompositeSelected && roundFormat(fluidityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {fluidityCompositeSelected && fluidityCompositeSelected.rank ? "Rank " + fluidityCompositeSelected.rank : ''}   
                 <div>{fluidityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -579,14 +598,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
            <div className='col-xs-2' style={graphBox}>
             <h4> High Growth Firms / Total Firms </h4>
             <div>
-              <div className='pull-left'>
-                <h4>{(fluidityHighGrowth ? ((fluidityHighGrowth.y || fluidityHighGrowth.y === 0) ? fluidityHighGrowth.y : '') : '').toLocaleString()}</h4>
-                Rank {fluidityHighGrowth.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(fluidityHighGrowth ? ((fluidityHighGrowth.y || fluidityHighGrowth.y === 0) ? roundFormat(fluidityHighGrowth.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighGrowth && fluidityHighGrowth.rank ? "Rank " + fluidityHighGrowth.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? fluidityHighGrowthSelected.y : '') : '').toLocaleString()}</h4>
-                {fluidityHighGrowthSelected ? "Rank " + fluidityHighGrowthSelected.rank : ""}   
+                <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? roundFormat(fluidityHighGrowthSelected.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighGrowthSelected && fluidityHighGrowthSelected.rank ? "Rank " + fluidityHighGrowthSelected.rank : ''}   
                 <div>{fluidityHighGrowthSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -611,14 +630,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.highgrowthfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{(fluidityHighRaw ? ((fluidityHighRaw.y || fluidityHighRaw.y === 0) ? fluidityHighRaw.y : '') : '').toLocaleString()}</h4>
-                Rank {fluidityHighRaw.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(fluidityHighRaw ? ((fluidityHighRaw.y || fluidityHighRaw.y === 0) ? roundFormat(fluidityHighRaw.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighRaw && fluidityHighRaw.rank ? "Rank " + fluidityHighRaw.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? fluidityHighRawSelected.y : '') : '').toLocaleString()}</h4>
-                {(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? "Rank " + fluidityHighRawSelected.rank : '') : '')}   
+                <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? roundFormat(fluidityHighRawSelected.y) : '') : '').toLocaleString()}</h4>
+                {(fluidityHighRawSelected && fluidityHighRawSelected.y && fluidityHighRawSelected.rank ? "Rank " + fluidityHighRawSelected.rank : '')}   
                 <div>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? this.state.displayYear : '') : '')}</div>
               </div>         
             </div>
@@ -644,18 +663,18 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <small> (inflow - outflow) </small>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left' style={{marginBottom:"15px"}}>
                <h4>{(fluidityNetMigration && fluidityNetMigration.y) ? 
-                        `${fluidityNetMigration.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityNetMigration.y)}%` : ''}
                </h4>
-                Rank {fluidityNetMigration.rank}
+                {fluidityNetMigration && fluidityNetMigration.rank ? "Rank " + fluidityNetMigration.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                <h4>{(fluidityNetMigrationSelected && fluidityNetMigrationSelected.y) ? 
-                        `${fluidityNetMigrationSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityNetMigrationSelected.y)}%` : ''}
                </h4>
-                {fluidityNetMigrationSelected ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
+                {fluidityNetMigrationSelected && fluidityNetMigrationSelected.rank ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
                 <div>{fluidityNetMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -683,16 +702,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                <h4>{(fluidityTotalMigration && fluidityTotalMigration.y) ? 
-                        `${fluidityTotalMigration.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityTotalMigration.y)}%` : ''}
                </h4>
-                Rank {fluidityTotalMigration.rank}
+                {fluidityTotalMigration && fluidityTotalMigration.rank ? "Rank " + fluidityTotalMigration.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.y) ? 
-                        `${fluidityTotalMigrationSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityTotalMigrationSelected.y)}%` : ''}
                 </h4>
-                {fluidityTotalMigrationSelected ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
+                {fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.rank ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
                 <div>{fluidityTotalMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -720,14 +739,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.diversity}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((diversityComposite && diversityComposite.y) || '').toLocaleString()}</h4>
-                Rank {diversityComposite.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((diversityComposite && roundFormat(diversityComposite.y)) || '').toLocaleString()}</h4>
+                {diversityComposite && diversityComposite.rank ? "Rank " + diversityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((diversityCompositeSelected && diversityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {diversityCompositeSelected ? "Rank " + diversityCompositeSelected.rank : ""}   
+                <h4>{((diversityCompositeSelected && roundFormat(diversityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {diversityCompositeSelected && diversityCompositeSelected.rank ? "Rank " + diversityCompositeSelected.rank : ""}   
                 <div>{diversityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -752,18 +771,18 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.foreignborn}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(diversityForeignBorn && diversityForeignBorn.y) ? 
-                      `${diversityForeignBorn.y.toLocaleString()}%` : ''}
+                      `${roundFormat(diversityForeignBorn.y)}%` : ''}
                 </h4>
-                Rank {diversityForeignBorn.rank}
+                {diversityForeignBorn && diversityForeignBorn.rank ? "Rank " + diversityForeignBorn.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(diversityForeignBornSelected && diversityForeignBornSelected.y) ? 
-                      `${diversityForeignBornSelected.y.toLocaleString()}%` : ""}
+                      `${roundFormat(diversityForeignBornSelected.y)}%` : ""}
                 </h4>
-                {diversityForeignBornSelected ? "Rank " + diversityForeignBornSelected.rank : ""}   
+                {diversityForeignBornSelected && diversityForeignBornSelected.rank ? "Rank " + diversityForeignBornSelected.rank : ""}   
                 <div>{diversityForeignBornSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -788,19 +807,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.emplqvariance}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(diversityEmpVariance && diversityEmpVariance.y) ? 
-                      `${diversityEmpVariance.y.toLocaleString()}%` : ''}
+                      `${roundFormat(diversityEmpVariance.y)}%` : ''}
                 </h4>
-                Rank {diversityEmpVariance.rank}
+                {diversityEmpVariance && diversityEmpVariance.rank ? "Rank " + diversityEmpVariance.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(diversityEmpVarianceSelected && diversityEmpVarianceSelected.y) ? 
-                        `${diversityEmpVarianceSelected.y.toLocaleString()}%` : ""}
+                        `${roundFormat(diversityEmpVarianceSelected.y)}%` : ""}
                 </h4>
-                {diversityEmpVarianceSelected ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
-                <div>{diversityEmpVarianceSelected ? this.state.displayYear : ""}</div>
+                {diversityEmpVarianceSelected && diversityEmpVarianceSelected.rank ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
+                <div>{diversityEmpVarianceSelected? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
@@ -824,14 +843,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.emphhi}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{(diversityEmpHHI && diversityEmpHHI.y && diversityEmpHHI.y.toFixed(2)) || 'No data'}</h4>
-                Rank {diversityEmpHHI.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(diversityEmpHHI && diversityEmpHHI.y && roundFormat(diversityEmpHHI.y)) || ''}</h4>
+                {diversityEmpHHI && diversityEmpHHI.rank ? "Rank " + diversityEmpHHI.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(diversityEmpHHISelected && diversityEmpHHISelected.y && diversityEmpHHISelected.y.toFixed(2)) || 'No data'}</h4>
-                {diversityEmpHHISelected ? "Rank " + diversityEmpHHISelected.rank : ""}   
+                <h4>{(diversityEmpHHISelected && diversityEmpHHISelected.y && roundFormat(diversityEmpHHISelected.y)) || ''}</h4>
+                {diversityEmpHHISelected && diversityEmpHHISelected.rank ? "Rank " + diversityEmpHHISelected.rank : ""}   
                 <div>{diversityEmpHHISelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -843,8 +862,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
           </div>          
           <div className='col-xs-2' style={graphBox}>
             <h4> Opportunity for Low Income Children </h4>
-            <h4>{((diversityOppLow  && diversityOppLow.y) || '').toLocaleString()}</h4> 
-            Rank {diversityOppLow.rank}
+            <h4>{((diversityOppLow  && roundFormat(diversityOppLow.y)) || '').toLocaleString()}</h4> 
+            {diversityOppLow && diversityOppLow.rank ? "Rank " + diversityOppLow.rank : ''}
           </div>
           <div className='col-xs-2'>
             <h4><span data-tip data-for="opportunity" className={"pull-right " + classes['info']}>?</span>Opportunity for High Income Children</h4>
@@ -860,8 +879,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               >
               <span>{CategoryText.opportunity}</span>
             </ReactTooltip>
-            <h4>{((diversityOppHigh && diversityOppHigh.y) || '').toLocaleString()}</h4> 
-            Rank {diversityOppHigh.rank}
+            <h4>{((diversityOppHigh && roundFormat(diversityOppHigh.y)) || '').toLocaleString()}</h4> 
+            {diversityOppHigh && diversityOppHigh.rank ? "Rank " + diversityOppHigh.rank : ''}
           </div>
         </div>
 
