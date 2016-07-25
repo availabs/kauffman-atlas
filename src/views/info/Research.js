@@ -11,6 +11,7 @@ import { loadMetroScores } from 'redux/modules/metroScoresData'
 import ComponentButtons from 'components/ranks/ComponentButtons'
 import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
+import BarChart from 'components/graphs/BarChart.js'
 import MetroScores from 'components/metro/MetroScores'
 
 
@@ -61,15 +62,28 @@ export default class Research extends React.Component {
       return <span />
     }
     else{
-      return (
-        <LineGraph  
-          activeColor="ranks"  
-          onMouseover={this.onMouseover}
-          data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-          plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-          graph={this.state.activeComponent + "composite"}
-        />
-      )      
+      if((this.state.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
+        return (
+         <BarChart    
+            data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+            plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+            graph="opportunitycomposite"
+            onMouseover={this.onMouseover}
+          />
+        )
+      }
+      else{
+        return (
+          <LineGraph  
+            activeColor="ranks"  
+            onMouseover={this.onMouseover}
+            data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+            plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+            graph={this.state.activeComponent + "composite"}
+          />
+        )          
+      }
+    
     }
   }
 

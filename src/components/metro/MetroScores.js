@@ -341,9 +341,16 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
 
     if(this.props.research){
       var style = {width:"100%"}
+      var lineLegend = ''
     }
     else{
       var style = {}
+      var lineLegend = (
+            <div className='col-xs-2' style={{textAlign:"right",marginTop:"10px"}}>
+              <div className="row" style={{marginBottom:"15px"}}><small>Colored lines represents current metro over time</small></div>
+              <div className="row"><small>Black lines represents national average over time</small></div>
+            </div>
+            )
     }
 
     return (
@@ -383,10 +390,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
           </div>
-          <div className='col-xs-2' style={{textAlign:"right",marginTop:"10px"}}>
-            <div className="row" style={{marginBottom:"15px"}}><small>Colored lines represents current metro over time</small></div>
-            <div className="row"><small>Black lines represents national average over time</small></div>
-          </div>
+            {lineLegend}
         </div>
         <div className='row' style={rowStyle}>
           <h4>Density</h4>
