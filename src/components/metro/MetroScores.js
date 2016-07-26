@@ -6,7 +6,18 @@ import classes from 'styles/sitewide/index.scss'
 import LineGraph from 'components/graphs/SimpleLineGraph'
 import ReactTooltip from 'react-tooltip'
 import CategoryText from 'components/misc/categoryText'
+import d3 from 'd3'
 
+let roundFormat = function(input){
+  var outFormat = d3.format(".2f");
+  var output = outFormat(input);
+
+  if(output == "-0.00"){
+    output = "0.00";
+  }
+
+  return output;
+}
 
 export class MetroScoresOverview extends React.Component<void, Props, void> {
   constructor () {
@@ -15,6 +26,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       displayYear:0
     }
     this.hover = this.hover.bind(this)
+    this.alignYears = this.alignYears.bind(this)
    }
 
 
@@ -39,27 +51,22 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     return this.props.metroScores[this.props.metroId]      
   }
 
-  _trimYears(years,cities){
+  _trimYears(years,city){
+    var newValues = []
 
-    var filteredCities = cities.map(city => {
-      var newValues = []
-
-      city.values.forEach(yearValue => {
-        if(yearValue.x >= years[0] && yearValue.x <= years[1]){
-          newValues.push(yearValue);
-        }
-      })
-      var newCity = {
-        color:city.color,
-        key:city.key,
-        name:city.name,
-        values:newValues
+    city.values.forEach(yearValue => {
+      if(yearValue.x >= years[0] && yearValue.x <= years[1]){
+        newValues.push(yearValue);
       }
-      return newCity;
     })
-
-
-    return filteredCities;
+    var newCity = {
+      color:city.color,
+      scoreColor:city.scoreColor,
+      key:city.key,
+      name:city.name,
+      values:newValues
+    }
+    return newCity;
   }
 
 
@@ -84,15 +91,86 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
       })
     }]
 
-    if(output[0].values[0] && !color){
-      let first = output[0].values[0].values.y
-      let last = output[0].values[output[0].values.length-1].values.y
-      let graphcolor = first > last ? '#db9a36' : '#7d8faf'
-      output[0].color = graphcolor
-    }
-    
+    // if(output[0].values[0] && !color){
+    //   let first = output[0].values[0].values.y
+    //   let last = output[0].values[output[0].values.length-1].values.y
+    //   let graphcolor = first > last ? '#db9a36' : '#7d8faf'
+    //   output[0].color = graphcolor
+    // }
     
     return output;
+  }
+
+  alignYears(returnType){
+    var metroScores = this.props.metroScores[this.props.metroId],
+        natScores = this.props.metroScores["national"];
+
+    var alignedMetro = {},
+        alignedNat = {}
+
+    Object.keys(metroScores).forEach(metric => {
+      if(typeof metroScores[metric] == "object"){
+        if(!alignedMetro[metric]){
+          alignedMetro[metric] = {}
+        }
+        if(!alignedNat[metric]){
+          alignedNat[metric] = {}
+        }
+
+        Object.keys(metroScores[metric]).forEach(subMetric =>{
+          if(typeof metroScores[metric][subMetric] == "object"){
+            if(!alignedMetro[metric][subMetric]){
+              alignedMetro[metric][subMetric] = {}
+            }
+            if(!alignedNat[metric][subMetric]){
+              alignedNat[metric][subMetric] = {}
+            }
+
+            if(Object.keys(metroScores[metric][subMetric]).length <= 2){
+              Object.keys(metroScores[metric][subMetric]).forEach(dataset => {
+                if(!alignedMetro[metric][subMetric][dataset]){
+                  alignedMetro[metric][subMetric][dataset] = {}
+                }
+                if(!alignedNat[metric][subMetric][dataset]){
+                  alignedNat[metric][subMetric][dataset] = {}
+                }
+
+                var metroYearRange = ([d3.min(metroScores[metric][subMetric][dataset]['values'],function(c) {return c.x}),
+                                    d3.max(metroScores[metric][subMetric][dataset]['values'],function(c) {return c.x})])
+                var natYearRange = ([d3.min(natScores[metric][subMetric][dataset]['values'],function(c) {return c.x}),
+                                    d3.max(natScores[metric][subMetric][dataset]['values'],function(c) {return c.x})])
+
+                var minYear = d3.max([metroYearRange[0],natYearRange[0]])
+                var maxYear = d3.min([metroYearRange[1],natYearRange[1]])
+
+                alignedMetro[metric][subMetric][dataset] = this._trimYears(([minYear,maxYear]),metroScores[metric][subMetric][dataset]);
+                alignedNat[metric][subMetric][dataset] = this._trimYears(([minYear,maxYear]),natScores[metric][subMetric][dataset]);
+              })             
+            }
+            else{
+              var metroYearRange = ([d3.min(metroScores[metric][subMetric]['values'],function(c) {return c.x}),
+                                  d3.max(metroScores[metric][subMetric]['values'],function(c) {return c.x})])
+              var natYearRange = ([d3.min(natScores[metric][subMetric]['values'],function(c) {return c.x}),
+                                  d3.max(natScores[metric][subMetric]['values'],function(c) {return c.x})])
+
+              var minYear = d3.max([metroYearRange[0],natYearRange[0]])
+              var maxYear = d3.min([metroYearRange[1],natYearRange[1]])
+
+              alignedMetro[metric][subMetric] = this._trimYears(([minYear,maxYear]),metroScores[metric][subMetric]);
+              alignedNat[metric][subMetric] = this._trimYears(([minYear,maxYear]),natScores[metric][subMetric]);
+            }        
+          }
+        })
+      }
+    })
+
+
+    if(returnType == "metro"){
+      return alignedMetro;
+    }
+    else{
+      return alignedNat;
+    }
   }
 
   hover(d){
@@ -102,10 +180,10 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
   render () {
     if (!this.hasData()) return <span />
     //console.log('got data', this.props.metroScores[this.props.metroId])
-
+    //console.log(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw)
     let year = 2013
-    let scores = this.props.metroScores[this.props.metroId];
-    let natScores = this.props.metroScores["national"];
+    let scores = this.alignYears("metro");
+    let natScores = this.alignYears("national");
 
     let combined = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let combinedSelected = scores.combined.composite ?  scores.combined.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
@@ -126,8 +204,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.density.composite.values, function(v) { return v.y }),d3.max(scores.density.composite.values, function(v) { return v.y })])
     densityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
-
-
     let densityNewFirms = scores.density.newFirms.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityNewFirmsSelected = scores.density.newFirms.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityNewFirmsGraph = this.formatData(scores.density.newFirms.relative.values,scores.density.newFirms.relative.scoreColor)
@@ -136,9 +212,6 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainLow = d3.min([d3.min(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.min(scores.density.newFirms.relative.values, function(v) { return v.y })])
     var domainHigh = d3.max([d3.max(natScores.density.newFirms.relative.values, function(v) { return v.y }),d3.max(scores.density.newFirms.relative.values, function(v) { return v.y })])
     densityNewFirmsGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
-    console.log("national",natScores.density.newFirms.relative.values)
-    console.log("local",scores.density.newFirms.relative.values)
-
 
     let densityShareEmp = scores.density.shareEmp.relative.values.filter(d => { return d.x === year })[0] || {}
     let densityShareEmpSelected = scores.density.shareEmp.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
@@ -149,63 +222,108 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     var domainHigh = d3.max([d3.max(natScores.density.shareEmp.relative.values, function(v) { return v.y }),d3.max(scores.density.shareEmp.relative.values, function(v) { return v.y })])
     densityShareEmpGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
-
     let densityHighTech = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityHighTechSelected = scores.density.shareEmpQWI_HighTech.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityHighTechGraph = this.formatData(scores.density.shareEmpQWI_HighTech.raw.values,scores.density.shareEmpQWI_HighTech.raw.scoreColor)
     let densityNatHighTechGraph = this.formatData(natScores.density.shareEmpQWI_HighTech.raw.values,natScores.density.shareEmpQWI_HighTech.raw.color)
+    let densityHighTechGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y }),d3.min(scores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y }),d3.max(scores.density.shareEmpQWI_HighTech.raw.values, function(v) { return v.y })])
+    densityHighTechGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let densityExceptAccom = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === year })[0] || {}
     let densityExceptAccomSelected = scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let densityExceptAccomGraph = this.formatData(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.scoreColor)
     let densityNatExceptAccomGraph = this.formatData(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values,natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.color)
+    let densityExceptAccomGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y }),d3.min(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y }),d3.max(scores.density.shareEmpQWI_ExceptAccomAndRetail.raw.values, function(v) { return v.y })])
+    densityExceptAccomGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
 
     let fluidityComposite = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityCompositeSelected = scores.fluidity.composite ? scores.fluidity.composite.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityCompositeGraph = this.formatData(scores.fluidity.composite ? scores.fluidity.composite.values : [],scores.fluidity.composite.scoreColor)
     let fluidityNatCompositeGraph = this.formatData(natScores.fluidity.composite ? natScores.fluidity.composite.values : [],natScores.fluidity.composite.color)
+    let fluidityCompositeGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.composite.values, function(v) { return v.y }),d3.min(scores.fluidity.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.composite.values, function(v) { return v.y }),d3.max(scores.fluidity.composite.values, function(v) { return v.y })])
+    fluidityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityHighRaw = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighRawSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityHighRawGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.raw.scoreColor)
     let fluidityNatHighRawGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.raw.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.raw.color)    
+    let fluidityHighRawGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.highGrowth.raw.values, function(v) { return v.y }),d3.min(scores.fluidity.highGrowth.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.highGrowth.raw.values, function(v) { return v.y }),d3.max(scores.fluidity.highGrowth.raw.values, function(v) { return v.y })])
+    fluidityHighRawGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityHighGrowth = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === year })[0] || {} : {}
     let fluidityHighGrowthSelected = scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null : null
     let fluidityHighGrowthGraph =  this.formatData(scores.fluidity.highGrowth ? scores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],scores.fluidity.highGrowth.relative.scoreColor)
     let fluidityNatHighGrowthGraph =  this.formatData(natScores.fluidity.highGrowth ? natScores.fluidity.highGrowth.relative.values.filter(d => { return d.x >= 2007 }) : [],natScores.fluidity.highGrowth.relative.color)    
+    let fluidityHighGrowthGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.highGrowth.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.highGrowth.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.highGrowth.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.highGrowth.relative.values, function(v) { return v.y })])
+    fluidityHighGrowthGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let fluidityNetMigration = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityNetMigrationSelected = scores.fluidity.netMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityNetMigrationGraph = this.formatData(scores.fluidity.netMigration.relative.values,scores.fluidity.netMigration.relative.scoreColor)
     let fluidityNatNetMigrationGraph = this.formatData(natScores.fluidity.netMigration.relative.values,natScores.fluidity.netMigration.relative.color)
-    
+    let fluidityNetMigrationGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.netMigration.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.netMigration.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.netMigration.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.netMigration.relative.values, function(v) { return v.y })])
+    fluidityNetMigrationGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
     let fluidityTotalMigration = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === year })[0] || {}
     let fluidityTotalMigrationSelected = scores.fluidity.totalMigration.relative.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let fluidityTotalMigrationGraph = this.formatData(scores.fluidity.totalMigration.relative.values,scores.fluidity.totalMigration.relative.scoreColor)
     let fluidityNatTotalMigrationGraph = this.formatData(natScores.fluidity.totalMigration.relative.values,natScores.fluidity.totalMigration.relative.color)
+    let fluidityTotalMigrationGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.fluidity.totalMigration.relative.values, function(v) { return v.y }),d3.min(scores.fluidity.totalMigration.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.fluidity.totalMigration.relative.values, function(v) { return v.y }),d3.max(scores.fluidity.totalMigration.relative.values, function(v) { return v.y })])
+    fluidityTotalMigrationGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
     
+
 
     let diversityComposite = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x === year })[0] || {} : {}
     let diversityCompositeSelected = scores.diversity.composite ? scores.diversity.composite.values.filter(d => { return d.x=== this.state.displayYear })[0] || null : null
     let diversityCompositeGraph = this.formatData(scores.diversity.composite ? scores.diversity.composite.values : [],scores.diversity.composite.scoreColor)
     let diversityNatCompositeGraph = this.formatData(natScores.diversity.composite ? natScores.diversity.composite.values : [],natScores.diversity.composite.color)
+    let diversityCompositeGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.composite.values, function(v) { return v.y }),d3.min(scores.diversity.composite.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.composite.values, function(v) { return v.y }),d3.max(scores.diversity.composite.values, function(v) { return v.y })])
+    diversityCompositeGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let diversityForeignBorn =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x === year })[0] || {}
     let diversityForeignBornSelected =  scores.diversity.foreignborn.relative.values.filter(d => { return d.x=== this.state.displayYear })[0] || null
     let diversityForeignBornGraph = this.formatData(scores.diversity.foreignborn ? scores.diversity.foreignborn.relative.values : [],scores.diversity.foreignborn.relative.scoreColor)
     let diversityNatForeignBornGraph = this.formatData(natScores.diversity.foreignborn ? natScores.diversity.foreignborn.relative.values : [],natScores.diversity.foreignborn.relative.color)
-    
+    let diversityForeignBornGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.foreignborn.relative.values, function(v) { return v.y }),d3.min(scores.diversity.foreignborn.relative.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.foreignborn.relative.values, function(v) { return v.y }),d3.max(scores.diversity.foreignborn.relative.values, function(v) { return v.y })])
+    diversityForeignBornGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
     let diversityEmpVariance = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpVarianceSelected = scores.diversity.empLQVariance.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let diversityEmpVarianceGraph = this.formatData(scores.diversity.empLQVariance.raw.values,scores.diversity.empLQVariance.raw.scoreColor)
     let diversityNatEmpVarianceGraph = this.formatData(natScores.diversity.empLQVariance.raw.values,natScores.diversity.empLQVariance.raw.color)    
+    let diversityEmpVarianceGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.min(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.empLQVariance.raw.values, function(v) { return v.y }),d3.max(scores.diversity.empLQVariance.raw.values, function(v) { return v.y })])
+    diversityEmpVarianceGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
 
     let diversityEmpHHI = scores.diversity.empHHI.raw.values.filter(d => { return d.x === year })[0] || {}
     let diversityEmpHHISelected = scores.diversity.empHHI.raw.values.filter(d => { return d.x === this.state.displayYear })[0] || null
     let diversityEmpHHIGraph = this.formatData(scores.diversity.empHHI.raw.values,scores.diversity.empHHI.raw.scoreColor)
-    let diversityNatEmpHHIGraph = this.formatData(natScores.diversity.empHHI.raw.values,natScores.diversity.empHHI.raw.color)    
+    let diversityNatEmpHHIGraph = this.formatData(natScores.diversity.empHHI.raw.values,natScores.diversity.empHHI.raw.color) 
+    let diversityEmpHHIGraphYScale = d3.scale.linear();
+    var domainLow = d3.min([d3.min(natScores.diversity.empHHI.raw.values, function(v) { return v.y }),d3.min(scores.diversity.empHHI.raw.values, function(v) { return v.y })])
+    var domainHigh = d3.max([d3.max(natScores.diversity.empHHI.raw.values, function(v) { return v.y }),d3.max(scores.diversity.empHHI.raw.values, function(v) { return v.y })])
+    diversityEmpHHIGraphYScale.domain([(domainLow - domainLow * 0.05),(domainHigh + domainHigh * 0.05)])
+
 
     let diversityOppHigh =  scores.diversity.opportunity ? scores.diversity.opportunity.values[1] || {} : {}
     let diversityOppLow =  scores.diversity.opportunity ? scores.diversity.opportunity.values[0] || {} : {}
@@ -220,8 +338,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     let graphBox = {
       borderRight: '1px solid #ccc'
     }
+
+    if(this.props.research){
+      var style = {width:"100%"}
+      var lineLegend = ''
+    }
+    else{
+      var style = {}
+      var lineLegend = (
+            <div className='col-xs-2' style={{textAlign:"right",marginTop:"10px"}}>
+              <div className="row" style={{marginBottom:"15px"}}><small>Colored lines represents current metro over time</small></div>
+              <div className="row"><small>Black lines represents national average over time</small></div>
+            </div>
+            )
+    }
+
     return (
-      <div className='container'> 
+      <div className='container' style={style}> 
         <div className='row' >
           <div className='col-xs-4'>
             <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
@@ -239,13 +372,13 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <div>
               <div className='pull-left'>
-                <h4>{((combined && combined.y) || '').toLocaleString()}</h4>
-                Rank {combined.rank}
+                <h4>{((combined && roundFormat(combined.y)) || '').toLocaleString()}</h4>
+                {combined && combined.rank ? "Rank " + combined.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((combinedSelected && combinedSelected.y) || '').toLocaleString()}</h4>
-                {combinedSelected ? "Rank " + combinedSelected.rank : ""}   
+                <h4>{((combinedSelected && roundFormat(combinedSelected.y)) || '').toLocaleString()}</h4>
+                {combinedSelected && combinedSelected.rank ? "Rank " + combinedSelected.rank : ''}   
                 <div>{combinedSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -257,6 +390,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
             </div>
           </div>
+            {lineLegend}
         </div>
         <div className='row' style={rowStyle}>
           <h4>Density</h4>
@@ -275,14 +409,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.density}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityComposite && densityComposite.y) || '').toLocaleString()}</h4>
-                Rank {densityComposite.rank}
+              <div className='pull-left' style={{marginBottom:"15px"}}>
+                <h4>{((densityComposite && roundFormat(densityComposite.y)) || '').toLocaleString()}</h4>
+                {densityComposite && densityComposite.rank ? "Rank " + densityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((densityCompositeSelected && densityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {densityCompositeSelected ? "Rank " + densityCompositeSelected.rank : ""}   
+                <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
                 <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -307,14 +441,14 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.newfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityNewFirms && densityNewFirms.y) || '').toLocaleString()}</h4>
-                Rank {densityNewFirms.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((densityNewFirms && roundFormat(densityNewFirms.y)) || '').toLocaleString()}</h4>
+                {densityNewFirms && densityNewFirms.rank ? "Rank " + densityNewFirms.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((densityNewFirmsSelected && densityNewFirmsSelected.y) || '').toLocaleString()}</h4>
-                {densityNewFirmsSelected ? "Rank " + densityNewFirmsSelected.rank : ""}   
+                <h4>{((densityNewFirmsSelected && roundFormat(densityNewFirmsSelected.y)) || '').toLocaleString()}</h4>
+                {densityNewFirmsSelected && densityNewFirmsSelected.rank ? "Rank " + densityNewFirmsSelected.rank : ''}   
                 <div>{densityNewFirmsSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -339,18 +473,18 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareofemploymentinnewfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(densityShareEmp && densityShareEmp.y) ? 
-                      `${densityShareEmp.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityShareEmp.y)}%` : ''}
                 </h4>
-                Rank {densityShareEmp.rank}
+                {densityShareEmp && densityShareEmp.rank ? "Rank " + densityShareEmp.rank :''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityShareEmpSelected && densityShareEmpSelected.y) ? 
-                      `${densityShareEmpSelected.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityShareEmpSelected.y)}%` : ''}
                 </h4>
-                {densityShareEmpSelected ? "Rank " + densityShareEmpSelected.rank : ""}   
+                {densityShareEmpSelected && densityShareEmpSelected.rank ? "Rank " + densityShareEmpSelected.rank : ''}   
                 <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
@@ -375,23 +509,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareEmpHighTech}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(densityHighTech && densityHighTech.y) ? 
-                      `${densityHighTech.y.toLocaleString()}%` : 'N/A'}
+                      `${roundFormat(densityHighTech.y)}%` : ''}
                 </h4>
-                {(densityHighTech && densityHighTech.y) ? "Rank " + densityHighTech.rank : "Rank N/A"}
+                {(densityHighTech && densityHighTech.rank) ? "Rank " + densityHighTech.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
-                      `${densityHighTechSelected.y.toLocaleString()}%` : ''}
+                      `${roundFormat(densityHighTechSelected.y)}%` : ''}
                 </h4>
-                {densityHighTechSelected && densityHighTechSelected.y ? "Rank " + densityHighTechSelected.rank : ""}   
+                {densityHighTechSelected && densityHighTechSelected.rank ? "Rank " + densityHighTechSelected.rank : ''}   
                 <div>{densityHighTechSelected && densityHighTechSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
               <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
             </div>
@@ -411,21 +545,21 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.shareEmpNoAccRet}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((densityExceptAccom && densityExceptAccom.y) || '').toLocaleString()}%</h4>
-                Rank {densityExceptAccom.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((densityExceptAccom && roundFormat(densityExceptAccom.y)) || '').toLocaleString()}%</h4>
+                {densityExceptAccom && densityExceptAccom.rank ? "Rank " + densityExceptAccom.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
-                        `${densityExceptAccomSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(densityExceptAccomSelected.y)}%` : ''}
                 </h4>
-                {densityExceptAccomSelected  && densityExceptAccomSelected.y ? "Rank " + densityExceptAccomSelected.rank : ""}   
+                {densityExceptAccomSelected  && densityExceptAccomSelected.rank ? "Rank " + densityExceptAccomSelected.rank : ''}   
                 <div>{densityExceptAccomSelected  && densityExceptAccomSelected.y ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
               <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
               <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
             </div>
@@ -448,19 +582,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.fluidity}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((fluidityComposite && fluidityComposite.y) || '').toLocaleString()}</h4>
-                Rank {fluidityComposite.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((fluidityComposite && roundFormat(fluidityComposite.y)) || '').toLocaleString()}</h4>
+                {fluidityComposite && fluidityComposite.rank ? "Rank " + fluidityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((fluidityCompositeSelected && fluidityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {fluidityCompositeSelected ? "Rank " + fluidityCompositeSelected.rank : ""}   
+                <h4>{((fluidityCompositeSelected && roundFormat(fluidityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {fluidityCompositeSelected && fluidityCompositeSelected.rank ? "Rank " + fluidityCompositeSelected.rank : ''}   
                 <div>{fluidityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityCompositeGraphYScale} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityCompositeGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityCompositeGraph[0].values[fluidityCompositeGraph[0].values.length-1].key}</span>
             </div>
@@ -468,19 +602,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
            <div className='col-xs-2' style={graphBox}>
             <h4> High Growth Firms / Total Firms </h4>
             <div>
-              <div className='pull-left'>
-                <h4>{(fluidityHighGrowth ? ((fluidityHighGrowth.y || fluidityHighGrowth.y === 0) ? fluidityHighGrowth.y : '') : '').toLocaleString()}</h4>
-                Rank {fluidityHighGrowth.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(fluidityHighGrowth ? ((fluidityHighGrowth.y || fluidityHighGrowth.y === 0) ? roundFormat(fluidityHighGrowth.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighGrowth && fluidityHighGrowth.rank ? "Rank " + fluidityHighGrowth.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? fluidityHighGrowthSelected.y : '') : '').toLocaleString()}</h4>
-                {fluidityHighGrowthSelected ? "Rank " + fluidityHighGrowthSelected.rank : ""}   
+                <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? roundFormat(fluidityHighGrowthSelected.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighGrowthSelected && fluidityHighGrowthSelected.rank ? "Rank " + fluidityHighGrowthSelected.rank : ''}   
                 <div>{fluidityHighGrowthSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover}  yScale={fluidityHighGrowthGraphYScale} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
             </div>           
@@ -500,19 +634,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.highgrowthfirms}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{(fluidityHighRaw ? ((fluidityHighRaw.y || fluidityHighRaw.y === 0) ? fluidityHighRaw.y : '') : '').toLocaleString()}</h4>
-                Rank {fluidityHighRaw.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(fluidityHighRaw ? ((fluidityHighRaw.y || fluidityHighRaw.y === 0) ? roundFormat(fluidityHighRaw.y) : '') : '').toLocaleString()}</h4>
+                {fluidityHighRaw && fluidityHighRaw.rank ? "Rank " + fluidityHighRaw.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? fluidityHighRawSelected.y : '') : '').toLocaleString()}</h4>
-                {(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? "Rank " + fluidityHighRawSelected.rank : '') : '')}   
+                <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? roundFormat(fluidityHighRawSelected.y) : '') : '').toLocaleString()}</h4>
+                {(fluidityHighRawSelected && fluidityHighRawSelected.y && fluidityHighRawSelected.rank ? "Rank " + fluidityHighRawSelected.rank : '')}   
                 <div>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? this.state.displayYear : '') : '')}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityHighRawGraphYScale} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
             </div>
@@ -533,23 +667,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <small> (inflow - outflow) </small>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left' style={{marginBottom:"15px"}}>
                <h4>{(fluidityNetMigration && fluidityNetMigration.y) ? 
-                        `${fluidityNetMigration.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityNetMigration.y)}%` : ''}
                </h4>
-                Rank {fluidityNetMigration.rank}
+                {fluidityNetMigration && fluidityNetMigration.rank ? "Rank " + fluidityNetMigration.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                <h4>{(fluidityNetMigrationSelected && fluidityNetMigrationSelected.y) ? 
-                        `${fluidityNetMigrationSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityNetMigrationSelected.y)}%` : ''}
                </h4>
-                {fluidityNetMigrationSelected ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
+                {fluidityNetMigrationSelected && fluidityNetMigrationSelected.rank ? "Rank " + fluidityNetMigrationSelected.rank : ""}   
                 <div>{fluidityNetMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityNetMigrationGraphYScale} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityNetMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityNetMigrationGraph[0].values[fluidityNetMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -572,21 +706,21 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             <div>
               <div className='pull-left'>
                <h4>{(fluidityTotalMigration && fluidityTotalMigration.y) ? 
-                        `${fluidityTotalMigration.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityTotalMigration.y)}%` : ''}
                </h4>
-                Rank {fluidityTotalMigration.rank}
+                {fluidityTotalMigration && fluidityTotalMigration.rank ? "Rank " + fluidityTotalMigration.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.y) ? 
-                        `${fluidityTotalMigrationSelected.y.toLocaleString()}%` : ''}
+                        `${roundFormat(fluidityTotalMigrationSelected.y)}%` : ''}
                 </h4>
-                {fluidityTotalMigrationSelected ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
+                {fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.rank ? "Rank " + fluidityTotalMigrationSelected.rank : ""}   
                 <div>{fluidityTotalMigrationSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityTotalMigrationGraphYScale} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
               <span className='pull-left'>{fluidityTotalMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityTotalMigrationGraph[0].values[fluidityTotalMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -609,19 +743,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.diversity}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{((diversityComposite && diversityComposite.y) || '').toLocaleString()}</h4>
-                Rank {diversityComposite.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{((diversityComposite && roundFormat(diversityComposite.y)) || '').toLocaleString()}</h4>
+                {diversityComposite && diversityComposite.rank ? "Rank " + diversityComposite.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{((diversityCompositeSelected && diversityCompositeSelected.y) || '').toLocaleString()}</h4>
-                {diversityCompositeSelected ? "Rank " + diversityCompositeSelected.rank : ""}   
+                <h4>{((diversityCompositeSelected && roundFormat(diversityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {diversityCompositeSelected && diversityCompositeSelected.rank ? "Rank " + diversityCompositeSelected.rank : ""}   
                 <div>{diversityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityCompositeGraphYScale} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[0].key : ''}</span>
               <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
             </div>
@@ -641,23 +775,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.foreignborn}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(diversityForeignBorn && diversityForeignBorn.y) ? 
-                      `${diversityForeignBorn.y.toLocaleString()}%` : ''}
+                      `${roundFormat(diversityForeignBorn.y)}%` : ''}
                 </h4>
-                Rank {diversityForeignBorn.rank}
+                {diversityForeignBorn && diversityForeignBorn.rank ? "Rank " + diversityForeignBorn.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(diversityForeignBornSelected && diversityForeignBornSelected.y) ? 
-                      `${diversityForeignBornSelected.y.toLocaleString()}%` : ""}
+                      `${roundFormat(diversityForeignBornSelected.y)}%` : ""}
                 </h4>
-                {diversityForeignBornSelected ? "Rank " + diversityForeignBornSelected.rank : ""}   
+                {diversityForeignBornSelected && diversityForeignBornSelected.rank ? "Rank " + diversityForeignBornSelected.rank : ""}   
                 <div>{diversityForeignBornSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityForeignBornGraphYScale} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityForeignBornGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityForeignBornGraph[0].values[diversityForeignBornGraph[0].values.length-1].key}</span>
             </div>
@@ -677,23 +811,23 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.emplqvariance}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
                 <h4>{(diversityEmpVariance && diversityEmpVariance.y) ? 
-                      `${diversityEmpVariance.y.toLocaleString()}%` : ''}
+                      `${roundFormat(diversityEmpVariance.y)}%` : ''}
                 </h4>
-                Rank {diversityEmpVariance.rank}
+                {diversityEmpVariance && diversityEmpVariance.rank ? "Rank " + diversityEmpVariance.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
                 <h4>{(diversityEmpVarianceSelected && diversityEmpVarianceSelected.y) ? 
-                        `${diversityEmpVarianceSelected.y.toLocaleString()}%` : ""}
+                        `${roundFormat(diversityEmpVarianceSelected.y)}%` : ""}
                 </h4>
-                {diversityEmpVarianceSelected ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
-                <div>{diversityEmpVarianceSelected ? this.state.displayYear : ""}</div>
+                {diversityEmpVarianceSelected && diversityEmpVarianceSelected.rank ? "Rank " + diversityEmpVarianceSelected.rank : ""}   
+                <div>{diversityEmpVarianceSelected? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpVarianceGraphYScale} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
             </div>
@@ -713,27 +847,27 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               <span>{CategoryText.emphhi}</span>
             </ReactTooltip>
             <div>
-              <div className='pull-left'>
-                <h4>{(diversityEmpHHI && diversityEmpHHI.y && diversityEmpHHI.y.toFixed(2)) || 'No data'}</h4>
-                Rank {diversityEmpHHI.rank}
+              <div className='pull-left'  style={{marginBottom:"15px"}}>
+                <h4>{(diversityEmpHHI && diversityEmpHHI.y && roundFormat(diversityEmpHHI.y)) || ''}</h4>
+                {diversityEmpHHI && diversityEmpHHI.rank ? "Rank " + diversityEmpHHI.rank : ''}
                 <div>2013</div>
               </div>
               <div className='pull-right'>
-                <h4>{(diversityEmpHHISelected && diversityEmpHHISelected.y && diversityEmpHHISelected.y.toFixed(2)) || 'No data'}</h4>
-                {diversityEmpHHISelected ? "Rank " + diversityEmpHHISelected.rank : ""}   
+                <h4>{(diversityEmpHHISelected && diversityEmpHHISelected.y && roundFormat(diversityEmpHHISelected.y)) || ''}</h4>
+                {diversityEmpHHISelected && diversityEmpHHISelected.rank ? "Rank " + diversityEmpHHISelected.rank : ""}   
                 <div>{diversityEmpHHISelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpHHIGraphYScale} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
               <span className='pull-left'>{diversityEmpHHIGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpHHIGraph[0].values[diversityEmpHHIGraph[0].values.length-1].key}</span>
             </div>
           </div>          
           <div className='col-xs-2' style={graphBox}>
             <h4> Opportunity for Low Income Children </h4>
-            <h4>{((diversityOppLow  && diversityOppLow.y) || '').toLocaleString()}</h4> 
-            Rank {diversityOppLow.rank}
+            <h4>{((diversityOppLow  && roundFormat(diversityOppLow.y)) || '').toLocaleString()}</h4> 
+            {diversityOppLow && diversityOppLow.rank ? "Rank " + diversityOppLow.rank : ''}
           </div>
           <div className='col-xs-2'>
             <h4><span data-tip data-for="opportunity" className={"pull-right " + classes['info']}>?</span>Opportunity for High Income Children</h4>
@@ -749,8 +883,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               >
               <span>{CategoryText.opportunity}</span>
             </ReactTooltip>
-            <h4>{((diversityOppHigh && diversityOppHigh.y) || '').toLocaleString()}</h4> 
-            Rank {diversityOppHigh.rank}
+            <h4>{((diversityOppHigh && roundFormat(diversityOppHigh.y)) || '').toLocaleString()}</h4> 
+            {diversityOppHigh && diversityOppHigh.rank ? "Rank " + diversityOppHigh.rank : ''}
           </div>
         </div>
 

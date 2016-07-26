@@ -50,7 +50,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	    switch(page){
 		case 'combined':
 		    return (
-			<MetroScores metroId={metroId} metroData={this.props.metros[metroId]} />
+			<MetroScores metroId={metroId}/>
 		    )
 		    case 'Employment':
 			    return (
