@@ -238,10 +238,9 @@ export class LineGraph extends React.Component<void, Props, void> {
           var path = [];
 
           x.domain().slice(1).forEach(function(b, i) {
-            var a = x.domain()[i];
-
-            if(d[i+1] != undefined){
-                path.push("L", x(a), ",", y(d[i].rank), "h", x.rangeBand(), curve(a, b, i, d));    
+            
+            if(d[i+1]){
+                path.push("L", x(d[i].x,), ",", y(d[i].rank), "h", x.rangeBand(), curve(d[i].x, d[i+1].x, i, d));    
             }
             
           });
