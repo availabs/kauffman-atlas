@@ -132,14 +132,14 @@ export class MapGraphLegend extends React.Component<void, Props, void> {
       .append('rect')
       .attr("height", cellWidth / 4  )
       .attr("width", cellWidth)
-      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",24)" })
+      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",28)" })
       .attr('fill', function(d) {return color(d)} )
       .on('mouseover',this.props.legendHover.bind(null,color))
       .on('mouseout',this.props.legendHoverOut)
       
     legendCells
       .append('text')
-      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",16)" })
+      .attr("transform", function(d,i) {return "translate(" + (i * cellWidth) + ",18)" })
       .attr("dx", 4)
       .attr("dy", ".35em")
       .style('font-size', cellWidth / 5 + 'px')

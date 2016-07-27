@@ -35,7 +35,7 @@ export class HomeView extends React.Component<void, Props, void> {
             className={"btn btn-default " + (i == this.props.bucket ? classes["active"] : '')}
           >
             {i === 3 ? 'Top ' :  ''}
-            {this.props.popScale[i].toLocaleString()} {i < 3 ? <sup>th</sup> : ''} 
+            {this.props.popScale[i].toLocaleString()}{i < 3 ? <sup>th</sup> : ''} 
              {
               (this.props.popScale[(i+1)]) ? (<span>{" - " + this.props.popScale[(i+1)]}<sup>th</sup></span>) : ""
              }            
