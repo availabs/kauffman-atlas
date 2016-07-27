@@ -34,11 +34,22 @@ const handleFetchErrors = (response) => {
 }
 
 
-const buildRequestURL = (msa) => 
-  `${apiServerAddress}/data/` + 
-  `fips${(msa !== '31080') ? `C${msa.slice(0,4)}` : `C3108C3110`}/` +
-  `yr${years.join('')}/qtr1234/` + 
-  `ind${fourDigitNaics.map(c => _.padStart(c, 6, '0')).join('')}/` + 
+const getFipsCode = (msa) => {
+  if (msa === '26180') {
+    return 'C2618C4652'
+  } else if (msa === '31080') {
+    return 'C3108C3110'
+  } else {
+    return `C${msa.slice(0,4)}`
+  }
+}
+
+
+const buildRequestURL = (msa) => console.log('==>', msa) ||
+  `${apiServerAddress}/data/` +
+  `fips${getFipsCode(msa)}/` +
+  `yr${years.join('')}/qtr1234/` +
+  `ind${fourDigitNaics.map(c => _.padStart(c, 6, '0')).join('')}/` +
   `?${_.union(empFields, lqEmpFields).map(field => `fields[]=${field}`).join('&')}`
 
 
