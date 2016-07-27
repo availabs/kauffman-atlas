@@ -13,7 +13,8 @@ import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
 import BarChart from 'components/graphs/BarChart.js'
 import MetroScores from 'components/metro/MetroScores'
-
+import NationalMap from 'components/maps/NationalMap'
+import MapGraphLegend from 'components/ranks/MapGraphLegend'
 
 export default class Research extends React.Component {
 
@@ -62,70 +63,99 @@ export default class Research extends React.Component {
       return <span />
     }
     else{
-      if((this.state.metric).replace(/ /g,'') === 'incomebasedonchildhood'){
-        return (
-         <BarChart    
-            data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-            plot="value" dataType="composite" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-            graph="opportunitycomposite"
-            onMouseover={this.onMouseover}
-          />
-        )
-      }
-      else{
-        return (
-          <LineGraph  
-            activeColor="ranks"  
-            onMouseover={this.onMouseover}
-            data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-            plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-            graph={this.state.activeComponent + "composite"}
-          />
-        )          
-      }
+     
+      return (
+        <div className='row'>
+          <div className='col-md-6'>
+            <LineGraph  
+              activeColor="ranks"
+              hideTitle
+              hideBrush
+              extent={[50,90]}
+              onMouseover={this.onMouseover}
+              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+              plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+              graph={this.state.activeComponent + "composite"}
+            />  
+          </div>
+          <div className='col-md-6'>
+
+            <LineGraph  
+              activeColor="ranks"  
+              container='values'
+              hideTitle
+              hideBrush
+              extent={[0,50]}
+              onMouseover={this.onMouseover}
+              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+              plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+              graph={this.state.activeComponent + "composite"}
+            />  
+          </div>
+        </div>
+
+      )          
+      
     
     }
   }
 
   render () {
+    var metroArray = Object.keys(this.props.metros).map(msaId => ({key:msaId, data:this.props.metros[msaId]})).map(metro => metro.key)
     return (
       <div className='container-fluid'>
-        <div className="row">
-          <div className={'col-xs-12'} style={{padding:"10px"}}>
-            <div style={{width:"35%",float:"left"}}>
-              <ComponentButtons
-                onComponentChange={this._setActiveComponent} 
-                activeComponent={this.state.activeComponent}
-              />
-            </div>
-            <div style={{width:"65%",float:"right"}}>
-              <SubGraphButtons
-                pull="right"
-                metric={this.state.metric}
-                onComponentChange={this._setMetric} 
-                activeComponent={this.state.activeComponent}
-              />
-            </div>
-          </div>   
-        </div>
         <div className='row'>
             <div id="mapDiv" className={'col-xs-12 '}>
               {this._renderMapGraph()}
             </div>
         </div>
+        <div className='row'>
+          <div className='col-sm-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
+            <h4> About the Entrepreneurial Ecosystem Atlas </h4>
+            <p>Would you be surprised to learn that the metropolitan statistical area surrounding Miami, Florida, is the healthiest entrepreneurial ecosystem in the United States? Or that Washington D.C. is the second healthiest and has been in the top two for the last half decade? These are a few of the findings of the Entrepreneurial Ecosystem Atlas project. 
+            </p>
+            <p>
+            The Entrepreneurial Ecosystem Atlas, created by the Albany Visualization and Informatics Lab (AVAIL) from the University at Albany, with funding from the Ewing Marion Kauffman Foundation, is a set of interactive tools designed to provide a visual understanding of the economic indicators of entrepreneurial ecosystems in the United States. 
+            </p><p>
+            The idea was to create an interactive web-atlas, based on publicly available longitudinal datasets, that can provide snapshots of entrepreneurial health of the nation as a whole, and of metropolitan regions separately and comparatively, but also provide focused tools for in-depth investigation. The Entrepreneurial Ecosystem Atlas provides researchers, consultants, journalists and policymakers with a view into economic data through a lens that is designed to bring the entrepreneurial ecosystem into focus. The tool should help answer questions about economic and demographic characteristics of an MSA, and allow for evaluation of the efficacy of regional policies designed to encourage entrepreneurism. 
+              </p><p>
+            At the center of the atlas is the Entrepreneurial Ecosystems Index (EEI), which combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The EEI represents the overall health of entrepreneurial ecosystems and is a composite index based on three indicator categories - Fluidity, Density and Diversity (1) - which are calculated using various U.S. Economic Census datasets. These indicators look at measurable results of the entrepreneurial landscape such as startup activity and growth, but they also evaluate the “soil health” of the Entrepreneurial Ecosystem – the population demographics, the industry specialization and diversification, the population and job churn, economic mobility, and economic equality. You might think of the EEI as a means for providing new ways to identify where new businesses could thrive – as tool for locating good places to plant a business. 
+            </p>
+            <h4> National Trends in The Entrepreneurial Ecosystems Index</h4>
+            <p>
+              From 30,000 feet the larger metropolitan statistical areas tend to score higher, 6 of the Top 10 and 26 of the Top 50 have populations of greater than 1 million people. 
+              However there is not a direct correlation between population and EEI score, Memphis, TN where 1.3 million people live scores only 29 out ot 100 on in the index putting it in 284th place out of 353 metros indexed.
+            </p>
+
+          </div>
+        </div>
+
+        <div className='row'>
+        <h4> Entrepreneurial Ecosystem Index Scores by Metro Area </h4>
+        <div className='col-xs-6'>
+          <MapGraphLegend 
+            mapGraph='map'
+            activeColor='scores'
+            activeComponent={this.state.activeComponent + "composite"}            
+            legendHover={function(){}}
+            legendHoverOut={function(){}}
+          />
+        </div>
+          <NationalMap 
+            metros={metroArray} 
+            activeColor={'scores'}
+            activeComponent={this.state.activeComponent + "composite"}
+            onMouseover={function(){}}
+            legendHover={function(){}}
+          />
+        </div>
         <div>
-          <MetroScores metroId={"national"} research={"true"}/>  
+          <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
         </div>
         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
-            <h4>About This Project</h4>
-            <p>Would you be surprised to learn that the metropolitan statistical area surrounding Miami, Florida, is the healthiest entrepreneurial ecosystem in the United States? Or that Washington D.C. is the second healthiest and has been in the top two for the last half decade? These are a few of the findings of the Entrepreneurial Ecosystem Atlas project. 
-The Entrepreneurial Ecosystem Atlas, created by the Albany Visualization and Informatics Lab (AVAIL) from the University at Albany, with funding from the Ewing Marion Kauffman Foundation, is a set of interactive tools designed to provide a visual understanding of the economic indicators of entrepreneurial ecosystems in the United States. 
-The idea was to create an interactive web-atlas, based on publicly available longitudinal datasets, that can provide snapshots of entrepreneurial health of the nation as a whole, and of metropolitan regions separately and comparatively, but also provide focused tools for in-depth investigation. The Entrepreneurial Ecosystem Atlas provides researchers, consultants, journalists and policymakers with a view into economic data through a lens that is designed to bring the entrepreneurial ecosystem into focus. The tool should help answer questions about economic and demographic characteristics of an MSA, and allow for evaluation of the efficacy of regional policies designed to encourage entrepreneurism. 
-At the center of the atlas is the Entrepreneurial Ecosystems Index (EEI), which combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The EEI represents the overall health of entrepreneurial ecosystems and is a composite index based on three indicator categories - Fluidity, Density and Diversity (1) - which are calculated using various U.S. Economic Census datasets. These indicators look at measurable results of the entrepreneurial landscape such as startup activity and growth, but they also evaluate the “soil health” of the Entrepreneurial Ecosystem – the population demographics, the industry specialization and diversification, the population and job churn, economic mobility, and economic equality. You might think of the EEI as a means for providing new ways to identify where new businesses could thrive – as tool for locating good places to plant a business. 
-From 30,000 feet it appears as though the rust belt and the southeast are not thriving entrepreneurial ecosystems.
-</p><p>
-
+           
+ <p>
 The Entrepreneurial Ecosystem Index ranks Miami, Washington D.C., Boulder, San Francisco, and Los Angeles as the top five metropolitan statistical areas in the latest year of data (2013). New York City was ranked 6th and Austin, Texas, 7th. While many of the top 7 cities are expected, it is somewhat surprising to find Miami at the top of the list. For instance, the Kauffman Index for Growth Entrepreneurship, an index that ranks MSAs based on the density of high growth startups, ranks Miami as the 39th MSA in the nation. So how does an MSA like Miami, 39th in the Growth Entrepreneurship Rankings, measure as the number one healthiest Entrepreneurial Ecosystem?
 Firstly, it ranks high in terms of foreign born population. A full 38% of the population of Miami is foreign born, a demographic with historically high rates of entrepreneurism. Theory suggests that a high concentration of foreign born population should provide a fertile environment for innovation. Secondly, Miami has a high rate of new firms per 1K population and a high share of employment in High Tech Firms. 
 </p><p>

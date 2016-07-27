@@ -104,6 +104,8 @@ export class LineGraph extends React.Component<void, Props, void> {
     var newProps = Object.assign({},this.props);
     newProps.data = newData;
 
+
+
     if(this.props.plot == "value"){
       var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
     }
@@ -111,7 +113,12 @@ export class LineGraph extends React.Component<void, Props, void> {
       var extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
     }
     
-    this.setState({extent:extent})    
+    this.setState({extent:extent})
+    if(this.props.extent){
+      this.setState({
+        extent: this.props.extent
+      })
+    }
   }
 
   componentDidMount () {
@@ -153,7 +160,7 @@ export class LineGraph extends React.Component<void, Props, void> {
   }
 
   _metroChange (oldMetros,newMetros){
-    if(oldMetros.length == newMetros.length){
+    if(oldMetros && oldMetros.length === newMetros.length){
       //Check to see if they are
       for(var i=0; i<oldMetros.length; i++){
         if(oldMetros[i] != newMetros[i]){
@@ -322,10 +329,10 @@ export class LineGraph extends React.Component<void, Props, void> {
     }
 
     //Get rid of everything already in the svg
-    d3.select("#line svg").selectAll("*").remove();
+    d3.select("#" + (this.props.container || 'line') + "svg").selectAll("*").remove();
 
     //Create new svg
-    var svg = d3.select("#line svg")
+    var svg = d3.select("#" + (this.props.container || 'line') + " svg")
     .attr('viewBox','-90 -20 ' + (width) + ' ' + (height))
 
     filteredData.sort(function(a,b){
@@ -455,54 +462,54 @@ export class LineGraph extends React.Component<void, Props, void> {
          return "Ranking"               
         }
       });
-
-    svg.append("g")
-      .attr("class", "y axis")
-      .attr("transform","translate("+paddedWidth+",0)")
-      .call(yAxisBrush)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", "-5em")
-      .attr("dy", "2em")
-      .attr("x","-15em") 
-
-
-    var brush = d3.svg.brush()
-        .y(yBrush)
-        .extent(scope.state.extent)
-        .on("brushstart", brushstart)
-        .on("brush", brushmove)
-        .on("brushend", brushend);
-
-
-    var arc = d3.svg.arc()
-        .outerRadius(15)
-        .startAngle(0)
-        .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
-
-    var brushg = svg.append("g")
-        .attr("class", "brush")
-        .attr("transform", "translate("+(paddedWidth + 17)+",0)")
-        .call(brush)
-        .style("opacity",".4");  
-
-
-    brushg.selectAll(".resize").append("path")
-        .attr("transform", "translate("+(paddedHeight / 4) + ",0)")
+    if(! this.props.hideBrush) {
+      svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform","translate("+paddedWidth+",0)")
+        .call(yAxisBrush)
+      .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("d", arc);
+        .attr("y", "-5em")
+        .attr("dy", "2em")
+        .attr("x","-15em") 
 
-    brushg.selectAll(".resize").append("path")
-        .attr("transform", "rotate(-90)")
-        .attr("d", arc);
 
-    brushg.selectAll("rect")
-        .attr("transform","translate(-15,0)")
-        .attr("width", (30));
+      var brush = d3.svg.brush()
+          .y(yBrush)
+          .extent(scope.state.extent)
+          .on("brushstart", brushstart)
+          .on("brush", brushmove)
+          .on("brushend", brushend);
 
-brushstart();
-brushmove();
 
+      var arc = d3.svg.arc()
+          .outerRadius(15)
+          .startAngle(0)
+          .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
+
+      var brushg = svg.append("g")
+          .attr("class", "brush")
+          .attr("transform", "translate("+(paddedWidth + 17)+",0)")
+          .call(brush)
+          .style("opacity",".4");  
+
+
+      brushg.selectAll(".resize").append("path")
+          .attr("transform", "translate("+(paddedHeight / 4) + ",0)")
+          .attr("transform", "rotate(-90)")
+          .attr("d", arc);
+
+      brushg.selectAll(".resize").append("path")
+          .attr("transform", "rotate(-90)")
+          .attr("d", arc);
+
+      brushg.selectAll("rect")
+          .attr("transform","translate(-15,0)")
+          .attr("width", (30));
+
+      brushstart();
+      brushmove();
+  }
 function brushstart() {
 
 }
@@ -855,12 +862,13 @@ function brushend() {
     return (
         <div className={classes['graphContainer']}>
             <div className={classes['title']}>
-              <h4>{scope._labelFunction(this.props)}</h4>
             </div>
-            <a onClick={this._resetBrush} type="button" className="btn btn-default pull-right">         
-              Reset Brush   
-            </a>
-            <div id="line" className={classes['svg-container']}>
+            {this.props.hideBrush ? '' :
+              <a onClick={this._resetBrush} type="button" className="btn btn-default pull-right">         
+                Reset Brush   
+              </a>
+            }
+            <div id={(this.props.container || 'line')} className={classes['svg-container']}>
               <svg className={classes['.svg-content-responsive']} preserveAspectRatio='xMinYMin meet'/>
             </div>
         </div>

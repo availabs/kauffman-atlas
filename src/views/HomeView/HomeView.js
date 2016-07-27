@@ -181,8 +181,6 @@ export class HomeView extends React.Component<void, Props, void> {
         if(bValue > aValue){
           return 1
         }
-
-
       }
     }
 

@@ -354,217 +354,228 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
     }
 
     return (
-      <div className='container' style={style}> 
-        <div className='row' >
-          <div className='col-xs-4'>
-            <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
-            <ReactTooltip 
-              id="composite" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{right:0}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.combined}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'>
-                <h4>{((combined && roundFormat(combined.y)) || '').toLocaleString()}</h4>
-                {combined && combined.rank ? "Rank " + combined.rank : ''}
-                <div>2013</div>
+      <div className='container' style={style}>
+
+        {this.props.sector ? '' : 
+          <div className='row' >
+            <div className='col-xs-4'>
+              <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
+              <ReactTooltip 
+                id="composite" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{right:0}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.combined}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'>
+                  <h4>{((combined && roundFormat(combined.y)) || '').toLocaleString()}</h4>
+                  {combined && combined.rank ? "Rank " + combined.rank : ''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{((combinedSelected && roundFormat(combinedSelected.y)) || '').toLocaleString()}</h4>
+                  {combinedSelected && combinedSelected.rank ? "Rank " + combinedSelected.rank : ''}   
+                  <div>{combinedSelected ? this.state.displayYear : ""}</div>
+                </div>         
               </div>
-              <div className='pull-right'>
-                <h4>{((combinedSelected && roundFormat(combinedSelected.y)) || '').toLocaleString()}</h4>
-                {combinedSelected && combinedSelected.rank ? "Rank " + combinedSelected.rank : ''}   
-                <div>{combinedSelected ? this.state.displayYear : ""}</div>
-              </div>         
             </div>
-          </div>
-          <div className='col-xs-6'>
-            <div>
-              <LineGraph hover={this.hover} yScale={combinedGraphYScale} data={combinedGraph} data2={combinedNatGraph} uniq='compGraph' options={{height: 100}} />
-              <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
-              <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
+            <div className='col-xs-6'>
+              <div>
+                <LineGraph hover={this.hover} yScale={combinedGraphYScale} data={combinedGraph} data2={combinedNatGraph} uniq='compGraph' options={{height: 100}} />
+                <span className='pull-left'>{combinedGraph[0].values[0].key}</span>
+                <span className='pull-right'>{combinedGraph[0].values[combinedGraph[0].values.length-1].key}</span>
+              </div>
             </div>
+              {lineLegend}
           </div>
-            {lineLegend}
-        </div>
-        <div className='row' style={rowStyle}>
-          <h4>Density</h4>
-          <div className='col-xs-4' style={graphBox}>
-            <h4><span data-tip data-for="density" className={"pull-right " + classes['info']}>?</span>Density Composite Index</h4>
-            <ReactTooltip 
-              id="density" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{right:0}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.density}</span>
-            </ReactTooltip>
-            <div>
+        }
+        {this.props.sector && this.props.sector !== 'density' ? '' :
+          <div className='row' style={rowStyle}>
+            <h4>Density</h4>
+            <div className='row'>
+            <div className='col-xs-6'>
+              <h4><span data-tip data-for="density" className={"pull-right " + classes['info']}>?</span>Density Composite Index</h4>
+              <ReactTooltip 
+                id="density" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{right:0}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.density}</span>
+              </ReactTooltip>
               <div className='pull-left' style={{marginBottom:"15px"}}>
                 <h4>{((densityComposite && roundFormat(densityComposite.y)) || '').toLocaleString()}</h4>
                 {densityComposite && densityComposite.rank ? "Rank " + densityComposite.rank : ''}
                 <div>2013</div>
               </div>
-              <div className='pull-right'>
-                <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
-                {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
-                <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
-              </div>         
-            </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={densityCompositeGraphYScale}  data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
-            </div>
-          </div>
-           <div className='col-xs-2' style={graphBox}>
-            <h4><span data-tip data-for="newFirms" className={"pull-right " + classes['info']}>?</span>New Firms / 1k pop</h4>
-            <ReactTooltip 
-              id="newFirms" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{right:0}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.newfirms}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'  style={{marginBottom:"15px"}}>
-                <h4>{((densityNewFirms && roundFormat(densityNewFirms.y)) || '').toLocaleString()}</h4>
-                {densityNewFirms && densityNewFirms.rank ? "Rank " + densityNewFirms.rank : ''}
-                <div>2013</div>
               </div>
-              <div className='pull-right'>
-                <h4>{((densityNewFirmsSelected && roundFormat(densityNewFirmsSelected.y)) || '').toLocaleString()}</h4>
-                {densityNewFirmsSelected && densityNewFirmsSelected.rank ? "Rank " + densityNewFirmsSelected.rank : ''}   
-                <div>{densityNewFirmsSelected ? this.state.displayYear : ""}</div>
-              </div>         
-            </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={densityNewFirmsGraphYScale} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityNewFirmsGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityNewFirmsGraph[0].values[densityNewFirmsGraph[0].values.length-1].key}</span>
-            </div>
-          </div>
-          <div className='col-xs-2' style={graphBox}>
-            <h4><span data-tip data-for="shareEmp" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Firms</h4>
-            <ReactTooltip 
-              id="shareEmp" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.shareofemploymentinnewfirms}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'  style={{marginBottom:"15px"}}>
-                <h4>{(densityShareEmp && densityShareEmp.y) ? 
-                      `${roundFormat(densityShareEmp.y)}%` : ''}
-                </h4>
-                {densityShareEmp && densityShareEmp.rank ? "Rank " + densityShareEmp.rank :''}
-                <div>2013</div>
+              <div className='col-xs-6' >
+                <div>
+                  <LineGraph hover={this.hover} yScale={densityCompositeGraphYScale}  data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
+                  <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
+                  <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
+                </div>
+                
+                
+                <div className='pull-right'>
+                  <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                  {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
+                  <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
+                </div>         
+              
               </div>
-              <div className='pull-right'>
-                <h4>{(densityShareEmpSelected && densityShareEmpSelected.y) ? 
-                      `${roundFormat(densityShareEmpSelected.y)}%` : ''}
-                </h4>
-                {densityShareEmpSelected && densityShareEmpSelected.rank ? "Rank " + densityShareEmpSelected.rank : ''}   
-                <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
-              </div>         
             </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={densityShareEmpGraphYScale} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityShareEmpGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
-            </div>
-          </div>
-          <div className='col-xs-2' style={graphBox}>
-            <h4><span data-tip data-for="highTech" className={"pull-right " + classes['info']}>?</span>Share of Employment in High Tech Firms</h4>
-            <ReactTooltip 
-              id="highTech" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{left:100}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.shareEmpHighTech}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'  style={{marginBottom:"15px"}}>
-                <h4>{(densityHighTech && densityHighTech.y) ? 
-                      `${roundFormat(densityHighTech.y)}%` : ''}
-                </h4>
-                {(densityHighTech && densityHighTech.rank) ? "Rank " + densityHighTech.rank : ''}
-                <div>2013</div>
+             <div className='col-xs-3' style={graphBox}>
+              <h4><span data-tip data-for="newFirms" className={"pull-right " + classes['info']}>?</span>New Firms / 1k pop</h4>
+              <ReactTooltip 
+                id="newFirms" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{right:0}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.newfirms}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'  style={{marginBottom:"15px"}}>
+                  <h4>{((densityNewFirms && roundFormat(densityNewFirms.y)) || '').toLocaleString()}</h4>
+                  {densityNewFirms && densityNewFirms.rank ? "Rank " + densityNewFirms.rank : ''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{((densityNewFirmsSelected && roundFormat(densityNewFirmsSelected.y)) || '').toLocaleString()}</h4>
+                  {densityNewFirmsSelected && densityNewFirmsSelected.rank ? "Rank " + densityNewFirmsSelected.rank : ''}   
+                  <div>{densityNewFirmsSelected ? this.state.displayYear : ""}</div>
+                </div>         
               </div>
-              <div className='pull-right'>
-                <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
-                      `${roundFormat(densityHighTechSelected.y)}%` : ''}
-                </h4>
-                {densityHighTechSelected && densityHighTechSelected.rank ? "Rank " + densityHighTechSelected.rank : ''}   
-                <div>{densityHighTechSelected && densityHighTechSelected.y ? this.state.displayYear : ""}</div>
-              </div>         
-            </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
-            </div>
-          </div>
-          <div className='col-xs-2'>
-            <h4><span data-tip data-for="exceptAccom" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Traded</h4>
-            <ReactTooltip 
-              id="exceptAccom" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{left:300}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.shareEmpNoAccRet}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'  style={{marginBottom:"15px"}}>
-                <h4>{((densityExceptAccom && roundFormat(densityExceptAccom.y)) || '').toLocaleString()}%</h4>
-                {densityExceptAccom && densityExceptAccom.rank ? "Rank " + densityExceptAccom.rank : ''}
-                <div>2013</div>
+              <div>
+                <LineGraph hover={this.hover} yScale={densityNewFirmsGraphYScale} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
+                <span className='pull-left'>{densityNewFirmsGraph[0].values[0].key}</span>
+                <span className='pull-right'>{densityNewFirmsGraph[0].values[densityNewFirmsGraph[0].values.length-1].key}</span>
               </div>
-              <div className='pull-right'>
-                <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
-                        `${roundFormat(densityExceptAccomSelected.y)}%` : ''}
-                </h4>
-                {densityExceptAccomSelected  && densityExceptAccomSelected.rank ? "Rank " + densityExceptAccomSelected.rank : ''}   
-                <div>{densityExceptAccomSelected  && densityExceptAccomSelected.y ? this.state.displayYear : ""}</div>
-              </div>         
             </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
-              <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
-              <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
+            <div className='col-xs-3' style={graphBox}>
+              <h4><span data-tip data-for="shareEmp" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Firms</h4>
+              <ReactTooltip 
+                id="shareEmp" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.shareofemploymentinnewfirms}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'  style={{marginBottom:"15px"}}>
+                  <h4>{(densityShareEmp && densityShareEmp.y) ? 
+                        `${roundFormat(densityShareEmp.y)}%` : ''}
+                  </h4>
+                  {densityShareEmp && densityShareEmp.rank ? "Rank " + densityShareEmp.rank :''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{(densityShareEmpSelected && densityShareEmpSelected.y) ? 
+                        `${roundFormat(densityShareEmpSelected.y)}%` : ''}
+                  </h4>
+                  {densityShareEmpSelected && densityShareEmpSelected.rank ? "Rank " + densityShareEmpSelected.rank : ''}   
+                  <div>{densityShareEmpSelected ? this.state.displayYear : ""}</div>
+                </div>         
+              </div>
+              <div>
+                <LineGraph hover={this.hover} yScale={densityShareEmpGraphYScale} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
+                <span className='pull-left'>{densityShareEmpGraph[0].values[0].key}</span>
+                <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
+              </div>
             </div>
-          </div>        
-        </div>
+            <div className='col-xs-3' style={graphBox}>
+              <h4><span data-tip data-for="highTech" className={"pull-right " + classes['info']}>?</span>Share of Employment in High Tech Firms</h4>
+              <ReactTooltip 
+                id="highTech" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{left:100}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.shareEmpHighTech}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'  style={{marginBottom:"15px"}}>
+                  <h4>{(densityHighTech && densityHighTech.y) ? 
+                        `${roundFormat(densityHighTech.y)}%` : ''}
+                  </h4>
+                  {(densityHighTech && densityHighTech.rank) ? "Rank " + densityHighTech.rank : ''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{(densityHighTechSelected && densityHighTechSelected.y) ? 
+                        `${roundFormat(densityHighTechSelected.y)}%` : ''}
+                  </h4>
+                  {densityHighTechSelected && densityHighTechSelected.rank ? "Rank " + densityHighTechSelected.rank : ''}   
+                  <div>{densityHighTechSelected && densityHighTechSelected.y ? this.state.displayYear : ""}</div>
+                </div>         
+              </div>
+              <div>
+                <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+                <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
+                <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
+              </div>
+            </div>
+            <div className='col-xs-3'>
+              <h4><span data-tip data-for="exceptAccom" className={"pull-right " + classes['info']}>?</span>Share of Employment in New Traded</h4>
+              <ReactTooltip 
+                id="exceptAccom" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{left:300}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.shareEmpNoAccRet}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'  style={{marginBottom:"15px"}}>
+                  <h4>{((densityExceptAccom && roundFormat(densityExceptAccom.y)) || '').toLocaleString()}%</h4>
+                  {densityExceptAccom && densityExceptAccom.rank ? "Rank " + densityExceptAccom.rank : ''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{(densityExceptAccomSelected && densityExceptAccomSelected.y) ? 
+                          `${roundFormat(densityExceptAccomSelected.y)}%` : ''}
+                  </h4>
+                  {densityExceptAccomSelected  && densityExceptAccomSelected.rank ? "Rank " + densityExceptAccomSelected.rank : ''}   
+                  <div>{densityExceptAccomSelected  && densityExceptAccomSelected.y ? this.state.displayYear : ""}</div>
+                </div>         
+              </div>
+              <div>
+                <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+                <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
+                <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
+              </div>
+            </div>        
+          </div>
+        }
+        {this.props.sector && this.props.sector !== 'fluidity' ? '' :
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
           <div className='col-xs-4' style={graphBox}>
@@ -726,6 +737,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </div>
           </div>
         </div>
+        }
+        {this.props.sector && this.props.sector !== 'diversity' ? '' :
         <div className='row' style={rowStyle}>
           <h4>Diversity</h4>
           <div className='col-xs-4' style={graphBox}>
@@ -887,7 +900,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             {diversityOppHigh && diversityOppHigh.rank ? "Rank " + diversityOppHigh.rank : ''}
           </div>
         </div>
-
+      }
       </div>
     )      
   }

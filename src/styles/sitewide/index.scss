@@ -164,10 +164,14 @@
 
 .info{
   color: #efefef;
-  border-radius: 25px;
+  border-radius: 100px;
   background-color: #5d5d5d;
   cursor: pointer;
-  padding:3px;
+  padding-left:6px;
+  padding-top: 3px;
+  font-size: 12px;
+  height: 18px;
+  width: 18px;
 }
 
 .info:hover{

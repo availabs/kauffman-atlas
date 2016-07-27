@@ -55,7 +55,7 @@ export default class Resources extends React.Component {
         <div className='container'>
           <div className='row'>
             <Sticky style={{paddingTop:"5px"}}>
-              <div id="rankingsTableSelect" className="col-md-2">
+              <div id="rankingsTableSelect" className="col-xs-2">
                 <ul className={"nav nav-pills nav-stacked " + styles['kuafnav']}  style={{color:'#efefef'}}>
                   
                   <li role="presentation" className={this._isActive(undefined)}>
@@ -100,7 +100,7 @@ export default class Resources extends React.Component {
                 </ul>
               </div>
             </Sticky>
-            <div className={'col-md-10 ' + styles['text-div']}  style={{backgroundColor: '#f7f7f7', float:"right", overflow: 'hidden',marginBottom: 2, marginTop: -3}}>
+            <div className={'col-xs-10 ' + styles['text-div']}  style={{backgroundColor: '#f7f7f7', float:"right", overflow: 'hidden',marginBottom: 2, marginTop: -3}}>
              {this.renderContent ()}
             </div>
           </div>
