@@ -78,20 +78,7 @@ export default class Research extends React.Component {
               graph={this.state.activeComponent + "composite"}
             />  
           </div>
-          <div className='col-md-6'>
-
-            <LineGraph  
-              activeColor="ranks"  
-              container='values'
-              hideTitle
-              hideBrush
-              extent={[0,50]}
-              onMouseover={this.onMouseover}
-              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-              plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph={this.state.activeComponent + "composite"}
-            />  
-          </div>
+          
         </div>
 
       )          
@@ -121,26 +108,19 @@ export default class Research extends React.Component {
               </p><p>
             At the center of the atlas is the Entrepreneurial Ecosystems Index (EEI), which combines a dozen different indicators to rank metropolitan statistical areas (MSAs) across the nation. The EEI represents the overall health of entrepreneurial ecosystems and is a composite index based on three indicator categories - Fluidity, Density and Diversity (1) - which are calculated using various U.S. Economic Census datasets. These indicators look at measurable results of the entrepreneurial landscape such as startup activity and growth, but they also evaluate the “soil health” of the Entrepreneurial Ecosystem – the population demographics, the industry specialization and diversification, the population and job churn, economic mobility, and economic equality. You might think of the EEI as a means for providing new ways to identify where new businesses could thrive – as tool for locating good places to plant a business. 
             </p>
-            <h4> National Trends in The Entrepreneurial Ecosystems Index</h4>
-            <p>
-              From 30,000 feet the larger metropolitan statistical areas tend to score higher, 6 of the Top 10 and 26 of the Top 50 have populations of greater than 1 million people. 
-              However there is not a direct correlation between population and EEI score, Memphis, TN where 1.3 million people live scores only 29 out ot 100 on in the index putting it in 284th place out of 353 metros indexed.
-            </p>
-
+            </div>
           </div>
-        </div>
-
         <div className='row'>
-        <h4> Entrepreneurial Ecosystem Index Scores by Metro Area </h4>
-        <div className='col-xs-6'>
-          <MapGraphLegend 
-            mapGraph='map'
-            activeColor='scores'
-            activeComponent={this.state.activeComponent + "composite"}            
-            legendHover={function(){}}
-            legendHoverOut={function(){}}
-          />
-        </div>
+          <h4> Entrepreneurial Ecosystem Index Scores by Metro Area </h4>
+          <div className='col-xs-6'>
+            <MapGraphLegend 
+              mapGraph='map'
+              activeColor='scores'
+              activeComponent={this.state.activeComponent + "composite"}            
+              legendHover={function(){}}
+              legendHoverOut={function(){}}
+            />
+          </div>
           <NationalMap 
             metros={metroArray} 
             activeColor={'scores'}
@@ -149,10 +129,35 @@ export default class Research extends React.Component {
             legendHover={function(){}}
           />
         </div>
-        <div>
-          <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
-        </div>
         <div className='row'>
+          <div className='col-sm-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
+            <h4> National Trends in The Entrepreneurial Ecosystems Index</h4>
+            <p>
+              From 30,000 feet the larger metropolitan statistical areas tend to score higher, 6 of the Top 10 and 26 of the Top 50 have populations of greater than 1 million people. 
+              However there is not a direct correlation between population and EEI score, Memphis, TN where 1.3 million people live scores only 29 out ot 100 on in the index putting it in 284th place out of 353 metros indexed. 
+              Another prominent example of popluation size not matching EEI score is Boulder, CO which is home to only 330 thousand people but scores 67.93 in 2013, the second highest score in the index.
+            </p>
+          </div>
+          <div className='row'>
+            <div className='col-md-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
+            <h4> Rank of Metro Areas in Top 50 for All Years of Study</h4>
+            <LineGraph  
+              activeColor="ranks"  
+              container='values'
+              hideTitle
+              hideBrush
+              extent={[0,50]}
+              onMouseover={this.onMouseover}
+              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
+              plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
+              graph={this.state.activeComponent + "composite"}
+            />  
+          </div>
+          </div>
+        </div>
+
+        
+         <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
            
  <p>
@@ -189,6 +194,10 @@ The Entrepreneurial Ecosystem Atlas advances the cause of Entrepreneurial Ecosys
 </p>
 
           </div>
+        <div>
+          <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
+        </div>
+       
         </div>
       </div>
     )
