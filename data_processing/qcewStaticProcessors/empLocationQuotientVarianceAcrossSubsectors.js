@@ -14,6 +14,7 @@ import { qcewApi as apiServerAddress } from '../../src/AppConfig'
 const outputFilePath = path.join(__dirname, '../../src/static/data/economySpecializationStatistics.json') 
 
 const msaIds = Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
+msaIds[msaIds.findIndex(id => (id === '26180'))] = '46520' // Honolulu case
 
 
 const allNaicsCodes = Object.keys(JSON.parse(fs.readFileSync('../../src/static/data/naicsKeys.json')))
@@ -34,11 +35,23 @@ const handleFetchErrors = (response) => {
 }
 
 
+const getFipsCode = (msa) => {
+  if (msa === '46520') {
+    return 'C2618C4652'
+  } else if (msa === '31080') {
+    return 'C3108C3110'
+  } else {
+    return `C${msa.slice(0,4)}`
+  }
+}
+
+
+
 const buildRequestURL = (msa) => 
-  `${apiServerAddress}/data/` + 
-  `fips${(msa !== '31080') ? `C${msa.slice(0,4)}` : `C3108C3110`}/` +
-  `yr${years.join('')}/qtr1234/` + 
-  `ind${fourDigitNaics.map(c => _.padStart(c, 6, '0')).join('')}/` + 
+  `${apiServerAddress}/data/` +
+  `fips${getFipsCode(msa)}/` +
+  `yr${years.join('')}/qtr1234/` +
+  `ind${fourDigitNaics.map(c => _.padStart(c, 6, '0')).join('')}/` +
   `?${_.union(empFields, lqEmpFields).map(field => `fields[]=${field}`).join('&')}`
 
 
