@@ -74,6 +74,8 @@ module.exports = function () {
   let yAccessor = yAccessorDefault
   let getValues = getValuesDefault
 
+  let alwaysRedrawYAxis = false
+
   function timeDomain (d) { return d3.extent(_.flatMap(d, x => [_.first(x.values).key, _.last(x.values).key])) }
   function linearDomain (d) { return [0, d.length ? getValues(d[0]).length - 1 : 1] }
   function ordinalDomain (d) { return d.length ? getValues(d[0]).map(function (d, i) { return xAccessor(d, i) }) : [] }
@@ -158,7 +160,7 @@ module.exports = function () {
       return d3.extent(getValues(d).filter(line.defined()), function (d, i) { return yAccessor(d, i) })
     })))
 
-    if(yScale.domain()[0] == 0){
+    if(alwaysRedrawYAxis || (yScale.domain()[0] === 0)) {
       yScale.range([hght, 0])
             .domain([extent[0] - extent[0] * 0.05, extent[1] + extent[0] * 0.05])
     }
@@ -276,8 +278,8 @@ module.exports = function () {
         })
       points.attr(pointAttr)
       points.transition().delay(transitionTime).attr({
-        cx: function (d, i) { return xScale(d.x) },
-        cy: function (d, i) { return yScale(d.y) }
+        cx: function (d) { return xScale(d.x) },
+        cy: function (d) { return yScale(d.y) }
       })
     }
   }
@@ -545,6 +547,9 @@ module.exports = function () {
       mouseListener = ml
       return graph
   }
+  graph.alwaysRedrawYAxis = (flag) => {
+    alwaysRedrawYAxis = !!flag
+  }
 
   return graph
 
@@ -561,13 +566,13 @@ module.exports = function () {
 
   function __mouseover (d) {
     if (mouseover) {
-	mouseover.call(this, d, svg)
+	    mouseover.call(this, d, svg)
     }
-      if(mouseListener) {
-	    Object.keys(mouseListener).forEach(id => {
-//		mouseListener[id](d)
-	    })
-	}
+    //if(mouseListener) {
+      //Object.keys(mouseListener).forEach(id => {
+        //mouseListener[id](d)
+      //})
+	  //}
   }
   function __mousemove (d) {
     var x = xScale(d.point.x)
