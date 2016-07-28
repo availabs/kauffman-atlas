@@ -14,6 +14,7 @@ import { qcewApi as apiServerAddress } from '../../src/AppConfig'
 const outputFilePath = path.join(__dirname, '../../src/static/data/economySpecializationStatistics.json') 
 
 const msaIds = Object.keys(JSON.parse(fs.readFileSync('../../src/static/msaIdToName.json')))
+msaIds[msaIds.findIndex(id => (id === '26180'))] = '46520' // Honolulu case
 
 
 const allNaicsCodes = Object.keys(JSON.parse(fs.readFileSync('../../src/static/data/naicsKeys.json')))
@@ -35,7 +36,7 @@ const handleFetchErrors = (response) => {
 
 
 const getFipsCode = (msa) => {
-  if (msa === '26180') {
+  if (msa === '46520') {
     return 'C2618C4652'
   } else if (msa === '31080') {
     return 'C3108C3110'
@@ -45,7 +46,8 @@ const getFipsCode = (msa) => {
 }
 
 
-const buildRequestURL = (msa) => console.log('==>', msa) ||
+
+const buildRequestURL = (msa) => 
   `${apiServerAddress}/data/` +
   `fips${getFipsCode(msa)}/` +
   `yr${years.join('')}/qtr1234/` +
