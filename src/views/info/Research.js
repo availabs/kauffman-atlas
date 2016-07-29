@@ -29,6 +29,8 @@ export default class Research extends React.Component {
     this._setActiveComponent = this._setActiveComponent.bind(this)
     this._setMetric = this._setMetric.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
+    this._renderGraph = this._renderGraph.bind(this)
+    this._renderMap = this._renderMap.bind(this)
    }
 
   // _renderNationalScores()   {
@@ -57,45 +59,66 @@ export default class Research extends React.Component {
     let curFeature = feature.city ? feature.city.key : feature.id  
   }
 
-  _renderMapGraph(){
-    if(!this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]){
-      this.props["get" + this.state.activeComponent + (this.state.metric).replace(/ /g,'')]()
+  _renderGraph(component, metric, color, container, plot, extent){
+    if(!this.props[component + (metric).replace(/ /g,'')]){
+      this.props["get" + component + (metric).replace(/ /g,'')]()
       return <span />
     }
     else{
-     
       return (
-        <div className='row'>
-          <div className='col-md-6'>
-            <LineGraph  
-              activeColor="ranks"
-              hideTitle
-              hideBrush
-              extent={[50,90]}
-              onMouseover={this.onMouseover}
-              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-              plot="value" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph={this.state.activeComponent + "composite"}
-            />  
-          </div>
-          
-        </div>
-
+        <div>
+          <LineGraph  
+            activeColor={color}
+            container={container}
+            hideTitle
+            hideBrush
+            extent={extent}
+            onMouseover={this.onMouseover}
+            data={this.props[component + (metric).replace(/ /g,'')]} 
+            plot={plot} dataType="relative" title={component + (metric).replace(/ /g,'')} 
+            graph={component + metric}
+          />
+        </div>  
       )          
-      
-    
+    }
+  }
+
+  _renderMap(component, metric, color, container, plot, extent){
+    var metroArray = Object.keys(this.props.metros).map(msaId => ({key:msaId, data:this.props.metros[msaId]})).map(metro => metro.key)
+
+    if(!this.props[component + (metric).replace(/ /g,'')]){
+      this.props["get" + component + (metric).replace(/ /g,'')]()
+      return <span />
+    }
+    else{
+      console.log(color,container)
+      return (
+        <div>
+          <div className='col-xs-6'>
+              <MapGraphLegend 
+                mapGraph='map'
+                activeColor='scores'
+                activeComponent={component + "composite"}            
+                legendHover={function(){}}
+                legendHoverOut={function(){}}
+              />
+            </div>
+          <NationalMap 
+            metros={metroArray} 
+            activeColor={'scores'}
+            activeComponent={component + "composite"}
+            onMouseover={function(){}}
+            legendHover={function(){}}
+          />
+        </div> 
+      )          
     }
   }
 
   render () {
-    var metroArray = Object.keys(this.props.metros).map(msaId => ({key:msaId, data:this.props.metros[msaId]})).map(metro => metro.key)
+   
     return (
       <div className='container-fluid'>
-        <div className='row'>
-            <div id="mapDiv" className={'col-xs-12 '}>
-              {this._renderMapGraph()}
-            </div>
-        </div>
         <div className='row'>
           <div className='col-sm-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
             <h4> About the Entrepreneurial Ecosystem Atlas </h4>
@@ -112,22 +135,7 @@ export default class Research extends React.Component {
           </div>
         <div className='row'>
           <h4> Entrepreneurial Ecosystem Index Scores by Metro Area </h4>
-          <div className='col-xs-6'>
-            <MapGraphLegend 
-              mapGraph='map'
-              activeColor='scores'
-              activeComponent={this.state.activeComponent + "composite"}            
-              legendHover={function(){}}
-              legendHoverOut={function(){}}
-            />
-          </div>
-          <NationalMap 
-            metros={metroArray} 
-            activeColor={'scores'}
-            activeComponent={this.state.activeComponent + "composite"}
-            onMouseover={function(){}}
-            legendHover={function(){}}
-          />
+          {this. _renderMap('combined', 'composite')}
         </div>
         <div className='row'>
           <div className='col-sm-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
@@ -141,17 +149,7 @@ export default class Research extends React.Component {
           <div className='row'>
             <div className='col-md-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
             <h4> Rank of Metro Areas in Top 50 for All Years of Study</h4>
-            <LineGraph  
-              activeColor="ranks"  
-              container='values'
-              hideTitle
-              hideBrush
-              extent={[0,50]}
-              onMouseover={this.onMouseover}
-              data={this.props[this.state.activeComponent + (this.state.metric).replace(/ /g,'')]} 
-              plot="rank" dataType="relative" title={this.state.activeComponent + (this.state.metric).replace(/ /g,'')} 
-              graph={this.state.activeComponent + "composite"}
-            />  
+             {this._renderGraph('combined', 'composite', 'ranks', 'ranksas', 'rank',[0,50])}
           </div>
           </div>
         </div>
@@ -159,16 +157,32 @@ export default class Research extends React.Component {
         
          <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
-           
- <p>
-The Entrepreneurial Ecosystem Index ranks Miami, Washington D.C., Boulder, San Francisco, and Los Angeles as the top five metropolitan statistical areas in the latest year of data (2013). New York City was ranked 6th and Austin, Texas, 7th. While many of the top 7 cities are expected, it is somewhat surprising to find Miami at the top of the list. For instance, the Kauffman Index for Growth Entrepreneurship, an index that ranks MSAs based on the density of high growth startups, ranks Miami as the 39th MSA in the nation. So how does an MSA like Miami, 39th in the Growth Entrepreneurship Rankings, measure as the number one healthiest Entrepreneurial Ecosystem?
+            <p>
+             The Entrepreneurial Ecosystem Index ranks Washington D.C., Boulder , Austin, New York and Miami as the top five metropolitan statistical areas in the latest year of data (2013).San Francisco, Los Angeles and San Jose-Sunnyvale-Santa Clara were alll within the top 10. While many of the top 7 cities are expected, it is somewhat surprising to find Washington DC at the top of the list. For instance, the Kauffman Index for Growth Entrepreneurship, an index that ranks MSAs based on the density of high growth startups, ranks Miami as the 39th MSA in the nation. So how does an MSA like Miami, 39th in the Growth Entrepreneurship Rankings, measure as the number one healthiest Entrepreneurial Ecosystem?
+            </p>
+            <p>
 Firstly, it ranks high in terms of foreign born population. A full 38% of the population of Miami is foreign born, a demographic with historically high rates of entrepreneurism. Theory suggests that a high concentration of foreign born population should provide a fertile environment for innovation. Secondly, Miami has a high rate of new firms per 1K population and a high share of employment in High Tech Firms. 
-</p><p>
+</p>
+          </div>
+<div className='row'>
+    <div id="mapDiv" className={'col-xs-12 '}>
+    <h4>Top Metro EEI Composite Scores <small>Out of 100</small></h4>
+      {this._renderGraph('combined', 'composite', 'scores', 'scores', 'value',[50,85])}
+    </div>
+</div>
+<div className={'col-xs-12 ' + classes['text-div']}>
+<p>
 Upon digging deeper into the Entrepreneurial Ecosystem Atlas we find that Miami has a healthy and diverse portfolio of industry clusters, with its lone standout specialization being Water Transportation, which likely points toward the Cruise Industry.
 The presence of so many healthy industry clusters indicates that Miami is economically diverse in addition to its diverse population, its high percentage of New Firms per 1K, and high Share of Employment in High Tech Firms.  
 </p><p>
 Additionally, Miami appears to have a relatively recent increase in young firms in the sectors of manufacturing and finance/insurance. These industries traditionally provide a solid bedrock for any entrepreneurial ecosystem. 
-</p><p>
+</p>
+</div>
+<div>
+  <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
+</div>
+<div className={'col-xs-12 ' + classes['text-div']}>
+<p>
 Washington D.C., the second highest ranked city in the Entrepreneurial Ecosystem Atlas, is a less surprising entry on the list. Washington D.C. has had a consistently strong collection of high growth startups in recent years. Kauffman Growth Index ranks them highly….. The Entrepreneurial Ecosystem Index takes this into account in ranking Washington 1st in the Fluidity Category.  
 Washington D.C. also scores well in percent of foreign born population and in the Equality of Opportunity data which shows that traditionally, individuals who grow up in Washington D.C. have a good chance of taking home a higher income than their parents. 
 Washington D.C.’s share of Employment in High Tech New Firms score is likely bolstered by its high establishment quotient in the Professional, Scientific and Technical Services industry sector. Employment in the sub-industry sectors of Computer Systems Design, Scientific Research and Development, and Management, Scientific, and Technical Services, are all higher than three times the national average. 
@@ -177,26 +191,38 @@ The Entrepreneurial Ecosystem Atlas also visualizes trends such as the great rec
 First let’s take a look at the effects of the great recession. There’s a clear dip in the number of new and young firms per 1,000 people over 2008 and 2009, likely a result of the credit crunch, which made it difficult to start a business. There’s a corresponding dip in employment turnover rate as a percentage of total employment which visualizes the dearth of economic mobility associated with recessions. ***
  </p><p>
 Hurricane Katrina also shows up clearly in some graphs, appearing to be a complete outlier in the Net Migration graph. 
-</p><p>
+</p>
+</div>
+<div>
+  <MetroScores metroId={"national"} research={"true"} sector={'diversity'} />  
+</div>
+<div className={'col-xs-12 ' + classes['text-div']}>
+<p>
 The industries in New Orleans most severely impacted by Katrina were the Accommodation / Food Services and Retail Trade. Whereas Manufacturing, Health Care / Social Assistance, and Professional, Scientific, and Technical Services show a slight drop in the 4th quarter of 2005 before rebounding to pre-Katrina levels in the 1st quarter of 2006. These industries were clearly more resilient than the Accommodation / Food Services and Retail Trade industries, a finding that is clearly illustrated by the Quarterly Employment visualization tools. New Orleans is now a decade into the Katrina recovery and Accommodation / Food Services and Retail Trade appear to have finally rebounded to pre-Katrina levels.
 </p><p>
 The Albany Visualization and Informatics Lab explored our hometown MSA of Albany – Schenectady – Troy, NY, to see if we could find evidence of the recent investment in its Startup New York program and its investment in nanotechnology research and development. The State of New York and regional economic leaders have branded the Albany – Schenectady – Troy area “Tech Valley.” As part of developing the Tech Valley idea, state funding has been directed to the University at Albany’s College of Nano-scale Engineering (now SUNY Polytech) where a huge investment was made in nanotechnology manufacturing and research facilities. Funding and tax breaks were levied to develop a Startup New York program for encouraging entrepreneurship in the region and to attract startups from other regions to relocate to the new facilities. Additionally, the semiconductor manufacturing company Global Foundries opened a manufacturing plant in neighboring Malta, NY, beginning mass-production in 2012.
-</p><p>
+</p>
+
+<p>
 Looking at the Entrepreneurial Ecosystem Atlas, evidence of the effects of these policies appears mixed. Clearly there is a spike in 0-1 year-old manufacturing firms in the 4th quarter of 2011 as indicated by the red line in the graph below. 
 </p><p>
 We can follow that through 2012 and 2013 by looking at 2-3 year-old manufacturing firms.  
 </p><p>
 We can continue to follow this trend into 2014 by looking at 4-5 year-old manufacturing firms.
-</p><p>
+</p>
+</div>
+<div>
+  <MetroScores metroId={"national"} research={"true"} sector={'fluidity'} />  
+</div>
+<div className={'col-xs-12 ' + classes['text-div']}>
+<p>
 The Startup New York program, however, seems to be more difficult to track in terms of overall success.  Clearly it is possible to link the growth in manufacturing to the Startup New York program, but there is little evidence of success in other sectors commonly associated with startup culture such as Information and Professional Services. Moreover, aside from the jump in manufacturing noted earlier, there doesn’t appear to be much happening in the Albany – Schenectady – Troy region in the way of 0-1 year-old firms. We would have to look back to a jump in new firms in 2009 in the Information sector which notably does not appear to follow into the 2-3 year-old firm-age, likely indicating firm death.
 </p><p>
 The Entrepreneurial Ecosystem Atlas advances the cause of Entrepreneurial Ecosystem studies by producing replicable metrics and data science tools such as Application Programming Interfaces (APIs) for various economic census datasets. Looking at each MSA with the same tool provides a level of discovery rarely available, as many of the resources in economic research projects are limited to “one-off” analytical studies that only look at a few places at a time. By using data science methods to calculate the entrepreneurial ecosystem metrics, researchers can look at every MSA in the U.S. and drill down equally into each one, ensuring like-kind output because of the method used to calculate the metrics. This will provide a strong foundation for future theory and policy analysis. 
 </p>
 
           </div>
-        <div>
-          <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
-        </div>
+       
        
         </div>
       </div>
