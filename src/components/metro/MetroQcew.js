@@ -139,6 +139,7 @@ const renderVisualizations = (props) => (
                            yFormat={(props.measureIsCurrency) ? dollarFormatter : integerFormatter}
                            xScaleType={'time'}
                            yAxis={true}
+                           alwaysRedrawYAxis={true}
                            margin={graphMargin}
                            tooltip={true}
                            title={props.lineGraphRawTitle}
@@ -156,6 +157,7 @@ const renderVisualizations = (props) => (
                            xFormat={d => d ? d3.time.format('%Y')(new Date(d)) : ''}
                            yAxis={true}
                            yFormat={floatFormatter}
+                           alwaysRedrawYAxis={true}
                            margin={graphMargin}
                            tooltip={true}
                            title={props.lineGraphLQTitle}
