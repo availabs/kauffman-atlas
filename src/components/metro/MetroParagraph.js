@@ -74,16 +74,14 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     return (<span>{i}<sup>th</sup></span>);
   }
 
-
   _highScore(data){
     let compScores = [];
-
-    compScores.push({value:data.density.composite.values[data.density.composite.values.length-1], metric:'density'})
-    compScores.push({value:data.fluidity.composite.values[data.fluidity.composite.values.length-1], metric:'fluidity'})
-    compScores.push({value:data.diversity.composite.values[data.diversity.composite.values.length-1], metric:'diversity'})
+    console.log(data)
+    compScores.push({value:data.density.composite.values.filter(d => { return d.x === 2013 })[0], metric:'density'})
+    compScores.push({value:data.fluidity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'fluidity'})
+    compScores.push({value:data.diversity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'diversity'})
 
     var topMetric = compScores.reduce((highest,current) => {
-      console.log(current)
       return highest.value.rank < current.value.rank ? highest : current
     },{value:{rank:400}})
 
@@ -93,11 +91,10 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
-
-            console.log( metricName.toLowerCase())
       return (
-        data[topMetric.metric][metricName]['relative'] ? { value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :
-        data[topMetric.metric][metricName]['raw'] ? { value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :               
+        data[topMetric.metric][metricName]['relative'] ? { value:data[topMetric.metric][metricName]['relative'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :
+        data[topMetric.metric][metricName]['raw'] ? { value:data[topMetric.metric][metricName]['raw'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :               
+        (metricName == "composite") ? { value:data[topMetric.metric][metricName].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :                         
         { value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] }                          
         )
     }).reduce((highest, current) => {
@@ -111,9 +108,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   _lowScore(data){
     let compScores = [];
 
-    compScores.push({value:data.density.composite.values[data.density.composite.values.length-1], metric:'density'})
-    compScores.push({value:data.fluidity.composite.values[data.fluidity.composite.values.length-1], metric:'fluidity'})
-    compScores.push({value:data.diversity.composite.values[data.diversity.composite.values.length-1], metric:'diversity'})
+    compScores.push({value:data.density.composite.values.filter(d => { return d.x === 2013 })[0], metric:'density'})
+    compScores.push({value:data.fluidity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'fluidity'})
+    compScores.push({value:data.diversity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'diversity'})
 
     var bottomMetric = compScores.reduce((lowest,current) => {
       return lowest.value.rank > current.value.rank ? lowest : current
@@ -125,9 +122,11 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
+
       return (
-        data[bottomMetric.metric][metricName]['relative'] ? { value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :
-        data[bottomMetric.metric][metricName]['raw'] ? { value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :               
+        data[bottomMetric.metric][metricName]['relative'] ? { value:data[bottomMetric.metric][metricName]['relative'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :
+        data[bottomMetric.metric][metricName]['raw'] ? { value:data[bottomMetric.metric][metricName]['raw'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :               
+        (metricName == "composite") ? { value:data[bottomMetric.metric][metricName].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :                         
         { value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] }                          
         )
     }).reduce((lowest, current) => {
