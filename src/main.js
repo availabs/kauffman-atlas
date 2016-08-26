@@ -35,4 +35,4 @@ const routes = makeRoutes(store)
 // React application to the DOM!
 
 var app = document.getElementById('root');
-ReactDOM.render(<Root history={history}  store={store}routes={routes} onUpdate={logPageView} />, app);
+ReactDOM.render(<Root history={history}  store={store} routes={routes} />, app);
