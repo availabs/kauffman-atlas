@@ -36,7 +36,7 @@ export default class Resources extends React.Component {
 
   render () {
     let subStyle = {
-       marginLeft: 10,
+      marginLeft: 10,
       fontSize: 12,
       fontWeight:100,
       //color

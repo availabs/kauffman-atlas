@@ -359,7 +359,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         {this.props.sector ? '' : 
           <div className='row' >
             <div className='col-xs-4'>
-              <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Composite Entrepreneurial Ecosystem Index</h4>
+              <h4><span data-tip data-for="composite" className={"pull-right " + classes['info']}>?</span>Entrepreneurial Ecosystem Index</h4>
               <ReactTooltip 
                 id="composite" 
                 place="top" 
@@ -418,20 +418,28 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 {densityComposite && densityComposite.rank ? "Rank " + densityComposite.rank : ''}
                 <div>2013</div>
               </div>
+              <div className='pull-right'>
+                <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
+                <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
+              </div>  
               </div>
               <div className='col-xs-6' >
                 <div>
-                  <LineGraph hover={this.hover} yScale={densityCompositeGraphYScale}  data={densityCompositeGraph} data2={densityNatCompositeGraph} uniq='densityCompGraph' options={{height: 50}} />
+                  <LineGraph 
+                    hover={this.hover}
+                    yScale={densityCompositeGraphYScale}
+                    data={densityCompositeGraph}
+                    data2={densityNatCompositeGraph}
+                    uniq='densityCompGraph'
+                    options={{height: 100}}
+                  />
                   <span className='pull-left'>{densityCompositeGraph[0].values[0].key}</span>
                   <span className='pull-right'>{densityCompositeGraph[0].values[densityCompositeGraph[0].values.length-1].key}</span>
                 </div>
                 
                 
-                <div className='pull-right'>
-                  <h4>{((densityCompositeSelected && roundFormat(densityCompositeSelected.y)) || '').toLocaleString()}</h4>
-                  {densityCompositeSelected && densityCompositeSelected.rank ? "Rank " + densityCompositeSelected.rank : ''}   
-                  <div>{densityCompositeSelected ? this.state.displayYear : ""}</div>
-                </div>         
+                      
               
               </div>
             </div>
@@ -462,7 +470,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 </div>         
               </div>
               <div>
-                <LineGraph hover={this.hover} yScale={densityNewFirmsGraphYScale} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 50}} />
+                <LineGraph hover={this.hover} yScale={densityNewFirmsGraphYScale} data={densityNewFirmsGraph} data2={densityNatNewFirmsGraph} uniq='densityNewFirsmGraph' options={{height: 100}} />
                 <span className='pull-left'>{densityNewFirmsGraph[0].values[0].key}</span>
                 <span className='pull-right'>{densityNewFirmsGraph[0].values[densityNewFirmsGraph[0].values.length-1].key}</span>
               </div>
@@ -498,7 +506,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 </div>         
               </div>
               <div>
-                <LineGraph hover={this.hover} yScale={densityShareEmpGraphYScale} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 50}} />
+                <LineGraph hover={this.hover} yScale={densityShareEmpGraphYScale} data={densityShareEmpGraph} data2={densityNatShareEmpGraph} uniq='densityShareEmpGraph' options={{height: 100}} />
                 <span className='pull-left'>{densityShareEmpGraph[0].values[0].key}</span>
                 <span className='pull-right'>{densityShareEmpGraph[0].values[densityShareEmpGraph[0].values.length-1].key}</span>
               </div>
@@ -534,7 +542,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 </div>         
               </div>
               <div>
-                <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 50}} />
+                <LineGraph hover={this.hover} yScale={densityHighTechGraphYScale} data={densityHighTechGraph} data2={densityNatHighTechGraph} uniq='densityHighTechGraph' options={{height: 100}} />
                 <span className='pull-left'>{densityHighTechGraph[0].values[0].key}</span>
                 <span className='pull-right'>{densityHighTechGraph[0].values[densityHighTechGraph[0].values.length-1].key}</span>
               </div>
@@ -568,7 +576,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 </div>         
               </div>
               <div>
-                <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 50}} />
+                <LineGraph hover={this.hover} yScale={densityExceptAccomGraphYScale} data={densityExceptAccomGraph} data2={densityNatExceptAccomGraph} uniq='densityExceptAccomGraph' options={{height: 100}} />
                 <span className='pull-left'>{densityExceptAccomGraph[0].values[0].key}</span>
                 <span className='pull-right'>{densityExceptAccomGraph[0].values[densityExceptAccomGraph[0].values.length-1].key}</span>
               </div>
@@ -578,39 +586,44 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         {this.props.sector && this.props.sector !== 'fluidity' ? '' :
         <div className='row' style={rowStyle}>
           <h4>Fluidity</h4>
-          <div className='col-xs-4' style={graphBox}>
-            <h4><span data-tip data-for="fluidity" className={"pull-right " + classes['info']}>?</span>Fluidity Composite Index</h4>
-            <ReactTooltip 
-              id="fluidity" 
-              place="top" 
-              type="dark" 
-              effect="solid"
-              offset={{right:0}}
-              class={classes['tooltip']}
-              delayShow={350}
-              delayHide={200}
-              >
-              <span>{CategoryText.fluidity}</span>
-            </ReactTooltip>
-            <div>
-              <div className='pull-left'  style={{marginBottom:"15px"}}>
-                <h4>{((fluidityComposite && roundFormat(fluidityComposite.y)) || '').toLocaleString()}</h4>
-                {fluidityComposite && fluidityComposite.rank ? "Rank " + fluidityComposite.rank : ''}
-                <div>2013</div>
+           <div className='row'>
+            <div className='col-xs-6'>
+              <h4><span data-tip data-for="fluidity" className={"pull-right " + classes['info']}>?</span>Fluidity Composite Index</h4>
+              <ReactTooltip 
+                id="fluidity" 
+                place="top" 
+                type="dark" 
+                effect="solid"
+                offset={{right:0}}
+                class={classes['tooltip']}
+                delayShow={350}
+                delayHide={200}
+                >
+                <span>{CategoryText.fluidity}</span>
+              </ReactTooltip>
+              <div>
+                <div className='pull-left'  style={{marginBottom:"15px"}}>
+                  <h4>{((fluidityComposite && roundFormat(fluidityComposite.y)) || '').toLocaleString()}</h4>
+                  {fluidityComposite && fluidityComposite.rank ? "Rank " + fluidityComposite.rank : ''}
+                  <div>2013</div>
+                </div>
+                <div className='pull-right'>
+                  <h4>{((fluidityCompositeSelected && roundFormat(fluidityCompositeSelected.y)) || '').toLocaleString()}</h4>
+                  {fluidityCompositeSelected && fluidityCompositeSelected.rank ? "Rank " + fluidityCompositeSelected.rank : ''}   
+                  <div>{fluidityCompositeSelected ? this.state.displayYear : ""}</div>
+                </div>         
               </div>
-              <div className='pull-right'>
-                <h4>{((fluidityCompositeSelected && roundFormat(fluidityCompositeSelected.y)) || '').toLocaleString()}</h4>
-                {fluidityCompositeSelected && fluidityCompositeSelected.rank ? "Rank " + fluidityCompositeSelected.rank : ''}   
-                <div>{fluidityCompositeSelected ? this.state.displayYear : ""}</div>
-              </div>         
             </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={fluidityCompositeGraphYScale} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 50}} />
-              <span className='pull-left'>{fluidityCompositeGraph[0].values[0].key}</span>
-              <span className='pull-right'>{fluidityCompositeGraph[0].values[fluidityCompositeGraph[0].values.length-1].key}</span>
+             <div className='col-xs-6'>
+              <div>
+                <LineGraph hover={this.hover} yScale={fluidityCompositeGraphYScale} data={fluidityCompositeGraph} data2={fluidityNatCompositeGraph} uniq='fluidityCompositeGraph' options={{height: 100}} />
+                <span className='pull-left'>{fluidityCompositeGraph[0].values[0].key}</span>
+                <span className='pull-right'>{fluidityCompositeGraph[0].values[fluidityCompositeGraph[0].values.length-1].key}</span>
+              </div>
             </div>
+
           </div>
-           <div className='col-xs-2' style={graphBox}>
+           <div className='col-xs-3' style={graphBox}>
             <h4> High Growth Firms / Total Firms </h4>
             <div>
               <div className='pull-left'  style={{marginBottom:"15px"}}>
@@ -618,19 +631,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 {fluidityHighGrowth && fluidityHighGrowth.rank ? "Rank " + fluidityHighGrowth.rank : ''}
                 <div>2013</div>
               </div>
-              <div className='pull-right'>
+              <div className='pull-right' style={{minHeight: 79}}> 
                 <h4>{(fluidityHighGrowthSelected ? ((fluidityHighGrowthSelected.y || fluidityHighGrowthSelected.y === 0) ? roundFormat(fluidityHighGrowthSelected.y) : '') : '').toLocaleString()}</h4>
                 {fluidityHighGrowthSelected && fluidityHighGrowthSelected.rank ? "Rank " + fluidityHighGrowthSelected.rank : ''}   
                 <div>{fluidityHighGrowthSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover}  yScale={fluidityHighGrowthGraphYScale} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover}  yScale={fluidityHighGrowthGraphYScale} data={fluidityHighGrowthGraph} data2={fluidityNatHighGrowthGraph} uniq='fluidityHighGrowthGraph' options={{height: 100}} />
               <span className='pull-left'>{fluidityHighGrowthGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighGrowthGraph[0].values[fluidityHighGrowthGraph[0].values.length-1].key}</span>
             </div>           
           </div>
-          <div className='col-xs-2' style={graphBox}>
+          <div className='col-xs-3' style={graphBox}>
             <h4><span data-tip data-for="highgrowthfirms" className={"pull-right " + classes['info']}>?</span>High Growth Firms</h4>
             <ReactTooltip 
               id="highgrowthfirms" 
@@ -650,19 +663,19 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 {fluidityHighRaw && fluidityHighRaw.rank ? "Rank " + fluidityHighRaw.rank : ''}
                 <div>2013</div>
               </div>
-              <div className='pull-right'>
+              <div className='pull-right' style={{minHeight: 79}}>
                 <h4>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? roundFormat(fluidityHighRawSelected.y) : '') : '').toLocaleString()}</h4>
                 {(fluidityHighRawSelected && fluidityHighRawSelected.y && fluidityHighRawSelected.rank ? "Rank " + fluidityHighRawSelected.rank : '')}   
                 <div>{(fluidityHighRawSelected ? ((fluidityHighRawSelected.y || fluidityHighRawSelected.y === 0) ? this.state.displayYear : '') : '')}</div>
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={fluidityHighRawGraphYScale} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityHighRawGraphYScale} data={fluidityHighRawGraph} data2={fluidityNatHighRawGraph} uniq='fluidityHighRawGraph' options={{height: 100}} />
               <span className='pull-left'>{fluidityHighRawGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityHighRawGraph[0].values[fluidityHighRawGraph[0].values.length-1].key}</span>
             </div>
           </div>
-          <div className='col-xs-2' style={graphBox}>
+          <div className='col-xs-3' style={graphBox}>
             <h4><span data-tip data-for="netmigration" className={"pull-right " + classes['info']}>?</span>Net Migration</h4>
             <ReactTooltip 
               id="netmigration" 
@@ -685,7 +698,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 {fluidityNetMigration && fluidityNetMigration.rank ? "Rank " + fluidityNetMigration.rank : ''}
                 <div>2013</div>
               </div>
-              <div className='pull-right'>
+              <div className='pull-right' style={{minHeight: 79}}>
                <h4>{(fluidityNetMigrationSelected && fluidityNetMigrationSelected.y) ? 
                         `${roundFormat(fluidityNetMigrationSelected.y)}%` : ''}
                </h4>
@@ -694,12 +707,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={fluidityNetMigrationGraphYScale} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityNetMigrationGraphYScale} data={fluidityNetMigrationGraph} data2={fluidityNatNetMigrationGraph} uniq='fluidityNetMigrationGraph' options={{height: 100}} />
               <span className='pull-left'>{fluidityNetMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityNetMigrationGraph[0].values[fluidityNetMigrationGraph[0].values.length-1].key}</span>
             </div>
           </div>
-          <div className='col-xs-2'>
+          <div className='col-xs-3'>
             <h4><span data-tip data-for="totalmigration" className={"pull-right " + classes['info']}>?</span>Total Migration</h4>
             <ReactTooltip 
               id="totalmigration" 
@@ -722,7 +735,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 {fluidityTotalMigration && fluidityTotalMigration.rank ? "Rank " + fluidityTotalMigration.rank : ''}
                 <div>2013</div>
               </div>
-              <div className='pull-right'>
+              <div className='pull-right' style={{minHeight: 79}}>
                 <h4>{(fluidityTotalMigrationSelected && fluidityTotalMigrationSelected.y) ? 
                         `${roundFormat(fluidityTotalMigrationSelected.y)}%` : ''}
                 </h4>
@@ -731,7 +744,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={fluidityTotalMigrationGraphYScale} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={fluidityTotalMigrationGraphYScale} data={fluidityTotalMigrationGraph} data2={fluidityNatTotalMigrationGraph} uniq='fluidityTotalMigrationGraph' options={{height: 100}} />
               <span className='pull-left'>{fluidityTotalMigrationGraph[0].values[0].key}</span>
               <span className='pull-right'>{fluidityTotalMigrationGraph[0].values[fluidityTotalMigrationGraph[0].values.length-1].key}</span>
             </div>
@@ -741,7 +754,8 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
         {this.props.sector && this.props.sector !== 'diversity' ? '' :
         <div className='row' style={rowStyle}>
           <h4>Diversity</h4>
-          <div className='col-xs-4' style={graphBox}>
+          <div className='row'>
+            <div className='col-xs-6'>
             <h4><span data-tip data-for="diversity" className={"pull-right " + classes['info']}>?</span>Diversity Composite Index</h4>
             <ReactTooltip 
               id="diversity" 
@@ -767,13 +781,17 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 <div>{diversityCompositeSelected ? this.state.displayYear : ""}</div>
               </div>         
             </div>
-            <div>
-              <LineGraph hover={this.hover} yScale={diversityCompositeGraphYScale} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 50}} />
-              <span className='pull-left'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[0].key : ''}</span>
-              <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
+            </div>
+
+            <div className='col-xs-6'>
+              <div>
+                <LineGraph hover={this.hover} yScale={diversityCompositeGraphYScale} data={diversityCompositeGraph} data2={diversityNatCompositeGraph} uniq='diversityCompositeGraph' options={{height: 100}} />
+                <span className='pull-left'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[0].key : ''}</span>
+                <span className='pull-right'>{diversityCompositeGraph[0].values[0] ? diversityCompositeGraph[0].values[diversityCompositeGraph[0].values.length-1].key : ''}</span>
+              </div>
             </div>
           </div>
-          <div className='col-xs-2' style={graphBox}>
+          <div className='col-xs-3' style={graphBox}>
             <h4><span data-tip data-for="foreignborn" className={"pull-right " + classes['info']}>?</span>% Foreign Born</h4>
             <ReactTooltip 
               id="foreignborn" 
@@ -804,12 +822,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={diversityForeignBornGraphYScale} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityForeignBornGraphYScale} data={diversityForeignBornGraph} data2={diversityNatForeignBornGraph} uniq='diversityForeignBornGraph' options={{height: 100}} />
               <span className='pull-left'>{diversityForeignBornGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityForeignBornGraph[0].values[diversityForeignBornGraph[0].values.length-1].key}</span>
             </div>
           </div>
-          <div className='col-xs-2' style={graphBox}>
+          <div className='col-xs-3' style={graphBox}>
             <h4><span data-tip data-for="empVariance" className={"pull-right " + classes['info']}>?</span>Economic Diversity</h4>
             <ReactTooltip 
               id="empVariance" 
@@ -840,12 +858,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={diversityEmpVarianceGraphYScale} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpVarianceGraphYScale} data={diversityEmpVarianceGraph} data2={diversityNatEmpVarianceGraph} uniq='diversityEmpVarianceGraph' options={{height: 100}} />
               <span className='pull-left'>{diversityEmpVarianceGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpVarianceGraph[0].values[diversityEmpVarianceGraph[0].values.length-1].key}</span>
             </div>
           </div>          
-          <div className='col-xs-2' style={graphBox}>
+          <div className='col-xs-3' style={graphBox}>
             <h4><span data-tip data-for="empHHI" className={"pull-right " + classes['info']}>?</span>Hirschman-Herfindahl Index</h4>
             <ReactTooltip 
               id="empHHI" 
@@ -872,17 +890,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               </div>         
             </div>
             <div>
-              <LineGraph hover={this.hover} yScale={diversityEmpHHIGraphYScale} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 50}} />
+              <LineGraph hover={this.hover} yScale={diversityEmpHHIGraphYScale} data={diversityEmpHHIGraph} data2={diversityNatEmpHHIGraph} uniq='diversityEmpHHIGraph' options={{height: 100}} />
               <span className='pull-left'>{diversityEmpHHIGraph[0].values[0].key}</span>
               <span className='pull-right'>{diversityEmpHHIGraph[0].values[diversityEmpHHIGraph[0].values.length-1].key}</span>
             </div>
           </div>          
-          <div className='col-xs-2' style={graphBox}>
-            <h4> Opportunity for Low Income Children </h4>
-            <h4>{((diversityOppLow  && roundFormat(diversityOppLow.y)) || '').toLocaleString()}</h4> 
-            {diversityOppLow && diversityOppLow.rank ? "Rank " + diversityOppLow.rank : ''}
-          </div>
-          <div className='col-xs-2'>
+          <div className='col-xs-3' >
             <h4><span data-tip data-for="opportunity" className={"pull-right " + classes['info']}>?</span>Opportunity for High Income Children</h4>
             <ReactTooltip 
               id="opportunity" 
@@ -898,6 +911,12 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
             </ReactTooltip>
             <h4>{((diversityOppHigh && roundFormat(diversityOppHigh.y)) || '').toLocaleString()}</h4> 
             {diversityOppHigh && diversityOppHigh.rank ? "Rank " + diversityOppHigh.rank : ''}
+
+            <h4> Opportunity for Low Income Children </h4>
+            <h4>{((diversityOppLow  && roundFormat(diversityOppLow.y)) || '').toLocaleString()}</h4> 
+            {diversityOppLow && diversityOppLow.rank ? "Rank " + diversityOppLow.rank : ''}
+         
+            
           </div>
         </div>
       }

@@ -115,6 +115,7 @@ export class LineGraph extends React.Component<void, Props, void> {
     
     this.setState({extent:extent})
     if(this.props.extent){
+      console.log('extent props')
       this.setState({
         extent: this.props.extent
       })
@@ -136,14 +137,16 @@ export class LineGraph extends React.Component<void, Props, void> {
 
       var newProps = Object.assign({},nextProps);
       newProps.data = newData;
-
+      var extent = []
       if(this.props.plot == "value"){
-        var extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
+        extent = [d3.min(newData, function(c) { return d3.min(c.values, function(v) { return v.y }); }),d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.y }); })]                  
       }
       else{
-        var extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
+        extent = [0,d3.max(newData, function(c) { return d3.max(c.values, function(v) { return v.rank }); })]              
       }
-
+      this.setState({
+        extent: extent
+      })
       this._renderGraph(newProps);
     }
   }
@@ -329,11 +332,12 @@ export class LineGraph extends React.Component<void, Props, void> {
     }
 
     //Get rid of everything already in the svg
-    d3.select("#" + (this.props.container || 'line') + "svg").selectAll("*").remove();
+    d3.select("#" + (this.props.container || 'line') + " svg").selectAll("g").remove();
+    console.log('remove ', "#" + (this.props.container || 'line') + "svg")
 
     //Create new svg
     var svg = d3.select("#" + (this.props.container || 'line') + " svg")
-    .attr('viewBox','-90 -20 ' + (width) + ' ' + (height))
+      .attr('viewBox','-90 -20 ' + (width) + ' ' + (height))
 
     filteredData.sort(function(a,b){
         return b.values[0].rank - a.values[0].rank

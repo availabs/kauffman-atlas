@@ -12,6 +12,7 @@ import LineGraph from '../../components/graphs/SimpleLineGraph'
 import TooltipTable from '../tables/TooltipTable'
 import RadarChart from '../../components/vis/RadarChart/RadarChart'
 import OverviewTable from '../tables/OverviewTable'
+import naicsLib from 'static/data/naicsKeys'
 
 import { measureLabels } from '../../support/qcew'
 import { kmgtFormatter, kmgtDollarFormatter } from '../misc/numberFormatters'
@@ -59,6 +60,7 @@ const buttonStyle = {
   marginLeft: '1px',
   marginRight: '1px',
 }
+
 
 
 const renderVisualizations = (props) => (
@@ -176,8 +178,14 @@ const renderVisualizations = (props) => (
             </div>
           </div>
         </StickyContainer >
-
+      <div className= 'row'>
+        <div key='leftpad' style={{textAlign: 'left', padding: 15}}>
+            <h4>{props.selectedParentNaicsTitle}</h4>
+            {naicsLib[Object.keys(props.overviewTableData)[0].slice(0, -1)] && naicsLib[Object.keys(props.overviewTableData)[0].slice(0, -1)].description ? naicsLib[Object.keys(props.overviewTableData)[0]].description.filter((d,i) => { return i < 4 && d !== "The Sector as a Whole"}).map((d,i) => { return <p key={'desc'+i}>{d}</p> }) : ''}
+        </div>
+      </div>
       <div className='row' style={{overflow:'hidden', zIndex: 10}} >
+           
         <div className='col-xs-5'>
           <strong>
             {`Share of ${props.lineGraphRawTitle} by Industry`}
@@ -204,9 +212,10 @@ const renderVisualizations = (props) => (
       </div>
 
       <div className='row'>
-        <OverviewTable data={props.overviewTableData}
-                       sortFieldChange={props.overviewTableSortFieldChange}
-                       onNaicsLabelClick={props.drilldownIntoNaicsSubindustry}/>
+        <OverviewTable 
+         data={props.overviewTableData}
+         sortFieldChange={props.overviewTableSortFieldChange}
+         onNaicsLabelClick={props.drilldownIntoNaicsSubindustry}/>
       </div>
     </StickyContainer>
   </div>
