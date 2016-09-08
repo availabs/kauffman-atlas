@@ -29,10 +29,10 @@ var shareEmpNewFirmsQWI_ExceptAccomAndRetail =
 var processedNewFirms = _processData({data:densityData,selectedMetric:"newValues"});
 var processedShareEmpNewFirmsQWI_All = _processGeneral(shareEmpNewFirmsQWI_All,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_All = _polishData(processedShareEmpNewFirmsQWI_All['raw'],"qwiDensity");
-var processedShareEmpNewFirmsQWI_HighTech = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity");
-var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw'],"qwiDensity");
 var processedShareEmpNewFirmsQWI_ExceptAccomAndRetail = _processGeneral(shareEmpNewFirmsQWI_ExceptAccomAndRetail,"qwiDensity");
 var coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail = _polishData(processedShareEmpNewFirmsQWI_ExceptAccomAndRetail['raw'],"qwiDensity");
+var processedShareEmpNewFirmsQWI_HighTech = _processGeneral(shareEmpNewFirmsQWI_HighTech,"qwiDensity","yes");
+var coloredShareEmpNewFirmsQWI_HighTech = _polishData(processedShareEmpNewFirmsQWI_HighTech['raw'],"qwiDensity");
 var processedDensityComposite = _processComposite(processedNewFirms['relative'],coloredShareEmpNewFirmsQWI_All,coloredShareEmpNewFirmsQWI_HighTech,coloredShareEmpNewFirmsQWI_ExceptAccomAndRetail);
 
 
@@ -1134,15 +1134,10 @@ function _rankCities(cities,dataset){
         );    
   }
 
-  //if(dataset == "qwiDensity"){
-    //console.log("qwiDensity")
-  //}
-
   years.forEach(year => {
       var rank = 1;
       //Sort cities according to each year
       cities.sort(_sortCities(year));
-
       //Go through and assign ranks for current year
       cities.forEach(city => {
           city.values.forEach(yearValues => {
@@ -1342,14 +1337,15 @@ function _sortCities(year){
         }
       })       
 
+      aValue = aValue || 0;
+      bValue = bValue || 0;
       if(aValue > bValue){
         return -1;
       }
       if(bValue > aValue){
         return 1;
       }           
-                
-      return 0;     
+                    
   }
 }
 function _sortMsaCities(){
@@ -1652,7 +1648,9 @@ function _relativeAgainstPopulation(graphRawData){
 function _processGeneral(data,dataset){
   var finalData = _convertToCoordinateArray(data,dataset);
 
+
   var rankedData = _rankCities(finalData,dataset);
+ 
   var polishedData = _polishData(rankedData,dataset);
 
   var graphRawData = polishedData;

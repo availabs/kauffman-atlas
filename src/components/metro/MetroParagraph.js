@@ -74,13 +74,12 @@ export class MetroParagraph extends React.Component<void, Props, void> {
     return (<span>{i}<sup>th</sup></span>);
   }
 
-
   _highScore(data){
     let compScores = [];
-
-    compScores.push({value:data.density.composite.values[data.density.composite.values.length-1], metric:'density'})
-    compScores.push({value:data.fluidity.composite.values[data.fluidity.composite.values.length-1], metric:'fluidity'})
-    compScores.push({value:data.diversity.composite.values[data.diversity.composite.values.length-1], metric:'diversity'})
+    console.log(data)
+    compScores.push({value:data.density.composite.values.filter(d => { return d.x === 2013 })[0], metric:'density'})
+    compScores.push({value:data.fluidity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'fluidity'})
+    compScores.push({value:data.diversity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'diversity'})
 
     var topMetric = compScores.reduce((highest,current) => {
       return highest.value.rank < current.value.rank ? highest : current
@@ -93,8 +92,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       return metricScores;
     },[]).map(metricName => {
       return (
-        data[topMetric.metric][metricName]['relative'] ? { value:data[topMetric.metric][metricName]['relative'].values[(data[topMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :
-        data[topMetric.metric][metricName]['raw'] ? { value:data[topMetric.metric][metricName]['raw'].values[(data[topMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :               
+        data[topMetric.metric][metricName]['relative'] ? { value:data[topMetric.metric][metricName]['relative'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :
+        data[topMetric.metric][metricName]['raw'] ? { value:data[topMetric.metric][metricName]['raw'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :               
+        (metricName == "composite") ? { value:data[topMetric.metric][metricName].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] } :                         
         { value:data[topMetric.metric][metricName].values[(data[topMetric.metric][metricName].values.length-1)],metric:CategoryNames[(topMetric.metric + metricName.toLowerCase())] }                          
         )
     }).reduce((highest, current) => {
@@ -108,9 +108,9 @@ export class MetroParagraph extends React.Component<void, Props, void> {
   _lowScore(data){
     let compScores = [];
 
-    compScores.push({value:data.density.composite.values[data.density.composite.values.length-1], metric:'density'})
-    compScores.push({value:data.fluidity.composite.values[data.fluidity.composite.values.length-1], metric:'fluidity'})
-    compScores.push({value:data.diversity.composite.values[data.diversity.composite.values.length-1], metric:'diversity'})
+    compScores.push({value:data.density.composite.values.filter(d => { return d.x === 2013 })[0], metric:'density'})
+    compScores.push({value:data.fluidity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'fluidity'})
+    compScores.push({value:data.diversity.composite.values.filter(d => { return d.x === 2013 })[0], metric:'diversity'})
 
     var bottomMetric = compScores.reduce((lowest,current) => {
       return lowest.value.rank > current.value.rank ? lowest : current
@@ -122,9 +122,11 @@ export class MetroParagraph extends React.Component<void, Props, void> {
       }
       return metricScores;
     },[]).map(metricName => {
+
       return (
-        data[bottomMetric.metric][metricName]['relative'] ? { value:data[bottomMetric.metric][metricName]['relative'].values[(data[bottomMetric.metric][metricName]['relative'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :
-        data[bottomMetric.metric][metricName]['raw'] ? { value:data[bottomMetric.metric][metricName]['raw'].values[(data[bottomMetric.metric][metricName]['raw'].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :               
+        data[bottomMetric.metric][metricName]['relative'] ? { value:data[bottomMetric.metric][metricName]['relative'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :
+        data[bottomMetric.metric][metricName]['raw'] ? { value:data[bottomMetric.metric][metricName]['raw'].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :               
+        (metricName == "composite") ? { value:data[bottomMetric.metric][metricName].values.filter(d => { return d.x === 2013 })[0],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] } :                         
         { value:data[bottomMetric.metric][metricName].values[(data[bottomMetric.metric][metricName].values.length-1)],metric:CategoryNames[(bottomMetric.metric + metricName.toLowerCase())] }                          
         )
     }).reduce((lowest, current) => {
@@ -161,7 +163,7 @@ export class MetroParagraph extends React.Component<void, Props, void> {
         </p>
         <p>
           It scores highest in the {topScore.metric.metric} category with a score of {roundFormat(topScore.metric.value.y)} which ranks as the {this.ordinal_suffix_of(topScore.metric.value.rank)} highest score in that category. 
-          The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}, which measures [hovertext for {topScore.sub.metric}], where it ranks {this.ordinal_suffix_of(topScore.sub.value.rank)} nationally at {roundFormat(topScore.sub.value.y)}{CategoryUnits[topScore.sub.metric]}.
+          The {topScore.metric.metric} score in {name} is driven by {topScore.sub.metric}, which measures {CategoryHoverParagraph[topScore.sub.metric]}, where it ranks {this.ordinal_suffix_of(topScore.sub.value.rank)} nationally at {roundFormat(topScore.sub.value.y)}{CategoryUnits[topScore.sub.metric]}.
         </p>
         <p>
           {name} scores lowest in the {bottomScore.metric.metric} category which {CategoryHoverParagraph[bottomScore.metric.metric]} 

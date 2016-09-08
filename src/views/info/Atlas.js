@@ -39,7 +39,7 @@ export default class Atlas extends React.Component {
               <strong>Share of Employment in New Traded Firms</strong> is calculated using Quarterly Workforce Indicators (QWI).  One of the greatest strengths of QWI is that it shows share of employment by both 2-digit NAICS industry and firm-age. This metric calculates share of employment in new firms (>1 year old) in all industries except for retail (NAICS 44-45) and accommodations and food services (NAICS 72).</p>
 
               <p>
-              <strong>Share of Employment in New High-Tech Firms</strong>Share of Employment in High Tech is calculated using Quarterly Workforce Indicators (QWI).  One of the greatest strengths of QWI is that it shows share of employment by both 2-digit NAICS industry and firm-age.This metric calculate share of employment in new firms (>1 year old), only in the sectors Information (NAICS 51) and Professional Scientific and Technical Services (54). </p>
+              <strong>Share of Employment in New High-Tech Firms</strong> is calculated using Quarterly Workforce Indicators (QWI).  One of the greatest strengths of QWI is that it shows share of employment by both 2-digit NAICS industry and firm-age.This metric calculate share of employment in new firms (>1 year old), only in the sectors Information (NAICS 51) and Professional Scientific and Technical Services (54). </p>
             </div>
           </div>
         </div>

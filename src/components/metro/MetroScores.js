@@ -450,7 +450,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
                 place="top" 
                 type="dark" 
                 effect="solid"
-                offset={{right:0}}
+                offset={{right:50}}
                 class={classes['tooltip']}
                 delayShow={350}
                 delayHide={200}
@@ -798,7 +798,7 @@ export class MetroScoresOverview extends React.Component<void, Props, void> {
               place="top" 
               type="dark" 
               effect="solid"
-              offset={{left:0}}
+              offset={{right:50}}
               class={classes['tooltip']}
               delayShow={350}
               delayHide={200}

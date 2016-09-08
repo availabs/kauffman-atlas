@@ -2,12 +2,11 @@ import React from 'react'
 import d3 from 'd3'
 import GraphSource from './MultiLineGraphSource'
 import _ from 'lodash'
-import { connect } from 'react-redux'
 
 // import styles from './Race.scss'
 
 class LineGraph extends React.Component {
-  constructor (props) {
+  constructor () {
     super()
     this.state = {
       graph: GraphSource()
@@ -56,6 +55,9 @@ class LineGraph extends React.Component {
         newScale.range([tempHeight,0])
         this.state.graph2.yScale(newScale)
       }
+      if (this.props.alwaysRedrawYAxis) {
+        this.state.graph2.alwaysRedrawYAxis(true)
+      }
       d3.select('#lineGraph' + this.props.uniq)
         .append('svg')
         .call(this.state.graph2)
@@ -102,6 +104,9 @@ class LineGraph extends React.Component {
       newScale.range([tempHeight,0])
       this.state.graph.yScale(newScale)
     }
+    if (this.props.alwaysRedrawYAxis) {
+      this.state.graph.alwaysRedrawYAxis(true)
+    }
 
     if(this.props.data2){
       d3.select('#lineGraph' + this.props.uniq).select("svg")
@@ -127,7 +132,7 @@ class LineGraph extends React.Component {
 
   }
 
-  _mouseListener (d,data) {
+  _mouseListener (d) {
     if (this.props.quarterChangeListener) {
       this.props.quarterChangeListener(d.point.x) 
     }
