@@ -64,7 +64,7 @@ export const loadMetroZipsGeo = (msaId, zips) => {
     })
     .then(response => response.json())
     .then(json => {
-      console.log('test', json, zips)
+      //console.log('test', json, zips)
       return dispatch(recieveGeoZipData(json,msaId))
     })
   }

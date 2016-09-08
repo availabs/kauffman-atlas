@@ -165,7 +165,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 						<Link to={'/metro/'+metroId + '/cluster'}
 					    className={classes['whitelink']}>Cluster Analysis</Link>
 				    </li>
-				    <li onClick={this._selectDisplay.bind(null,'combined')}>
+				    <li style={this._linkIsActive(['workforce'])} onClick={this._selectDisplay.bind(null,'workforce')}>
 						<Link to={'/metro/'+metroId+'/workforce'}
 					    className={classes['whitelink']}>Firm Mapping</Link>
 				    </li>
@@ -249,6 +249,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 	function selectChange(msaId){
 		scope.context.router.push('/metro/'+msaId+'/'+scope.props.params.pageid)
 	}
+	let page = this.props.params.pageid || this.state.display
 
 	if(!this.props.metros[metroId] || !this.props.metros[metroId].pop){
 	    return (
@@ -268,7 +269,7 @@ export class MetroHome extends React.Component<void, Props, void> {
 			<div>
 			    <div style={{backgroundColor: '#7d8faf', color: '#efefef', paddingTop:20, paddingBottom: 20}}>
 				<MetroHeader metroId={metroId} metroData={this.props.metros[metroId]} selectChange={selectChange}/>
-				<MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/>
+				{page === 'combined' ? <MetroParagraph metroId={metroId} metroData={this.props.metros[metroId]}/> : <span />}
 			    </div>
 			    {this.renderNav()}
 			    {this.subNav()}

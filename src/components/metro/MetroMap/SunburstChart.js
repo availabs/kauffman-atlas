@@ -20,8 +20,9 @@ module.exports = {
 
 		var color = d3.scale.category20c();
 
-		var svg = d3.select("#sunburst")
-		  .append("g")
+		d3
+
+		var svg = d3.select("#sunburst g")
 		    .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
 		var partition = d3.layout.partition()

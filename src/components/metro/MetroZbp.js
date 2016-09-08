@@ -15,7 +15,8 @@ export class MetroZbp extends React.Component {
     this.state = {
       depth: 2,
       filter: null,
-      sort: 'emp_quot'
+      sort: 'emp_quot',
+      year: 2013
     }
     this._fecthData = this._fecthData.bind(this)
     this._processData = this._processData.bind(this)

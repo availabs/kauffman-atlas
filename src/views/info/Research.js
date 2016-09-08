@@ -2,16 +2,16 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import classes from 'styles/sitewide/index.scss'
-import { browserHistory } from 'react-router'
+// import { browserHistory } from 'react-router'
 import { loadDensityComposite,loadNewValues,loadShare,loadShareEmpNoAccRet,loadShareEmpHighTech, } from 'redux/modules/densityData'   
 import { loadFluidityComposite,loadInc5000Data, loadNetMigrationIrs, loadTotalMigration,loadAnnualChurn } from 'redux/modules/fluidityData'    
 import { loadDiversityComposite,loadOpportunityData,loadForeignBornData,loadEmpVarianceData,loadEmpHHIData } from 'redux/modules/diversityData'    
 import { loadCombinedComposite } from 'redux/modules/combinedData'
 import { loadMetroScores } from 'redux/modules/metroScoresData'
-import ComponentButtons from 'components/ranks/ComponentButtons'
-import SubGraphButtons from 'components/ranks/SubGraphButtons'
+//import ComponentButtons from 'components/ranks/ComponentButtons'
+//import SubGraphButtons from 'components/ranks/SubGraphButtons'
 import LineGraph from 'components/graphs/LineGraph.js'
-import BarChart from 'components/graphs/BarChart.js'
+//import BarChart from 'components/graphs/BarChart.js'
 import MetroScores from 'components/metro/MetroScores'
 import NationalMap from 'components/maps/NationalMap'
 import MapGraphLegend from 'components/ranks/MapGraphLegend'
@@ -147,92 +147,64 @@ export default class Research extends React.Component {
             </p>
           </div>
           <div className='row'>
-            <div className='col-md-12' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
-            <h4> Rank of Metro Areas in Top 50 for All Years of Study</h4>
-             {this._renderGraph('combined', 'composite', 'ranks', 'ranksas', 'rank',[0,50])}
-          </div>
+            <div className='col-md-6' style={{textAlign: 'justify', textJustify: 'inter-word'}}>
+              <h4> Rank of Metro Areas in Top 50 <small>for All Years of Study</small></h4>
+              {this._renderGraph('combined', 'composite', 'ranks', 'ranksas', 'rank',[0,50])}
+            </div>
+            <div id="mapDiv" className={'col-md-6'}>
+              <h4>Top Metro EEI Composite Scores <small>Out of 100</small></h4>
+              {this._renderGraph('combined', 'composite', 'scores', 'scores', 'value',[50,85])}
+            </div>
           </div>
         </div>
 
-        
-         <div className='row'>
+        <div className='row'>
           <div className={'col-xs-12 ' + classes['text-div']}>
             <p>
-             The Entrepreneurial Ecosystem Index ranks Washington D.C., Boulder , Austin, New York and Miami as the top five metropolitan statistical areas in the latest year of data (2013).San Francisco, Los Angeles and San Jose-Sunnyvale-Santa Clara were alll within the top 10. While many of the top 7 cities are expected, it is somewhat surprising to find Washington DC at the top of the list. For instance, the Kauffman Index for Growth Entrepreneurship, an index that ranks MSAs based on the density of high growth startups, ranks Miami as the 39th MSA in the nation. So how does an MSA like Miami, 39th in the Growth Entrepreneurship Rankings, measure as the number one healthiest Entrepreneurial Ecosystem?
+             The Entrepreneurial Ecosystem Index ranks Washington D.C., Boulder , Austin, New York and Miami as the top five metropolitan statistical areas in the latest year of data (2013).San Francisco, Los Angeles and San Jose-Sunnyvale-Santa Clara were alll within the top 10. While many of the top 7 cities are expected, it is somewhat surprising to find Boulder, CO ranking in second place.
             </p>
             <p>
-Firstly, it ranks high in terms of foreign born population. A full 38% of the population of Miami is foreign born, a demographic with historically high rates of entrepreneurism. Theory suggests that a high concentration of foreign born population should provide a fertile environment for innovation. Secondly, Miami has a high rate of new firms per 1K population and a high share of employment in High Tech Firms. 
-</p>
+             Boulder has ranked second every year since the begining of our data in 2009, ranking above average in density, diversity and fluidity combined metrics driven by higher than average rates of entrepreneurship and the rate of high growth firms from the area. This may come as less of a suprise though to people who follow the start up world as the top teir incubator TechStars was founded in Boulder in 2006.
+            </p>
           </div>
-<div className='row'>
-    <div id="mapDiv" className={'col-xs-12 '}>
-    <h4>Top Metro EEI Composite Scores <small>Out of 100</small></h4>
-      {this._renderGraph('combined', 'composite', 'scores', 'scores', 'value',[50,85])}
-    </div>
-</div>
-<div className={'col-xs-12 ' + classes['text-div']}>
-<p>
-Upon digging deeper into the Entrepreneurial Ecosystem Atlas we find that Miami has a healthy and diverse portfolio of industry clusters, with its lone standout specialization being Water Transportation, which likely points toward the Cruise Industry.
-The presence of so many healthy industry clusters indicates that Miami is economically diverse in addition to its diverse population, its high percentage of New Firms per 1K, and high Share of Employment in High Tech Firms.  
-</p><p>
-Additionally, Miami appears to have a relatively recent increase in young firms in the sectors of manufacturing and finance/insurance. These industries traditionally provide a solid bedrock for any entrepreneurial ecosystem. 
-</p>
-</div>
-<div>
-  <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
-</div>
-<div className={'col-xs-12 ' + classes['text-div']}>
-<p>
-Washington D.C., the second highest ranked city in the Entrepreneurial Ecosystem Atlas, is a less surprising entry on the list. Washington D.C. has had a consistently strong collection of high growth startups in recent years. Kauffman Growth Index ranks them highly….. The Entrepreneurial Ecosystem Index takes this into account in ranking Washington 1st in the Fluidity Category.  
-Washington D.C. also scores well in percent of foreign born population and in the Equality of Opportunity data which shows that traditionally, individuals who grow up in Washington D.C. have a good chance of taking home a higher income than their parents. 
-Washington D.C.’s share of Employment in High Tech New Firms score is likely bolstered by its high establishment quotient in the Professional, Scientific and Technical Services industry sector. Employment in the sub-industry sectors of Computer Systems Design, Scientific Research and Development, and Management, Scientific, and Technical Services, are all higher than three times the national average. 
-</p><p>
-The Entrepreneurial Ecosystem Atlas also visualizes trends such as the great recession of 2008, the effects of Hurricane Katrina, and more importantly the recovery of establishments and employment that follow such events.
-First let’s take a look at the effects of the great recession. There’s a clear dip in the number of new and young firms per 1,000 people over 2008 and 2009, likely a result of the credit crunch, which made it difficult to start a business. There’s a corresponding dip in employment turnover rate as a percentage of total employment which visualizes the dearth of economic mobility associated with recessions. ***
- </p><p>
-Hurricane Katrina also shows up clearly in some graphs, appearing to be a complete outlier in the Net Migration graph. 
-</p>
-</div>
-<div>
-  <MetroScores metroId={"national"} research={"true"} sector={'diversity'} />  
-</div>
-<div className={'col-xs-12 ' + classes['text-div']}>
-<p>
-The industries in New Orleans most severely impacted by Katrina were the Accommodation / Food Services and Retail Trade. Whereas Manufacturing, Health Care / Social Assistance, and Professional, Scientific, and Technical Services show a slight drop in the 4th quarter of 2005 before rebounding to pre-Katrina levels in the 1st quarter of 2006. These industries were clearly more resilient than the Accommodation / Food Services and Retail Trade industries, a finding that is clearly illustrated by the Quarterly Employment visualization tools. New Orleans is now a decade into the Katrina recovery and Accommodation / Food Services and Retail Trade appear to have finally rebounded to pre-Katrina levels.
-</p><p>
-The Albany Visualization and Informatics Lab explored our hometown MSA of Albany – Schenectady – Troy, NY, to see if we could find evidence of the recent investment in its Startup New York program and its investment in nanotechnology research and development. The State of New York and regional economic leaders have branded the Albany – Schenectady – Troy area “Tech Valley.” As part of developing the Tech Valley idea, state funding has been directed to the University at Albany’s College of Nano-scale Engineering (now SUNY Polytech) where a huge investment was made in nanotechnology manufacturing and research facilities. Funding and tax breaks were levied to develop a Startup New York program for encouraging entrepreneurship in the region and to attract startups from other regions to relocate to the new facilities. Additionally, the semiconductor manufacturing company Global Foundries opened a manufacturing plant in neighboring Malta, NY, beginning mass-production in 2012.
-</p>
+        <div>
+          <h4>National Trends in Density Composite</h4>
+          <MetroScores metroId={"national"} research={"true"} sector={'density'} />  
+        </div>
+        <div className={'col-xs-12 ' + classes['text-div']}>
+        <p>
+         It has been well documented that business creation in the United States has been in decline since its peak in the 1990s. The 'great recession' of 2008 led to a precipitous decline in the creation of new businesses adjusted for population and the recovery has been slow since. While not all metropolitan areas have been equally effected by the downturn, we cannot find any examples of cities which have higher rates of business creation than they did before 2000.
+        </p>
+        <p>
+          The overall share of employment in new firms has also been steadily in decline however it was not as sharply impacted by the economic downturn of 2008. While we did see a small national increase in this data from metropolitan areas in 2013, it did decrease again for 2014 and is overall down %5 from its 1990 peak.
+        </p>
+        <p>
+          By looking at share of employment in new high tech firms (Firms in Information and Professional NAICS categories) we see a less exagerated decline and can find cities which have had record levels of employment in these measures. In the national average the dot com boom and 2000 bust can be seen much more clearly than in the overall entrepreneurial activity. However by 2014 we have yet to see a post 'great recession' increase in the percentage of people working in new technology firms.
+        </p>
+        </div>
+        <div>
+          <h4>National Trends in Diversity Composite</h4>
+          <MetroScores metroId={"national"} research={"true"} sector={'diversity'} />  
+        </div>
+        <div className={'col-xs-12 ' + classes['text-div']}>
+          <p>
+            The diversity measures see some of the largest variation of measures across metro areas, with the lowest composite scores being in the 30's and 40's and the highest scores reaching into the 80s. The composite is measuring three different kinds of diversity, being cultural, economic and social and so its hard to draw broad conclusions from the composite in total. 
+          </p>
+          <p>
+            Looking at the individual measures however provides valuable insights. Overall the percentage of foreign born population in metro areas has increased from 2009 to 2014. Both of our measures of economic diversity show fluctiation without meaningful change on the national level. These measures however do well however when looking at individual metros when looking for areas that are over specialized in certain industries.
+          </p>
+        </div>
+    
+          <h4>Conclusions</h4>
+          <p>
+          The Entrepreneurial Ecosystem Atlas advances the cause of Entrepreneurial Ecosystem studies by producing replicable metrics and data science tools such as Application Programming Interfaces (APIs) for various economic census datasets. Looking at each MSA with the same tool provides a level of discovery rarely available, as many of the resources in economic research projects are limited to “one-off” analytical studies that only look at a few places at a time. By using data science methods to calculate the entrepreneurial ecosystem metrics, researchers can look at every MSA in the U.S. and drill down equally into each one, ensuring like-kind output because of the method used to calculate the metrics. This will provide a strong foundation for future theory and policy analysis. 
+          </p>
 
-<p>
-Looking at the Entrepreneurial Ecosystem Atlas, evidence of the effects of these policies appears mixed. Clearly there is a spike in 0-1 year-old manufacturing firms in the 4th quarter of 2011 as indicated by the red line in the graph below. 
-</p><p>
-We can follow that through 2012 and 2013 by looking at 2-3 year-old manufacturing firms.  
-</p><p>
-We can continue to follow this trend into 2014 by looking at 4-5 year-old manufacturing firms.
-</p>
-</div>
-<div>
-  <MetroScores metroId={"national"} research={"true"} sector={'fluidity'} />  
-</div>
-<div className={'col-xs-12 ' + classes['text-div']}>
-<p>
-The Startup New York program, however, seems to be more difficult to track in terms of overall success.  Clearly it is possible to link the growth in manufacturing to the Startup New York program, but there is little evidence of success in other sectors commonly associated with startup culture such as Information and Professional Services. Moreover, aside from the jump in manufacturing noted earlier, there doesn’t appear to be much happening in the Albany – Schenectady – Troy region in the way of 0-1 year-old firms. We would have to look back to a jump in new firms in 2009 in the Information sector which notably does not appear to follow into the 2-3 year-old firm-age, likely indicating firm death.
-</p><p>
-The Entrepreneurial Ecosystem Atlas advances the cause of Entrepreneurial Ecosystem studies by producing replicable metrics and data science tools such as Application Programming Interfaces (APIs) for various economic census datasets. Looking at each MSA with the same tool provides a level of discovery rarely available, as many of the resources in economic research projects are limited to “one-off” analytical studies that only look at a few places at a time. By using data science methods to calculate the entrepreneurial ecosystem metrics, researchers can look at every MSA in the U.S. and drill down equally into each one, ensuring like-kind output because of the method used to calculate the metrics. This will provide a strong foundation for future theory and policy analysis. 
-</p>
-
-          </div>
-       
-       
         </div>
       </div>
     )
   }
 }
-
-
-
-
 
 const mapStateToProps = (state) => ({
   densitycomposite:state.densityData.compositeData,    

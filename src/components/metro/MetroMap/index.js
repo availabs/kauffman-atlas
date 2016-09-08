@@ -20,7 +20,7 @@ export class MetroZbp extends React.Component {
       filter: null,
       mapWidth: 600,
       mapHeight: 600,
-      sort: 'emp_quot',
+      year: 2013,
       options: {
         mode: "zips",
         naics: {
@@ -37,18 +37,18 @@ export class MetroZbp extends React.Component {
   }
   
   _fecthData () {
-    if(!this.state.loadingData && (!this.props.zbpData.data[this.props.year] || !this.props.zbpData.data[this.props.year][this.props.currentMetro])){
+    if(!this.state.loadingData && (!this.props.zbpData.data[this.state.year] || !this.props.zbpData.data[this.state.year][this.props.currentMetro])){
       this.setState({loadingData:true})
-      return this.props.loadZipData(this.props.currentMetro,this.props.year)
+      return this.props.loadZipData(this.props.currentMetro,this.state.year)
     }
 
     if(!this.props.zbpData.geo[this.props.currentMetro]){
       return this.props.loadZbpGeoData(this.props.currentMetro)
     }
 
-    if(!this.state.loadingMap && !this.props.zbpData.zip[this.props.currentMetro] && this.props.zbpData.data[this.props.year] && this.props.zbpData.data[this.props.year][this.props.currentMetro]){
+    if(!this.state.loadingMap && !this.props.zbpData.zip[this.props.currentMetro] && this.props.zbpData.data[this.state.year] && this.props.zbpData.data[this.state.year][this.props.currentMetro]){
       this.setState({loadingMap: true})
-      return this.props.loadZbpZipsGeo(this.props.currentMetro, Object.keys(this.props.zbpData.data[this.props.year][this.props.currentMetro]))
+      return this.props.loadZbpZipsGeo(this.props.currentMetro, Object.keys(this.props.zbpData.data[this.state.year][this.props.currentMetro]))
     }
 
     if(!this.props.naicsKeys){
@@ -75,6 +75,10 @@ export class MetroZbp extends React.Component {
       map.renderGeography(zipsData, this.state.mapWidth, this.state.mapHeight)
       this.setState({mapLoaded: true})
     }
+    if(!this.state.bubbleLoaded) {
+      
+      // this.setState({bubbleLoaded: true})
+    }
     if(this.props.currentMetro !== nextProps.currentMetro) {
       this.setState({
         mapLoaded: false,
@@ -86,9 +90,9 @@ export class MetroZbp extends React.Component {
   }
 
   _renderBubbles () {
-    if(this.state.mapLoaded && !this.state.bubbleLoaded && this.props.naicsKeys && this.props.zbpData.geo[this.props.currentMetro] && this.props.zbpData.zip[this.props.currentMetro] &&  d3.select('#zip_group')[0][0] && this.props.zbpData.data[this.props.year] && this.props.zbpData.data[this.props.year][this.props.currentMetro]){
+    if(this.state.mapLoaded && !this.state.bubbleLoaded && this.props.naicsKeys && this.props.zbpData.geo[this.props.currentMetro] && this.props.zbpData.zip[this.props.currentMetro] &&  d3.select('#zip_group')[0][0] && this.props.zbpData.data[this.state.year] && this.props.zbpData.data[this.state.year][this.props.currentMetro]){
       bubble.renderBubbleChart(
-        this.props.zbpData.data[this.props.year][this.props.currentMetro],
+        this.props.zbpData.data[this.state.year][this.props.currentMetro],
         this.state.mapWidth,
         this.state.mapHeight,
         map.centroids,
@@ -96,12 +100,12 @@ export class MetroZbp extends React.Component {
         this.props.naicsKeys
       )
       sunburst.renderSunburst(
-        bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys),
+        bubble.getCircleArray(this.props.zbpData.data[this.state.year][this.props.currentMetro], this.props.naicsKeys),
         this.setNaics,
         null,null, 
         this.props.naicsKeys
       )
-      this.setState({bubbleLoaded: true})
+      
     }
   }
 
@@ -132,6 +136,7 @@ export class MetroZbp extends React.Component {
           options: newOptions,
           bubbleLoaded: false
       });
+      console.log('setNaics', this.state)
     }
   }
 
@@ -145,72 +150,61 @@ export class MetroZbp extends React.Component {
   }
 
   hasData () {
-    return (this.props.zbpData.data[this.props.year] &&
-      this.props.zbpData.data[this.props.year][this.props.currentMetro] &&
+    return (this.props.zbpData.data[this.state.year] &&
+      this.props.zbpData.data[this.state.year][this.props.currentMetro] &&
       this.props.zbpData.geo[this.props.currentMetro] &&
       this.props.zbpData.zip[this.props.currentMetro] &&
       this.props.naicsKeys)
   }
 
   renderControls() {
+        //console.log('test', this.props.zbpData.data[this.state.year][this.props.currentMetro])
+        var zipcodeCount = ""
+        var currentData = this.props.zbpData.data[this.state.year] &&
+          this.props.zbpData.data[this.state.year][this.props.currentMetro] 
+          ? bubble.getCircleArray(this.props.zbpData.data[this.state.year][this.props.currentMetro], this.props.naicsKeys) : []
+        var estCounts = {}
+        var estEmps = {}
+        var cluster =  this.state.options.mode === "cluster" ? " active" : ""
+        var zips =  this.state.options.mode === "zips" ? " active" : ""
 
-        var zipcodeCount = "",
-            currentData = this.props.zbpData.data[this.props.year] && this.props.zbpData.data[this.props.year][this.props.currentMetro] ? bubble.getCircleArray(this.props.zbpData.data[this.props.year][this.props.currentMetro], this.props.naicsKeys) : [],
-            estCounts = {},
-            estEmps = {},
-            cluster =  this.state.options.mode === "cluster" ? " active" : "",
-            zips =  this.state.options.mode === "zips" ? " active" : "";
-
-
-        if(currentData > 0){
-            zipcodeCount = this.state.geo.features.length - 1;
-            estCounts[this.state.year] = currentData.length;
-            estEmps[this.state.year] = currentData.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
+        if(currentData.length > 0){
+            zipcodeCount = this.props.zbpData.zip[this.props.currentMetro] ? this.props.zbpData.zip[this.props.currentMetro].features.length : ''
+            estCounts[this.state.year] = currentData.length
+            estEmps[this.state.year] = currentData.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0)
             //estCounts[this.state.year2] = this.state.data2.length;
             //estEmps[this.state.year2] = this.state.data2.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0);
             /*estCount = this.state.data.length,
             estEmp = this.state.data.reduce((a,b) => { return parseInt(a) + parseInt(b.radius) },0)
             console.log("empEst", estEmp)*/
         }
-        else {
-            estCounts[this.state.year] = 0;
-            //estCounts[this.state.year2] = 0;
-        }
+        
 
         let style14 = {textAlign:"center",padding:6,fontSize:14 }
         return (
             <div className="col-md-12">
-                <div className="row">
-                    <div className="col-xs-4" style={style14}>
-                        <strong># Zipcodes</strong>
-                    </div>
-                    <div className="col-xs-8" style={style14}>
-                        {zipcodeCount}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xs-12" style={style14}>
-                        <table className="table">
-                            <caption><strong>Establishments</strong></caption>
-                            <tr><th>{this.state.year2}</th><th>{this.state.year}</th><th>Change</th></tr>
-                            <tr>
-                                <td>{estCounts[this.state.year]}</td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xs-4" style={{textAlign:"center",padding:6,fontSize:16}}>
-                        <strong>Display:</strong>
-                    </div>
-                    <div className="col-xs-8">
-                        <div className="btn-group" role="group" >
-                          <button type="button" className={"btn btn-default " + cluster} onClick={this.setMode.bind(null,"cluster")}>Industry</button>
-                          <button type="button" className={"btn btn-default " + zips} onClick={this.setMode.bind(null,"zips")}>Geography</button>
-                        </div>
-                    </div>
-                </div>
+              <div className="row">
+                  <div className="col-xs-12" style={style14}>
+                    <table className="table">
+                      <tbody>
+                      <tr><th>Zipcodes</th><td>{zipcodeCount}</td></tr>
+                      <tr><th>Establishments</th><td>{estCounts[this.state.year] ? estCounts[this.state.year].toLocaleString() : ''}</td></tr>
+                      <tr><th>Employments</th><td>{estEmps[this.state.year] ? estEmps[this.state.year].toLocaleString() : ''}</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+              <div className="row">
+                  <div className="col-xs-12" style={{textAlign:"center",padding:6,fontSize:16}}>
+                      <strong>Display:</strong>
+                  </div>
+                  <div className="col-xs-12" style={{paddingBottom: 10}}>
+                      <div className="btn-group" role="group" >
+                        <button type="button" className={"btn btn-default " + cluster} onClick={this.setMode.bind(null,"cluster")}>Industry</button>
+                        <button type="button" className={"btn btn-default " + zips} onClick={this.setMode.bind(null,"zips")}>Geography</button>
+                      </div>
+                  </div>
+              </div>
             </div>
         )
   }
@@ -218,22 +212,23 @@ export class MetroZbp extends React.Component {
   render () {
     this._fecthData()
     let loading = (
-            <div style={{position:"relative",top:"50%",left:"50%"}}>
-             <Loading type="balls" color="rgb(125, 143, 175)"  /><br />
-             Loading...
+      <div style={{position:"relative",top:"50%",left:"50%"}}>
+       <Loading type="balls" color="rgb(125, 143, 175)"  /><br />
+       Loading...
 
-            </div>
-        )
+      </div>
+    )
 
-        if(this.hasData()){
-            loading = <span />
-        }
+    if(this.hasData()){
+        loading = <span />
+    }
     
-    let naicsLib = this.props.naicsKeys
+    this._renderBubbles()
+    //let naicsLib = this.props.naicsKeys
     let reset = <a onClick={this._setFilter.bind(this,null,2)}>reset</a>
     let name = !this.state.options.naics.name || this.state.options.naics.name === "zbp" ? "All Industries" : this.state.options.naics.code+" - "+this.state.options.naics.name;
 
-    this._renderBubbles()
+    
     return (
       <div className='container-fluid'>
         <h4>Metro Map</h4>
@@ -242,7 +237,9 @@ export class MetroZbp extends React.Component {
             {this.renderControls()}
             
             <h4>{name}</h4>
-            <svg id="sunburst" style={{width:"300px",height:"300px", zIndex:999}} />
+            <svg id="sunburst" style={{width:"300px",height:"300px", zIndex:999}} >
+              <g />
+            </svg>
                 
            
           </div>
