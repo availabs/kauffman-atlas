@@ -19,8 +19,6 @@ export default class Resources extends React.Component {
     switch (page) {
       case 'datasources':
         return <DataSources />
-      case 'research':
-        return <Research />
       default:
         return (
           <Atlas />
@@ -92,10 +90,6 @@ export default class Resources extends React.Component {
                       </Scrollspy>
                       : <span/>
                     }
-                  </li>
-                    
-                  <li role="presentation" className={this._isActive('research')}>
-                    <Link to='/resources/research' style={{color}}>Research</Link>
                   </li>
                 </ul>
               </div>

@@ -8,26 +8,12 @@ export default class DataSources extends React.Component {
   render () {
     return (
       <div>
-        <div className='conatiner-fluid'>
-          <div className='container-fluid'>
-            <div className='row'>
-              <div className={'col-xs-12 ' + classes['text-div']}>
-                <h4>Datasources</h4>
-                 <p>
-                  <strong>Combined</strong> At the core of any entrepreneurial ecosystem are the entrepreneurs themselves. 
-                  Density is a measure of the rate entrepreneurs form new firms are in a metropolitan area. 
-                  The density metric does not measure pure volume, instead it ranks the relative density of new firms, and the percentage of the workforce employed by these young firms. 
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <a name='computed' />
          <div className='conatiner-fluid' id='computed'>
           <div className='container-fluid'>
             <div className='row'>
               <div className={'col-xs-12 ' + classes['text-div']}>
-                <h1>Entreprenurial Ecosystem Atlas Computed Data</h1>
+                <h1>Entrepreneurial Ecosystem Atlas Computed Data</h1>
                
                  <p>
                   Here we provide access to all the data that we have computer to create this website.
@@ -80,13 +66,13 @@ export default class DataSources extends React.Component {
                         </tr>
                         <tr>
                           <td>New Firms / 1k Pop</td>
-                          <td>  Array of New Firms / 1k Poplatuin and Scores for all  MSAs.</td>
+                          <td>  Array of New Firms / 1k Population and Scores for all  MSAs.</td>
                           <td> BDS </td>
                           <td> <a href='data/processedNewFirms.json'> /data/processedNewFirms.json </a> </td>
                         </tr>
                         <tr>
                           <td> % Employment in New Firms (BDS)</td>
-                          <td>  Array of % Employment in New Firsm and scores for all  MSAs.(Not Used in Composite)</td>
+                          <td>  Array of % Employment in New Firms and scores for all  MSAs.(Not Used in Composite)</td>
                           <td> BDS </td>
                           <td> <a href='data/processedShareEmp.json'> /data/processedShareEmp.json </a> </td>
                         </tr>
